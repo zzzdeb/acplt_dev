@@ -1,0 +1,90 @@
+#include "ov.ovm"
+#include "fb.ovm"
+
+LIBRARY CTree
+	VERSION   = "V0.1 (DD-Mon-YYYY)";
+	AUTHOR    = "";
+	COPYRIGHT = "";
+	COMMENT   = "";
+	
+	/**
+		Documentation of Copy.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS Copy : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
+			root: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
+			tree: STRING FLAGS="o" COMMENT="tree";
+			libs: STRING FLAGS="o" COMMENT="libs";
+			resstat: UINT FLAGS="o"	COMMENT="result_status";
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			getfactory	: C_FUNCTION <GET_FACTORY>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	CLASS TreeJSON : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			root: STRING FLAGS="i" COMMENT="root domain";
+			variables: BOOL HAS_GET_ACCESSOR FLAGS="i" COMMENT="if variables must be get or set";
+			tree: STRING FLAGS="o" COMMENT="tree";
+			libs: STRING FLAGS="o" COMMENT="libs";
+			resstat: UINT FLAGS="o"	COMMENT="result_status";
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	
+	CLASS string : CLASS ov/object
+		IS_INSTANTIABLE;
+		VARIABLES
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
+			// fb/functionblock based classes have to implement typemethod
+			//typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		Add associations and their documentation here.
+		Association syntax is:
+	*/
+	//ASSOCIATION assocName : ONE_TO_MANY
+	//	PARENT parentVarName : CLASS ov/object;
+	//	CHILD  childVarName : CLASS ov/object;
+	//END_ASSOCIATION;
+	
+END_LIBRARY;

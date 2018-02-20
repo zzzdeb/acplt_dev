@@ -1,0 +1,15 @@
+#ifndef CTree_OVF_INCLUDED
+#define CTree_OVF_INCLUDED
+
+/* 
+	Declare your C functions here. 
+	Example:
+	typedef OV_DLLFNCEXPORT void MY_FUNC(
+		OV_STRING varName
+	);
+*/
+	typedef OV_DLLFNCEXPORT OV_STRING GET_FACTORY(
+		OV_INSTPTR_ov_domain obj 
+	);
+	
+#endif
