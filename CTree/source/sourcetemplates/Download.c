@@ -3,11 +3,11 @@
 *
 *   FILE
 *   ----
-*   Copy.c
+*   Download.c
 *
 *   History
 *   -------
-*   2018-02-20   File created
+*   2018-02-27   File created
 *
 *******************************************************************************
 *
@@ -25,14 +25,14 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_Copy_typemethod(
+OV_DLLFNCEXPORT void CTree_Download_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
     /*    
     *   local variables
     */
-    OV_INSTPTR_CTree_Copy pinst = Ov_StaticPtrCast(CTree_Copy, pfb);
+    OV_INSTPTR_CTree_Download pinst = Ov_StaticPtrCast(CTree_Download, pfb);
 
     return;
 }

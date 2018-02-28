@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include "string.h"
 
-VERSION_FOR_CTREE = 2;
+#define VERSION_FOR_CTREE 	2
 
 OV_STRING crawl_tree(const OV_INSTPTR_ov_domain root,  OV_STRING* libs, OV_BOOL getvariables);
 
@@ -63,24 +63,30 @@ OV_DLLFNCEXPORT void CTree_Copy_typemethod(
 	OV_STRING tree = "";
 	OV_STRING libs = "";
 
-	OV_UINT liblen = 0;
 	OV_STRING liblist = "";
+	OV_RESULT res = 0 ;
 
 	root = ov_path_getobjectpointer(pinst->v_root, VERSION_FOR_CTREE);
 	if(root==NULL){
 		pinst->v_resstat = OV_ERR_BADPARAM;
 		return;
 	}
+	//!!!check if root is accessable
 
 	ov_string_append(&tree, strquot(root->v_identifier));
 	ov_string_append(&tree, " : ");
 	ov_string_append(&tree, crawl_tree(root, &libs, pinst->v_getvar));
 	ov_string_append(&tree, ",");
+	//checking libs and tree
+	if(!libs || !tree){
+		pinst->v_resstat = OV_ERR_BADVALUE;
+		return;
+	}
 
 	libs[ov_string_getlength(libs)-1] = '\0';
 
 //	libs
-	ov_string_append(&liblist, strquot("libraries"));
+	ov_string_append(&liblist, strquot("Libraries"));
 	ov_string_append(&liblist, " : ");
 	ov_string_append(&liblist, strclasp(libs, "[", "]"));
 	ov_string_append(&tree, liblist);
@@ -88,6 +94,15 @@ OV_DLLFNCEXPORT void CTree_Copy_typemethod(
 
 
 	tree = strclasp(tree, "{", "}");
+	if(!tree)
+		return;
+
+	res = ov_string_setvalue(&pinst->v_tree, tree);
+	if(res)
+		return;
+	res = ov_string_setvalue(&pinst->v_libs, liblist);
+	if(res)
+		return;
 	ov_string_setvalue(&pinst->v_tree, tree);
 	ov_string_setvalue(&pinst->v_libs, liblist);
     return;
@@ -113,12 +128,6 @@ OV_STRING crawl_tree(const OV_INSTPTR_ov_domain root,  OV_STRING* libs, OV_BOOL 
 	OV_STRING fact = "";
 	OV_STRING quotedlib = "";
 	OV_STRING factory = strquot("factory");
-       
-	   //checking libs and tree
-       if(!libs || !tree){
-               pinst->v_resstat = OV_ERR_BADVALUE;
-               return;
-       }
 
 	//variables
 	if(getvariables){

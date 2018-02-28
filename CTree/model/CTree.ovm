@@ -12,7 +12,8 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Copy : CLASS fb/functionblock
+/**
+CLASS Copy : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
 			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
@@ -35,7 +36,7 @@ LIBRARY CTree
 			getfactory	: C_FUNCTION <GET_FACTORY>;
 		END_OPERATIONS;
 	END_CLASS;
-	
+*/
 	CLASS TreeJSON : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
@@ -59,24 +60,43 @@ LIBRARY CTree
 		END_OPERATIONS;
 	END_CLASS;
 	
-	
-	CLASS string : CLASS ov/object
+	/**
+		Documentation of Upload.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS Upload : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
-			// Add variables here. The syntax is:
-			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
+			root: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
+			status: STRING FLAGS="o"	COMMENT="result_status";
+			return: INT FLAGS="o"	COMMENT="return";
 		END_VARIABLES;
 		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
-			// fb/functionblock based classes have to implement typemethod
-			//typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
+	
+	/**
+		Documentation of Copy.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS Download : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
+			root: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
+			tree: STRING FLAGS="o" COMMENT="tree";
+			libs: STRING FLAGS="o" COMMENT="libs";
+			return: INT FLAGS="o"	COMMENT="return";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+
 	
 	/**
 		Add associations and their documentation here.

@@ -1,0 +1,18 @@
+{
+    "Tree":{
+        "A":{
+            "factory":"/acplt/CTree/Upload",
+            "variables":{},
+            "children":{
+                "AA":{
+                    "factory":"/acplt/CTree/Upload",
+                    "variables":{},
+                    "children":{}
+                }
+            }
+        }
+    },
+    "Links":{},
+    "Path":"/TechUnits",
+    "Libraries":["CTree","ksapi"]
+}

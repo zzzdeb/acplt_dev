@@ -16,12 +16,7 @@
 ******************************************************************************/
 
 
-#ifndef OV_COMPILE_LIBRARY_CTree
-#define OV_COMPILE_LIBRARY_CTree
-#endif
 
-
-#include "CTree.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_string.h"
 #include <stdio.h>
@@ -29,12 +24,12 @@
 
 OV_DLLFNCEXPORT OV_STRING strclasp(OV_STRING word, OV_STRING bracket1, OV_STRING bracket2){
 	OV_RESULT res;
-	OV_STRING sum = "";
+	OV_STRING sum;
 	if(!word)
 		return NULL;
 
 	if (bracket1){
-		res = ov_string_append(&sum, bracket1);
+		res = ov_string_setvalue(&sum, bracket1);
 		if(res){
 			return NULL;
 		}
