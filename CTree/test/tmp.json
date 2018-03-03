@@ -1,0 +1,30 @@
+{
+  "Libraries": ["CTree", "fb", "ACPLTlab003lindyn", "iec61131stdfb"],
+  "Tree": {
+    "test": { "factory": "/acplt/CTree/Download", "children": {} },
+    "pid2": {
+      "factory": "/acplt/fb/functionchart",
+      "children": {
+        "x": { "factory": "/acplt/fb/singleport", "children": {} },
+        "w": { "factory": "/acplt/fb/singleport", "children": {} },
+        "KI": { "factory": "/acplt/fb/singleport", "children": {} },
+        "KP": { "factory": "/acplt/fb/singleport", "children": {} },
+        "KD": { "factory": "/acplt/fb/singleport", "children": {} },
+        "y": { "factory": "/acplt/fb/singleport", "children": {} },
+        "diff": { "factory": "/acplt/ACPLTlab003lindyn/diff", "children": {} },
+        "int": { "factory": "/acplt/ACPLTlab003lindyn/int", "children": {} },
+        "add": { "factory": "/acplt/iec61131stdfb/ADD", "children": {} },
+        "mul": { "factory": "/acplt/iec61131stdfb/MUL", "children": {} },
+        "add2": { "factory": "/acplt/iec61131stdfb/ADD", "children": {} },
+        "sub": { "factory": "/acplt/iec61131stdfb/SUB", "children": {} },
+        "mul2": { "factory": "/acplt/iec61131stdfb/MUL", "children": {} },
+        "VorFilter": {
+          "factory": "/acplt/ACPLTlab003lindyn/pt1",
+          "children": {}
+        }
+      }
+    }
+  },
+  "Path": "/TechUnits",
+  "Links": {}
+}

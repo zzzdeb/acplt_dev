@@ -3,11 +3,11 @@
 *
 *   FILE
 *   ----
-*   TreeJSON.c
+*   helper.c
 *
 *   History
 *   -------
-*   2018-01-25   File created
+*   2018-03-02   File created
 *
 *******************************************************************************
 *
@@ -23,28 +23,31 @@
 
 #include "CTree.h"
 #include "libov/ov_macros.h"
-#include "string.h"
-#include "cJSON.h"
 
 
-OV_DLLFNCEXPORT OV_BOOL CTree_TreeJSON_variables_get(
-    OV_INSTPTR_CTree_TreeJSON          pobj
-) {
-    return pobj->v_variables;
-}
-
-OV_DLLFNCEXPORT void CTree_TreeJSON_typemethod(
+OV_DLLFNCEXPORT void CTree_helper_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
     /*    
     *   local variables
     */
-    OV_INSTPTR_CTree_TreeJSON pinst = Ov_StaticPtrCast(CTree_TreeJSON, pfb);
-    OV_RESULT res;
-    OV_STRING tmp = "abcde";
-    res = strget(&pinst->v_tree, tmp, 2, -1);
-    pinst->v_resstat = res;
+    OV_INSTPTR_CTree_helper pinst = Ov_StaticPtrCast(CTree_helper, pfb);
+
     return;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(
+		OV_STRING* valuestr, const OV_VAR_VALUE* value   
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_typeToStr(
+		OV_STRING* typestr, const OV_VAR_TYPE * type
+	) {
+
+    return OV_ERR_OK;
 }
 

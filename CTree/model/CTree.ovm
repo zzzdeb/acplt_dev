@@ -37,28 +37,6 @@ CLASS Copy : CLASS fb/functionblock
 		END_OPERATIONS;
 	END_CLASS;
 */
-	CLASS TreeJSON : CLASS fb/functionblock
-		IS_INSTANTIABLE;
-		VARIABLES
-			root: STRING FLAGS="i" COMMENT="root domain";
-			variables: BOOL HAS_GET_ACCESSOR FLAGS="i" COMMENT="if variables must be get or set";
-			tree: STRING FLAGS="o" COMMENT="tree";
-			libs: STRING FLAGS="o" COMMENT="libs";
-			resstat: UINT FLAGS="o"	COMMENT="result_status";
-			// Add variables here. The syntax is:
-			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
-		END_VARIABLES;
-		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
-			// fb/functionblock based classes have to implement typemethod
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
 	
 	/**
 		Documentation of Upload.
@@ -97,7 +75,16 @@ CLASS Copy : CLASS fb/functionblock
 		END_OPERATIONS;
 	END_CLASS;
 
-	
+	CLASS helper : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+		END_VARIABLES;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			valueToStr 	: C_FUNCTION <VALUE_TO_STRING>;
+			typeToStr 	: C_FUNCTION <TYPE_TO_STRING>;
+		END_OPERATIONS;
+	END_CLASS;	
 	/**
 		Add associations and their documentation here.
 		Association syntax is:

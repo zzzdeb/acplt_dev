@@ -1,0 +1,36 @@
+{
+  "Libraries": ["CTree"],
+  "Tree": {
+    "download": {
+      "variables": {
+        "getvar": ["", "BOOL"],
+        "root": ["", "STRING"],
+        "tree": ["", "STRING"],
+        "libs": ["", "STRING"],
+        "return": ["", "INT"],
+        "iexreq": ["", "BOOL"],
+        "eexreq": ["", "BOOL"],
+        "maxcalctime": ["", "TIME_SPAN"],
+        "methcount": ["", "UINT"],
+        "actimode": ["", "INT"],
+        "proctime": ["", "TIME"],
+        "cyctime": ["", "TIME_SPAN"],
+        "ErrState": ["", "INT"],
+        "calctime": ["", "TIME_SPAN"],
+        "Xpos": ["", "INT"],
+        "Ypos": ["", "INT"],
+        "identifier": ["", "STRING"],
+        "idH": ["", "UINT"],
+        "idL": ["", "UINT"],
+        "creationtime": ["", "TIME"],
+        "pouterobject": ["", "TIME"],
+        "objectstate": ["", "INT"],
+        "linktable": ["", "INT"]
+      },
+      "factory": "/acplt/CTree/Download",
+      "children": {}
+    }
+  },
+  "Path": "/TechUnits",
+  "Links": {}
+}
