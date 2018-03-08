@@ -83,6 +83,7 @@ CLASS Copy : CLASS fb/functionblock
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 			valueToStr 	: C_FUNCTION <VALUE_TO_STRING>;
 			typeToStr 	: C_FUNCTION <TYPE_TO_STRING>;
+			getfactory	: C_FUNCTION <GET_FACTORY>;
 		END_OPERATIONS;
 	END_CLASS;	
 	/**

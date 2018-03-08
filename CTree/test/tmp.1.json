@@ -1,0 +1,15 @@
+{
+  "Libraries": ["CTree"],
+  "Tree": {
+    "download": {
+      "factory": "/acplt/CTree/Download",
+      "children": {}
+    }
+  },
+  "Path": "/TechUnits",
+  "Links": [{
+    "of_association": "/acplt/fb/tasklist",
+    "parent": ["taskparent", "/Tasks/UrTask"],
+    "children": ["taskchild", "/TechUnits/download"]
+  }]
+}

@@ -8,8 +8,8 @@
 		OV_STRING varName
 	);
 */
-	typedef OV_DLLFNCEXPORT OV_STRING GET_FACTORY(
-		OV_INSTPTR_ov_domain obj 
+	typedef OV_STRING GET_FACTORY(
+		OV_INSTPTR_ov_domain obj
 	);
 	
 	typedef OV_DLLFNCEXPORT OV_RESULT VALUE_TO_STRING(
@@ -19,5 +19,5 @@
 	typedef OV_DLLFNCEXPORT OV_RESULT TYPE_TO_STRING(
 		OV_STRING* typestr, const OV_VAR_TYPE * type
 	);
-	
+		
 #endif

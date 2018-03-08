@@ -7,7 +7,7 @@
 *
 *   History
 *   -------
-*   2018-03-02   File created
+*   2018-03-08   File created
 *
 *******************************************************************************
 *
@@ -49,5 +49,12 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_typeToStr(
 	) {
 
     return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(
+		OV_INSTPTR_ov_domain obj
+	) {
+
+    return (OV_STRING)0;
 }
 
