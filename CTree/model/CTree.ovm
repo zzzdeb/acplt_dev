@@ -1,43 +1,16 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "ksbase.ovm"
+//#include "ksapi.ovm"
+#include "kshttp.ovm"
 
 LIBRARY CTree
-	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
-	COPYRIGHT = "";
-	COMMENT   = "";
+	VERSION   = "V0.1 (15-Mon-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
+	COMMENT   = "Upload and Download tree in json format";
 	
-	/**
-		Documentation of Copy.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-	*/
-/**
-CLASS Copy : CLASS fb/functionblock
-		IS_INSTANTIABLE;
-		VARIABLES
-			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
-			root: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
-			tree: STRING FLAGS="o" COMMENT="tree";
-			libs: STRING FLAGS="o" COMMENT="libs";
-			resstat: UINT FLAGS="o"	COMMENT="result_status";
-			// Add variables here. The syntax is:
-			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
-		END_VARIABLES;
-		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in CTree.ovf. Implement the functions in Copy.c.
-			// fb/functionblock based classes have to implement typemethod
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
-			getfactory	: C_FUNCTION <GET_FACTORY>;
-		END_OPERATIONS;
-	END_CLASS;
-*/
-	
+
 	/**
 		Documentation of Upload.
 		@note Javadoc syntax is allowed here.
@@ -50,7 +23,13 @@ CLASS Copy : CLASS fb/functionblock
 			root: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
 			status: STRING FLAGS="o"	COMMENT="result_status";
 			return: INT FLAGS="o"	COMMENT="return";
+			errorLog: STRING FLAGS="o"	COMMENT="Logs for error";
+			log: STRING FLAGS="o"	COMMENT="Logs";
+			//cache: C_TYPE <CtreeUpload> COMMENT="Cache of Object";
 		END_VARIABLES;
+//		PARTS
+//			apiSet				:	CLASS	ksapi/setVar;
+//		END_PARTS;
 		OPERATIONS
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
@@ -82,8 +61,13 @@ CLASS Copy : CLASS fb/functionblock
 		OPERATIONS
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 			valueToStr 	: C_FUNCTION <VALUE_TO_STRING>;
-			typeToStr 	: C_FUNCTION <TYPE_TO_STRING>;
+			ovtypeToStr 	: C_FUNCTION <OVTYPE_TO_STRING>;
+			kstypeToStr 	: C_FUNCTION <KSTYPE_TO_STRING>;
+			strToOVType 	: C_FUNCTION <STRING_TO_OVTYPE>;
+			strToKSType 	: C_FUNCTION <STRING_TO_KSTYPE>;
+			strToValue 	: C_FUNCTION <STRING_TO_VALUE>;
 			getfactory	: C_FUNCTION <GET_FACTORY>;
+			strlistcat: C_FUNCTION <STR_LIST_CAT>;
 		END_OPERATIONS;
 	END_CLASS;	
 	/**

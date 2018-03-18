@@ -115,6 +115,7 @@ OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV
 }
 
 
+
 //OV_STRING* stringvec_append(OV_STRING* vec, OV_UINT* size, OV_STRING element){
 //	OV_STRING  pStr = NULL;
 //	OV_STRING* ret = NULL;

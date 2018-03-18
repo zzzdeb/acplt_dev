@@ -29,47 +29,208 @@
 #include "libov/ov_path.h"
 #include "libov/ov_association.h"
 
+#include "ksbase.h"
+#include "NoneTicketAuthenticator.h"
+
 #include "cJSON.h"
 
 #include "libov/ov_debug.h"
 
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+
 #define VERSION_FOR_CTREE 	2
+#define VARIABLE_FORMAT_SIZE	3
 
 
-OV_RESULT set_values(cJSON* jsvalues, OV_INSTPTR_ov_object pobj){
+typedef struct {
+	OV_INSTPTR_CTree_Upload pinst;
+	OV_INSTPTR_ov_object proot;
+	OV_STRING root_path;
+	OV_STRING current_path;
+} CtreeUpload;
 
+OV_RESULT CtreeUplaod_init(CtreeUpload* pupload, OV_INSTPTR_CTree_Upload pinst) {
+	OV_RESULT res = OV_ERR_OK;
+	pupload->pinst = pinst;
+	pupload->root_path = "";
+	ov_string_append(&pupload->root_path, pinst->v_root);
+	pupload->proot = ov_path_getobjectpointer(pinst->v_root, VERSION_FOR_CTREE);
+
+	//TODO: find out from object
+//	ov_string_setvalue(&pupload->pinst->p_apiSet.v_serverHost, "localhost");
+//	ov_string_setvalue(&pupload->pinst->p_apiSet.v_serverName, "MANAGER");
+
+	return res;
 }
 
-OV_RESULT upload_tree(cJSON* jsparent, OV_INSTPTR_ov_domain pparent) {
+OV_RESULT print_log(CtreeUpload* pupload,
+		void (*ov_logfile)(const OV_STRING, ...), const OV_STRING format, ...) {
+	OV_RESULT res = OV_ERR_OK;
+	va_list args;
+	(*ov_logfile)(format, args);
+
+	ov_string_print(&pupload->pinst->v_log, format, args);
+	if (ov_logfile == ov_logfile_error)
+		ov_string_print(&pupload->pinst->v_errorLog, format, args);
+	return res;
+}
+
+OV_RESULT print_log_exit(CtreeUpload* pupload, OV_RESULT result,
+		void (*ov_logfile)(const OV_STRING, ...), const OV_STRING format, ...) {
+	va_list args;
+	pupload->pinst->v_return = result;
+	return print_log(pupload, ov_logfile, format, args);
+}
+
+OV_ANY get_value_from_str(cJSON* jsvar) {
+	OV_ANY value;
+	value.state = OV_ST_GOOD;
+	CTree_helper_strToOVType(&value.value.vartype,
+			cJSON_GetArrayItem(jsvar, 2)->valuestring);
+	CTree_helper_strToValue(&value.value,
+			cJSON_GetArrayItem(jsvar, 1)->valuestring);
+//	OV_STRING typestr = "";
+//	CTree_helper_ovtypeToStr(&typestr, &value.value.vartype);
+//	OV_STRING valuestr = "";
+//	CTree_helper_valueToStr(&valuestr, &value.value);
+//	ov_logfile_debug("%s:%s has type %i : %s with value %s", jsvar->string, cJSON_GetArrayItem(jsvar, 2)->valuestring, value.value.vartype, typestr, valuestr);
+	return value;
+}
+
+
+OV_RESULT set_variable_values(CtreeUpload* pupload, cJSON* jsvariables,
+		OV_INSTPTR_ov_object pobj) {
+	/*
+	 *	parameter and result objects
+	 */
+//	OV_INSTPTR_ksapi_setVar papiSet = &(pupload->pinst->p_apiSet);
+
+	OV_RESULT res = OV_ERR_OK;
+
+	cJSON* jsvariable = NULL;
+	OV_UINT number_of_variables = cJSON_GetArraySize(jsvariables);
+	OV_STRING objpathwithpunct = NULL;
+
+	OV_SETVAR_PAR params;
+	OV_SETVAR_RES result;
+	OV_SETVAR_ITEM *addrp = NULL;
+
+	OV_TICKET* pticket = NULL;
+
+	//object path
+	ov_memstack_lock();
+	ov_string_setvalue(&objpathwithpunct,
+			ov_path_getcanonicalpath(pobj, VERSION_FOR_CTREE));
+	ov_string_append(&objpathwithpunct, ".");
+	ov_memstack_unlock();
+
+	//TODO: check json value
+
+	ov_memstack_lock();
+	addrp = (OV_SETVAR_ITEM*) ov_memstack_alloc(
+			number_of_variables * sizeof(OV_SETVAR_ITEM));
+
+	if (!addrp) {
+		ov_memstack_unlock();
+		res = OV_ERR_TARGETGENERIC;
+		print_log_exit(pupload, res, ov_logfile_error, "%s",
+				": internal memory problem");
+		return res;
+	}
+
+	params.items_val = addrp;
+	params.items_len = number_of_variables;
+
+	//create NONE-ticket
+	pticket = ksbase_NoneAuth->v_ticket.vtbl->createticket(NULL, OV_TT_NONE);
+
+	//#####################################################################
+	//process multiple variables at once
+	cJSON_ArrayForEach(jsvariable, jsvariables)
+	{
+		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
+		//TODO:check for vartype and value
+
+		OV_STRING strlist[] = {objpathwithpunct, jsvariable->string};
+		OV_STRING_VEC variable_path = {.veclen=2, .value=strlist};
+		addrp->path_and_name = CTree_helper_strlistcat(&variable_path);
+
+		//add one size of a pointer
+		addrp++;
+	}
+
+	ov_ksserver_setvar(2, pticket, &params, &result);
+
+	/*	delete Ticket	*/
+	pticket->vtbl->deleteticket(pticket);
+
+	/**
+	 * Parse result from KS function
+	 */
+
+	if (Ov_Fail(result.result)) {
+		//memory problem or NOACCESS
+//			kshttp_print_result_array(&response->contentString, request.response_format, &result.result, 1, ": NOACCESS or memory problem");
+		ov_memstack_unlock();
+		return result.result;
+	}
+	for (int i = 0; i < result.results_len; i++) {
+//		OV_STRING resstring = NULL;
+//		ov_string_setvalue(&resstring, ov_result_getresulttext(result.results_val[i]));
+		ov_logfile_debug("%i",  result.results_val[i]);
+	}
+//		fr = kshttp_print_result_array(&response->contentString, request.response_format, result.results_val, result.results_len, "");
+
+	ov_memstack_unlock();
+	return res;
+}
+
+
+
+OV_RESULT upload_tree(CtreeUpload* pupload, cJSON* jsparent,
+		OV_INSTPTR_ov_domain pparent) {
 
 	OV_RESULT res = OV_ERR_OK;
 
 	OV_INSTPTR_ov_class pclass = NULL;
-	OV_INSTPTR_ov_domain pobj = NULL;
+	OV_INSTPTR_ov_object pobj = NULL;
 	OV_INSTPTR_ov_object pclassobj = NULL;
 	OV_STRING identifier = NULL;
 
 	cJSON* jschild = NULL;
 	cJSON* jscurrent = NULL;
+	OV_STRING parentpath = NULL;
+
+	//TODO: find more elegant solution to get path
+	ov_memstack_lock();
+	ov_string_setvalue(&parentpath,
+			ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pparent),
+			VERSION_FOR_CTREE));
+	ov_memstack_unlock();
 
 	cJSON_ArrayForEach(jschild, jsparent)
 	{
+//		1. Getting identifier
 		ov_string_setvalue(&identifier, jschild->string);
 		if (!identifier) {
 			return OV_ERR_BADPARAM;
 		}
+
+//		2. Getting class pointer
 		jscurrent = cJSON_GetObjectItemCaseSensitive(jschild, "factory");
 		OV_STRING factory = cJSON_GetStringValue(jscurrent);
-
 		pclassobj = ov_path_getobjectpointer(factory, VERSION_FOR_CTREE);
+		if (pclassobj == NULL) {
+			ov_logfile_error("There is no class with path %s", factory);
+		}
 		pclass = Ov_StaticPtrCast(ov_class, pclassobj);
-//		OV_UINT len = 0;
-//		OV_STRING* fact = ov_string_split(factory, "/", &len);
-//		OV_STRING class = NULL;
-//		ov_string_setvalue(&class, fact[len-2]);
-//		ov_string_append(class, "_");
-//		ov_string_append(class, fact[len-1]);
+		if (pclass == NULL) {
+			ov_logfile_error("There is no class with path %s", factory);
+		}
 
+//		3. Creating Object
 		res =
 				ov_class_createobject(pclass,
 						((OV_INSTPTR_ov_domain) ((pparent)
@@ -80,27 +241,39 @@ OV_RESULT upload_tree(cJSON* jsparent, OV_INSTPTR_ov_domain pparent) {
 						((OV_INSTPTR_ov_object*) &(pobj)));
 		if (Ov_Fail(res)) {
 			if (res == OV_ERR_ALREADYEXISTS) {
+				//TODO: check if it is from same class
+				OV_STRING strvalue[] = { parentpath, "/", identifier };
+				OV_STRING_VEC strvector = { .veclen = 3, .value = strvalue };
+				pobj = ov_path_getobjectpointer(CTree_helper_strlistcat(&strvector),
+				VERSION_FOR_CTREE);
 				ov_logfile_warning("%s already exists", identifier);
 			} else {
-				ov_logfile_error("Couldnt create %s in %s", identifier,
-						pparent->v_identifier);
+				ov_logfile_error("Could not create %s in %s", identifier,
+						parentpath);
 				return res;
 			}
 		} else {
-			ov_logfile_info("%s created in %s", identifier,
-					pparent->v_identifier);
+			ov_logfile_info("created %s/%s", parentpath, identifier);
 		}
 
-		res = upload_tree(cJSON_GetObjectItem(jschild, "children"), pobj);
+		//	1. Set Variables
+		cJSON* jsvariables = cJSON_GetObjectItemCaseSensitive(jschild,
+				"variables");
+
+		set_variable_values(pupload, jsvariables, pobj);
+
+		res = upload_tree(pupload, cJSON_GetObjectItem(jschild, "children"),
+				Ov_StaticPtrCast(ov_domain, pobj));
 		if (Ov_Fail(res)) {
-			ov_logfile_error("couldnt load tree. error at %s", identifier);
+			//TODO: give more info
+			ov_logfile_error("Could not load tree. error at %s", parentpath);
 			return res;
 		}
 	}
 	return res;
 }
 
-OV_RESULT upload_libraries(const cJSON* jslibs) {
+OV_RESULT upload_libraries(CtreeUpload* pupload, const cJSON* jslibs) {
 	cJSON* current = NULL;
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
@@ -117,19 +290,19 @@ OV_RESULT upload_libraries(const cJSON* jslibs) {
 		//	2.3 check if loaded successfully?
 		switch (res) {
 		case OV_ERR_OK:
-			ov_logfile_info("lib %s loaded\n", libname);
+			print_log(pupload, ov_logfile_info, "Library %s loaded", libname);
 			break;
 		case OV_ERR_ALREADYEXISTS:
-			ov_logfile_info("lib %s already exists\n", libname);
+			print_log(pupload, ov_logfile_info, "Library %s exists", libname);
 			break;
 		default:
-			ov_logfile_error("couldnt load lib %s\n", libname);
+			print_log_exit(pupload, res, ov_logfile_error,
+					"Could not load library %s", libname);
 			return res;
 		}
 	}
 	return res;
 }
-
 
 OV_RESULT link_objects(const cJSON* jslinks) {
 	OV_RESULT res = OV_ERR_OK;
@@ -149,25 +322,48 @@ OV_RESULT link_objects(const cJSON* jslinks) {
 				Ov_StaticPtrCast(ov_association,
 						ov_path_getobjectpointer(cJSON_GetStringValue(current), VERSION_FOR_CTREE));
 
-		current = cJSON_GetObjectItem(jschild, "parent");
-		pparent = ov_path_getobjectpointer(
-				cJSON_GetStringValue(cJSON_GetArrayItem(current, 1)),
-				VERSION_FOR_CTREE);
-		if (pparent == NULL)
-			break;
-//			return OV_ERR_BADPARAM;
+		cJSON* jsasparent = NULL;
+		cJSON* jsasparents = cJSON_GetObjectItem(jschild, "parents");
 
-		current = cJSON_GetObjectItem(jschild, "children");
-		OV_STRING path = cJSON_GetStringValue(cJSON_GetArrayItem(current, 1));
-		pchild = ov_path_getobjectpointer(path, VERSION_FOR_CTREE);
-		if (pchild == NULL)
-			break;
-//			return OV_ERR_BADPARAM;
+		cJSON_ArrayForEach(jsasparent, jsasparents)
+		{
+			pparent = ov_path_getobjectpointer(cJSON_GetStringValue(jsasparent),
+			VERSION_FOR_CTREE);
+			if (pparent == NULL) {
+				ov_logfile_error("%s does not exist",
+						cJSON_GetStringValue(jsasparent));
+				continue;
+				//			return OV_ERR_BADPARAM;
+			}
 
-		ov_logfile_info("linking %s with %s", pparent->v_identifier,
-				pchild->v_identifier);
+			cJSON* jsaschild = NULL;
+			cJSON* jsaschildren = cJSON_GetObjectItem(jschild, "children");
+			cJSON_ArrayForEach(jsaschild, jsaschildren)
+			{
+				OV_STRING path = cJSON_GetStringValue(jsaschild);
+				pchild = ov_path_getobjectpointer(path, VERSION_FOR_CTREE);
+				if (pchild == NULL) {
+					ov_logfile_error("%s does not exist", path);
+					continue;
+					//			return OV_ERR_BADPARAM;
+				}
 
-		ov_association_link(passoc, pparent, pchild, OV_PMH_DEFAULT, NULL, OV_PMH_DEFAULT, NULL);
+				res = ov_association_link(passoc, pparent, pchild,
+				OV_PMH_DEFAULT, NULL, OV_PMH_DEFAULT, NULL);
+				if (Ov_OK(res))
+					ov_logfile_info("%s linked with %s through %s",
+							pparent->v_identifier, pchild->v_identifier,
+							passoc->v_identifier);
+				else {
+					ov_logfile_error("%s can not be linked with %s through %s",
+							pparent->v_identifier, pchild->v_identifier,
+							passoc->v_identifier);
+					res = OV_ERR_OK;
+					//!!!
+				}
+			}
+		}
+
 	}
 	return res;
 }
@@ -180,8 +376,9 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
 
 //    ov_string_setvalue(&pinst->v_json, "{\"Path\":\"/TechUnits\", \"Tree\":{\"A\":{\"factory\":\"/acplt/CTree/Upload\",\"variables\":{},\"children\":{\"AA\":{\"factory\":\"/acplt/CTree/Upload\",\"variables\":{},\"children\":{}}}}},\"Links\":{},\"Libraries\":[\"CTree\",\"ksapi\"]}");
-
 	OV_RESULT res;
+	CtreeUpload upload;		// = ov_memstack_alloc(sizeof(CtreeUpload));
+	CtreeUplaod_init(&upload, pinst);
 
 	//1. parse input
 	cJSON * jsbase = NULL;
@@ -196,25 +393,28 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	if (jsbase == NULL) {
 		const char *error_ptr = cJSON_GetErrorPtr();
 		if (error_ptr != NULL) {
-			ov_logfile_error("bad js file");
+//			print_log(&upload, ov_logfile_error, "bad js file");
 		}
-		pinst->v_return = OV_ERR_BADPARAM;
+		print_log_exit(&upload, OV_ERR_BADPARAM, ov_logfile_error,
+				"Bad json file");
 		return;
 	}
-	ov_logfile_info("parsed successfully");
+	print_log(&upload, ov_logfile_info, "parsed successfully");
 
 //   2. Load Libraries
 //   2.1 jsbase contains libraries?
 	jslibs = cJSON_GetObjectItem(jsbase, "Libraries");
 	if (jslibs == NULL) {
-		ov_logfile_info("no libraries to load");
+		print_log(&upload, ov_logfile_info, "No libraries to load");
 	}
+
 //  2.2 load
-	res = upload_libraries(jslibs);
+	res = upload_libraries(&upload, jslibs);
 //  2.3 successfully?
 	if (Ov_Fail(res))
 		if (res != OV_ERR_ALREADYEXISTS) {
-			pinst->v_return = res;
+			print_log_exit(&upload, res, ov_logfile_error,
+					"Couldnt load dependent libraries");
 			return;
 		}
 
@@ -224,10 +424,10 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	OV_STRING rootpath = NULL;
 	ov_string_setvalue(&rootpath,
 			cJSON_GetStringValue(cJSON_GetObjectItem(jsbase, "Path")));
-	OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(rootpath,
-			VERSION_FOR_CTREE);
-	upload_tree(jstree, Ov_StaticPtrCast(ov_domain, proot));
 
+	OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(rootpath,
+	VERSION_FOR_CTREE);
+	upload_tree(&upload, jstree, Ov_StaticPtrCast(ov_domain, proot));
 
 //	4. Link
 	jslinks = cJSON_GetObjectItem(jsbase, "Links");
