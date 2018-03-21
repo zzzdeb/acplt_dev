@@ -7,7 +7,7 @@
 *
 *   History
 *   -------
-*   2018-03-08   File created
+*   2018-03-21   File created
 *
 *******************************************************************************
 *
@@ -25,18 +25,6 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_helper_typemethod(
-	OV_INSTPTR_fb_functionblock	pfb,
-	OV_TIME						*pltc
-) {
-    /*    
-    *   local variables
-    */
-    OV_INSTPTR_CTree_helper pinst = Ov_StaticPtrCast(CTree_helper, pfb);
-
-    return;
-}
-
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(
 		OV_STRING* valuestr, const OV_VAR_VALUE* value   
 	) {
@@ -44,8 +32,43 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(
     return OV_ERR_OK;
 }
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_typeToStr(
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_ovtypeToStr(
 		OV_STRING* typestr, const OV_VAR_TYPE * type
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_kstypeToStr(
+		OV_STRING* typestr, const OV_VAR_TYPE * type
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(
+		OV_VAR_TYPE * type, const OV_STRING typestr
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToKSType(
+		OV_VAR_TYPE * type, const OV_STRING typestr
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(
+		OV_VAR_VALUE* value, const OV_STRING valuestr
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(
+		OV_STRING* accessstr, const OV_ACCESS * access
 	) {
 
     return OV_ERR_OK;
@@ -53,6 +76,13 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_typeToStr(
 
 OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(
 		OV_INSTPTR_ov_domain obj
+	) {
+
+    return (OV_STRING)0;
+}
+
+OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(
+		const OV_STRING_VEC* const vector
 	) {
 
     return (OV_STRING)0;

@@ -1,10 +1,53 @@
 #ifndef CTree_OVT_INCLUDED
 #define CTree_OVT_INCLUDED
 
+#include "cJSON.h"
+#include "CTree.h"
 /* 
 	Define your data types here. 
 */
 
+enum JSON_FORMAT {
+	VARTYPE_POS = 0,
+	VARVAL_POS = 1
+};
 
+typedef struct{
+	char msg[1024];
+} CTreeCache;
+
+typedef struct{
+	OV_INSTPTR_ov_domain proot;
+	cJSON* tree;
+	cJSON* jsbase;
+	cJSON* jstree;
+	cJSON* jslibs;
+	cJSON* jslinks;
+	char msg[1024];
+} CTreeDownloadCache;
+
+typedef struct {
+	OV_INSTPTR_ov_object proot;
+	OV_STRING root_path;
+	OV_STRING current_path;
+	cJSON * jsbase;
+	cJSON * jslibs;
+	cJSON * jslinks;
+	cJSON * jstree;
+	cJSON * jspath;
+	char msg[1024];
+} CTreeUploadCache;
+
+typedef struct {
+	OV_INSTPTR_ov_object proot;
+	OV_STRING root_path;
+	OV_STRING current_path;
+	cJSON * jsbase;
+	cJSON * jslibs;
+	cJSON * jslinks;
+	cJSON * jstree;
+	cJSON * jspath;
+	char msg[1024];
+} CTreeTransportCache;
 	
 #endif

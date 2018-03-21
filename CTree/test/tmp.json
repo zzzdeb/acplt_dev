@@ -3,57 +3,124 @@
   "Tree": {
     "download": {
       "variables": {
-        "iexreq": ["1", "TRUE", "BOOL"],
-        "libs": ["1", "[\"CTree\"]", "STRING"],
-        "tree": ["1", "{\n\t\"Libraries\":\t[\"CTree\"],\n\t\"Tree\":\t{\n\t\t\"download\":\t{\n\t\t\t\"variables\":\t{\n\t\t\t\t\"getvar\":\t[\"3\", \"TRUE\", \"BOOL\"],\n\t\t\t\t\"root\":\t[\"1\", \"/TechUnits\", \"STRING\"],\n\t\t\t\t\"tree\":\t[\"1\", \"-\", \"STRING\"],\n\t\t\t\t\"libs\":\t[\"1\", \"-\", \"STRING\"],\n\t\t\t\t\"return\":\t[\"1\", \"0\", \"INT\"],\n\t\t\t\t\"iexreq\":\t[\"1\", \"FALSE\", \"BOOL\"],\n\t\t\t\t\"eexreq\":\t[\"1\", \"FALSE\", \"BOOL\"],\n\t\t\t\t\"maxcalctime\":\t[\"1\", \"0.0\", \"TIME_SPAN\"],\n\t\t\t\t\"methcount\":\t[\"1\", \"0\", \"UINT\"],\n\t\t\t\t\"actimode\":\t[\"1\", \"1\", \"INT\"],\n\t\t\t\t\"proctime\":\t[\"1\", \"1520983006.320126\", \"TIME\"],\n\t\t\t\t\"cyctime\":\t[\"1\", \"0.0\", \"TIME_SPAN\"],\n\t\t\t\t\"ErrState\":\t[\"1\", \"0\", \"INT\"],\n\t\t\t\t\"calctime\":\t[\"1\", \"0.0\", \"TIME_SPAN\"],\n\t\t\t\t\"Xpos\":\t[\"1\", \"0\", \"INT\"],\n\t\t\t\t\"Ypos\":\t[\"1\", \"0\", \"INT\"],\n\t\t\t\t\"idH\":\t[\"1\", \"0\", \"UINT\"],\n\t\t\t\t\"idL\":\t[\"1\", \"614\", \"UINT\"]\n\t\t\t},\n\t\t\t\"factory\":\t\"/acplt/CTree/Download\",\n\t\t\t\"children\":\t{\n\t\t\t}\n\t\t}\n\t},\n\t\"Path\":\t\"/TechUnits\",\n\t\"Links\":\t[{\n\t\t\t\"of_association\":\t\"/acplt/fb/tasklist\",\n\t\t\t\"parents\":\t[\"/Tasks/UrTask\"],\n\t\t\t\"children\":\t[\"/TechUnits/download\"]\n\t\t}]\n}", "STRING"],
-        "root": ["1", "/TEST", "STRING"],
         "getvar": ["1", "TRUE", "BOOL"],
+        "root": ["1", "/TechUnits", "STRING"],
+        "tree": ["1", "{\n\t\"Libraries\":\t[\"CTree\"],\n\t\"Tree\":\t{\n\t\t\"download\":\t{\n\t\t\t\"factory\":\t\"/acplt/CTree/Download\",\n\t\t\t\"children\":\t{\n\t\t\t}\n\t\t}\n\t},\n\t\"Links\":\t[],\n\t\"Path\":\t\"/TechUnits\"\n}", "STRING"],
+        "libs": ["1", "[\"CTree\"]", "STRING"],
         "return": ["1", "0", "INT"],
+        "errorLog": ["1", "-", "STRING"],
+        "log": ["1", "-", "STRING"],
+        "cache": ["1", "-", "STRING"],
+        "jslibs": ["1", "-", "STRING"],
+        "iexreq": ["1", "FALSE", "BOOL"],
         "eexreq": ["1", "FALSE", "BOOL"],
         "maxcalctime": ["1", "0.0", "TIME_SPAN"],
         "methcount": ["1", "1", "UINT"],
         "actimode": ["1", "1", "INT"],
-        "proctime": ["1", "1520983143.904142", "TIME"],
+        "proctime": ["1", "1521345334.825154", "TIME"],
         "cyctime": ["1", "0.0", "TIME_SPAN"],
         "ErrState": ["1", "0", "INT"],
-        "calctime": ["1", "0.251", "TIME_SPAN"],
+        "calctime": ["1", "0.32", "TIME_SPAN"],
         "Xpos": ["1", "0", "INT"],
         "Ypos": ["1", "0", "INT"],
         "idH": ["1", "0", "UINT"],
-        "idL": ["1", "614", "UINT"]
+        "idL": ["1", "626", "UINT"]
       },
       "factory": "/acplt/CTree/Download",
       "children": {}
     }
   },
-  "Path": "/TechUnits",
   "Links": [{
     "of_association": "/acplt/fb/tasklist",
     "parents": ["/Tasks/UrTask"],
     "children": ["/TechUnits/download"]
-  }]
+  }],
+  "Path": "/TechUnits"
 }
+
+{
+  "Libraries": ["CTree"],
+  "Tree": {
+    "upload": {
+      "variables": {
+        "json": ["READ WRITE PART ", "-", "STRING"],
+        "root": ["READ WRITE PART ", "/TechUnits", "STRING"],
+        "status": ["READ PART ", "-", "STRING"],
+        "return": ["READ PART ", "49", "INT"],
+        "errorLog": ["READ PART ", "-", "STRING"],
+        "log": ["READ PART ", "652588576object already exists", "STRING"],
+        "iexreq": ["READ WRITE PART ", "FALSE", "BOOL"],
+        "eexreq": ["READ PART ", "FALSE", "BOOL"],
+        "maxcalctime": ["READ WRITE PART ", "0.0", "TIME_SPAN"],
+        "methcount": ["READ PART ", "2", "UINT"],
+        "actimode": ["READ WRITE PART ", "1", "INT"],
+        "proctime": ["READ WRITE PART ", "1521449781.432580", "TIME"],
+        "cyctime": ["READ WRITE PART ", "0.0", "TIME_SPAN"],
+        "ErrState": ["READ PART ", "0", "INT"],
+        "calctime": ["READ PART ", "0.260", "TIME_SPAN"],
+        "Xpos": ["READ WRITE PART ", "0", "INT"],
+        "Ypos": ["READ WRITE PART ", "0", "INT"],
+        "idH": ["READ WRITE PART ", "0", "UINT"],
+        "idL": ["READ WRITE PART ", "741", "UINT"]
+      },
+      "factory": "/acplt/CTree/Upload",
+      "children": {}
+    },
+    "download": {
+      "variables": {
+        "getvar": ["READ WRITE PART ", "TRUE", "BOOL"],
+        "root": ["READ WRITE PART ", "/TechUnits", "STRING"],
+        "tree": ["READ PART ", "-", "STRING"],
+        "libs": ["READ PART ", "-", "STRING"],
+        "return": ["READ PART ", "0", "INT"],
+        "errorLog": ["READ PART ", "-", "STRING"],
+        "log": ["READ PART ", "-", "STRING"],
+        "iexreq": ["READ WRITE PART ", "FALSE", "BOOL"],
+        "eexreq": ["READ PART ", "FALSE", "BOOL"],
+        "maxcalctime": ["READ WRITE PART ", "0.0", "TIME_SPAN"],
+        "methcount": ["READ PART ", "0", "UINT"],
+        "actimode": ["READ WRITE PART ", "1", "INT"],
+        "proctime": ["READ WRITE PART ", "1521345334.825154", "TIME"],
+        "cyctime": ["READ WRITE PART ", "0.0", "TIME_SPAN"],
+        "ErrState": ["READ PART ", "0", "INT"],
+        "calctime": ["READ PART ", "0.0", "TIME_SPAN"],
+        "Xpos": ["READ WRITE PART ", "0", "INT"],
+        "Ypos": ["READ WRITE PART ", "0", "INT"],
+        "idH": ["READ WRITE PART ", "0", "UINT"],
+        "idL": ["READ WRITE PART ", "749", "UINT"]
+      },
+      "factory": "/acplt/CTree/Download",
+      "children": {}
+    }
+  },
+  "Links": [],
+  "Path": "/TechUnits"
+}
+
+
+
+
 
 {
   "Libraries": ["CTree"],
   "Tree": {
     "download": {
       "variables": {
-        "iexreq": ["1", "TRUE", "BOOL"],
-        "getvar": ["1", "TRUE", "BOOL"],
-        "return": ["1", "0", "INT"],
-        "eexreq": ["1", "FALSE", "BOOL"],
-        "maxcalctime": ["1", "0.0", "TIME_SPAN"],
-        "methcount": ["1", "1", "UINT"],
-        "actimode": ["1", "0", "INT"],
-        "proctime": ["1", "1520983143.904142", "TIME"],
-        "cyctime": ["1", "0.0", "TIME_SPAN"],
-        "ErrState": ["1", "0", "INT"],
-        "calctime": ["1", "0.251", "TIME_SPAN"],
-        "Xpos": ["1", "0", "INT"],
-        "Ypos": ["1", "0", "INT"],
-        "idH": ["1", "0", "UINT"],
-        "idL": ["1", "614", "UINT"]
+        "iexreq": ["w", "TRUE", "BOOL"],
+        "getvar": ["w", "TRUE", "BOOL"],
+        "return": ["w", "0", "INT"],
+        "eexreq": ["r", "FALSE", "BOOL"],
+        "maxcalctime": ["w", "0.0", "TIME_SPAN"],
+        "methcount": ["r", "1", "UINT"],
+        "actimode": ["w", "0", "INT"],
+        "proctime": ["w", "1520983143.904142", "TIME"],
+        "cyctime": ["w", "0.0", "TIME_SPAN"],
+        "ErrState": ["w", "0", "INT"],
+        "calctime": ["w", "0.251", "TIME_SPAN"],
+        "Xpos": ["w", "0", "INT"],
+        "Ypos": ["w", "0", "INT"],
+        "idH": ["w", "0", "UINT"],
+        "idL": ["w", "614", "UINT"]
       },
       "factory": "/acplt/CTree/Download",
       "children": {}

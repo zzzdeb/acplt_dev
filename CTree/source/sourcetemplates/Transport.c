@@ -3,7 +3,7 @@
 *
 *   FILE
 *   ----
-*   Download.c
+*   Transport.c
 *
 *   History
 *   -------
@@ -25,7 +25,7 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_Download_submit(
+OV_DLLFNCEXPORT void CTree_Transport_submit(
 		OV_INSTPTR_CTree_CTreeCommon	 			pobj
 	) {
     /*    

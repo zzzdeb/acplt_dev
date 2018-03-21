@@ -7,7 +7,7 @@
 *
 *   History
 *   -------
-*   2018-03-08   File created
+*   2018-03-21   File created
 *
 *******************************************************************************
 *
@@ -25,14 +25,12 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_Upload_typemethod(
-	OV_INSTPTR_fb_functionblock	pfb,
-	OV_TIME						*pltc
-) {
+OV_DLLFNCEXPORT void CTree_Upload_submit(
+		OV_INSTPTR_CTree_CTreeCommon	 			pobj
+	) {
     /*    
     *   local variables
     */
-    OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
 
     return;
 }

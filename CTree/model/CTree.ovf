@@ -38,6 +38,26 @@
 	typedef OV_DLLFNCEXPORT OV_STRING STR_LIST_CAT(
 		const OV_STRING_VEC* const vector
 	);
-		
+	
+	typedef OV_DLLFNCEXPORT OV_RESULT ACCESS_TO_STRING(
+		OV_STRING* accessstr, const OV_ACCESS * access
+	);
+	
+	typedef void CTREE_FNC_SUBMIT(
+		OV_INSTPTR_CTree_CTreeCommon	 			pobj
+	);
+	
+	typedef OV_RESULT CTREE_FNC_PREPSUBMIT(
+			OV_INSTPTR_CTree_CTreeCommon	 			pobj,
+			OV_INSTPTR_ksbase_ClientBase*				pClient,
+			OV_VTBLPTR_ksbase_ClientBase*				pVtblClient
+	);
+	
+	typedef OV_RESULT CTREE_FNC_GENSETFSUBMIT(
+			OV_INSTPTR_CTree_CTreeCommon	 			pobj,
+			OV_STRING 									serverHost,
+			OV_STRING 									serverName,
+			OV_STRING 									path
+	);
 		
 #endif

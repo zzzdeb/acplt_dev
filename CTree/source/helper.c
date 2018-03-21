@@ -41,16 +41,6 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(const OV_STRING_VEC* const vec
 
 //value
 
-OV_DLLFNCEXPORT void CTree_helper_typemethod(OV_INSTPTR_fb_functionblock pfb,
-		OV_TIME *pltc) {
-	/*
-	 *   local variables
-	 */
-	OV_INSTPTR_CTree_helper pinst = Ov_StaticPtrCast(CTree_helper, pfb);
-
-	return;
-}
-
 OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
 	if (pobj == NULL)
 		return NULL;
@@ -96,7 +86,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING* valuestr,
 		break;
 	case OV_VT_STRING:
 		if (value->valueunion.val_string == NULL)
-			result = ov_string_setvalue(valuestr, "-");
+			result = ov_string_setvalue(valuestr, "");
 		else
 			result = ov_string_print(valuestr, "%s",
 					value->valueunion.val_string); /* if vartype == OV_VT_STRING */
@@ -280,7 +270,8 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_ovtypeToStr(OV_STRING* typestr,
 		const OV_VAR_TYPE * type) {
 	if (OV_TYPE_TO_STR[*type] == NULL)
 		return OV_ERR_BADPARAM;
-	OV_RESULT res = ov_string_setvalue(typestr, OV_TYPE_TO_STR[*type]);
+	*typestr = "";
+	OV_RESULT res = ov_string_append(typestr, OV_TYPE_TO_STR[*type]);
 	return res;
 }
 
@@ -377,6 +368,65 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE* value,
 		return result; //TODO: revise it
 	}
 	return result;
+}
+//typedef struct {
+//	OV_UINT veclen;
+//	OV_ACCESS value[];
+//} OV_ACCESSTYPE_VEC;
+//
+//const KS_VARTYPE_VEC KS_VAR_TYPE_LIST = { .veclen = 39, .value = {
+//#define OV_AC_NONE          ENUMVAL(OV_ACCESS, 0) /* no access at all, element is not visible */
+//#define OV_AC_READ          ENUMVAL(OV_ACCESS, 1) /* read access           */
+//#define OV_AC_WRITE         ENUMVAL(OV_ACCESS, 2) /* write access          */
+//#define OV_AC_READWRITE     (OV_AC_READ | OV_AC_WRITE) /* both read and write access */
+//
+//#define OV_AC_DELETEABLE    ENUMVAL(OV_ACCESS, 0x10000000) /* object can be deleted */
+//#define OV_AC_RENAMEABLE    ENUMVAL(OV_ACCESS, 0x08000000) /* object can be renamed */
+//#define OV_AC_LINKABLE      ENUMVAL(OV_ACCESS, 0x04000000) /* parent/child can be linked */
+//#define OV_AC_UNLINKABLE    ENUMVAL(OV_ACCESS, 0x02000000) /* parent/child can be unlinked */
+//
+//#define OV_AC_INSTANTIABLE  ENUMVAL(OV_ACCESS, 0x20000000) /* object can act as a factory */
+//#define OV_AC_PART
+//
+//KS_VT_ANY } };
+
+OV_STRING ACCESS_TO_STR[] = {
+[OV_AC_NONE] = "OV_AC_NONE",
+[OV_AC_READ] = "OV_AC_READ",
+[OV_AC_WRITE] = "OV_AC_WRITE",
+[OV_AC_READWRITE] = "OV_AC_READWRITE",
+//[OV_AC_DELETEABLE] = "OV_AC_DELETABLE",
+//[OV_AC_RENAMEABLE] = "OV_AC_RENAMEABLE",
+//[OV_AC_LINKABLE] = "OV_AC_LINKABLE",
+//[OV_AC_UNLINKABLE] = "OV_AC_UNLINKABLE",
+//[OV_AC_INSTANTIABLE] = "OV_AC_INSTANTIABLE",
+//[OV_AC_PART] = "OV_AC_PART",
+};
+
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(
+		OV_STRING* accessstr, const OV_ACCESS * access
+	) {
+	ov_string_setvalue(accessstr, "");
+	if (*access & KS_AC_NONE)
+		ov_string_append(accessstr, "NONE ");
+	else if (*access & KS_AC_READ)
+		ov_string_append(accessstr, "READ ");
+	if (*access & KS_AC_WRITE)
+		ov_string_append(accessstr, "WRITE ");
+	if (*access & KS_AC_DELETEABLE)
+		ov_string_append(accessstr, "DELETEABLE ");
+	if (*access & KS_AC_RENAMEABLE)
+		ov_string_append(accessstr, "RENAMEABLE ");
+	if (*access & KS_AC_LINKABLE)
+		ov_string_append(accessstr, "LINKABLE ");
+	if (*access & KS_AC_UNLINKABLE)
+		ov_string_append(accessstr, "UNLINKABLE ");
+	if (*access & KS_AC_INSTANTIABLE)
+		ov_string_append(accessstr, "INSTANTIABLE ");
+	if (*access & KS_AC_PART)
+		ov_string_append(accessstr, "PART ");
+
+    return OV_ERR_OK;
 }
 
 //http

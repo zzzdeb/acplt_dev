@@ -3,11 +3,11 @@
 *
 *   FILE
 *   ----
-*   Download.c
+*   Transport.c
 *
 *   History
 *   -------
-*   2018-03-21   File created
+*   2018-03-20   File created
 *
 *******************************************************************************
 *
@@ -25,7 +25,7 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_Download_submit(
+OV_DLLFNCEXPORT void CTree_Transport_submit(
 		OV_INSTPTR_CTree_CTreeCommon	 			pobj
 	) {
     /*    

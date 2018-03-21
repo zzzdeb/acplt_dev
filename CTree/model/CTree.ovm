@@ -1,7 +1,8 @@
 #include "ov.ovm"
 #include "fb.ovm"
+
 #include "ksbase.ovm"
-//#include "ksapi.ovm"
+#include "ksapi.ovm"
 #include "kshttp.ovm"
 
 LIBRARY CTree
@@ -11,27 +12,65 @@ LIBRARY CTree
 	COMMENT   = "Upload and Download tree in json format";
 	
 
+	CLASS	CTreeCommon					:	CLASS	ov/domain
+		COMMENT	=	"baseclass for CTree objects";
+		VARIABLES
+			/* Input *************************************************/
+			serverHost	:	STRING	
+				COMMENT			=	"Host (or IP Address or whatever type of address) of target machine."
+				INITIALVALUE	=	"";
+			serverName	:	STRING
+				COMMENT			=	"KS-Name of the target ks-server. (This may not be necessarry for all types of communication.)"
+				INITIALVALUE	=	"";	
+			path		:	STRING
+				COMMENT			=	"Target Path"
+				INITIALVALUE	=	"";
+			status		:	INT
+				COMMENT			= "status of KS obj: 0: initial; 1: request sent, waiting for answer; 2: completed; 128: internal error, see result for error code; 64: request failed, see result for error code"
+				INITIALVALUE	=	0;
+			result		:	UINT
+				COMMENT	=	"Result of last Operation in KS_ERR Codes"
+				INITIALVALUE	=	0;
+			holdConnection	:	BOOL
+				COMMENT			=	"Tell client not to close the connection after each request"
+				INITIALVALUE	=	FALSE;
+			Reset		:	BOOL	HAS_SET_ACCESSOR
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				INITIALVALUE	= FALSE;
+			Submit		:	BOOL	HAS_SET_ACCESSOR
+				COMMENT	=	"Rising edge triggers submit function"
+				INITIALVALUE	= FALSE;
+			errorLog: STRING  
+				COMMENT="Logs for error";
+			log: STRING 
+				COMMENT="Logs";
+				
+		END_VARIABLES;
+		OPERATIONS
+			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
+			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
+			submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
+			getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
+			prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
+			genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 	/**
 		Documentation of Upload.
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Upload : CLASS fb/functionblock
+	CLASS Upload : CLASS CTree/CTreeCommon
 		IS_INSTANTIABLE;
 		VARIABLES
 			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
 			root: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
-			status: STRING FLAGS="o"	COMMENT="result_status";
-			return: INT FLAGS="o"	COMMENT="return";
-			errorLog: STRING FLAGS="o"	COMMENT="Logs for error";
-			log: STRING FLAGS="o"	COMMENT="Logs";
-			//cache: C_TYPE <CtreeUpload> COMMENT="Cache of Object";
+			
+			cache: C_TYPE <CTreeUploadCache> COMMENT="Cache of Object";
 		END_VARIABLES;
-//		PARTS
-//			apiSet				:	CLASS	ksapi/setVar;
-//		END_PARTS;
 		OPERATIONS
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
 		END_OPERATIONS;
 	END_CLASS;
 	
@@ -40,36 +79,55 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Download : CLASS fb/functionblock
+	CLASS Download : CLASS CTree/CTreeCommon
 		IS_INSTANTIABLE;
 		VARIABLES
 			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
 			root: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
 			tree: STRING FLAGS="o" COMMENT="tree";
 			libs: STRING FLAGS="o" COMMENT="libs";
-			return: INT FLAGS="o"	COMMENT="return";
+			
+			cache:	C_TYPE <CTreeDownloadCache> COMMENT="Cache";
 		END_VARIABLES;
 		OPERATIONS
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
 		END_OPERATIONS;
 	END_CLASS;
 
-	CLASS helper : CLASS fb/functionblock
+	CLASS helper : CLASS ov/object
 		IS_INSTANTIABLE;
 		VARIABLES
 		END_VARIABLES;
 		OPERATIONS
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 			valueToStr 	: C_FUNCTION <VALUE_TO_STRING>;
 			ovtypeToStr 	: C_FUNCTION <OVTYPE_TO_STRING>;
 			kstypeToStr 	: C_FUNCTION <KSTYPE_TO_STRING>;
 			strToOVType 	: C_FUNCTION <STRING_TO_OVTYPE>;
 			strToKSType 	: C_FUNCTION <STRING_TO_KSTYPE>;
 			strToValue 	: C_FUNCTION <STRING_TO_VALUE>;
+			accessToStr	:	C_FUNCTION <ACCESS_TO_STRING>;
 			getfactory	: C_FUNCTION <GET_FACTORY>;
 			strlistcat: C_FUNCTION <STR_LIST_CAT>;
 		END_OPERATIONS;
 	END_CLASS;	
+	
+	
+	CLASS Transport : CLASS CTree/CTreeCommon
+		IS_INSTANTIABLE;
+		VARIABLES
+			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
+			fromIP: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
+			fromSERVER: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
+			toIP: STRING FLAGS="o" COMMENT="tree";
+			toSERVER: STRING FLAGS="o" COMMENT="libs";
+			
+			cache:	C_TYPE <CTreeTransportCache> COMMENT="Cache";
+		END_VARIABLES;
+		OPERATIONS
+			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
+		END_OPERATIONS;
+	END_CLASS;
+
 	/**
 		Add associations and their documentation here.
 		Association syntax is:
