@@ -7,7 +7,7 @@
 *
 *   History
 *   -------
-*   2018-03-21   File created
+*   2018-03-23   File created
 *
 *******************************************************************************
 *
@@ -25,12 +25,81 @@
 #include "libov/ov_macros.h"
 
 
-OV_DLLFNCEXPORT void CTree_Transport_submit(
-		OV_INSTPTR_CTree_CTreeCommon	 			pobj
-	) {
+OV_DLLFNCEXPORT OV_RESULT CTree_Transport_Reset_set(
+    OV_INSTPTR_CTree_Transport          pobj,
+    const OV_BOOL  value
+) {
+    pobj->v_Reset = value;
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT void CTree_Transport_startup(
+	OV_INSTPTR_ov_object 	pobj
+) {
     /*    
     *   local variables
     */
+    OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pobj);
+
+    /* do what the base class does first */
+    fb_functionblock_startup(pobj);
+
+    /* do what */
+
+
+    return;
+}
+
+OV_DLLFNCEXPORT void CTree_Transport_shutdown(
+	OV_INSTPTR_ov_object 	pobj
+) {
+    /*    
+    *   local variables
+    */
+    OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pobj);
+
+    /* do what */
+
+    /* set the object's state to "shut down" */
+    fb_functionblock_shutdown(pobj);
+
+    return;
+}
+
+OV_DLLFNCEXPORT void CTree_Transport_submit(
+		OV_INSTPTR_CTree_Transport	 			pobj
+	) {
+
+    return;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_Transport_prepareSubmit(
+			OV_INSTPTR_CTree_Transport	 			pobj,
+			OV_INSTPTR_ksbase_ClientBase*				pClient,
+			OV_VTBLPTR_ksbase_ClientBase*				pVtblClient
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
+			OV_INSTPTR_CTree_Transport	 			pobj,
+			OV_STRING 									serverHost,
+			OV_STRING 									serverName,
+			OV_STRING 									path
+	) {
+
+    return OV_ERR_OK;
+}
+
+OV_DLLFNCEXPORT void CTree_Transport_typemethod(
+	OV_INSTPTR_fb_functionblock	pfb,
+	OV_TIME						*pltc
+) {
+    /*    
+    *   local variables
+    */
+    OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pfb);
 
     return;
 }

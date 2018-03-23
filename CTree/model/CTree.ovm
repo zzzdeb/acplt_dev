@@ -12,65 +12,31 @@ LIBRARY CTree
 	COMMENT   = "Upload and Download tree in json format";
 	
 
-	CLASS	CTreeCommon					:	CLASS	ov/domain
-		COMMENT	=	"baseclass for CTree objects";
-		VARIABLES
-			/* Input *************************************************/
-			serverHost	:	STRING	
-				COMMENT			=	"Host (or IP Address or whatever type of address) of target machine."
-				INITIALVALUE	=	"";
-			serverName	:	STRING
-				COMMENT			=	"KS-Name of the target ks-server. (This may not be necessarry for all types of communication.)"
-				INITIALVALUE	=	"";	
-			path		:	STRING
-				COMMENT			=	"Target Path"
-				INITIALVALUE	=	"";
-			status		:	INT
-				COMMENT			= "status of KS obj: 0: initial; 1: request sent, waiting for answer; 2: completed; 128: internal error, see result for error code; 64: request failed, see result for error code"
-				INITIALVALUE	=	0;
-			result		:	UINT
-				COMMENT	=	"Result of last Operation in KS_ERR Codes"
-				INITIALVALUE	=	0;
-			holdConnection	:	BOOL
-				COMMENT			=	"Tell client not to close the connection after each request"
-				INITIALVALUE	=	FALSE;
-			Reset		:	BOOL	HAS_SET_ACCESSOR
-				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
-				INITIALVALUE	= FALSE;
-			Submit		:	BOOL	HAS_SET_ACCESSOR
-				COMMENT	=	"Rising edge triggers submit function"
-				INITIALVALUE	= FALSE;
-			errorLog: STRING  
-				COMMENT="Logs for error";
-			log: STRING 
-				COMMENT="Logs";
-				
-		END_VARIABLES;
-		OPERATIONS
-			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
-			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
-			submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
-			getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
-			prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
-			genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
-		END_OPERATIONS;
-	END_CLASS;
-	
+
 	/**
 		Documentation of Upload.
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Upload : CLASS CTree/CTreeCommon
+	CLASS Upload : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
 			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
-			root: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
+			path: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
+			
+			status		:	INT
+				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+				INITIALVALUE	=	0;
+			
+			result		:	INT FLAGS="o"
+				COMMENT			= "Result: 0: Success; 1: Error; 2: With warning;"
+				INITIALVALUE	=	0;
+			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
 			
 			cache: C_TYPE <CTreeUploadCache> COMMENT="Cache of Object";
 		END_VARIABLES;
 		OPERATIONS
-			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
 	
@@ -79,20 +45,61 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Download : CLASS CTree/CTreeCommon
+	CLASS Download : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
-			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
-			root: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
-			tree: STRING FLAGS="o" COMMENT="tree";
-			libs: STRING FLAGS="o" COMMENT="libs";
+			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied";
+			path: STRING FLAGS="i" COMMENT="path of object to download as json" INITIALVALUE="/TechUnits";
+			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
+			
+			tree: STRING FLAGS="o" COMMENT="tree as json";
+			libs: STRING FLAGS="o" COMMENT="libs used in tree";
+			
+			status		:	INT  
+				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+				INITIALVALUE	=	0;
+			result		:	INT FLAGS="o"
+				COMMENT			= "Result: 0: Success; 1: Error; 2: With warning;"
+				INITIALVALUE	=	0;
+			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
 			
 			cache:	C_TYPE <CTreeDownloadCache> COMMENT="Cache";
 		END_VARIABLES;
 		OPERATIONS
-			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
+	
+	CLASS	Transport					:	CLASS	CTree/Download
+		IS_INSTANTIABLE;
+		COMMENT	=	"Transport of tree from one server to another with Donwload and Upload";
+		VARIABLES
+			/* Input *************************************************/
+			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
+			holdConnection	:	BOOL FLAGS="i"
+				COMMENT			=	"Tell client not to close the connection after each request"
+				INITIALVALUE	=	FALSE;
+			Reset		:	BOOL	HAS_SET_ACCESSOR
+				FLAGS="i"
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				INITIALVALUE	= FALSE;
+			//serverName	:	STRING;
+			//serverHost	:	STRING;
+			//Submit		:	BOOL	HAS_SET_ACCESSOR
+			//	COMMENT	=	"Rising edge triggers submit function"
+			//	INITIALVALUE	= FALSE;
+		END_VARIABLES;
+		OPERATIONS
+			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
+			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
+			submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
+			//getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
+			prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
+			genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
+			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 
 	CLASS helper : CLASS ov/object
 		IS_INSTANTIABLE;
@@ -108,23 +115,6 @@ LIBRARY CTree
 			accessToStr	:	C_FUNCTION <ACCESS_TO_STRING>;
 			getfactory	: C_FUNCTION <GET_FACTORY>;
 			strlistcat: C_FUNCTION <STR_LIST_CAT>;
-		END_OPERATIONS;
-	END_CLASS;	
-	
-	
-	CLASS Transport : CLASS CTree/CTreeCommon
-		IS_INSTANTIABLE;
-		VARIABLES
-			getvar: BOOL FLAGS="i" COMMENT="if variables should be copied";
-			fromIP: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
-			fromSERVER: STRING FLAGS="i" COMMENT="root domain" INITIALVALUE="/TechUnits";
-			toIP: STRING FLAGS="o" COMMENT="tree";
-			toSERVER: STRING FLAGS="o" COMMENT="libs";
-			
-			cache:	C_TYPE <CTreeTransportCache> COMMENT="Cache";
-		END_VARIABLES;
-		OPERATIONS
-			submit  : C_FUNCTION <CTREE_FNC_SUBMIT>;
 		END_OPERATIONS;
 	END_CLASS;
 
