@@ -24,12 +24,8 @@ LIBRARY CTree
 			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
 			path: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
 			
-			status		:	INT
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
-				INITIALVALUE	=	0;
-			
 			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 2: With warning;"
+				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
 				INITIALVALUE	=	0;
 			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
 			
@@ -48,18 +44,14 @@ LIBRARY CTree
 	CLASS Download : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
-			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied";
+			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
 			path: STRING FLAGS="i" COMMENT="path of object to download as json" INITIALVALUE="/TechUnits";
-			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
 			
 			tree: STRING FLAGS="o" COMMENT="tree as json";
 			libs: STRING FLAGS="o" COMMENT="libs used in tree";
 			
-			status		:	INT  
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
-				INITIALVALUE	=	0;
 			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 2: With warning;"
+				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param;"
 				INITIALVALUE	=	0;
 			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
 			
@@ -76,6 +68,8 @@ LIBRARY CTree
 		VARIABLES
 			/* Input *************************************************/
 			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
+			targetPath:	STRING FLAGS="i" COMMENT="variable path of upload object." INITIALVALUE="";
+			
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"
 				INITIALVALUE	=	FALSE;
@@ -83,6 +77,11 @@ LIBRARY CTree
 				FLAGS="i"
 				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
 				INITIALVALUE	= FALSE;
+			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
+			
+			status		:	INT FLAGS="o" 
+				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+				INITIALVALUE	=	0;
 			//serverName	:	STRING;
 			//serverHost	:	STRING;
 			//Submit		:	BOOL	HAS_SET_ACCESSOR
@@ -102,7 +101,6 @@ LIBRARY CTree
 	
 
 	CLASS helper : CLASS ov/object
-		IS_INSTANTIABLE;
 		VARIABLES
 		END_VARIABLES;
 		OPERATIONS

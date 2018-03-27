@@ -334,3 +334,197 @@
   }],
   "Path": "/TechUnits"
 }
+
+
+{
+  "Libraries": ["ov"],
+  "Tree": {
+    "TechUnits": {
+      "variables": {
+        "idH": ["UINT", "0"],
+        "idL": ["UINT", "578"]
+      },
+      "factory": "ov/domain"
+    }
+  },
+  "Path": "/TechUnits"
+}
+
+
+{
+  "Libraries": ["ov", "CTree"],
+  "Tree": {
+    "TechUnits": {
+      "variables": {
+        "idH": ["UINT", "0"],
+        "idL": ["UINT", "578"]
+      },
+      "factory": "ov/domain",
+      "children": {
+        "transport": {
+          "variables": {
+            "targetKS": ["STRING", "localhost:MANAGER"],
+            "holdConnection": ["BOOL", "FALSE"],
+            "Reset": ["BOOL", "FALSE"],
+            "autoUpload": ["BOOL", "FALSE"],
+            "getVar": ["BOOL", "FALSE"],
+            "path": ["STRING", "/TechUnits"],
+            "status": ["INT", "0"],
+            "result": ["INT", "0"],
+            "iexreq": ["BOOL", "FALSE"],
+            "eexreq": ["BOOL", "TRUE"],
+            "maxcalctime": ["TIME_SPAN", "0.0"],
+            "methcount": ["UINT", "0"],
+            "actimode": ["INT", "1"],
+            "proctime": ["TIME", "1522172919.598156"],
+            "cyctime": ["TIME_SPAN", "0.0"],
+            "ErrState": ["INT", "0"],
+            "calctime": ["TIME_SPAN", "0.0"],
+            "Xpos": ["INT", "0"],
+            "Ypos": ["INT", "0"],
+            "idH": ["UINT", "0"],
+            "idL": ["UINT", "636"]
+          },
+          "links": {
+            "taskparent": {
+              "of_association": "fb/tasklist",
+              "parents": [""],
+              "children": ["this"]
+            }
+          },
+          "factory": "CTree/Transport"
+        }
+      }
+    }
+  },
+  "Path": "/TechUnits"
+}
+
+{
+  "Libraries": ["ov", "CTree", "ksxdr", "TCPbind"],
+  "Tree": {
+    "TechUnits": {
+      "variables": {
+        "idH": ["UINT", "0"],
+        "idL": ["UINT", "578"]
+      },
+      "factory": "ov/domain",
+      "children": {
+        "transport": {
+          "variables": {
+            "targetKS": ["STRING", "localhost:MANAGER"],
+            "holdConnection": ["BOOL", "FALSE"],
+            "Reset": ["BOOL", "FALSE"],
+            "autoUpload": ["BOOL", "FALSE"],
+            "getVar": ["BOOL", "FALSE"],
+            "path": ["STRING", "/TechUnits"],
+            "tree": ["STRING", "{\n\t\"Libraries\":\t[\"ov\", \"CTree\"],\n\t\"Tree\":\t{\n\t\t\"TechUnits\":\t{\n\t\t\t\"factory\":\t\"ov/domain\",\n\t\t\t\"children\":\t{\n\t\t\t\t\"download\":\t{\n\t\t\t\t\t\"factory\":\t\"CTree/Download\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t},\n\t\"Path\":\t\"/TechUnits\"\n}"],
+            "libs": ["STRING", "[\"ov\", \"CTree\"]"],
+            "status": ["INT", "2"],
+            "result": ["INT", "0"],
+            "iexreq": ["BOOL", "FALSE"],
+            "eexreq": ["BOOL", "FALSE"],
+            "maxcalctime": ["TIME_SPAN", "0.0"],
+            "methcount": ["UINT", "1"],
+            "actimode": ["INT", "0"],
+            "proctime": ["TIME", "1522172919.598156"],
+            "cyctime": ["TIME_SPAN", "0.0"],
+            "ErrState": ["INT", "0"],
+            "calctime": ["TIME_SPAN", "0.744"],
+            "Xpos": ["INT", "0"],
+            "Ypos": ["INT", "0"],
+            "idH": ["UINT", "0"],
+            "idL": ["UINT", "636"]
+          },
+          "links": {
+            "taskparent": {
+              "of_association": "fb/tasklist",
+              "parents": ["/Tasks/UrTask"],
+              "children": ["this"]
+            }
+          },
+          "factory": "CTree/Transport",
+          "children": {
+            "Client": {
+              "variables": {
+                "ManagerPort": ["STRING", "7509"],
+                "msgAccepted": ["INT", "0"],
+                "msgStatus": ["INT", "0"],
+                "rpcErrCode": ["INT", "0"],
+                "sentProcID": ["UINT", "258"],
+                "sentXID": ["UINT", "3594102604"],
+                "timeLastEvent": ["TIME", "1522172952.786516"],
+                "timeout": ["UINT", "30"],
+                "tempXID": ["UINT", "3594102604"],
+                "serverHost": ["STRING", "localhost"],
+                "serverName": ["STRING", "MANAGER"],
+                "serverPort": ["STRING", "7509"],
+                "state": ["UINT", "8"],
+                "runningKSservice": ["UINT", "0"],
+                "holdConnection": ["BOOL", "FALSE"],
+                "actimode": ["INT", "0"],
+                "cycInterval": ["INT", "5"],
+                "NextExecTime": ["TIME", "1522172952.802941"],
+                "idH": ["UINT", "0"],
+                "idL": ["UINT", "647"]
+              },
+              "links": {
+                "Channel": {
+                  "of_association": "ksbase/AssocChannelDataHandler",
+                  "parents": ["~/transport/Client/channel"],
+                  "children": ["this"]
+                },
+                "RootComTask": {
+                  "of_association": "ksbase/AssocComTaskList",
+                  "parents": ["/communication/RootComTask"],
+                  "children": ["this"]
+                }
+              },
+              "factory": "ksxdr/xdrClient",
+              "children": {
+                "channel": {
+                  "variables": {
+                    "socket": ["INT", "-1"],
+                    "ConnectionState": ["UINT", "0"],
+                    "address": ["STRING", "127.0.0.1"],
+                    "ClientHandlerAssociated": ["UINT", "0"],
+                    "isLocal": ["BOOL", "FALSE"],
+                    "usesStreamProtocol": ["BOOL", "TRUE"],
+                    "LastReceiveTime": ["TIME", "1522172952.794553"],
+                    "ConnectionTimeOut": ["UINT", "300"],
+                    "UnusedDataTimeOut": ["UINT", "300"],
+                    "CloseAfterSend": ["BOOL", "FALSE"],
+                    "actimode": ["INT", "1"],
+                    "cycInterval": ["INT", "1"],
+                    "NextExecTime": ["TIME", "1522172960.758787"],
+                    "idH": ["UINT", "0"],
+                    "idL": ["UINT", "648"]
+                  },
+                  "links": {
+                    "DataHandler": {
+                      "of_association": "ksbase/AssocChannelDataHandler",
+                      "parents": ["this"],
+                      "children": ["~/transport/Client"]
+                    },
+                    "ChannelParent": {
+                      "of_association": "ksbase/AssocCurrentChannel",
+                      "parents": [""],
+                      "children": ["this"]
+                    },
+                    "RootComTask": {
+                      "of_association": "ksbase/AssocComTaskList",
+                      "parents": ["/communication/RootComTask"],
+                      "children": ["this"]
+                    }
+                  },
+                  "factory": "TCPbind/TCPChannel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Path": "/TechUnits"
+}

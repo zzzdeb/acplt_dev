@@ -42,29 +42,45 @@
 #include <string.h>
 #include <stdio.h>
 
-#define VERSION_FOR_CTREE 	2
-#define VARIABLE_FORMAT_SIZE	3
+/*
+ * Helpers
+ */
+OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
+	OV_STRING resstr = "";
 
-/*OV_RESULT CtreeUplaod_init(CtreeUpload* pupload, OV_INSTPTR_CTree_Upload pinst) {
-	OV_RESULT res = OV_ERR_OK;
-	pupload->root_path = "";
-	ov_string_append(&pupload->root_path, pinst->v_root);
-	pupload->proot = ov_path_getobjectpointer(pinst->v_root, VERSION_FOR_CTREE);
+	if (pre == NULL)
+		return resstr;
 
-	//TODO: find out from object
-//	ov_string_setvalue(&pupload->pinst->p_apiSet.v_serverHost, "localhost");
-//	ov_string_setvalue(&pupload->pinst->p_apiSet.v_serverName, "MANAGER");
+	ov_string_setvalue(&resstr, pre);
+	if (path == NULL)
+		return resstr;
+	ov_string_append(&resstr, path + 1);
+	return resstr;
+}
 
-	return res;
-}*/
+OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
+	OV_STRING path = "/acplt/";
+	ov_string_append(&path, neutralpath);
+	OV_INSTPTR_ov_class pclass = NULL;
+	pclass = Ov_StaticPtrCast(ov_class,
+			ov_path_getobjectpointer(path, VERSION_FOR_CTREE));
+	if (pclass != NULL)
+		return pclass;
 
+	ov_string_setvalue(&path, "/Libraries/");
+	ov_string_append(&path, neutralpath);
+	pclass = Ov_StaticPtrCast(ov_class,
+			ov_path_getobjectpointer(path, VERSION_FOR_CTREE));
+	if (pclass != NULL)
+		return pclass;
 
-OV_RESULT Upload_log_exit(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type, OV_RESULT result,
-		 const OV_STRING format, ...) {
+	return NULL;
+}
+
+OV_RESULT Upload_log(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type,
+		OV_RESULT result, const OV_STRING format, ...) {
 	char msg[1024];
 
-	cJSON_free(pinst->v_cache.jsbase);
-	ov_string_setvalue(&pinst->v_json, "");
 	va_list args;
 
 	pinst->v_result = result;
@@ -79,7 +95,7 @@ OV_RESULT Upload_log_exit(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type, O
 
 	ov_logfile_print(msg_type, msg);
 
-	if(msg_type==OV_MT_ERROR){
+	if (msg_type == OV_MT_ERROR) {
 		ov_string_append(&pinst->v_ErrorMsg, ov_result_getresulttext(result));
 		ov_string_append(&pinst->v_ErrorMsg, " ; ");
 		ov_string_append(&pinst->v_ErrorMsg, msg);
@@ -89,7 +105,7 @@ OV_RESULT Upload_log_exit(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type, O
 }
 
 OV_ANY get_value_from_str(cJSON* jsvar) {
-	OV_ANY value;
+	OV_ANY value = { 0 };
 	value.state = OV_ST_GOOD;
 	CTree_helper_strToOVType(&value.value.vartype,
 			cJSON_GetArrayItem(jsvar, VARTYPE_POS)->valuestring);
@@ -132,8 +148,7 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	if (!addrp) {
 		ov_memstack_unlock();
 		res = OV_ERR_TARGETGENERIC;
-		Upload_log_exit(pinst, res, OV_MT_ERROR, "%s",
-				": internal memory problem");
+		Upload_log(pinst, res, OV_MT_ERROR, "%s", ": internal memory problem");
 		return res;
 	}
 
@@ -149,10 +164,9 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	{
 		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
 		//TODO:check for vartype and value
-
-		OV_STRING strlist[] = { objpathwithpunct, jsvariable->string };
-		OV_STRING_VEC variable_path = { .veclen = 2, .value = strlist };
-		addrp->path_and_name = CTree_helper_strlistcat(&variable_path);
+		OV_STRING tmp = "";
+		ov_string_print(&tmp, "%s%s", objpathwithpunct, jsvariable->string);
+		addrp->path_and_name = tmp;
 
 		//add one size of a pointer
 		addrp++;
@@ -176,8 +190,11 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	for (int i = 0; i < result.results_len; i++) {
 //		OV_STRING resstring = NULL;
 //		ov_string_setvalue(&resstring, ov_result_getresulttext(result.results_val[i]));
-		if((result.results_val[i] != OV_ERR_OK) && (result.results_val[i] !=OV_ERR_NOACCESS))
-			Upload_log_exit(pinst, OV_MT_WARNING, result.results_val[i] , "%s returns OV_RESULT: %i", params.items_val[i].path_and_name, result.results_val[i]);
+		if ((result.results_val[i] != OV_ERR_OK)
+				&& (result.results_val[i] != OV_ERR_NOACCESS))
+			Upload_log(pinst, OV_MT_WARNING, result.results_val[i],
+					"%s returns OV_RESULT: %i",
+					params.items_val[i].path_and_name, result.results_val[i]);
 	}
 //		fr = kshttp_print_result_array(&response->contentString, request.response_format, result.results_val, result.results_len, "");
 
@@ -192,7 +209,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 
 	OV_INSTPTR_ov_class pclass = NULL;
 	OV_INSTPTR_ov_object pobj = NULL;
-	OV_INSTPTR_ov_object pclassobj = NULL;
+	OV_INSTPTR_ov_class pclassobj = NULL;
 	OV_STRING identifier = NULL;
 
 	cJSON* jschild = NULL;
@@ -215,18 +232,18 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 		}
 
 //		2. Getting class pointer
-		jscurrent = cJSON_GetObjectItemCaseSensitive(jschild, "factory");
-		OV_STRING factory = cJSON_GetStringValue(jscurrent);
-		pclassobj = ov_path_getobjectpointer(factory, VERSION_FOR_CTREE);
-		if (pclassobj == NULL) {
-			Upload_log_exit(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
-					"There is no class with path %s", factory);
+		jscurrent = cJSON_GetObjectItemCaseSensitive(jschild, FACTORYNAME);
+		if (jscurrent == NULL) {
+			ov_logfile_warning("malformed json at %s/%s", parentpath,
+					jschild->string);
 			continue;
 		}
-		pclass = Ov_StaticPtrCast(ov_class, pclassobj);
+		OV_STRING factory = "";
+		ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
+		pclass = inverse_neutralpath(factory);
 		if (pclass == NULL) {
-			Upload_log_exit(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
-					"There is no class with path %s", factory);
+			Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
+					"There is no class : %s", factory);
 			continue;
 		}
 
@@ -242,37 +259,39 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 		if (Ov_Fail(res)) {
 			if (res == OV_ERR_ALREADYEXISTS) {
 				//TODO: check if it is from same class
-				OV_ELEMENT pelparent = {.elemtype=OV_ET_OBJECT, .pobj=Ov_StaticPtrCast(ov_object,pparent)};
-				OV_ELEMENT pelobj = {.elemtype=OV_ET_OBJECT};
+				OV_ELEMENT pelparent = { .elemtype = OV_ET_OBJECT, .pobj =
+						Ov_StaticPtrCast(ov_object, pparent) };
+				OV_ELEMENT pelobj = { .elemtype = OV_ET_OBJECT };
 				ov_element_searchchild(&pelparent, &pelobj, identifier);
 				pobj = pelobj.pobj;
-				Upload_log_exit(pinst, OV_MT_WARNING, res, "%s already exists",
+				Upload_log(pinst, OV_MT_WARNING, res, "%s already exists",
 						identifier);
 			} else {
-				return Upload_log_exit(pinst, res, OV_MT_ERROR,
+				return Upload_log(pinst, res, OV_MT_ERROR,
 						"Could not create %s in %s", identifier, parentpath);
 			}
 		} else {
 //			Upload_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
 //					identifier);
-			ov_logfile_info("created %s/%s", parentpath,
-										identifier);
+			ov_logfile_info("created %s/%s", parentpath, identifier);
 		}
 
-		//	1. Set Variables
+		//	4. Set Variables
 		cJSON* jsvariables = cJSON_GetObjectItemCaseSensitive(jschild,
 				"variables");
+		if (jsvariables != NULL) {
+			res = set_variable_values(pinst, jsvariables, pobj);
 
-		res = set_variable_values(pinst, jsvariables, pobj);
-		if(Ov_OK(res))
-//			Upload_log_exit(pinst, OV_MT_INFO, res, "variables set.");
-			ov_logfile_info("variables set.");
+			if (Ov_OK(res))
+				//			Upload_log_exit(pinst, OV_MT_INFO, res, "variables set.");
+				ov_logfile_info("variables set.");
+		}
 
-		res = upload_tree(pinst, cJSON_GetObjectItem(jschild, "children"),
+		res = upload_tree(pinst, cJSON_GetObjectItem(jschild, CHILDRENNAME),
 				Ov_StaticPtrCast(ov_domain, pobj));
 		if (Ov_Fail(res)) {
 			//TODO: give more info
-			return Upload_log_exit(pinst, res, OV_MT_ERROR,
+			return Upload_log(pinst, res, OV_MT_ERROR,
 					"Could not load tree. error at %s", parentpath);
 		}
 	}
@@ -301,153 +320,275 @@ OV_RESULT upload_libraries(OV_INSTPTR_CTree_Upload pinst, const cJSON* jslibs) {
 			ov_logfile_info("Library %s exists", libname);
 			break;
 		default:
-			return Upload_log_exit(pinst, res, OV_MT_ERROR,
+			return Upload_log(pinst, res, OV_MT_ERROR,
 					"Could not load library %s", libname);
 		}
 	}
 	return res;
 }
 
-OV_RESULT link_objects(const cJSON* jslinks) {
+OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
+		OV_STRING objpath) {
 	OV_RESULT res = OV_ERR_OK;
+	cJSON* jslinks = NULL;
+	cJSON* jslink = NULL;
+	cJSON* jschildren = NULL;
 	cJSON* jschild = NULL;
-	cJSON* current = NULL;
+	cJSON* jscurrent = NULL;
 	OV_INSTPTR_ov_association passoc = NULL;
 	OV_INSTPTR_ov_object pparent = NULL;
 	OV_INSTPTR_ov_object pchild = NULL;
+	OV_INSTPTR_ov_object pobj = ov_path_getobjectpointer(objpath,
+	VERSION_FOR_CTREE);
 
-	if (jslinks == NULL)
+	if (jsobj == NULL || pobj == NULL || pinst == NULL)
 		return OV_ERR_BADPARAM;
 
-	cJSON_ArrayForEach(jschild, jslinks)
-	{
-		current = cJSON_GetObjectItem(jschild, "of_association");
-		passoc =
-				Ov_StaticPtrCast(ov_association,
-						ov_path_getobjectpointer(cJSON_GetStringValue(current), VERSION_FOR_CTREE));
-
-		cJSON* jsasparent = NULL;
-		cJSON* jsasparents = cJSON_GetObjectItem(jschild, "parents");
-
-		cJSON_ArrayForEach(jsasparent, jsasparents)
+	jslinks = cJSON_GetObjectItem(jsobj, LINKSNAME);
+	if (jslinks != NULL) {
+		cJSON_ArrayForEach(jslink, jslinks)
 		{
-			pparent = ov_path_getobjectpointer(cJSON_GetStringValue(jsasparent),
-			VERSION_FOR_CTREE);
-			if (pparent == NULL) {
-				ov_logfile_error("%s does not exist",
-						cJSON_GetStringValue(jsasparent));
+			jscurrent = cJSON_GetObjectItem(jslink, ASSOCNAME);
+			if (!jscurrent) {
+				ov_logfile_warning("malformed links at %s.%s : %s", objpath,
+						jslink->string, ASSOCNAME);
 				continue;
-				//			return OV_ERR_BADPARAM;
+			}
+			cJSON* jsasparent = NULL;
+			cJSON* jsasparents = cJSON_GetObjectItem(jslink, LINKPARENTSNAME);
+			if (!jsasparents) {
+				ov_logfile_warning("malformed links at %s.%s : %s", objpath,
+						jslink->string, LINKPARENTSNAME);
+				continue;
+			}
+			cJSON* jsaschild = NULL;
+			cJSON* jsaschildren = cJSON_GetObjectItem(jslink,
+			LINKCHILDRENNAME);
+			if (!jsaschildren) {
+				ov_logfile_warning("malformed links at %s.%s: %s", objpath,
+						jslink->string, LINKCHILDRENNAME);
+				continue;
 			}
 
-			cJSON* jsaschild = NULL;
-			cJSON* jsaschildren = cJSON_GetObjectItem(jschild, "children");
-			cJSON_ArrayForEach(jsaschild, jsaschildren)
+			passoc = Ov_StaticPtrCast(ov_association,
+					inverse_neutralpath(cJSON_GetStringValue(jscurrent)));
+			if (!passoc) {
+				ov_logfile_warning("couldnt find assoc at %s.%s: %s", objpath,
+						jslink->string, ASSOCNAME);
+				continue;
+			}
+
+			cJSON_ArrayForEach(jsasparent, jsasparents)
 			{
-				OV_STRING path = cJSON_GetStringValue(jsaschild);
-				pchild = ov_path_getobjectpointer(path, VERSION_FOR_CTREE);
-				if (pchild == NULL) {
-					ov_logfile_error("%s does not exist", path);
+				OV_STRING link_parent_path = "";
+				if (ov_string_compare(cJSON_GetStringValue(jsasparent),
+						"this")==OV_STRCMP_EQUAL)
+					pparent = pobj;
+				else {
+					ov_string_setvalue(&link_parent_path,
+							cJSON_GetStringValue(jsasparent));
+					if (link_parent_path == NULL)
+						continue;
+
+					if (*link_parent_path == '~')
+						link_parent_path = inverse_path2(pinst->v_path,
+								link_parent_path);
+					pparent = ov_path_getobjectpointer(link_parent_path,
+					VERSION_FOR_CTREE);
+				}
+				if (pparent == NULL) {
+					ov_logfile_error("%s does not exist", link_parent_path);
 					continue;
 					//			return OV_ERR_BADPARAM;
 				}
 
-				res = ov_association_link(passoc, pparent, pchild,
-				OV_PMH_DEFAULT, NULL, OV_PMH_DEFAULT, NULL);
-				if (Ov_OK(res))
-					ov_logfile_info("%s linked with %s through %s",
-							pparent->v_identifier, pchild->v_identifier,
-							passoc->v_identifier);
-				else {
-					if (res == OV_ERR_ALREADYEXISTS) {
-						ov_logfile_warning(
-								"%s is already linked with %s through %s",
+				cJSON_ArrayForEach(jsaschild, jsaschildren)
+				{
+					OV_STRING path = "";
+					ov_string_setvalue(&path, cJSON_GetStringValue(jsaschild));
+					if (*path == '~')
+						path = inverse_path2(pinst->v_path, path);
+
+					if (ov_string_compare(cJSON_GetStringValue(jsaschild),
+							"this") == OV_STRCMP_EQUAL)
+						pchild = pobj;
+					else
+						pchild = ov_path_getobjectpointer(path,
+						VERSION_FOR_CTREE);
+
+					if (pchild == NULL) {
+						ov_logfile_error("%s does not exist", path);
+						continue;
+						//			return OV_ERR_BADPARAM;
+					}
+
+					/*
+					 * linking
+					 */
+					res = ov_association_link(passoc, pparent, pchild,
+					OV_PMH_DEFAULT, NULL, OV_PMH_DEFAULT, NULL);
+					if (Ov_OK(res))
+						ov_logfile_info("%s linked with %s through %s",
 								pparent->v_identifier, pchild->v_identifier,
 								passoc->v_identifier);
-						res = OV_ERR_OK;
-					} else {
-						ov_logfile_error(
-								"%s can not be linked with %s through %s",
-								pparent->v_identifier, pchild->v_identifier,
-								passoc->v_identifier);
-						res = OV_ERR_OK;
-						//!!!
+					else {
+						if (res == OV_ERR_ALREADYEXISTS) {
+							ov_logfile_warning(
+									"%s is already linked with %s through %s",
+									pparent->v_identifier, pchild->v_identifier,
+									passoc->v_identifier);
+							res = OV_ERR_OK;
+						} else {
+							ov_logfile_error(
+									"%s can not be linked with %s through %s",
+									pparent->v_identifier, pchild->v_identifier,
+									passoc->v_identifier);
+							res = OV_ERR_OK;
+							//!!!
+						}
 					}
 				}
 			}
 		}
+	}
+	jschildren = cJSON_GetObjectItem(jsobj, CHILDRENNAME);
+	if (jschildren == NULL)
+		return res;
+	cJSON_ArrayForEach(jschild, jschildren)
+	{
+		OV_STRING childpath = "";
+		ov_string_print(&childpath, "%s/%s", objpath, jschild->string);
+		link_objects(pinst, jschild, childpath);
 
 	}
 	return res;
 }
 
-OV_DLLFNCEXPORT void CTree_Upload_typemethod(
-	OV_INSTPTR_fb_functionblock	pfb,
-	OV_TIME						*pltc
-){
+OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	/*
-	 *   local variables
+	 * Init
 	 */
-	OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
-
-//    ov_string_setvalue(&pinst->v_json, "{\"Path\":\"/TechUnits\", \"Tree\":{\"A\":{\"factory\":\"/acplt/CTree/Upload\",\"variables\":{},\"children\":{\"AA\":{\"factory\":\"/acplt/CTree/Upload\",\"variables\":{},\"children\":{}}}}},\"Links\":{},\"Libraries\":[\"CTree\",\"ksapi\"]}");
-	OV_RESULT res;
-
-	//1. parse input
+	OV_RESULT res = OV_ERR_OK;
 	cJSON * jsbase = pinst->v_cache.jsbase = NULL;
 	cJSON * jslibs = pinst->v_cache.jslibs = NULL;
-	cJSON * jslinks = pinst->v_cache.jslinks = NULL;
 	cJSON * jstree = pinst->v_cache.jstree = NULL;
-//	cJSON * jspath = pinst->v_cache.jspath = NULL;
-//	cJSON * current = NULL;
+	//	cJSON * jspath = pinst->v_cache.jspath = NULL;
+	cJSON * jscurrent = NULL;
 
+	//1. parse input
 	jsbase = cJSON_Parse(pinst->v_json);
 	//1.1 check if file is ok
 	if (jsbase == NULL) {
 		const char *error_ptr = cJSON_GetErrorPtr();
 		if (error_ptr != NULL) {
-//			print_log(pinst, ov_logfile_error, "bad js file");
+			//			print_log(pinst, ov_logfile_error, "bad js file");
 		}
-		Upload_log_exit(pinst, OV_ERR_BADPARAM, OV_MT_ERROR,
-				"Bad json file");
-		return;
+		Upload_log(pinst, OV_ERR_BADPARAM, OV_MT_ERROR, "Bad json file");
+		return OV_ERR_BADPARAM;
+
 	}
 	ov_logfile_info("parsed successfully");
 
-//   2. Load Libraries
-//   2.1 jsbase contains libraries?
+	/*
+	 * init path
+	 */
+	if (!pinst->v_path) {
+		pinst->v_path = "";
+		ov_string_setvalue(&pinst->v_path,
+				cJSON_GetObjectItem(jsbase, PATHNAME)->valuestring);
+	} else {
+		strcpy(cJSON_GetObjectItem(jsbase, PATHNAME)->valuestring, pinst->v_path);
+	}
+
+	//   2. Load Libraries
+	//   2.1 jsbase contains libraries?
 	jslibs = cJSON_GetObjectItem(jsbase, "Libraries");
 	if (jslibs == NULL) {
 		ov_logfile_info("No libraries to load");
 	}
 
-//  2.2 load
+	//  2.2 load
 	res = upload_libraries(pinst, jslibs);
-//  2.3 successfully?
+	//  2.3 successfully?
 	if (Ov_Fail(res))
-		if (res != OV_ERR_ALREADYEXISTS) {
-			Upload_log_exit(pinst, OV_MT_ERROR, res,
+		if (res == OV_ERR_ALREADYEXISTS) {
+			res = OV_ERR_OK;
+		} else {
+			Upload_log(pinst, OV_MT_ERROR, res,
 					"Could not load dependent libraries");
-			return;
+			return res;
 		}
 
-//	3. CreateObjects Iteratively
-	jstree = cJSON_GetObjectItem(jsbase, "Tree");
+	//	3. CreateObjects Iteratively
+	OV_STRING root_factory = "";
+	jstree = cJSON_GetObjectItem(jsbase, TREENAME);
+	jscurrent = cJSON_GetObjectItem(jstree->child, FACTORYNAME);
+	if (jscurrent == NULL) {
+		ov_logfile_error("malformed root factory");
+		return OV_ERR_BADPARAM;
+	}
+	ov_string_setvalue(&root_factory, jscurrent->valuestring);
+	OV_INSTPTR_ov_class proot_class = inverse_neutralpath(root_factory);
 
-	OV_STRING rootpath = NULL;
-	ov_string_setvalue(&rootpath,
-			cJSON_GetStringValue(cJSON_GetObjectItem(jsbase, "Path")));
+	OV_STRING root_path = NULL;
+	ov_string_setvalue(&root_path,
+			cJSON_GetStringValue(cJSON_GetObjectItem(jsbase, PATHNAME)));
 
-	OV_INSTPTR_ov_object proot = Ov_GetParent(ov_containment, ov_path_getobjectpointer(rootpath,
-	VERSION_FOR_CTREE));
+	OV_STRING tmp = strrchr(root_path, '/');
+	*(tmp)=0;
+	OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(root_path, VERSION_FOR_CTREE);
+	*(tmp)='/';
+	strcpy(jstree->child->string, tmp+1);
+
+	if (proot != NULL) {
+//		if (proot_class != Ov_GetParent(ov_instantiation, proot)) {
+//			ov_logfile_error("no object with path %s", root_path);
+//			return OV_ERR_ALREADYEXISTS;
+//		}
+	} else {
+		ov_logfile_error("root doesnt exist");
+		return OV_ERR_GENERIC;
+	}
+
+
 	upload_tree(pinst, jstree, Ov_StaticPtrCast(ov_domain, proot));
 
-//	4. Link
-	jslinks = cJSON_GetObjectItem(jsbase, "Links");
-	link_objects(jslinks);
+	//	4. Link
+	res = link_objects(pinst, jstree->child, root_path);
 
-	// Free memory
-	Upload_log_exit(pinst, OV_MT_INFO, res, "%s", "Upload done.");
+	return res;
+}
+
+OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
+		OV_TIME *pltc) {
+	/*
+	 *   local variables
+	 */
+	OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
+
+	/*
+	 * Init
+	 */
+	pinst->v_ErrorMsg = "";
+	pinst->v_result = OV_ERR_OK;
+
+	OV_RESULT res = CTree_Upload_execute(pinst);
+	switch (res) {
+	case OV_ERR_OK:
+		pinst->v_result = res;
+		ov_logfile_info("Upload done.");
+		break;
+	case OV_ERR_BADPARAM:
+		pinst->v_result = res;
+		ov_logfile_error("Upload failed.");
+		break;
+	default:
+		pinst->v_result = OV_ERR_GENERIC;
+		ov_logfile_error("Upload failed. : %s", ov_result_getresulttext(res));
+	}
+	cJSON_free(pinst->v_cache.jsbase);
+	pinst->v_path = NULL;
+	pinst->v_json = NULL;
 	return;
 }
 

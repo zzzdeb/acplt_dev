@@ -6,11 +6,12 @@
 /* 
 	Define your data types here. 
 */
+#define VERSION_FOR_CTREE 	2
 
-enum JSON_FORMAT {
-	VARTYPE_POS = 0,
-	VARVAL_POS = 1
-};
+#define CTREE_COMMON_INTERNALERROR			128
+#define CTREE_COMMON_EXTERNALERROR			64
+#define CTREE_COMMON_SUCCESS				0
+#define CTREE_COMMON_ERROR					1
 
 typedef struct{
 	char msg[1024];
@@ -22,7 +23,6 @@ typedef struct{
 	cJSON* jsbase;
 	cJSON* jstree;
 	cJSON* jslibs;
-	cJSON* jslinks;
 	char msg[1024];
 } CTreeDownloadCache;
 
@@ -32,7 +32,7 @@ typedef struct {
 	OV_STRING current_path;
 	cJSON * jsbase;
 	cJSON * jslibs;
-	cJSON * jslinks;
+	//cJSON * jslinks;
 	cJSON * jstree;
 	cJSON * jspath;
 	char msg[1024];
@@ -44,10 +44,28 @@ typedef struct {
 	OV_STRING current_path;
 	cJSON * jsbase;
 	cJSON * jslibs;
-	cJSON * jslinks;
+	//cJSON * jslinks;
 	cJSON * jstree;
 	cJSON * jspath;
 	char msg[1024];
 } CTreeTransportCache;
+
+#define TREENAME	"Tree"
+#define LINKSNAME	"links"
+	#define ASSOCNAME	"of_association"
+	#define LINKPARENTSNAME	"parents"
+	#define LINKCHILDRENNAME "children"
+	#define LINKTHIS	"this"
+#define CHILDRENNAME	"children"
+#define VARIABLESNAME	"variables"
+	enum JSON_FORMAT {
+	VARIABLE_FORMAT_SIZE = 2,
+	VARTYPE_POS = 0,
+	VARVAL_POS = 1
+	};
+
+#define FACTORYNAME		"factory"
+#define PATHNAME		"Path"
+
 	
 #endif

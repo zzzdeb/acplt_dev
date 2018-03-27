@@ -1,6 +1,7 @@
 /*
 !/CTree
 /.metadata
+/*/source/sourcetemplates
 /*/build
 /*/Debug (Windows)
 !/.gitignore

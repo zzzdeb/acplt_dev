@@ -49,7 +49,7 @@ OV_DLLFNCEXPORT void CTree_Transport_startup(OV_INSTPTR_ov_object pobj) {
 
 //	 do what
 	pinst->v_result = OV_ERR_OK;
-//    pinst->v_status = CTree_COMMON_INITIAL;
+    pinst->v_status = CTREE_COMMON_INITIAL;
 
 	return;
 }
@@ -89,9 +89,14 @@ OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING * serverHost,
 	result = ov_string_setvalue(serverName, splited[1]);
 	if (Ov_Fail(result))
 		return OV_ERR_GENERIC;
-	result = ov_string_setvalue(path, splited[2]);
-	if (Ov_Fail(result))
-		return OV_ERR_GENERIC;
+	if(len>2){
+		result = ov_string_setvalue(path, splited[2]);
+		if (Ov_Fail(result))
+			return OV_ERR_GENERIC;
+	} else {
+		*path="";
+	}
+
 	return result;
 }
 
@@ -335,6 +340,8 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 	OV_UINT numberOfItems = 2;
 	OV_STRING path = NULL;
 	OV_UINT len = 0;
+	OV_STRING * splited = NULL;
+
 	result = CTree_Transport_prepareSubmit(pinst, &pClient, &pVtblClient);
 	if (Ov_Fail(result))
 		return result;
@@ -346,7 +353,12 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 		return result;
 	}
 
-	path = ov_string_split(pinst->v_targetKS, ":", &len)[2];
+	splited = ov_string_split(pinst->v_targetKS, ":", &len);
+	if(len>2)
+		path= splited[2];
+	else
+		path = "/data/CTree/Upload";
+
 	if (pinst->v_tree) {
 		items[0].path_and_name = "";
 		ov_string_print(&items[0].path_and_name, "%s.%s", path, "json"); /*	see comment below	*/
@@ -356,11 +368,11 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 		items[1].path_and_name = "";
 		ov_string_print(&items[1].path_and_name, "%s.%s", path, "path");
 		items[1].var_current_props.value.vartype = KS_VT_STRING;
-		items[1].var_current_props.value.valueunion.val_string = "test";
+		items[1].var_current_props.value.valueunion.val_string = pinst->v_targetPath;
 
 	} else {
-		KS_logfile_error(
-				("%s: submit: own Variable has empty path", pobj->v_identifier));
+		ov_logfile_error(
+				"%s: submit: own Variable has empty path", pinst->v_identifier);
 		pinst->v_status = CTREE_COMMON_INTERNALERROR;
 		pinst->v_result = result;
 		Ov_HeapFree(items);
@@ -392,14 +404,24 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
 	CTree_Download_typemethod(pfb, pltc);
 	if (Ov_Fail(pinst->v_result)) {
-		ov_logfile_error("Download failed.");
+		ov_logfile_error("Transport failed.");
 		return;
 	}
 	result = CTree_Transport_execute(pinst);
 	if (Ov_Fail(result)) {
-		ov_logfile_error("Transport failed. ");
-		pinst->v_result = !!result;
-		return;
+		switch (result) {
+			case OV_ERR_OK:
+				pinst->v_result = result;
+				ov_logfile_info("Transport done.");
+				break;
+			case OV_ERR_BADPARAM:
+				pinst->v_result = result;
+				ov_logfile_error("Transport failed.");
+				break;
+			default:
+				pinst->v_result = OV_ERR_GENERIC;
+				ov_logfile_error("Transport failed.");
+			}
 	}
 
 	return;
