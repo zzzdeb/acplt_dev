@@ -1,7 +1,10 @@
 /*
+!/.gitignore
 !/CTree
-/.metadata
+/*/.cproject
+/*/.project
+/*/.settings
 /*/source/sourcetemplates
 /*/build
+!/*/build/*/Makefile
 /*/Debug (Windows)
-!/.gitignore
