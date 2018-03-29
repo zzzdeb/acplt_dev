@@ -294,7 +294,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 				Ov_StaticPtrCast(ov_domain, pobj));
 		if (Ov_Fail(res)) {
 			//TODO: give more info
-			return Upload_log(pinst, res, OV_MT_ERROR,
+			return Upload_log(pinst, OV_MT_ERROR, res,
 					"Could not load tree. error at %s", parentpath);
 		}
 	}
@@ -323,7 +323,7 @@ OV_RESULT upload_libraries(OV_INSTPTR_CTree_Upload pinst, const cJSON* jslibs) {
 			ov_logfile_info("Library %s exists", libname);
 			break;
 		default:
-			return Upload_log(pinst, res, OV_MT_ERROR,
+			return Upload_log(pinst,  OV_MT_ERROR, res,
 					"Could not load library %s", libname);
 		}
 	}
@@ -400,7 +400,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 					VERSION_FOR_CTREE);
 				}
 				if (pparent == NULL) {
-					Upload_log(pinst, OV_MT_ERROR, "%s does not exist", link_parent_path);
+					Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC, "%s does not exist", link_parent_path);
 					continue;
 					//			return OV_ERR_BADPARAM;
 				}
@@ -420,7 +420,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 						VERSION_FOR_CTREE);
 
 					if (pchild == NULL) {
-						Upload_log(pinst, OV_MT_ERROR, "%s does not exist", path);
+						Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC, "%s does not exist", path);
 						continue;
 						//			return OV_ERR_BADPARAM;
 					}
@@ -442,7 +442,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 									passoc->v_identifier);
 							res = OV_ERR_OK;
 						} else {
-							Upload_log(pinst, OV_MT_ERROR,
+							Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 									"%s can not be linked with %s through %s",
 									pparent->v_identifier, pchild->v_identifier,
 									passoc->v_identifier);
