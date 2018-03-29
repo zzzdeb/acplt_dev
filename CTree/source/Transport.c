@@ -133,7 +133,7 @@ OV_DLLFNCEXPORT void CTree_Transport_submit(OV_INSTPTR_CTree_Transport pobj) {
 OV_RESULT CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport pCommon,
 		OV_INSTPTR_ksbase_ClientBase* pClient,
 		OV_VTBLPTR_ksbase_ClientBase* pVtblClient) {
-	OV_RESULT result;
+	OV_RESULT result = OV_ERR_OK;
 	OV_STRING tempstr = NULL;
 
 	if (!pClient || !pVtblClient)
@@ -244,7 +244,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
 		OV_INSTPTR_CTree_Transport pinst, OV_STRING serverHost,
 		OV_STRING serverName, OV_STRING path) {
 	OV_RESULT result = OV_ERR_OK;
-	OV_STRING kstarget = "";
+	OV_STRING kstarget = NULL;
 
 	result = ov_string_print(&pinst->v_targetKS, "%s:%s:%s", serverHost,
 			serverName, path);

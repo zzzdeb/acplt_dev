@@ -21,7 +21,9 @@
 #include "CTree.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
+#include "ksbase.h"
 #include <stdio.h>
+#include <string.h>
 
 #define VERSION_FOR_CTREE	2
 
