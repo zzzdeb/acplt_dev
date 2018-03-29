@@ -56,18 +56,26 @@ OV_RESULT crawl_tree(OV_INSTPTR_CTree_Download pinst,
 //checks if variable is one of the variables of ov_object
 OV_RESULT is_standard_variable(OV_STRING identifier);
 
+/*
+ * converts f.e. /acplt/a/b to a/b
+ */
 OV_STRING pathneutral(const OV_STRING const factory) {
 	OV_UINT len = 0;
-	OV_STRING resstr = "";
+	OV_STRING resstr = NULL;
 	OV_STRING* neutral = NULL;
-	ov_string_append(&resstr, factory);
+	ov_string_setvalue(&resstr, factory);
 	neutral = ov_string_split(resstr, "/", &len);
+	if(len<2)
+		return NULL;
 	ov_string_print(&resstr, "%s/%s", neutral[len - 2], neutral[len - 1]);
 	return resstr;
 }
 
+/*
+ * converts path from /a/b to ~/b if pre=/a & path=/a/b
+ */
 OV_STRING path2(const OV_STRING pre, const OV_STRING path) {
-	OV_STRING resstr = "";
+	OV_STRING resstr = NULL;
 	if (path == NULL)
 		return resstr;
 	ov_string_setvalue(&resstr, path);
@@ -108,10 +116,7 @@ OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
 	ov_logfile_print(msg_type, msg);
 	if (msg_type == OV_MT_ERROR) {
 		pinst->v_result = result;
-		ov_string_append(&pinst->v_ErrorMsg, ov_result_getresulttext(result));
-		ov_string_append(&pinst->v_ErrorMsg, " ; ");
-		ov_string_append(&pinst->v_ErrorMsg, msg);
-		ov_string_append(&pinst->v_ErrorMsg, " ; ");
+		ov_string_print(&pinst->v_ErrorMsg, "%s ; %s ;", ov_result_getresulttext(result), msg);
 	}
 	return result;
 }
@@ -234,7 +239,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 	cJSON* jslinks = cJSON_AddObjectToObject(jsobj, LINKSNAME);
 
 	OV_STRING factory = NULL;
-	cJSON* current = NULL;
+	cJSON* jscurrent = NULL;
 	OV_INSTPTR_ov_association passoc = NULL;
 	cJSON* jsparent = NULL;
 	cJSON* jslinksarray = NULL;
@@ -307,7 +312,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 		case KS_OT_LINK:
 //			OV_INSTPTR_ov_object pparent = NULL;
 //			OV_INSTPTR_ov_object pchild = NULL;
-			current = cJSON_AddObjectToObject(jslinks, one_result->identifier);
+			jscurrent = cJSON_AddObjectToObject(jslinks, one_result->identifier);
 
 			factory =
 					one_result->OV_OBJ_ENGINEERED_PROPS_u.link_engineered_props.association_identifier;
@@ -320,7 +325,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 				break;
 			}
 
-			cJSON_AddStringToObject(current, ASSOCNAME, pathneutral(factory));
+			cJSON_AddStringToObject(jscurrent, ASSOCNAME, pathneutral(factory));
 
 			ov_memstack_lock();
 			passoc = Ov_StaticPtrCast(ov_association,
@@ -329,16 +334,16 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 
 			if (ov_string_compare(passoc->v_parentrolename,
 					one_result->identifier)) {
-				cJSON* jscurrent = cJSON_AddArrayToObject(current,
+				cJSON* jscurrent1 = cJSON_AddArrayToObject(jscurrent,
 				LINKPARENTSNAME);
-				cJSON_AddItemToArray(jscurrent, cJSON_CreateString(LINKTHIS));
-				jslinksarray = cJSON_AddArrayToObject(current,
+				cJSON_AddItemToArray(jscurrent1, cJSON_CreateString(LINKTHIS));
+				jslinksarray = cJSON_AddArrayToObject(jscurrent,
 				LINKCHILDRENNAME);
 			} else {
-				jslinksarray = cJSON_AddArrayToObject(current, LINKPARENTSNAME);
-				cJSON* jscurrent = cJSON_AddArrayToObject(current,
+				jslinksarray = cJSON_AddArrayToObject(jscurrent, LINKPARENTSNAME);
+				cJSON* jscurrent1 = cJSON_AddArrayToObject(jscurrent,
 				LINKCHILDRENNAME);
-				cJSON_AddItemToArray(jscurrent, cJSON_CreateString(LINKTHIS));
+				cJSON_AddItemToArray(jscurrent1, cJSON_CreateString(LINKTHIS));
 			}
 
 			ov_string_print(&var_path, "%s.%s", object_path,
@@ -348,7 +353,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 			ov_ksserver_getvar(VERSION_FOR_CTREE, pticket, &get_var_par,
 					&get_var_res);
 
-			OV_STRING value = "";
+//			OV_STRING value = NULL;
 			for (unsigned i = 0; i < get_var_res.items_len; i++) {
 				OV_VAR_VALUE value =
 						get_var_res.items_val[i].var_current_props.value;
@@ -387,9 +392,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 
 			OV_GETVAR_RES get_var_res = { 0, 0, NULL };
 
-			ov_string_setvalue(&var_path, object_path);
-			ov_string_append(&var_path, ".");
-			ov_string_append(&var_path, one_result->identifier);
+			ov_string_print(&var_path, "%s.%s", object_path, one_result->identifier);
 			get_var_par.identifiers_len = 1;
 			get_var_par.identifiers_val = &var_path;
 			ov_ksserver_getvar(VERSION_FOR_CTREE, pticket, &get_var_par,
@@ -398,7 +401,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 			/*
 			 getting type as string
 			 */
-			OV_STRING typestr;
+			OV_STRING typestr = NULL;
 			//			ov_string_setvalue(&typestr, "1");
 			res = CTree_helper_ovtypeToStr(&typestr,
 					&get_var_res.items_val[0].var_current_props.value.vartype);
@@ -407,7 +410,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 			} else {
 				cJSON_AddItemToArray(jschild, cJSON_CreateString("error"));
 			}
-			OV_STRING valuestr = "";
+			OV_STRING valuestr = NULL;
 			/*
 			 getting value as string
 			 */
@@ -512,7 +515,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 //			ov_variable_initialvalue_get();
 			// access = pVtblObj->m_getaccess(pobj, pelem, pticket);
 			cJSON_AddItemToArray(jschild, cJSON_CreateString("1"));
-			OV_STRING valuestr = "";
+			OV_STRING valuestr = NULL;
 //			ov_string_setvalue(&valuestr, "1");
 			res = CTree_helper_valueToStr(&valuestr, &value.value);
 			if (Ov_OK(res)) {
@@ -602,7 +605,7 @@ OV_RESULT crawl_tree(OV_INSTPTR_CTree_Download pinst,
 	ov_memstack_unlock();
 
 //factory
-	OV_STRING factory = "";
+	OV_STRING factory = NULL;
 	ov_string_setvalue(&factory, CTree_helper_getfactory(pobj));
 	cJSON_AddStringToObject(jsobj, FACTORYNAME, pathneutral(factory));
 

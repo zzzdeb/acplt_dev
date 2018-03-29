@@ -45,8 +45,12 @@
 /*
  * Helpers
  */
+
+/*
+ * from path=~/b, pre=/a gives /a/b
+ */
 OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
-	OV_STRING resstr = "";
+	OV_STRING resstr = NULL;
 
 	if (pre == NULL)
 		return resstr;
@@ -57,7 +61,9 @@ OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
 	ov_string_append(&resstr, path + 1);
 	return resstr;
 }
-
+/*
+ * from a/b searches for class b in library a
+ */
 OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
 	OV_STRING path = "/acplt/";
 	ov_string_append(&path, neutralpath);
@@ -96,10 +102,7 @@ OV_RESULT Upload_log(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type,
 	ov_logfile_print(msg_type, msg);
 
 	if (msg_type == OV_MT_ERROR) {
-		ov_string_append(&pinst->v_ErrorMsg, ov_result_getresulttext(result));
-		ov_string_append(&pinst->v_ErrorMsg, " ; ");
-		ov_string_append(&pinst->v_ErrorMsg, msg);
-		ov_string_append(&pinst->v_ErrorMsg, " ; ");
+		ov_string_print(&pinst->v_ErrorMsg, "%s ; %s ;", ov_result_getresulttext(result), msg);
 	}
 	return result;
 }
@@ -126,8 +129,8 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	OV_UINT number_of_variables = cJSON_GetArraySize(jsvariables);
 	OV_STRING objpathwithpunct = NULL;
 
-	OV_SETVAR_PAR params;
-	OV_SETVAR_RES result;
+	OV_SETVAR_PAR params = {0};
+	OV_SETVAR_RES result = {0};
 	OV_SETVAR_ITEM *addrp = NULL;
 
 	OV_TICKET* pticket = NULL;
@@ -164,7 +167,7 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	{
 		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
 		//TODO:check for vartype and value
-		OV_STRING tmp = "";
+		OV_STRING tmp = NULL;
 		ov_string_print(&tmp, "%s%s", objpathwithpunct, jsvariable->string);
 		addrp->path_and_name = tmp;
 
@@ -238,7 +241,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 					jschild->string);
 			continue;
 		}
-		OV_STRING factory = "";
+		OV_STRING factory = NULL;
 		ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
 		pclass = inverse_neutralpath(factory);
 		if (pclass == NULL) {
@@ -380,7 +383,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 
 			cJSON_ArrayForEach(jsasparent, jsasparents)
 			{
-				OV_STRING link_parent_path = "";
+				OV_STRING link_parent_path = NULL;
 				if (ov_string_compare(cJSON_GetStringValue(jsasparent),
 						"this")==OV_STRCMP_EQUAL)
 					pparent = pobj;
@@ -397,14 +400,14 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 					VERSION_FOR_CTREE);
 				}
 				if (pparent == NULL) {
-					ov_logfile_error("%s does not exist", link_parent_path);
+					Upload_log(pinst, OV_MT_ERROR, "%s does not exist", link_parent_path);
 					continue;
 					//			return OV_ERR_BADPARAM;
 				}
 
 				cJSON_ArrayForEach(jsaschild, jsaschildren)
 				{
-					OV_STRING path = "";
+					OV_STRING path = NULL;
 					ov_string_setvalue(&path, cJSON_GetStringValue(jsaschild));
 					if (*path == '~')
 						path = inverse_path2(pinst->v_path, path);
@@ -456,7 +459,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 		return res;
 	cJSON_ArrayForEach(jschild, jschildren)
 	{
-		OV_STRING childpath = "";
+		OV_STRING childpath = NULL;
 		ov_string_print(&childpath, "%s/%s", objpath, jschild->string);
 		link_objects(pinst, jschild, childpath);
 
@@ -520,7 +523,7 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 		}
 
 	//	3. CreateObjects Iteratively
-	OV_STRING root_factory = "";
+	OV_STRING root_factory = NULL;
 	jstree = cJSON_GetObjectItem(jsbase, TREENAME);
 	jscurrent = cJSON_GetObjectItem(jstree->child, FACTORYNAME);
 	if (jscurrent == NULL) {
