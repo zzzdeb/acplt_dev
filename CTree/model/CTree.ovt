@@ -62,12 +62,12 @@ typedef struct {
 	#define VARTYPENAME "datatype"
 	#define VARVALUENAME	"value"
 	enum JSON_FORMAT {
-	VARIABLE_FORMAT_SIZE = 2,
 	VARTYPE_POS = 0,
-	VARVAL_POS = 1
+	VARVAL_POS = 1,
+	VARIABLE_FORMAT_SIZE = 2
 	};
 
-#define FACTORYNAME		"factory"
+#define FACTORYNAME		"class"
 #define PATHNAME		"Path"
 
 	
