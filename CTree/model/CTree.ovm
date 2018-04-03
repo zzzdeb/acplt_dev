@@ -2,6 +2,7 @@
 #include "fb.ovm"
 
 #include "ksbase.ovm"
+#include "ksxdr.ovm"
 #include "ksapi.ovm"
 #include "kshttp.ovm"
 
@@ -88,6 +89,8 @@ LIBRARY CTree
 			//	COMMENT	=	"Rising edge triggers submit function"
 			//	INITIALVALUE	= FALSE;
 		END_VARIABLES;
+		PARTS
+		END_PARTS;
 		OPERATIONS
 			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
 			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;

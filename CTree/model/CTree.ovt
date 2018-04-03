@@ -57,7 +57,10 @@ typedef struct {
 	#define LINKCHILDRENNAME "children"
 	#define LINKTHIS	"this"
 #define CHILDRENNAME	"children"
+#define PARTSNAME	"parts"
 #define VARIABLESNAME	"variables"
+	#define VARTYPENAME "datatype"
+	#define VARVALUENAME	"value"
 	enum JSON_FORMAT {
 	VARIABLE_FORMAT_SIZE = 2,
 	VARTYPE_POS = 0,
