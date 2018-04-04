@@ -61,14 +61,24 @@ typedef struct {
 #define VARIABLESNAME	"variables"
 	#define VARTYPENAME "datatype"
 	#define VARVALUENAME	"value"
+	#define NUMBEROFVAR_TOIGNORE 6
 	enum JSON_FORMAT {
 	VARTYPE_POS = 0,
 	VARVAL_POS = 1,
 	VARIABLE_FORMAT_SIZE = 2
 	};
+	#define NOTSUPPORTEDTYPE "not supported"
 
 #define FACTORYNAME		"class"
 #define PATHNAME		"Path"
+
+
+/************/
+//test struct
+typedef struct {
+	OV_UINT integ;
+	OV_SINGLE sin;
+} TestStruct;
 
 	
 #endif

@@ -83,14 +83,14 @@ LIBRARY CTree
 			status		:	INT FLAGS="o" 
 				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
 				INITIALVALUE	=	0;
+				
 			//serverName	:	STRING;
 			//serverHost	:	STRING;
 			//Submit		:	BOOL	HAS_SET_ACCESSOR
 			//	COMMENT	=	"Rising edge triggers submit function"
 			//	INITIALVALUE	= FALSE;
 		END_VARIABLES;
-		PARTS
-		END_PARTS;
+		
 		OPERATIONS
 			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
 			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
@@ -117,6 +117,46 @@ LIBRARY CTree
 			getfactory	: C_FUNCTION <GET_FACTORY>;
 			strlistcat: C_FUNCTION <STR_LIST_CAT>;
 		END_OPERATIONS;
+	END_CLASS;
+	
+	
+	CLASS test : CLASS fb/object
+	IS_INSTANTIABLE;
+	VARIABLES
+		//varVoid: C_TYPE<OV_VOID>;
+		varByte: C_TYPE<OV_BYTE>;
+		varBool: BOOL;
+		varInt: INT INITIALVALUE=-1;
+		varUint: UINT INITIALVALUE=1;
+		varSingle: SINGLE INITIALVALUE=1.1;
+		varDouble: DOUBLE INITIALVALUE=-1.1;
+		varString: STRING INITIALVALUE="string test";
+		varTime:	TIME;
+		varTimeSpan:	TIME_SPAN;
+		varState:	C_TYPE<OV_STATE>;
+		varStruct:	C_TYPE<TestStruct>;
+		
+		varByteVec:	C_TYPE<OV_BYTE_VEC>;
+		varBoolVec[]: BOOL;
+		varIntVec[]:	INT;
+		varUintVec[]:	UINT;
+		varSingleVec[]:	SINGLE;
+		varDoubleVec[]:	DOUBLE;
+		varStringVec[]:	STRING;
+		varTimeVec[]:	TIME;
+		varTimeSpanVec[]:	TIME_SPAN;
+		//varStructVec:	C_TYPE<TestStruct>;
+		
+	END_VARIABLES;
+	PARTS
+		testpart1:	CLASS ksxdr/xdrClient;
+		testpart2:	CLASS ksxdr/xdrClient;
+	END_PARTS;
+	OPERATIONS
+		startup				:	C_FUNCTION <OV_FNC_STARTUP>;
+		shutdown				:	C_FUNCTION <OV_FNC_SHUTDOWN>;
+		getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
+	END_OPERATIONS;
 	END_CLASS;
 
 	/**
