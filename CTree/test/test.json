@@ -1,0 +1,48 @@
+{ "Libraries":	["ov", "CTree", "ksxdr"], "Tree":	{ "TechUnits":	{ "class":	"ov/domain", "children":	{ "upload":	{ "variables":	{ "json":	["STRING", null], "path":	["STRING", null], "result":	["INT", 0], "ErrorMsg":	["STRING", null], "iexreq":	["BOOL", false], "eexreq":	["BOOL", false], "maxcalctime": ["TIME_SPAN", [0, 0]], "methcount":	["UINT", 6], "actimode":	["INT", 1], "proctime":	["TIME", [1522861523, 620544]], "cyctime": ["TIME_SPAN", [0, 0]], "ErrState":	["INT", 0], "calctime":	["TIME_SPAN", [0, 1342]], "Xpos": ["INT", 0], "Ypos":	["INT", 0] }, "links":	{ "taskparent":	{ "of_association":	"fb/tasklist", "parents":	["/Tasks/UrTask"], "children":	["this"] } }, "class":	"CTree/Upload" }, "test":	{ "variables":	{ "varBool":	["BOOL", false], "varInt":	["INT", 100], "varUint":	["UINT", 100], "varSingle":	["SINGLE", 15.149999618530273], "varDouble":	["DOUBLE", -15.15], "varString":	["STRING", "string test upload"], "varTime":	["TIME", [0, 0]], "varTimeSpan":	["TIME_SPAN", [0, 0]], "varBoolVec":	["BOOL_VEC", [true, false, true, true, false]], "varIntVec":	["INT_VEC", [1, 1, 0, 2147483647, -2147483648]], "varUintVec": ["UINT_VEC", [2147483647, 1, 0, 2147483647, 1]], "varSingleVec":	["SINGLE_VEC", [-10, -1, -1.1000000238418579]], "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, -2147483648, 10, 10, 10]], "varStringVec":	["STRING_VEC", ["upload", "test", "00000000000000000000000000000000000000", null, null]], "varTimeVec":	["TIME_VEC", [[10, 10], [10, 10], [10, 1]]], "varTimeSpanVec": ["TIME_SPAN_VEC", [[10, 10], [10, 10], [10, 10], [0, 0], [0, 0], [0, 0], [0, 0]]] }, "class":	"CTree/test", "parts":	{ "testpart1":	{ "variables":	{ "ManagerPort":	["STRING", "7509"], "msgAccepted":	["INT", 0], "msgStatus":	["INT", 0], "rpcErrCode":	["INT", 0], "sentProcID":	["UINT", 0], "sentXID":	["UINT", 0], "timeLastEvent":	["TIME", [0, 0]], "timeout":	["UINT", 30], "tempXID": ["UINT", 0], "serverHost":	["STRING", null], "serverName":	["STRING", null], "serverPort": ["STRING", null], "state":	["UINT", 0], "runningKSservice":	["UINT", 0], "holdConnection":	["BOOL", false], "actimode": ["INT", 0], "cycInterval":	["INT", 5], "NextExecTime":	["TIME", [0, 0]] }, "links":	{ "RootComTask":	{ "of_association": "ksbase/AssocComTaskList", "parents": ["/communication/RootComTask"], "children": ["this"] } }, "class":	"ksxdr/xdrClient" }, "testpart2":	{ "variables":	{ "ManagerPort":	["STRING", "7509"], "msgAccepted":	["INT", 0], "msgStatus":	["INT", 0], "rpcErrCode":	["INT", 0], "sentProcID":	["UINT", 0], "sentXID":	["UINT", 0], "timeLastEvent":	["TIME", [0, 0]], "timeout":	["UINT", 30], "tempXID": ["UINT", 0], "serverHost":	["STRING", null], "serverName":	["STRING", null], "serverPort": ["STRING", null], "state":	["UINT", 0], "runningKSservice":	["UINT", 0], "holdConnection":	["BOOL", false], "actimode": ["INT", 0], "cycInterval":	["INT", 5], "NextExecTime":	["TIME", [0, 0]] }, "links":	{ "RootComTask":	{ "of_association": "ksbase/AssocComTaskList", "parents": ["/communication/RootComTask"], "children": ["this"] } }, "class":	"ksxdr/xdrClient" } } } } } }, "Path":	"/TechUnits" }
+
+
+{
+  "Libraries": ["ov", "CTree", "ksxdr"],
+  "Tree": {
+    "TechUnits": {
+      "class": "ov/domain",
+      "children": {
+        "test": {
+          "variables": {
+            "varBool": ["BOOL", false],
+            "varInt": ["INT", 100],
+            "varUint": ["UINT", 100],
+            "varSingle": ["SINGLE", 15.15],
+            "varDouble": ["DOUBLE", -15.15],
+            "varString": ["STRING", "string test upload"],
+            "varTime": ["TIME", [10, 10]],
+            "varTimeSpan": ["TIME_SPAN", [10, 10]],
+            "varBoolVec": ["BOOL_VEC", [true, false, true, true, false]],
+            "varIntVec": ["INT_VEC", [1, 1, 0, 2147483647, -2147483648]],
+            "varUintVec": ["UINT_VEC", [4294967295, 1, 0, 4294967295, 1]],
+            "varSingleVec": ["SINGLE_VEC", [-10, -1, -1.1000000238418579]],
+            "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, -2147483648, 10, 10, 10]],
+            "varStringVec": ["STRING_VEC", ["upload", "test", "00000000000000000000000000000000000000", null, null]],
+            "varTimeVec": ["TIME_VEC", [
+              [10, 10],
+              [10, 10],
+              [10, 1]
+            ]],
+            "varTimeSpanVec": ["TIME_SPAN_VEC", [
+              [10, 10],
+              [10, 10],
+              [10, 10],
+              [0, 0],
+              [0, 0],
+              [0, 0],
+              [0, 0]
+            ]]
+          },
+          "class": "CTree/test"
+        }
+      }
+    }
+  },
+  "Path": "/TechUnits"
+}
+

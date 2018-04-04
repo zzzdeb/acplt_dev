@@ -113,13 +113,223 @@ OV_RESULT Upload_log(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type,
 	return result;
 }
 
+OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
+	OV_RESULT result = OV_ERR_OK;
+	if (!value || !jsvalue || !cJSON_IsArray(jsvalue))
+		return OV_ERR_BADPARAM;
+
+	OV_UINT i = 0;
+	cJSON * jstmp = NULL;
+	cJSON * jselem = NULL;
+	result = CTree_helper_strToOVType(&value->vartype,
+			cJSON_GetArrayItem(jsvalue, VARTYPE_POS)->valuestring);
+	if (result)
+		return result;
+
+	switch (value->vartype) {
+	case OV_VT_VOID:
+		break;
+	case OV_VT_BYTE:
+		return OV_ERR_NOTIMPLEMENTED;
+		break;
+	case OV_VT_BOOL:
+		value->valueunion.val_bool =
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valueint;
+		break;
+	case OV_VT_INT:
+		value->valueunion.val_int =
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valueint;
+		break;
+	case OV_VT_UINT:
+		value->valueunion.val_uint =
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valueint;
+		;
+		break;
+	case OV_VT_SINGLE:
+		value->valueunion.val_single =
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuedouble;
+		break;
+	case OV_VT_DOUBLE:
+		value->valueunion.val_double =
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuedouble;
+		break;
+	case OV_VT_STRING:
+		if (cJSON_IsNull(cJSON_GetArrayItem(jsvalue, VARVAL_POS))) {
+			value->valueunion.val_string = NULL;
+			break;
+		}
+		value->valueunion.val_string = NULL;
+		result = ov_string_setvalue(&value->valueunion.val_string,
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuestring);
+		break;
+	case OV_VT_TIME:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_time.secs =
+				cJSON_GetArrayItem(jsvalue, 0)->valueint;
+		value->valueunion.val_time.usecs =
+				cJSON_GetArrayItem(jsvalue, 1)->valueint;
+		break;
+	case OV_VT_TIME_SPAN:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_time_span.secs =
+				cJSON_GetArrayItem(jsvalue, 0)->valueint;
+		value->valueunion.val_time_span.usecs =
+				cJSON_GetArrayItem(jsvalue, 1)->valueint;
+		break;
+	case OV_VT_STATE:
+	case OV_VT_STRUCT:
+	case OV_VT_CTYPE:
+		return OV_ERR_NOTIMPLEMENTED;
+		break;
+
+		//		vector
+	case OV_VT_BYTE_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
+	case OV_VT_BOOL_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_bool_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_bool_vec.value = ov_memstack_alloc(
+				value->valueunion.val_bool_vec.veclen * sizeof(OV_BOOL));
+		i = 0;
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			if (cJSON_IsBool(jselem))
+				value->valueunion.val_bool_vec.value[i] = jselem->valueint;
+			i++;
+		}
+		break;
+	case OV_VT_INT_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_int_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_int_vec.value = ov_memstack_alloc(
+				value->valueunion.val_int_vec.veclen * sizeof(OV_INT));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_int_vec.value[i] = jselem->valueint;
+			i++;
+		}
+		break;
+	case OV_VT_UINT_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_uint_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_uint_vec.value = ov_memstack_alloc(
+				value->valueunion.val_uint_vec.veclen * sizeof(OV_UINT));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_uint_vec.value[i] = jselem->valueint;
+			i++;
+		}
+		break;
+	case OV_VT_SINGLE_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_single_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_single_vec.value = ov_memstack_alloc(
+				value->valueunion.val_single_vec.veclen * sizeof(OV_SINGLE));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_single_vec.value[i] = jselem->valuedouble;
+			i++;
+		}
+		break;
+	case OV_VT_DOUBLE_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_double_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_double_vec.value = ov_memstack_alloc(
+				value->valueunion.val_double_vec.veclen * sizeof(OV_DOUBLE));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_double_vec.value[i] = jselem->valuedouble;
+			i++;
+		}
+		break;
+	case OV_VT_STRING_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_string_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_string_vec.value = ov_memstack_alloc(
+				value->valueunion.val_string_vec.veclen * sizeof(OV_STRING));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_string_vec.value[i]=NULL;
+			result = ov_string_setvalue(
+					&value->valueunion.val_string_vec.value[i],
+					jselem->valuestring);
+			i++;
+		}
+		break;
+	case OV_VT_TIME_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_time_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_time_vec.value = ov_memstack_alloc(
+				value->valueunion.val_time_vec.veclen * sizeof(OV_TIME));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_time_vec.value[i].secs = cJSON_GetArrayItem(
+					jselem, 0)->valueint;
+			value->valueunion.val_time_vec.value[i].usecs = cJSON_GetArrayItem(
+					jselem, 1)->valueint;
+			i++;
+		}
+		break;
+	case OV_VT_TIME_SPAN_VEC:
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_time_span_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_time_span_vec.value = ov_memstack_alloc(
+				value->valueunion.val_time_span_vec.veclen
+						* sizeof(OV_TIME_SPAN));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_time_span_vec.value[i].secs =
+					cJSON_GetArrayItem(jselem, 0)->valueint;
+			value->valueunion.val_time_span_vec.value[i].usecs =
+					cJSON_GetArrayItem(jselem, 1)->valueint;
+			i++;
+		}
+		break;
+	case OV_VT_STRUCT_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
+
+	case OV_VT_BOOL_PV:
+	case OV_VT_INT_PV:
+	case OV_VT_UINT_PV:
+	case OV_VT_SINGLE_PV:
+	case OV_VT_DOUBLE_PV:
+	case OV_VT_STRING_PV:
+	case OV_VT_TIME_PV:
+	case OV_VT_TIME_SPAN_PV:
+
+	case OV_VT_BOOL_PV_VEC:
+	case OV_VT_INT_PV_VEC:
+	case OV_VT_UINT_PV_VEC:
+	case OV_VT_SINGLE_PV_VEC:
+	case OV_VT_DOUBLE_PV_VEC:
+	case OV_VT_STRING_PV_VEC:
+	case OV_VT_TIME_PV_VEC:
+	case OV_VT_TIME_SPAN_PV_VEC:
+
+	case OV_VT_ANY:
+
+	case OV_VT_POINTER:
+		return OV_ERR_NOTIMPLEMENTED;
+
+	default:
+		return OV_ERR_BADPARAM; //TODO: revise it
+	}
+	return result;
+}
+
 OV_ANY get_value_from_str(cJSON* jsvar) {
 	OV_ANY value = { 0 };
 	value.state = OV_ST_GOOD;
 	CTree_helper_strToOVType(&value.value.vartype,
 			cJSON_GetArrayItem(jsvar, VARTYPE_POS)->valuestring);
-	CTree_helper_strToValue(&value.value,
-			cJSON_GetArrayItem(jsvar, VARVAL_POS)->valuestring);
+	if (cJSON_IsString(cJSON_GetArrayItem(jsvar, VARVAL_POS)))
+		CTree_helper_strToValue(&value.value,
+				cJSON_GetArrayItem(jsvar, VARVAL_POS)->valuestring);
+	else if (cJSON_IsArray(cJSON_GetArrayItem(jsvar, VARVAL_POS)))
+		CTree_helper_strVecToValue(&value.value,
+				cJSON_GetArrayItem(jsvar, VARVAL_POS));
 	return value;
 }
 
@@ -141,14 +351,14 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 
 	OV_TICKET* pticket = NULL;
 
-	//object path
+//object path
 	ov_memstack_lock();
 	ov_string_setvalue(&objpathwithpunct,
 			ov_path_getcanonicalpath(pobj, VERSION_FOR_CTREE));
 	ov_string_append(&objpathwithpunct, ".");
 	ov_memstack_unlock();
 
-	//TODO: check json value
+//TODO: check json value
 
 	ov_memstack_lock();
 	addrp = (OV_SETVAR_ITEM*) ov_memstack_alloc(
@@ -164,19 +374,24 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	params.items_val = addrp;
 	params.items_len = number_of_variables;
 
-	//create NONE-ticket
+//create NONE-ticket
 	pticket = ksbase_NoneAuth->v_ticket.vtbl->createticket(NULL, OV_TT_NONE);
 
-	//#####################################################################
-	//process multiple variables at once
+//#####################################################################
+//process multiple variables at once
 	cJSON_ArrayForEach(jsvariable, jsvariables)
 	{
-		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
-		//TODO:check for vartype and value
 		OV_STRING tmp = NULL;
 		ov_string_print(&tmp, "%s%s", objpathwithpunct, jsvariable->string);
 		addrp->path_and_name = tmp;
 
+		//TODO:check for vartype and value and vector memory allocation
+//		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
+		OV_RESULT curResult = jsonToOVValue(&addrp->var_current_props.value,
+				jsvariable);
+		if (Ov_Fail(curResult))
+			ov_logfile_error("%s: value conversion:  %s",
+					ov_result_getresulttext(curResult), tmp);
 		//add one size of a pointer
 		addrp++;
 	}
@@ -192,7 +407,8 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 
 	if (Ov_Fail(result.result)) {
 		//memory problem or NOACCESS
-//			kshttp_print_result_array(&response->contentString, request.response_format, &result.result, 1, ": NOACCESS or memory problem");
+		ov_logfile_error("%s : NOACCESS or memory problem",
+				ov_result_getresulttext(result.result));
 		ov_memstack_unlock();
 		return result.result;
 	}
@@ -236,7 +452,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 	OV_PATH path;
 	OV_ELEMENT element;
 
-	//TODO: find more elegant solution to get path
+//TODO: find more elegant solution to get path
 	ov_memstack_lock();
 	ov_string_setvalue(&parentpath,
 			ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pparent),
@@ -537,12 +753,12 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	cJSON * jsbase = pinst->v_cache.jsbase = NULL;
 	cJSON * jslibs = pinst->v_cache.jslibs = NULL;
 	cJSON * jstree = pinst->v_cache.jstree = NULL;
-	//	cJSON * jspath = pinst->v_cache.jspath = NULL;
+//	cJSON * jspath = pinst->v_cache.jspath = NULL;
 	cJSON * jscurrent = NULL;
 
-	//1. parse input
+//1. parse input
 	jsbase = cJSON_Parse(pinst->v_json);
-	//1.1 check if file is ok
+//1.1 check if file is ok
 	if (jsbase == NULL) {
 		const char *error_ptr = cJSON_GetErrorPtr();
 		if (error_ptr != NULL) {
@@ -566,16 +782,16 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 				pinst->v_path);
 	}
 
-	//   2. Load Libraries
-	//   2.1 jsbase contains libraries?
+//   2. Load Libraries
+//   2.1 jsbase contains libraries?
 	jslibs = cJSON_GetObjectItem(jsbase, "Libraries");
 	if (jslibs == NULL) {
 		ov_logfile_info("No libraries to load");
 	}
 
-	//  2.2 load
+//  2.2 load
 	res = upload_libraries(pinst, jslibs);
-	//  2.3 successfully?
+//  2.3 successfully?
 	if (Ov_Fail(res)) {
 		if (res == OV_ERR_ALREADYEXISTS) {
 			res = OV_ERR_OK;
@@ -586,7 +802,7 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 		}
 	}
 
-	//	3. CreateObjects Iteratively
+//	3. CreateObjects Iteratively
 	OV_STRING root_factory = NULL;
 	jstree = cJSON_GetObjectItem(jsbase, TREENAME);
 	jscurrent = cJSON_GetObjectItem(jstree->child, FACTORYNAME);
@@ -624,7 +840,7 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 
 	res = upload_children(pinst, jstree, Ov_StaticPtrCast(ov_domain, proot));
 
-	//	4. Link
+//	4. Link
 	res = link_objects(pinst, jstree->child, root_path);
 
 	return res;
