@@ -28,7 +28,8 @@
 #define VERSION_FOR_CTREE	2
 
 //string
-OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(const OV_STRING_VEC* const vector) {
+OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(
+		const OV_STRING_VEC* const vector) {
 	OV_STRING res = NULL;
 	OV_UINT len = 0;
 	//	for (int i = 0; i < vector->veclen; i++)
@@ -55,6 +56,177 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
 	return factory;
 }
 
+//#define CTree_valuevecToString(valuestr, vartype, varvalue)					\
+//	cJSON * jsvalarray = cJSON_CreateArray();								\
+//	OV_STRING varstr = NULL;\
+//	for(OV_UINT i=0; i< varvalue->veclen; i++)											\
+//		cJSON_AddItemToArray(jsvalue, cJSON_CreateString(CTree_helper_valueToStr(varvalue->valueunion.val_##valuestr_vec[i])));\									\
+//	cJSON_print(jsvalarry);
+//
+
+//OV_RESULT vectorToStr(OV_STRING* valuestr, const OV_VAR_VALUE* value){
+//	OV_RESULT result = OV_ERR_OK;
+//	OV_STRING tmp = NULL;
+//	if(!(value->vartype & OV_VT_ISVECTOR) || !valuestr){
+//		return OV_ERR_BADPARAM;
+//	}
+//	OV_VAR_VALUE tmpVar = { .vartype=value->vartype & !OV_VT_ISVECTOR };
+//	cJSON * jsvalarray = cJSON_CreateArray();
+//	for(OV_UINT i=0; i<value->valueunion.val_bool_vec.veclen; i++){
+//		tmpVar.valueunion.val_bool = value->valueunion.val_bool_vec.value[i];
+//		result = CTree_helper_valueToStr(&tmp, tmpVar);
+//		cJSON_AddItemToArray(jsvalarray, cJSON_CreateString(tmp));
+//	}
+//	result = ov_string_setvalue(valuestr, cJSON_Print(jsvalarray));
+//	cJSON_free(jsvalarray);
+//	return result;
+//}
+
+OV_RESULT CTree_helper_strVecToValue(OV_VAR_VALUE* value, cJSON* jsvarlist) {
+	OV_RESULT result = OV_ERR_OK;
+	if (!value || !jsvarlist || !(value->vartype & OV_VT_ISVECTOR))
+		return OV_ERR_BADPARAM;
+
+	OV_UINT size = cJSON_GetArraySize(jsvarlist);
+
+	cJSON* jselem = NULL;
+	OV_UINT i = 0;
+	char * endPtr = NULL;
+
+	switch (value->vartype) {
+	case OV_VT_BYTE_VEC:
+		value->valueunion.val_byte_vec.veclen = size;
+		value->valueunion.val_byte_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_byte_vec, size, BYTE);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_byte_vec.value[i] = strtol(
+					jselem->valuestring, &endPtr, 0);
+			i++;
+		}
+		break;
+	case OV_VT_BOOL_VEC:
+		value->valueunion.val_bool_vec.veclen = size;
+		value->valueunion.val_bool_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_bool_vec, size, BOOL);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_bool_vec.value[i] = strtol(
+					jselem->valuestring, &endPtr, 0);
+			i++;
+		}
+		break;
+	case OV_VT_INT_VEC:
+		value->valueunion.val_int_vec.veclen = size;
+		value->valueunion.val_int_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_int_vec, size, INT);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_int_vec.value[i] = strtol(jselem->valuestring,
+					&endPtr, 0);
+			i++;
+		}
+		break;
+	case OV_VT_UINT_VEC:
+		value->valueunion.val_uint_vec.veclen = size;
+		value->valueunion.val_uint_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_uint_vec, size, UINT);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_uint_vec.value[i] = strtoul(
+					jselem->valuestring, &endPtr, 0);
+			i++;
+		}
+		break;
+	case OV_VT_SINGLE_VEC:
+		value->valueunion.val_single_vec.veclen = size;
+		value->valueunion.val_single_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_single_vec, size,
+				SINGLE);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_single_vec.value[i] = strtod(
+					jselem->valuestring, &endPtr);
+			i++;
+		}
+		break;
+	case OV_VT_DOUBLE_VEC:
+		value->valueunion.val_double_vec.veclen = size;
+		value->valueunion.val_double_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_double_vec, size,
+				DOUBLE);
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			value->valueunion.val_double_vec.value[i] = strtod(
+					jselem->valuestring, &endPtr);
+			i++;
+		}
+		break;
+	case OV_VT_STRING_VEC:
+		value->valueunion.val_string_vec.veclen = size;
+		value->valueunion.val_string_vec.value = NULL;
+		Ov_SetDynamicVectorLength(&value->valueunion.val_string_vec, size,
+				STRING);
+		ov_memstack_lock();
+		cJSON_ArrayForEach(jselem, jsvarlist)
+		{
+			result = ov_string_setvalue(
+					&value->valueunion.val_string_vec.value[i],
+					jselem->valuestring);
+			i++;
+		}
+		ov_memstack_unlock();
+		break;
+	case OV_VT_TIME_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
+	case OV_VT_TIME_SPAN_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
+	case OV_VT_STRUCT_VEC:
+		value->valueunion.val_struct_vec.veclen = 0;
+		value->valueunion.val_struct_vec.value = NULL;
+		return OV_ERR_NOTIMPLEMENTED;
+		break;
+	default:
+		return OV_ERR_UNKNOWNOPTYPEDEF;
+	}
+	return result;
+}
+
+#define VALUETOSTR(S, V) \
+_Generic ((V),\
+	OV_BOOL: ov_string_print(S, "%"OV_PRINT_BOOL, !!V),\
+	OV_UINT: ov_string_print(S, "%"OV_PRINT_UINT, V),\
+	default: S=NULL)
+
+#define STRTO(V, S) \
+_Generic ((S),\
+	OV_BOOL: ov_string_print(S, "%"OV_PRINT_BOOL, V),\
+	OV_UINT: ov_string_print(S, "%"OV_PRINT_UINT, V),\
+	default: S=NULL)
+
+//OV_RESULT ovvalueToJSON(cJSON* jsvalue, const OV_VAR_VALUE * value) {
+//	OV_RESULT result = OV_ERR_OK;
+//	OV_STRING valuestr = NULL;
+//
+//	switch (value->vartype){
+//	case OV_VT_VOID:
+//		break;
+//	case OV_VT_BYTE:
+//		jsvalue = cJSON_CreateNumber(value->valueunion.val_byte);
+//		break;
+//	case OV_VT_BOOL_VEC:
+//		jsvalue = cJSON_CreateArray();
+//		for (OV_UINT i = 0; i < value->valueunion.val_bool_vec.veclen; i++) {
+//			cJSON_AddItemToArray(jsvalue, cJSON_CreateBool(value->valueunion.val_bool_vec.value[i]));
+//		}
+//	break;
+//	default:
+//		return OV_ERR_BADPARAM;
+//	}
+//}
+
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING* valuestr,
 		const OV_VAR_VALUE* value) {
 	OV_RESULT result = OV_ERR_OK;
@@ -66,25 +238,35 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING* valuestr,
 	}
 
 //	check
+	*valuestr = NULL;
 	switch (value->vartype) {
-	case OV_VT_BOOL:
-		result = ov_string_print(valuestr, "%s",
-				(value->valueunion.val_bool ? "TRUE" : "FALSE"));
+	case OV_VT_VOID:
+		result = ov_string_setvalue(valuestr, "");
 		break;
 	case OV_VT_BYTE:
-		result = ov_string_print(valuestr, "%s", value->valueunion.val_byte);
+		result = ov_string_print(valuestr, "%d", value->valueunion.val_byte);
+		break;
+	case OV_VT_BOOL:
+		result = VALUETOSTR(valuestr, value->valueunion.val_bool);
+//		result = ov_string_print(valuestr, "%s",
+//				(value->valueunion.val_bool ? "TRUE" : "FALSE"));
 		break;
 	case OV_VT_INT:
-		result = ov_string_print(valuestr, "%i", value->valueunion.val_int);
+		result = ov_string_print(valuestr, "%" OV_PRINT_INT,
+				value->valueunion.val_int);
 		break;
 	case OV_VT_UINT:
-		result = ov_string_print(valuestr, "%u", value->valueunion.val_uint); /* if vartype == OV_VT_UINT */
+		result = VALUETOSTR(valuestr, value->valueunion.val_uint);
+//		result = ov_string_print(valuestr, "%" OV_PRINT_UINT,
+//				value->valueunion.val_uint); /* if vartype == OV_VT_UINT */
 		break;
 	case OV_VT_SINGLE:
-		result = ov_string_print(valuestr, "%f", value->valueunion.val_single); /* if vartype == OV_VT_SINGLE */
+		result = ov_string_print(valuestr, "%" OV_PRINT_SINGLE,
+				value->valueunion.val_single); /* if vartype == OV_VT_SINGLE */
 		break;
 	case OV_VT_DOUBLE:
-		result = ov_string_print(valuestr, "%d", value->valueunion.val_double);
+		result = ov_string_print(valuestr, "%" OV_PRINT_DOUBLE,
+				value->valueunion.val_double);
 		break;
 	case OV_VT_STRING:
 		if (value->valueunion.val_string == NULL)
@@ -104,11 +286,15 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING* valuestr,
 				value->valueunion.val_time_span.usecs); /* if vartype == OV_VT_STRING */
 		break;
 	case OV_VT_STATE:
+		result = ov_string_setvalue(valuestr, NOTSUPPORTEDTYPE);
+		break;
 	case OV_VT_STRUCT:
-	case OV_VT_CTYPE:
+		result = ov_string_setvalue(valuestr, NOTSUPPORTEDTYPE);
+		break;
 
-//		vector
 	case OV_VT_BYTE_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
 	case OV_VT_BOOL_VEC:
 	case OV_VT_INT_VEC:
 	case OV_VT_UINT_VEC:
@@ -117,16 +303,92 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING* valuestr,
 	case OV_VT_STRING_VEC:
 	case OV_VT_TIME_VEC:
 	case OV_VT_TIME_SPAN_VEC:
+	case OV_VT_TIME_SERIES:
+	case OV_VT_STATE_VEC:
 
-	case OV_VT_POINTER:
-	case OV_VT_VOID:
-		ov_string_setvalue(valuestr, "CANT");
-		break;
+	case OV_VT_STRUCT_VEC:
+
+	case OV_VT_BOOL_PV:
+	case OV_VT_INT_PV:
+	case OV_VT_UINT_PV:
+	case OV_VT_SINGLE_PV:
+	case OV_VT_DOUBLE_PV:
+	case OV_VT_STRING_PV:
+	case OV_VT_TIME_PV:
+	case OV_VT_TIME_SPAN_PV:
+
+	case OV_VT_BOOL_PV_VEC:
+	case OV_VT_INT_PV_VEC:
+	case OV_VT_UINT_PV_VEC:
+	case OV_VT_SINGLE_PV_VEC:
+	case OV_VT_DOUBLE_PV_VEC:
+	case OV_VT_STRING_PV_VEC:
+	case OV_VT_TIME_PV_VEC:
+	case OV_VT_TIME_SPAN_PV_VEC:
+
+	case OV_VT_ANY:
+
 	default:
-		result = ov_string_setvalue(valuestr, "-");
+		fprintf(stderr, "Unknown value type.\n");
+		exit(EXIT_FAILURE);
 	}
 	return result;
 }
+
+////		vector
+//	case OV_VT_BYTE_VEC:
+//
+//	case OV_VT_BOOL_VEC:
+//		for (OV_UINT i = 0; i < value->valueunion.val_bool_vec.veclen; i++) {
+//			result =
+//					ov_string_print(&varstr, "%s",
+//							(value->valueunion.val_bool_vec.value[i] ?
+//									"TRUE" : "FALSE"));
+//			if (Ov_OK(result)) {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString(varstr));
+//			} else {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
+//			}
+//		}
+//		break;
+//	case OV_VT_INT_VEC:
+//		for (OV_UINT i = 0; i < value->valueunion.val_int_vec.veclen; i++) {
+//			result = ov_string_print(&varstr, "%i",
+//					value->valueunion.val_int_vec.value[i]);
+//			if (Ov_OK(result)) {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString(varstr));
+//			} else {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
+//			}
+//		}
+//		break;
+//	case OV_VT_UINT_VEC:
+//		for (OV_UINT i = 0; i < value->valueunion.val_uint_vec.veclen; i++) {
+//			result = ov_string_print(&varstr, "%u",
+//					value->valueunion.val_uint_vec.value[i]);
+//			if (Ov_OK(result)) {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString(varstr));
+//			} else {
+//				cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
+//			}
+//		}
+//		break;
+//	case OV_VT_SINGLE_VEC:
+//
+//	case OV_VT_DOUBLE_VEC:
+//	case OV_VT_STRING_VEC:
+//	case OV_VT_TIME_VEC:
+//	case OV_VT_TIME_SPAN_VEC:
+//
+//	case OV_VT_POINTER:
+//	case OV_VT_VOID:
+//		ov_string_setvalue(valuestr, "CANT");
+//		break;
+//	default:
+//		result = ov_string_setvalue(valuestr, "-");
+//	}
+//	return result;
+//}
 typedef struct {
 	OV_UINT veclen;
 	OV_VAR_TYPE value[];
@@ -226,8 +488,8 @@ const OV_STRING const KS_TYPE_TO_STR[] = { [KS_VT_VOID] = "VOID", [KS_VT_BOOL
 				] = "STATE", [KS_VT_STRUCT] = "STRUCT",
 
 		[KS_VT_BYTE_VEC] = "BYTE_VEC", [KS_VT_BOOL_VEC] = "BOOL_VEC",
-		[KS_VT_INT_VEC] = "INT_VEC", [KS_VT_UINT_VEC] = "UINT_VEC",
-		[KS_VT_SINGLE_VEC] = "SINGLE_VEC", [KS_VT_DOUBLE_VEC] = "DOUBLE_VEC",
+		[KS_VT_INT_VEC ] = "INT_VEC", [KS_VT_UINT_VEC] = "UINT_VEC",
+		[KS_VT_SINGLE_VEC ] = "SINGLE_VEC", [KS_VT_DOUBLE_VEC] = "DOUBLE_VEC",
 		[KS_VT_STRING_VEC] = "STRING_VEC", [KS_VT_TIME_VEC] = "TIME_VEC",
 		[KS_VT_TIME_SPAN_VEC] = "TIME_SPAN_VEC", [KS_VT_TIME_SERIES
 				] = "TIME_SERIES", [KS_VT_STATE_VEC] = "STATE_VEC",
@@ -257,8 +519,8 @@ const OV_STRING const OV_TYPE_TO_STR[] = { [OV_VT_VOID] = "VOID", [OV_VT_BYTE
 				] = "ISVECTOR",
 
 		[OV_VT_BYTE_VEC] = "BYTE_VEC", [OV_VT_BOOL_VEC] = "BOOL_VEC",
-		[OV_VT_INT_VEC] = "INT_VEC", [OV_VT_UINT_VEC]= "UINT_VEC",
-		[OV_VT_SINGLE_VEC] = "SINGLE_VEC", [OV_VT_DOUBLE_VEC] = "DOUBLE_VEC",
+		[OV_VT_INT_VEC ] = "INT_VEC", [OV_VT_UINT_VEC]= "UINT_VEC",
+		[OV_VT_SINGLE_VEC ] = "SINGLE_VEC", [OV_VT_DOUBLE_VEC] = "DOUBLE_VEC",
 		[OV_VT_STRING_VEC] = "STRING_VEC", [OV_VT_TIME_VEC] = "TIME_VEC",
 		[OV_VT_TIME_SPAN_VEC] = "TIME_SPAN_VEC",
 		[OV_VT_STATE_VEC] = "STATE_VEC", [OV_VT_STRUCT_VEC] = "STRUCT_VEC", };
@@ -268,27 +530,204 @@ enum VARTYPES {
 };
 typedef enum VARTYPES VARTYPES;
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_ovtypeToStr(OV_STRING* typestr,
-		const OV_VAR_TYPE * type) {
-	if (OV_TYPE_TO_STR[*type] == NULL)
-		return OV_ERR_BADPARAM;
-	*typestr = "";
-	OV_RESULT res = ov_string_append(typestr, OV_TYPE_TO_STR[*type]);
-	return res;
+/*	----------------------------------------------------------------------	*/
+/*
+ *	Return value type of getAccessor
+ */
+OV_DLLFNCEXPORT OV_STRING CTree_helper_ovtypeToStr(OV_VAR_TYPE vartype) {
+	switch (vartype) {
+	case OV_VT_VOID:
+		return "VOID";
+	case OV_VT_BYTE:
+		return "BYTE";
+	case OV_VT_BOOL:
+		return "BOOL";
+	case OV_VT_INT:
+		return "INT";
+	case OV_VT_UINT:
+		return "UINT";
+	case OV_VT_SINGLE:
+		return "SINGLE";
+	case OV_VT_DOUBLE:
+		return "DOUBLE";
+	case OV_VT_STRING:
+		return "STRING";
+	case OV_VT_TIME:
+		return "TIME";
+	case OV_VT_TIME_SPAN:
+		return "TIME_SPAN";
+	case OV_VT_STATE:
+		return "OV_STATE";
+	case OV_VT_STRUCT:
+		return "OV_STRUCT";
+
+	case OV_VT_BYTE_VEC:
+		return "BYTE_VEC";
+	case OV_VT_BOOL_VEC:
+		return "BOOL_VEC";
+	case OV_VT_INT_VEC:
+		return "INT_VEC";
+	case OV_VT_UINT_VEC:
+		return "UINT_VEC";
+	case OV_VT_SINGLE_VEC:
+		return "SINGLE_VEC";
+	case OV_VT_DOUBLE_VEC:
+		return "DOUBLE_VEC";
+	case OV_VT_STRING_VEC:
+		return "STRING_VEC";
+	case OV_VT_TIME_VEC:
+		return "TIME_VEC";
+	case OV_VT_TIME_SPAN_VEC:
+		return "TIME_SPAN_VEC";
+	case OV_VT_TIME_SERIES:
+		return "TIME_SERIES";
+	case OV_VT_STATE_VEC:
+		return "STATE_VEC";
+
+	case OV_VT_STRUCT_VEC:
+		return "STRUCT_VEC";
+
+	case OV_VT_BOOL_PV:
+		return "BOOL_PV";
+	case OV_VT_INT_PV:
+		return "INT_PV";
+	case OV_VT_UINT_PV:
+		return "UINT_PV*";
+	case OV_VT_SINGLE_PV:
+		return "SINGLE_PV";
+	case OV_VT_DOUBLE_PV:
+		return "DOUBLE_PV";
+	case OV_VT_STRING_PV:
+		return "STRING_PV";
+	case OV_VT_TIME_PV:
+		return "TIME_PV";
+	case OV_VT_TIME_SPAN_PV:
+		return "TIME_SPAN_PV";
+
+	case OV_VT_BOOL_PV_VEC:
+		return "BOOL_PV_VEC";
+	case OV_VT_INT_PV_VEC:
+		return "INT_PV_VEC";
+	case OV_VT_UINT_PV_VEC:
+		return "UINT_PV_VEC";
+	case OV_VT_SINGLE_PV_VEC:
+		return "SINGLE_PV_VEC";
+	case OV_VT_DOUBLE_PV_VEC:
+		return "DOUBLE_PV_VEC";
+	case OV_VT_STRING_PV_VEC:
+		return "STRING_PV_VEC";
+	case OV_VT_TIME_PV_VEC:
+		return "TIME_PV_VEC";
+	case OV_VT_TIME_SPAN_PV_VEC:
+		return "TIME_SPAN_PV_VEC";
+
+	case OV_VT_ANY:
+		return "ANY";
+	default:
+		ov_logfile_error("Unknown value type. %u\n", vartype);
+		return NULL;
+		exit(EXIT_FAILURE);
+	}
+	return NULL;
 }
 
-//#define ForEachType(type)	for(int i=0; i<OV_VARTYPE_LIST.veclen; i++, type=OV_VARTYPE_LIST.value[i])
-
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE * type,
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE * vartype,
 		const OV_STRING typestr) {
-	for (size_t i = 0; i < OV_VAR_TYPE_LIST.veclen; i++) {
-		if (!ov_string_compare(typestr,
-				OV_TYPE_TO_STR[OV_VAR_TYPE_LIST.value[i]])) {
-			*type = OV_VAR_TYPE_LIST.value[i];
-			return OV_ERR_OK;
-		}
+	if (!typestr || !vartype) {
+		return OV_ERR_BADPARAM;
 	}
-	return OV_ERR_BADPARAM;
+	if (ov_string_compare(typestr, "VOID") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_VOID;
+	else if (ov_string_compare(typestr, "BYTE") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BYTE;
+	else if (ov_string_compare(typestr, "BOOL") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BOOL;
+	else if (ov_string_compare(typestr, "INT") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_INT;
+	else if (ov_string_compare(typestr, "UINT") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_UINT;
+	else if (ov_string_compare(typestr, "SINGLE") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_SINGLE;
+	else if (ov_string_compare(typestr, "DOUBLE") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_DOUBLE;
+	else if (ov_string_compare(typestr, "STRING") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRING;
+	else if (ov_string_compare(typestr, "TIME") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME;
+	else if (ov_string_compare(typestr, "TIME_SPAN") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_SPAN;
+	else if (ov_string_compare(typestr, "OV_STATE") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STATE;
+	else if (ov_string_compare(typestr, "OV_STRUCT") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRUCT;
+
+	else if (ov_string_compare(typestr, "BYTE_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BYTE_VEC;
+	else if (ov_string_compare(typestr, "BOOL_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BOOL_VEC;
+	else if (ov_string_compare(typestr, "INT_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_INT_VEC;
+	else if (ov_string_compare(typestr, "UINT_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_UINT_VEC;
+	else if (ov_string_compare(typestr, "SINGLE_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_SINGLE_VEC;
+	else if (ov_string_compare(typestr, "DOUBLE_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_DOUBLE_VEC;
+	else if (ov_string_compare(typestr, "STRING_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRING_VEC;
+	else if (ov_string_compare(typestr, "TIME_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_VEC;
+	else if (ov_string_compare(typestr, "TIME_SPAN_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_SPAN_VEC;
+	else if (ov_string_compare(typestr, "TIME_SERIES") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_SERIES;
+	else if (ov_string_compare(typestr, "STATE_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STATE_VEC;
+
+	else if (ov_string_compare(typestr, "STRUCT_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRUCT_VEC;
+
+	else if (ov_string_compare(typestr, "BOOL_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BOOL_PV;
+	else if (ov_string_compare(typestr, "INT_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_INT_PV;
+	else if (ov_string_compare(typestr, "UINT_PV*") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_UINT_PV;
+	else if (ov_string_compare(typestr, "SINGLE_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_SINGLE_PV;
+	else if (ov_string_compare(typestr, "DOUBLE_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_DOUBLE_PV;
+	else if (ov_string_compare(typestr, "STRING_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRING_PV;
+	else if (ov_string_compare(typestr, "TIME_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_PV;
+	else if (ov_string_compare(typestr, "TIME_SPAN_PV") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_SPAN_PV;
+
+	else if (ov_string_compare(typestr, "BOOL_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_BOOL_PV_VEC;
+	else if (ov_string_compare(typestr, "INT_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_INT_PV_VEC;
+	else if (ov_string_compare(typestr, "UINT_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_UINT_PV_VEC;
+	else if (ov_string_compare(typestr, "SINGLE_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_SINGLE_PV_VEC;
+	else if (ov_string_compare(typestr, "DOUBLE_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_DOUBLE_PV_VEC;
+	else if (ov_string_compare(typestr, "STRING_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_STRING_PV_VEC;
+	else if (ov_string_compare(typestr, "TIME_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_PV_VEC;
+	else if (ov_string_compare(typestr, "TIME_SPAN_PV_VEC") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_TIME_SPAN_PV_VEC;
+
+	else if (ov_string_compare(typestr, "ANY") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_ANY;
+	else {
+		vartype = OV_VT_VOID;
+		return OV_ERR_BADPARAM;
+	}
+	return OV_ERR_OK;
 }
 
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToKSType(KS_VAR_TYPE * type,
@@ -312,33 +751,37 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_kstypeToStr(OV_STRING* typestr,
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE* value,
 		const OV_STRING valuestr) {
 	OV_RESULT result = OV_ERR_OK;
-	//	check validity of input
+//	check validity of input
 	if (value == NULL || valuestr == NULL) {
 		result = OV_ERR_BADPARAM;
 		return result;
 	}
 
 	OV_UINT len;
+	char *endPtr = NULL;
 	OV_STRING* tmp = NULL;
-	//	check
+//	check
 	switch (value->vartype) {
-	case OV_VT_BOOL:
-		value->valueunion.val_bool = !ov_string_compare("TRUE", valuestr);
+	case OV_VT_VOID:
 		break;
 	case OV_VT_BYTE:
-//			result = ov_string_print(valuestr, "%s", value->valueunion.val_byte);
+		value->valueunion.val_byte = strtol(valuestr, &endPtr, 0);
+		break;
+	case OV_VT_BOOL:
+		value->valueunion.val_bool = strtol(valuestr, &endPtr, 0);
+//	value->valueunion.val_bool = !ov_string_compare("TRUE", valuestr);
 		break;
 	case OV_VT_INT:
-		value->valueunion.val_int = atoi(valuestr);
+		value->valueunion.val_int = strtol(valuestr, &endPtr, 0);
 		break;
 	case OV_VT_UINT:
-		value->valueunion.val_uint = atoi(valuestr);
+		value->valueunion.val_uint = strtoul(valuestr, &endPtr, 0);
 		break;
 	case OV_VT_SINGLE:
-		value->valueunion.val_uint = atof(valuestr);
+		value->valueunion.val_single = strtod(valuestr, &endPtr);
 		break;
 	case OV_VT_DOUBLE:
-		value->valueunion.val_uint = atof(valuestr);
+		value->valueunion.val_double = strtod(valuestr, &endPtr);
 		break;
 	case OV_VT_STRING:
 		result = ov_string_setvalue(&value->valueunion.val_string, valuestr);
@@ -346,12 +789,14 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE* value,
 	case OV_VT_TIME:
 	case OV_VT_TIME_SPAN:
 		tmp = ov_string_split(valuestr, ".", &len);
-		value->valueunion.val_time.secs = atoi(tmp[0]);
-		value->valueunion.val_time.usecs = atoi(tmp[1]);
+		value->valueunion.val_time.secs = strtol(tmp[0], &endPtr, 0);
+		value->valueunion.val_time.usecs = strtol(tmp[1], &endPtr, 0);
 		break;
 	case OV_VT_STATE:
 	case OV_VT_STRUCT:
 	case OV_VT_CTYPE:
+		return OV_ERR_NOTIMPLEMENTED;
+		break;
 
 		//		vector
 	case OV_VT_BYTE_VEC:
@@ -363,11 +808,35 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE* value,
 	case OV_VT_STRING_VEC:
 	case OV_VT_TIME_VEC:
 	case OV_VT_TIME_SPAN_VEC:
+	case OV_VT_STRUCT_VEC:
+		result = OV_ERR_NOTIMPLEMENTED;
+		break;
+
+	case OV_VT_BOOL_PV:
+	case OV_VT_INT_PV:
+	case OV_VT_UINT_PV:
+	case OV_VT_SINGLE_PV:
+	case OV_VT_DOUBLE_PV:
+	case OV_VT_STRING_PV:
+	case OV_VT_TIME_PV:
+	case OV_VT_TIME_SPAN_PV:
+
+	case OV_VT_BOOL_PV_VEC:
+	case OV_VT_INT_PV_VEC:
+	case OV_VT_UINT_PV_VEC:
+	case OV_VT_SINGLE_PV_VEC:
+	case OV_VT_DOUBLE_PV_VEC:
+	case OV_VT_STRING_PV_VEC:
+	case OV_VT_TIME_PV_VEC:
+	case OV_VT_TIME_SPAN_PV_VEC:
+
+	case OV_VT_ANY:
 
 	case OV_VT_POINTER:
-	case OV_VT_VOID:
+		return OV_ERR_NOTIMPLEMENTED;
+
 	default:
-		return result; //TODO: revise it
+		return OV_ERR_BADPARAM; //TODO: revise it
 	}
 	return result;
 }
@@ -392,22 +861,19 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE* value,
 //
 //KS_VT_ANY } };
 
-OV_STRING ACCESS_TO_STR[] = {
-[OV_AC_NONE] = "OV_AC_NONE",
-[OV_AC_READ] = "OV_AC_READ",
-[OV_AC_WRITE] = "OV_AC_WRITE",
-[OV_AC_READWRITE] = "OV_AC_READWRITE",
+OV_STRING ACCESS_TO_STR[] = { [OV_AC_NONE] = "OV_AC_NONE", [OV_AC_READ
+		] = "OV_AC_READ", [OV_AC_WRITE] = "OV_AC_WRITE", [OV_AC_READWRITE
+		] = "OV_AC_READWRITE",
 //[OV_AC_DELETEABLE] = "OV_AC_DELETABLE",
 //[OV_AC_RENAMEABLE] = "OV_AC_RENAMEABLE",
 //[OV_AC_LINKABLE] = "OV_AC_LINKABLE",
 //[OV_AC_UNLINKABLE] = "OV_AC_UNLINKABLE",
 //[OV_AC_INSTANTIABLE] = "OV_AC_INSTANTIABLE",
 //[OV_AC_PART] = "OV_AC_PART",
-};
+		};
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(
-		OV_STRING* accessstr, const OV_ACCESS * access
-	) {
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(OV_STRING* accessstr,
+		const OV_ACCESS * access) {
 	ov_string_setvalue(accessstr, "");
 	if (*access & KS_AC_NONE)
 		ov_string_append(accessstr, "NONE ");
@@ -428,7 +894,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(
 	if (*access & KS_AC_PART)
 		ov_string_append(accessstr, "PART ");
 
-    return OV_ERR_OK;
+	return OV_ERR_OK;
 }
 
 //http

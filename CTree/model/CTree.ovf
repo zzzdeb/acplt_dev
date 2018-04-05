@@ -16,8 +16,8 @@
 		OV_STRING* valuestr, const OV_VAR_VALUE* value   
 	);
 	
-	typedef OV_DLLFNCEXPORT OV_RESULT OVTYPE_TO_STRING(
-		OV_STRING* typestr, const OV_VAR_TYPE * type
+	typedef OV_DLLFNCEXPORT OV_STRING OVTYPE_TO_STRING(
+		OV_VAR_TYPE vartype
 	);
 	
 	typedef OV_DLLFNCEXPORT OV_RESULT KSTYPE_TO_STRING(

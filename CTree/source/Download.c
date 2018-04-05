@@ -607,7 +607,9 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 			if (Ov_OK(res)) {
 				cJSON_AddItemToArray(jschild, cJSON_CreateString(typestr));
 			} else {
+				//TODO: Erase it
 				cJSON_AddItemToArray(jschild, cJSON_CreateString("error"));
+				break;
 			}
 
 			/*
@@ -621,7 +623,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 			else {
 				ov_logfile_error("%s: %s", ov_result_getresulttext(res),
 						var_path);
-				res = OV_ERR_OK; //TODO
+				res = OV_ERR_OK; //TODO erase it;
 			}
 			break;
 
