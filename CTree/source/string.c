@@ -24,7 +24,7 @@
 
 OV_DLLFNCEXPORT OV_STRING strclasp(OV_STRING word, OV_STRING bracket1, OV_STRING bracket2){
 	OV_RESULT res;
-	OV_STRING sum;
+	OV_STRING sum=NULL;
 	if(!word)
 		return NULL;
 
@@ -56,7 +56,7 @@ OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV
 	/*
 	*	local variables
 	*/
-	OV_STRING res;
+	OV_STRING res=NULL;
 	OV_UINT slen = ov_string_getlength(str2);
 	OV_UINT nlen, nbeg, nend;
 	OV_UINT tempMaxStringLength = 0;
@@ -76,7 +76,7 @@ OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV
 	nend = end<0 ? slen+end : end;
 
 	if (nbeg==nend){
-		*str1="";
+		ov_string_setvalue(str1, NULL);
 		return OV_ERR_OK;
 	}
 
