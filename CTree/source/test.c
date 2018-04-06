@@ -50,7 +50,7 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varIntVec.value[1] = 1;
 	pinst->v_varIntVec.value[2] = -1;
 	pinst->v_varIntVec.value[3] = OV_VL_MAXINT;
-	pinst->v_varIntVec.value[4] = OV_VL_MININT;
+	pinst->v_varIntVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varUintVec, size, UINT);
 	pinst->v_varUintVec.value[0] = 0;
@@ -64,14 +64,14 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varSingleVec.value[1] = -1;
 	pinst->v_varSingleVec.value[2] = -1.1;
 	pinst->v_varSingleVec.value[3] = 10;
-	pinst->v_varSingleVec.value[4] = OV_VL_MININT;
+	pinst->v_varSingleVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varDoubleVec, size, DOUBLE);
 	pinst->v_varDoubleVec.value[0] = 0;
 	pinst->v_varDoubleVec.value[1] = -1;
 	pinst->v_varDoubleVec.value[2] = -1.1;
 	pinst->v_varDoubleVec.value[3] = 10;
-	pinst->v_varDoubleVec.value[4] = OV_VL_MININT;
+	pinst->v_varDoubleVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varStringVec, size, STRING);
 //	pinst->v_varDoubleVec.value[0] = NULL;
