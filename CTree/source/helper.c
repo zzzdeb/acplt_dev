@@ -36,7 +36,7 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(
 	//		len += strlen(vector->value[i]);
 	//	res = (OV_STRING) ov_memstack_alloc(len + 1);
 	for (int i = 0; i < vector->veclen; i++) {
-		len += strlen(vector->value[i]);
+		len += ov_string_getlength(vector->value[i]);
 		ov_string_append(&res, vector->value[i]);
 	}
 	return res;
@@ -50,8 +50,7 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
 
 	OV_STRING factory = NULL;  
 	ov_memstack_lock();
-	OV_INSTPTR_ov_object pparent = Ov_GetParent(ov_instantiation, pobj);
-	OV_INSTPTR_ov_object pparobj = Ov_PtrUpCast(ov_object, pparent);
+	OV_INSTPTR_ov_object pparobj = Ov_PtrUpCast(ov_object, Ov_GetParent(ov_instantiation, pobj));
 	OV_STRING tmp = ov_path_getcanonicalpath(pparobj, VERSION_FOR_CTREE);
 	ov_memstack_unlock();
 	ov_string_setvalue(&factory, tmp);
