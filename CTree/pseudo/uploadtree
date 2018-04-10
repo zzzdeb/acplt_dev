@@ -1,4 +1,4 @@
-def uploadtree(cjson parent, ov_object_ptr pparent)
+def downloadtree(cjson parent, ov_object_ptr pparent)
     
     objp pobj = null
 
@@ -7,4 +7,4 @@ def uploadtree(cjson parent, ov_object_ptr pparent)
         ident = child.name
         createobj(pparent, pobj, factory, ident)
 
-        uploadtree(child, pobj)
+        downloadtree(child, pobj)

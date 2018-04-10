@@ -2,7 +2,7 @@
  *
  *   FILE
  *   ----
- *   Upload.c
+ *   Download.c
  *
  *   History
  *   -------
@@ -88,7 +88,7 @@ OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
 	return NULL;
 }
 
-OV_RESULT Upload_log(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type,
+OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
 		OV_RESULT result, const OV_STRING format, ...) {
 	char msg[1024];
 
@@ -333,12 +333,12 @@ OV_ANY get_value_from_str(cJSON* jsvar) {
 	return value;
 }
 
-OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
+OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst, cJSON* jsvariables,
 		OV_INSTPTR_ov_object pobj) {
 	/*
 	 *	parameter and result objects
 	 */
-//	OV_INSTPTR_ksapi_setVar papiSet = &(pupload->pinst->p_apiSet);
+//	OV_INSTPTR_ksapi_setVar papiSet = &(pdownload->pinst->p_apiSet);
 	OV_RESULT res = OV_ERR_OK;
 
 	cJSON* jsvariable = NULL;
@@ -367,7 +367,7 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 	if (!addrp) {
 		ov_memstack_unlock();
 		res = OV_ERR_TARGETGENERIC;
-		Upload_log(pinst, res, OV_MT_ERROR, "%s", ": internal memory problem");
+		Download_log(pinst, res, OV_MT_ERROR, "%s", ": internal memory problem");
 		return res;
 	}
 
@@ -417,7 +417,7 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Upload pinst, cJSON* jsvariables,
 //		ov_string_setvalue(&resstring, ov_result_getresulttext(result.results_val[i]));
 		if ((result.results_val[i] != OV_ERR_OK)
 				&& (result.results_val[i] != OV_ERR_NOACCESS))
-			Upload_log(pinst, OV_MT_WARNING, result.results_val[i],
+			Download_log(pinst, OV_MT_WARNING, result.results_val[i],
 					"%s returns OV_RESULT: %i",
 					params.items_val[i].path_and_name, result.results_val[i]);
 	}
@@ -431,7 +431,7 @@ typedef enum {
 	CTREE_CHILDREN, CTREE_PARTS
 } TYPE_OF_MEMBER;
 
-OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
+OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 		OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type) {
 
 	OV_RESULT res = OV_ERR_OK;
@@ -480,7 +480,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 			ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
 			pclass = inverse_neutralpath(factory);
 			if (pclass == NULL) {
-				Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
+				Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
 						"There is no class : %s", factory);
 				continue;
 			}
@@ -502,14 +502,14 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 					OV_ELEMENT pelobj = { .elemtype = OV_ET_OBJECT };
 					ov_element_searchchild(&pelparent, &pelobj, identifier);
 					pobj = pelobj.pobj;
-					Upload_log(pinst, OV_MT_WARNING, res, "%s already exists",
+					Download_log(pinst, OV_MT_WARNING, res, "%s already exists",
 							identifier);
 				} else {
-					return Upload_log(pinst, res, OV_MT_ERROR,
+					return Download_log(pinst, res, OV_MT_ERROR,
 							"Could not create %s in %s", identifier, parentpath);
 				}
 			} else {
-//			Upload_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
+//			Download_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
 //					identifier);
 				ov_logfile_info("created %s/%s", parentpath, identifier);
 			}
@@ -528,7 +528,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 				 */
 				ov_memstack_unlock();
 				if (pobj == NULL) {
-					Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+					Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 							"couldnt find part %s.%s", parentpath, identifier);
 					return OV_ERR_BADPARAM;
 				}
@@ -538,7 +538,7 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 			pobj = element.pobj;
 			break;
 		default:
-			Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "bad CTREE type");
+			Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "bad CTREE type");
 			return OV_ERR_BADPARAM;
 		}
 
@@ -549,34 +549,34 @@ OV_RESULT upload_tree(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
 			res = set_variable_values(pinst, jsvariables, pobj);
 
 			if (Ov_OK(res))
-				//			Upload_log_exit(pinst, OV_MT_INFO, res, "variables set.");
+				//			Download_log_exit(pinst, OV_MT_INFO, res, "variables set.");
 				ov_logfile_info("variables set.");
 		}
 
-		res = upload_children(pinst, cJSON_GetObjectItem(jschild, CHILDRENNAME),
+		res = download_children(pinst, cJSON_GetObjectItem(jschild, CHILDRENNAME),
 				Ov_StaticPtrCast(ov_domain, pobj));
-		res = upload_parts(pinst, cJSON_GetObjectItem(jschild, PARTSNAME),
+		res = download_parts(pinst, cJSON_GetObjectItem(jschild, PARTSNAME),
 				Ov_StaticPtrCast(ov_domain, pobj));
 
 		if (Ov_Fail(res)) {
 			//TODO: give more info
-			return Upload_log(pinst, OV_MT_ERROR, res,
+			return Download_log(pinst, OV_MT_ERROR, res,
 					"Could not load tree. error at %s", parentpath);
 		}
 	}
 	return res;
 }
 
-OV_RESULT upload_children(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
+OV_RESULT download_children(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 		OV_INSTPTR_ov_domain pparent) {
-	return upload_tree(pinst, jsparent, pparent, CTREE_CHILDREN);
+	return download_tree(pinst, jsparent, pparent, CTREE_CHILDREN);
 }
-OV_RESULT upload_parts(OV_INSTPTR_CTree_Upload pinst, cJSON* jsparent,
+OV_RESULT download_parts(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 		OV_INSTPTR_ov_domain pparent) {
-	return upload_tree(pinst, jsparent, pparent, CTREE_PARTS);
+	return download_tree(pinst, jsparent, pparent, CTREE_PARTS);
 }
 
-OV_RESULT upload_libraries(OV_INSTPTR_CTree_Upload pinst, const cJSON* jslibs) {
+OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst, const cJSON* jslibs) {
 	cJSON* current = NULL;
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
@@ -598,14 +598,14 @@ OV_RESULT upload_libraries(OV_INSTPTR_CTree_Upload pinst, const cJSON* jslibs) {
 			ov_logfile_info("Library %s exists", libname);
 			break;
 		default:
-			return Upload_log(pinst, OV_MT_ERROR, res,
+			return Download_log(pinst, OV_MT_ERROR, res,
 					"Could not load library %s", libname);
 		}
 	}
 	return res;
 }
 
-OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
+OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 		OV_STRING objpath) {
 	OV_RESULT res = OV_ERR_OK;
 	cJSON* jslinks = NULL;
@@ -676,7 +676,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 					VERSION_FOR_CTREE);
 				}
 				if (pparent == NULL) {
-					Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+					Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 							"%s does not exist", link_parent_path);
 					continue;
 					//			return OV_ERR_BADPARAM;
@@ -697,7 +697,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 						VERSION_FOR_CTREE);
 
 					if (pchild == NULL) {
-						Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+						Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 								"%s does not exist", path);
 						continue;
 						//			return OV_ERR_BADPARAM;
@@ -720,7 +720,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 									passoc->v_identifier);
 							res = OV_ERR_OK;
 						} else {
-							Upload_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+							Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 									"%s can not be linked with %s through %s",
 									pparent->v_identifier, pchild->v_identifier,
 									passoc->v_identifier);
@@ -745,7 +745,7 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 	return res;
 }
 
-OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
+OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	/*
 	 * Init
 	 */
@@ -764,7 +764,7 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 		if (error_ptr != NULL) {
 			//			print_log(pinst, ov_logfile_error, "bad js file");
 		}
-		Upload_log(pinst, OV_ERR_BADPARAM, OV_MT_ERROR, "Bad json file");
+		Download_log(pinst, OV_ERR_BADPARAM, OV_MT_ERROR, "Bad json file");
 		return OV_ERR_BADPARAM;
 
 	}
@@ -790,13 +790,13 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	}
 
 //  2.2 load
-	res = upload_libraries(pinst, jslibs);
+	res = download_libraries(pinst, jslibs);
 //  2.3 successfully?
 	if (Ov_Fail(res)) {
 		if (res == OV_ERR_ALREADYEXISTS) {
 			res = OV_ERR_OK;
 		} else {
-			Upload_log(pinst, OV_MT_ERROR, res,
+			Download_log(pinst, OV_MT_ERROR, res,
 					"Could not load dependent libraries");
 			return res;
 		}
@@ -807,7 +807,7 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	jstree = cJSON_GetObjectItem(jsbase, TREENAME);
 	jscurrent = cJSON_GetObjectItem(jstree->child, FACTORYNAME);
 	if (jscurrent == NULL) {
-		Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
+		Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
 				"malformed root factory");
 		return OV_ERR_BADPARAM;
 	}
@@ -829,16 +829,16 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 
 	if (proot != NULL) {
 //		if (proot_class != Ov_GetParent(ov_instantiation, proot)) {
-//			Upload_log(pinst, OV_MT_ERROR, "no object with path %s", root_path);
+//			Download_log(pinst, OV_MT_ERROR, "no object with path %s", root_path);
 //			return OV_ERR_ALREADYEXISTS;
 //		}
 	} else {
-		Upload_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s", root_path);
+		Download_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s", root_path);
 		return OV_ERR_GENERIC;
 	}
 	*(tmp) = '/';
 
-	res = upload_children(pinst, jstree, Ov_StaticPtrCast(ov_domain, proot));
+	res = download_children(pinst, jstree, Ov_StaticPtrCast(ov_domain, proot));
 
 //	4. Link
 	res = link_objects(pinst, jstree->child, root_path);
@@ -846,12 +846,12 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	return res;
 }
 
-OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
+OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		OV_TIME *pltc) {
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
+	OV_INSTPTR_CTree_Download pinst = Ov_StaticPtrCast(CTree_Download, pfb);
 
 	/*
 	 * Init
@@ -859,19 +859,19 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	pinst->v_ErrorMsg = NULL;
 	pinst->v_result = OV_ERR_OK;
 
-	OV_RESULT res = CTree_Upload_execute(pinst);
+	OV_RESULT res = CTree_Download_execute(pinst);
 	switch (res) {
 	case OV_ERR_OK:
 		pinst->v_result = res;
-		ov_logfile_info("Upload done.");
+		ov_logfile_info("Download done.");
 		break;
 	case OV_ERR_BADPARAM:
 		pinst->v_result = res;
-		ov_logfile_error("Upload failed.");
+		ov_logfile_error("Download failed.");
 		break;
 	default:
 		pinst->v_result = OV_ERR_GENERIC;
-		ov_logfile_error("Upload failed. : %s", ov_result_getresulttext(res));
+		ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
 	}
 	cJSON_free(pinst->v_cache.jsbase);
 	pinst->v_path = NULL;

@@ -357,7 +357,7 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 	if(len>2)
 		path= splited[2];
 	else
-		path = "/data/CTree/Upload";
+		path = "/data/CTree/Download";
 
 	if (pinst->v_tree) {
 		items[0].path_and_name = "";
@@ -402,7 +402,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pfb);
 	OV_RESULT result = { 0 };
 
-	CTree_Download_typemethod(pfb, pltc);
+	CTree_Upload_typemethod(pfb, pltc);
 	if (Ov_Fail(pinst->v_result)) {
 		ov_logfile_error("Transport failed.");
 		return;

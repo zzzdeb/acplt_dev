@@ -15,7 +15,7 @@ LIBRARY CTree
 
 
 	/**
-		Documentation of Upload.
+		Documentation of Common.
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
@@ -30,12 +30,12 @@ LIBRARY CTree
 		END_VARIABLES;
 	END_CLASS;
 	
-	CLASS Upload : CLASS CTree/Common
+	CLASS Download : CLASS CTree/Common
 		IS_INSTANTIABLE;
 		VARIABLES
-			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
-			path: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
-			cache: C_TYPE <CTreeUploadCache> COMMENT="Cache of Object";
+			json: STRING FLAGS="i" COMMENT="Tree to download as json format";
+			path: STRING FLAGS="i" COMMENT="where to download" INITIALVALUE="/TechUnits";
+			cache: C_TYPE <CTreeDownloadCache> COMMENT="Cache of Object";
 		END_VARIABLES;
 		OPERATIONS
 			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
@@ -47,29 +47,29 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Download : CLASS CTree/Common
+	CLASS Upload : CLASS CTree/Common
 		IS_INSTANTIABLE;
 		VARIABLES
 			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
-			path: STRING FLAGS="i" COMMENT="path of object to download as json" INITIALVALUE="/TechUnits";
+			path: STRING FLAGS="i" COMMENT="path of object to upload as json" INITIALVALUE="/TechUnits";
 			
 			tree: STRING FLAGS="o" COMMENT="tree as json";
 			libs: STRING FLAGS="o" COMMENT="libs used in tree";
 			
-			cache:	C_TYPE <CTreeDownloadCache> COMMENT="Cache";
+			cache:	C_TYPE <CTreeUploadCache> COMMENT="Cache";
 		END_VARIABLES;
 		OPERATIONS
 			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
 	
-	CLASS	Transport					:	CLASS	CTree/Download
+	CLASS	Transport					:	CLASS	CTree/Upload
 		IS_INSTANTIABLE;
-		COMMENT	=	"Transport of tree from one server to another with Donwload and Upload";
+		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
 		VARIABLES
 			/* Input *************************************************/
 			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
-			targetPath:	STRING FLAGS="i" COMMENT="variable path of upload object." INITIALVALUE="";
+			targetPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
 			
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"

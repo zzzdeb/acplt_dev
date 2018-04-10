@@ -2,7 +2,7 @@
  *
  *   FILE
  *   ----
- *   Download.c
+ *   Upload.c
  *
  *   History
  *   -------
@@ -43,7 +43,7 @@
 
 #define VERSION_FOR_CTREE 	2
 
-OV_RESULT crawl_tree(OV_INSTPTR_CTree_Download pinst,
+OV_RESULT crawl_tree(OV_INSTPTR_CTree_Upload pinst,
 		const OV_INSTPTR_ov_domain pobj, cJSON* jsobj);
 
 //OV_RESULT get_variables(const OV_INSTPTR_ov_object pobj, cJSON* jsvars,
@@ -97,7 +97,7 @@ OV_STRING pathAbsToRel(const OV_STRING pre, const OV_STRING path) {
 	return resstr;
 }
 
-OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
+OV_RESULT Upload_log(OV_INSTPTR_CTree_Upload pinst, OV_MSG_TYPE msg_type,
 		OV_RESULT result, const OV_STRING format, ...) {
 	va_list args;
 
@@ -121,7 +121,7 @@ OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
 	return result;
 }
 
-OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
+OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	OV_RESULT res = OV_ERR_OK;
 	/*
 	 * Initial
@@ -138,7 +138,7 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 
 	//!!!check if root is accessable
 	if (pinst->v_cache.proot == NULL) {
-		Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
+		Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
 				"%s could not be found", pinst->v_path);
 		return res;
 	}
@@ -150,7 +150,7 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 			pinst->v_cache.proot->v_identifier);
 	res = crawl_tree(pinst, pinst->v_cache.proot, jsroot);
 	if (Ov_Fail(res)) {
-		Download_log(pinst, OV_MT_ERROR, res, "Error at crawling tree.");
+		Upload_log(pinst, OV_MT_ERROR, res, "Error at crawling tree.");
 		return res;
 	}
 
@@ -168,7 +168,7 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	/*
 	 res = crawl_links(pinst, &elroot);
 	 if (Ov_Fail(res)) {
-	 Download_log(pinst, OV_MT_ERROR, res, "Couldnt crawl links.");
+	 Upload_log(pinst, OV_MT_ERROR, res, "Couldnt crawl links.");
 	 return res;
 	 }
 	 */
@@ -176,39 +176,39 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	res = ov_string_setvalue(&pinst->v_tree,
 			cJSON_Print(pinst->v_cache.jsbase));
 	if (Ov_Fail(res)) {
-		Download_log(pinst, OV_MT_ERROR, res, "Couldnt set json to v_tree.");
+		Upload_log(pinst, OV_MT_ERROR, res, "Couldnt set json to v_tree.");
 		return res;
 	}
 
 	res = ov_string_setvalue(&pinst->v_libs,
 			cJSON_Print(pinst->v_cache.jslibs));
 	if (Ov_Fail(res)) {
-		Download_log(pinst, OV_MT_ERROR, res, "Couldnt set json to v_libs.");
+		Upload_log(pinst, OV_MT_ERROR, res, "Couldnt set json to v_libs.");
 		return res;
 	}
 	return res;
 }
 
-OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
+OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		OV_TIME *pltc) {
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_CTree_Download pinst = Ov_StaticPtrCast(CTree_Download, pfb);
+	OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
 
-	OV_RESULT res = CTree_Download_execute(pinst);
+	OV_RESULT res = CTree_Upload_execute(pinst);
 	switch (res) {
 	case OV_ERR_OK:
 		pinst->v_result = res;
-		ov_logfile_info("Download done.");
+		ov_logfile_info("Upload done.");
 		break;
 	case OV_ERR_BADPARAM:
 		pinst->v_result = res;
-		ov_logfile_error("Download failed.");
+		ov_logfile_error("Upload failed.");
 		break;
 	default:
 		pinst->v_result = OV_ERR_GENERIC;
-		ov_logfile_error("Download failed.");
+		ov_logfile_error("Upload failed.");
 	}
 	cJSON_free(pinst->v_cache.jsbase);
 	return;
@@ -394,7 +394,7 @@ OV_RESULT ovvalueToJSON(cJSON** pjsvalue, const OV_VAR_VALUE * value) {
 	return result;
 }
 
-OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
+OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
 		const OV_STRING object_path) {
 
 	OV_GETEP_PAR params;
@@ -467,7 +467,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 	if (Ov_Fail(result.result)) {
 		//getEP is only valid for one target, so this variable hold all possible errors, not only NOACCESS like the other services
 		ov_memstack_unlock();
-//		return Download_print_log_exit(pinst, result.result);
+//		return Upload_print_log_exit(pinst, result.result);
 		return result.result;
 	}
 
@@ -797,7 +797,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
  return res;
  }*/
 
-OV_RESULT crawl_tree(OV_INSTPTR_CTree_Download pinst,
+OV_RESULT crawl_tree(OV_INSTPTR_CTree_Upload pinst,
 		const OV_INSTPTR_ov_domain pobj, cJSON* jsobj) {
 	cJSON* jslibs = pinst->v_cache.jslibs;
 	OV_RESULT res = 0;
