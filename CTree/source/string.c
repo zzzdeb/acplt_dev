@@ -22,41 +22,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-OV_DLLFNCEXPORT OV_STRING strclasp(OV_STRING word, OV_STRING bracket1, OV_STRING bracket2){
-	OV_RESULT res;
-	OV_STRING sum;
-	if(!word)
-		return NULL;
-
-	if (bracket1){
-		res = ov_string_setvalue(&sum, bracket1);
-		if(res){
-			return NULL;
-		}
-	}
-	res = ov_string_append(&sum, word);
-	if(res){
-			return NULL;
-	}
-
-	if (bracket2){
-		res = ov_string_append(&sum, bracket2);
-		if(res){
-				return NULL;
-		}
-	}
-    return sum;
-}
-
-OV_DLLFNCEXPORT OV_STRING strquot(OV_STRING word){
-	return strclasp(word, "\"", "\"");
-}
-
 OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV_INT end){
 	/*
 	*	local variables
 	*/
-	OV_STRING res;
+	OV_STRING res=NULL;
 	OV_UINT slen = ov_string_getlength(str2);
 	OV_UINT nlen, nbeg, nend;
 	OV_UINT tempMaxStringLength = 0;
@@ -76,7 +46,7 @@ OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV
 	nend = end<0 ? slen+end : end;
 
 	if (nbeg==nend){
-		*str1="";
+		ov_string_setvalue(str1, NULL);
 		return OV_ERR_OK;
 	}
 
@@ -116,38 +86,4 @@ OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV
 
 
 
-//OV_STRING* stringvec_append(OV_STRING* vec, OV_UINT* size, OV_STRING element){
-//	OV_STRING  pStr = NULL;
-//	OV_STRING* ret = NULL;
-//	OV_UINT elLen = ov_string_getlength(element);
-//	OV_UINT strLen = 0;
-//	OV_UINT nsize = 0;
-//
-//	if(*size==0)
-//		strLen = 1;
-//	else
-//	{
-//		for(int i=0; i<*size; i++){
-//			strLen += ov_string_getlength(vec[i]);
-//			strLen++;
-//			//!! if sep is not one char it cant work
-//		}
-//	}
-//	nsize = ((*size)+1) * sizeof(OV_STRING) + strLen + elLen;
-//	ret  = (OV_STRING *)Ov_HeapMalloc(nsize);
-//
-//    pStr = (OV_STRING)ret;
-//    pStr += ((*size)+1) * sizeof(OV_STRING);
-//
-//    for(int i=0; i<*size; i++) {
-//        strcpy(pStr, vec[i]);
-//        ret[i] = pStr;
-//
-//        pStr += ov_string_getlength(vec[i])+1;
-//    }
-//    strcpy(pStr, element);
-//    ret[(*size)] = pStr;
-//    (*size)++;
-////    *vec = *ret;
-//	return ret;
-//}
+
