@@ -6,6 +6,8 @@
 #include "ksapi.ovm"
 #include "kshttp.ovm"
 
+#include "eks.ovm"
+
 LIBRARY CTree
 	VERSION   = "V0.1 (15-Mon-2018)";
 	AUTHOR    = "Zolboo Erdenebayar";
@@ -102,6 +104,43 @@ LIBRARY CTree
 		END_OPERATIONS;
 	END_CLASS;
 	
+	CLASS LoadLibs : CLASS CTree/Download
+		IS_INSTANTIABLE;
+		VARIABLES
+			libBytes: ANY FLAGS="hi" COMMENT="Bibliotheken as byte";
+			libNames[]: STRING FLAGS="i" COMMENT="Bibliotheken namen";
+			libPosition[]: UINT FLAGS="i" COMMENT="Bibliotheken positionen";
+		END_VARIABLES;
+		PARTS
+			eks:		CLASS	eks/client;
+		END_PARTS;
+		OPERATIONS
+			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
+			startup      : C_FUNCTION <OV_FNC_STARTUP>;
+    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
+    		
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	
+	CLASS dbinfoExt : CLASS ov/object
+		IS_INSTANTIABLE;
+		VARIABLES
+			serversystem : STRING             FLAGS = "o"  COMMENT = "Server-Plattform";
+			serversystemarch : UINT             FLAGS = "o"  COMMENT = "Server-Plattform architecture";
+			libraries[] : STRING   HAS_GET_ACCESSOR      FLAGS = "o"  COMMENT = "libs in ../addonlibs";
+			lastUpdate : TIME   FLAGS = "o"  COMMENT = "Last update of libraries";
+		END_VARIABLES;
+		OPERATIONS
+			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
+			startup      : C_FUNCTION <OV_FNC_STARTUP>;
+    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
+			getaccess    : C_FUNCTION <OV_FNC_GETACCESS>;
+		END_OPERATIONS;
+	END_CLASS;
 
 	CLASS helper : CLASS ov/object
 		VARIABLES

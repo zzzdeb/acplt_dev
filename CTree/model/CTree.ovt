@@ -73,6 +73,43 @@ typedef struct {
 #define PATHNAME		"Path"
 
 
+/*
+* Namedef
+*/
+#define DBINFO_PATH "/data/CTree/dbinfo"
+#define UPLOAD_PATH "/data/CTree/Upload"
+#define TRANSPORT_PATH "/data/CTree/Transport"
+#define DOWNLOAD_PATH "/data/CTree/Download"
+
+/*
+*	Plattformen...
+*	--------------
+*/
+
+#if OV_SYSTEM_HPUX == 1
+#define SERVER_SYSTEM "hpux"
+#endif
+
+#if OV_SYSTEM_LINUX == 1
+#define SERVER_SYSTEM "linux"
+#endif
+
+#if OV_SYSTEM_NT == 1
+#define SERVER_SYSTEM "nt"
+#endif
+
+#if OV_SYSTEM_OPENVMS == 1
+#define SERVER_SYSTEM "openvms"
+#endif
+
+#if OV_SYSTEM_SOLARIS == 1
+#define SERVER_SYSTEM "solaris"
+#endif
+
+#if OV_SYSTEM_MC164 == 1
+#define SERVER_SYSTEM "mc164"
+#endif
+
 /************/
 //test struct
 typedef struct {
