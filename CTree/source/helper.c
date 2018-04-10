@@ -48,11 +48,13 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
 	if (pobj == NULL)
 		return NULL;
 
+	OV_STRING factory = NULL;  
 	ov_memstack_lock();
 	OV_INSTPTR_ov_object pparent = Ov_GetParent(ov_instantiation, pobj);
 	OV_INSTPTR_ov_object pparobj = Ov_PtrUpCast(ov_object, pparent);
-	OV_STRING factory = ov_path_getcanonicalpath(pparobj, VERSION_FOR_CTREE);
+	OV_STRING tmp = ov_path_getcanonicalpath(pparobj, VERSION_FOR_CTREE);
 	ov_memstack_unlock();
+	ov_string_setvalue(&factory, tmp);
 	return factory;
 }
 

@@ -1,0 +1,13 @@
+#ifndef eks_OVT_INCLUDED
+#define eks_OVT_INCLUDED
+
+#include "ksbase.h"
+/* 
+	Define your data types here. 
+*/
+
+typedef OV_VAR_VALUE* POV_VAR_VALUE;
+typedef OV_GETVAR_RES* POV_GETVAR_RES;
+typedef OV_SETVAR_RES* POV_SETVAR_RES;
+
+#endif

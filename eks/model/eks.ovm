@@ -1,0 +1,59 @@
+#include "ov.ovm"
+#include "ksbase.ovm"
+#include "ksxdr.ovm"
+
+LIBRARY eks
+	VERSION   = "V0.1 (01-04-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "";
+	COMMENT   = "Easy to use ksclient";
+	
+	/**
+		Documentation of client.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS client : CLASS ksxdr/xdrClient
+		IS_INSTANTIABLE;
+		VARIABLES
+			status : INT
+			COMMENT			= "status of KS obj: 0: initial; 1: request sent, waiting for answer; 2: completed; 128: internal error, see result for error code; 64: request failed, see result for error code"
+				INITIALVALUE	=	0;
+			result		:	UINT
+				COMMENT	=	"Result of last Operation in KS_ERR Codes"
+				INITIALVALUE	=	0;
+			pGetVarRes	: 	C_TYPE <POV_GETVAR_RES>
+				COMMENT = "";
+			pSetVarRes	: 	C_TYPE <POV_SETVAR_RES>
+				COMMENT = "";
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in eks.ovf. Implement the functions in client.c.
+			// fb/functionblock based classes have to implement typemethod
+			startup				:	C_FUNCTION	<OV_FNC_STARTUP>;
+			shutdown			:	C_FUNCTION	<OV_FNC_SHUTDOWN>;
+			
+			setParam			:	C_FUNCTION	<EKS_FNC_SETPAR>;
+			
+			getVar				:	C_FUNCTION 	<EKS_FNC_GETVAR>;
+			setParAndGetvar		:	C_FUNCTION 	<EKS_FNC_SETPAR_GETVAR>;
+			getVarCallback		: 	C_FUNCTION	<EKS_FNC_GETVAR_CALLBACK>;
+			
+			setVar				:	C_FUNCTION 	<EKS_FNC_SETVAR>;
+			setParAndSetvar		:	C_FUNCTION 	<EKS_FNC_SETPAR_SETVAR>;
+			setVarCallback		: 	C_FUNCTION	<EKS_FNC_SETVAR_CALLBACK>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		Add associations and their documentation here.
+		Association syntax is:
+	*/
+	//ASSOCIATION assocName : ONE_TO_MANY
+	//	PARENT parentVarName : CLASS ov/object;
+	//	CHILD  childVarName : CLASS ov/object;
+	//END_ASSOCIATION;
+	
+END_LIBRARY;

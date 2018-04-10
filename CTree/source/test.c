@@ -115,18 +115,18 @@ OV_DLLFNCEXPORT void CTree_test_shutdown(OV_INSTPTR_ov_object pobj) {
 	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pobj);
 
 	/* do what */
+	Ov_SetDynamicVectorValue(&pinst->v_varBoolVec, NULL, 0, BOOL);
+	Ov_SetDynamicVectorValue(&pinst->v_varIntVec, NULL, 0, INT);
+	Ov_SetDynamicVectorValue(&pinst->v_varUintVec, NULL, 0, UINT);
+	Ov_SetDynamicVectorValue(&pinst->v_varSingleVec, NULL, 0, SINGLE);
+	Ov_SetDynamicVectorValue(&pinst->v_varDoubleVec, NULL, 0, DOUBLE);
+	Ov_SetDynamicVectorValue(&pinst->v_varStringVec, NULL, 0, STRING);
+	Ov_SetDynamicVectorValue(&pinst->v_varTimeVec, NULL, 0, TIME);
+	Ov_SetDynamicVectorValue(&pinst->v_varTimeSpanVec, NULL, 0, TIME_SPAN);
+	Ov_SetDynamicVectorValue(&pinst->v_varByteVec.value.valueunion.val_byte_vec, NULL, 0, BYTE);
 
 	/* set the object's state to "shut down" */
 	ov_object_shutdown(pobj);
-	ov_database_free(&pinst->v_varBoolVec);
-	ov_database_free(&pinst->v_varIntVec);
-	ov_database_free(&pinst->v_varUintVec);
-	ov_database_free(&pinst->v_varSingleVec);
-	ov_database_free(&pinst->v_varDoubleVec);
-	ov_database_free(&pinst->v_varStringVec);
-	ov_database_free(&pinst->v_varTimeVec);
-	ov_database_free(&pinst->v_varTimeSpanVec);
-	ov_database_free(&pinst->v_varByteVec.value.valueunion.val_byte_vec);
 	return;
 }
 

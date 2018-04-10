@@ -75,13 +75,16 @@ OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
 	ov_string_print(&path, "%s%s", "/acplt/", neutralpath);
 	pclass = Ov_StaticPtrCast(ov_class,
 			ov_path_getobjectpointer(path, VERSION_FOR_CTREE));
-	if (pclass != NULL)
+	if (pclass != NULL) {
+		ov_string_setvalue(&path, NULL);
 		return pclass;
+	}
 
 	ov_string_setvalue(&path, "/Libraries/");
 	ov_string_append(&path, neutralpath);
 	pclass = Ov_StaticPtrCast(ov_class,
 			ov_path_getobjectpointer(path, VERSION_FOR_CTREE));
+	ov_string_setvalue(&path, NULL);
 	if (pclass != NULL)
 		return pclass;
 
@@ -163,18 +166,21 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuestring);
 		break;
 	case OV_VT_TIME:
-		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
-		value->valueunion.val_time.secs =
-				cJSON_GetArrayItem(jsvalue, 0)->valueint;
-		value->valueunion.val_time.usecs =
-				cJSON_GetArrayItem(jsvalue, 1)->valueint;
+		ov_time_asciitotime(&value->valueunion.val_time,
+				cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuestring);
+		/*jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		 value->valueunion.val_time.secs =
+		 cJSON_GetArrayItem(jsvalue, 0)->valueint;
+		 value->valueunion.val_time.usecs =
+		 cJSON_GetArrayItem(jsvalue, 1)->valueint;*/
 		break;
 	case OV_VT_TIME_SPAN:
+//		ov_time_asciitotimespan(&value->valueunion.val_time, cJSON_GetArrayItem(jsvalue, VARVAL_POS)->valuestring);
 		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
 		value->valueunion.val_time_span.secs =
-				cJSON_GetArrayItem(jsvalue, 0)->valueint;
+				cJSON_GetArrayItem(jstmp, 0)->valueint;
 		value->valueunion.val_time_span.usecs =
-				cJSON_GetArrayItem(jsvalue, 1)->valueint;
+				cJSON_GetArrayItem(jstmp, 1)->valueint;
 		break;
 	case OV_VT_STATE:
 	case OV_VT_STRUCT:
@@ -189,7 +195,8 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 				value->valueunion.val_int_vec.veclen * sizeof(OV_BYTE));
 		cJSON_ArrayForEach(jselem, jstmp)
 		{
-			value->valueunion.val_byte_vec.value[i] = (OV_BYTE)jselem->valueint;
+			value->valueunion.val_byte_vec.value[i] =
+					(OV_BYTE) jselem->valueint;
 			i++;
 		}
 		break;
@@ -271,10 +278,11 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 				value->valueunion.val_time_vec.veclen * sizeof(OV_TIME));
 		cJSON_ArrayForEach(jselem, jstmp)
 		{
-			value->valueunion.val_time_vec.value[i].secs = cJSON_GetArrayItem(
-					jselem, 0)->valueint;
-			value->valueunion.val_time_vec.value[i].usecs = cJSON_GetArrayItem(
-					jselem, 1)->valueint;
+			ov_time_asciitotime(&value->valueunion.val_time_vec.value[i], jselem->valuestring);
+			// value->valueunion.val_time_vec.value[i].secs = cJSON_GetArrayItem(
+			// 		jselem, 0)->valueint;
+			// value->valueunion.val_time_vec.value[i].usecs = cJSON_GetArrayItem(
+			// 		jselem, 1)->valueint;
 			i++;
 		}
 		break;
@@ -389,9 +397,9 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
 //process multiple variables at once
 	cJSON_ArrayForEach(jsvariable, jsvariables)
 	{
-		OV_STRING tmp = NULL;
-		ov_string_print(&tmp, "%s%s", objpathwithpunct, jsvariable->string);
-		addrp->path_and_name = tmp;
+		addrp->path_and_name = NULL;
+		ov_string_print(&addrp->path_and_name, "%s%s", objpathwithpunct,
+				jsvariable->string);
 
 		//TODO:check for vartype and value and vector memory allocation
 //		addrp->var_current_props.value = get_value_from_str(jsvariable).value;
@@ -399,12 +407,16 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
 				jsvariable);
 		if (Ov_Fail(curResult))
 			ov_logfile_error("%s: value conversion:  %s",
-					ov_result_getresulttext(curResult), tmp);
+					ov_result_getresulttext(curResult), addrp->path_and_name);
 		//add one size of a pointer
 		addrp++;
 	}
 
 	ov_ksserver_setvar(2, pticket, &params, &result);
+	for (OV_UINT i = 0; i < number_of_variables; i++) {
+		ov_string_setvalue(&params.items_val[i].path_and_name, NULL);
+	}
+	//TODO: free params.items_val[i].valuestr
 
 	/*	delete Ticket	*/
 	pticket->vtbl->deleteticket(pticket);
@@ -484,12 +496,13 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 						jschild->string);
 				continue;
 			}
-			OV_STRING factory = NULL;
-			ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
-			pclass = inverse_neutralpath(factory);
+			// OV_STRING factory = NULL;
+			// ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
+			pclass = inverse_neutralpath(cJSON_GetStringValue(jscurrent));
 			if (pclass == NULL) {
 				Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
-						"There is no class : %s", factory);
+						"There is no class : %s",
+						cJSON_GetStringValue(jscurrent));
 				continue;
 			}
 
@@ -513,8 +526,13 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 					Download_log(pinst, OV_MT_WARNING, res, "%s already exists",
 							identifier);
 				} else {
-					return Download_log(pinst, res, OV_MT_ERROR,
-							"Could not create %s in %s", identifier, parentpath);
+					//TODO: free identifier
+					res = Download_log(pinst, res, OV_MT_ERROR,
+							"Could not create %s in %s", identifier,
+							parentpath);
+					ov_string_setvalue(&identifier, NULL);
+					ov_string_setvalue(&parentpath, NULL);
+					return res;
 				}
 			} else {
 //			Download_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
@@ -538,6 +556,9 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 				if (pobj == NULL) {
 					Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
 							"couldnt find part %s.%s", parentpath, identifier);
+					ov_string_setvalue(&identifier, NULL);
+					ov_string_setvalue(&parentpath, NULL);
+					ov_string_setvalue(&elementpath, NULL);
 					return OV_ERR_BADPARAM;
 				}
 			}
@@ -547,6 +568,9 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 			break;
 		default:
 			Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "bad CTREE type");
+			ov_string_setvalue(&identifier, NULL);
+			ov_string_setvalue(&parentpath, NULL);
+			ov_string_setvalue(&elementpath, NULL);
 			return OV_ERR_BADPARAM;
 		}
 
@@ -569,10 +593,16 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 
 		if (Ov_Fail(res)) {
 			//TODO: give more info
+			ov_string_setvalue(&identifier, NULL);
+			ov_string_setvalue(&parentpath, NULL);
+			ov_string_setvalue(&elementpath, NULL);
 			return Download_log(pinst, OV_MT_ERROR, res,
 					"Could not load tree. error at %s", parentpath);
 		}
 	}
+	ov_string_setvalue(&identifier, NULL);
+	ov_string_setvalue(&parentpath, NULL);
+	ov_string_setvalue(&elementpath, NULL);
 	return res;
 }
 
@@ -591,12 +621,13 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
 
+	OV_STRING libname = NULL;
 	cJSON_ArrayForEach(current, jslibs)
 	{
 		if (!cJSON_IsString(current)) {
 			return OV_ERR_BADPARAM;
 		}
-		OV_STRING libname = cJSON_GetStringValue(current);
+		ov_string_setvalue(&libname, cJSON_GetStringValue(current));
 		plib = ov_library_search(libname);
 		res = Ov_CreateObject(ov_library, plib, &(pdb->acplt), libname);
 
@@ -612,11 +643,12 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 					"Could not load library %s", libname);
 		}
 	}
+	ov_string_setvalue(&libname, NULL);
 	return res;
 }
 
 OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
-		OV_STRING objpath) {
+		const OV_STRING objpath) {
 	OV_RESULT res = OV_ERR_OK;
 	cJSON* jslinks = NULL;
 	cJSON* jslink = NULL;
@@ -667,9 +699,9 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 				continue;
 			}
 
+			OV_STRING link_parent_path = NULL;
 			cJSON_ArrayForEach(jsasparent, jsasparents)
 			{
-				OV_STRING link_parent_path = NULL;
 				if (ov_string_compare(cJSON_GetStringValue(jsasparent),
 						"this") == OV_STRCMP_EQUAL)
 					pparent = pobj;
@@ -692,9 +724,9 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 					//			return OV_ERR_BADPARAM;
 				}
 
+				OV_STRING path = NULL;
 				cJSON_ArrayForEach(jsaschild, jsaschildren)
 				{
-					OV_STRING path = NULL;
 					ov_string_setvalue(&path, cJSON_GetStringValue(jsaschild));
 					if (*path == '~')
 						path = inverse_path2(pinst->v_path, path);
@@ -739,19 +771,22 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 						}
 					}
 				}
+				ov_string_setvalue(&path, NULL);
 			}
+			ov_string_setvalue(&link_parent_path, NULL);
 		}
 	}
 	jschildren = cJSON_GetObjectItem(jsobj, CHILDRENNAME);
 	if (jschildren == NULL)
 		return res;
+	OV_STRING childpath = NULL;
 	cJSON_ArrayForEach(jschild, jschildren)
 	{
-		OV_STRING childpath = NULL;
 		ov_string_print(&childpath, "%s/%s", objpath, jschild->string);
 		link_objects(pinst, jschild, childpath);
 
 	}
+	ov_string_setvalue(&childpath, NULL);
 	return res;
 }
 
@@ -760,14 +795,15 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	 * Init
 	 */
 	OV_RESULT res = OV_ERR_OK;
-	cJSON * jsbase = pinst->v_cache.jsbase = NULL;
+	cJSON * jsbase = NULL;
 	cJSON * jslibs = pinst->v_cache.jslibs = NULL;
 	cJSON * jstree = pinst->v_cache.jstree = NULL;
 //	cJSON * jspath = pinst->v_cache.jspath = NULL;
 	cJSON * jscurrent = NULL;
 
 //1. parse input
-	jsbase = cJSON_Parse(pinst->v_json);
+	pinst->v_cache.jsbase = cJSON_Parse(pinst->v_json);
+	jsbase = pinst->v_cache.jsbase;
 //1.1 check if file is ok
 	if (jsbase == NULL) {
 		const char *error_ptr = cJSON_GetErrorPtr();
@@ -823,6 +859,7 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	}
 	ov_string_setvalue(&root_factory, jscurrent->valuestring);
 	OV_INSTPTR_ov_class proot_class = inverse_neutralpath(root_factory);
+	ov_string_setvalue(&root_factory, NULL);
 
 	OV_STRING root_path = NULL;
 	ov_string_setvalue(&root_path,
@@ -845,6 +882,8 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	} else {
 		Download_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s",
 				root_path);
+		*(tmp) = '/';
+		ov_string_setvalue(&root_path, NULL);
 		return OV_ERR_GENERIC;
 	}
 	*(tmp) = '/';
@@ -854,6 +893,8 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 //	4. Link
 	res = link_objects(pinst, jstree->child, root_path);
 
+	// 5. Free
+	ov_string_setvalue(&root_path, NULL);
 	return res;
 }
 
@@ -867,7 +908,7 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	/*
 	 * Init
 	 */
-	pinst->v_ErrorMsg = NULL;
+	ov_string_setvalue(&pinst->v_ErrorMsg, NULL);
 	pinst->v_result = OV_ERR_OK;
 
 	OV_RESULT res = CTree_Download_execute(pinst);
@@ -885,8 +926,8 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
 	}
 	cJSON_Delete(pinst->v_cache.jsbase);
-	pinst->v_path = NULL;
-	pinst->v_json = NULL;
+	ov_string_setvalue(&pinst->v_path, NULL);
+	ov_string_setvalue(&pinst->v_json, NULL);
 	return;
 }
 

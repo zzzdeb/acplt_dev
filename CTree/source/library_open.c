@@ -35,6 +35,7 @@
 		OV_INSTPTR_CTree_Download	pdownload	=	NULL;
 		OV_INSTPTR_CTree_Upload		pupload	=	NULL;
 		OV_INSTPTR_CTree_Transport	ptransport	=	NULL;
+		OV_INSTPTR_CTree_dbinfoExt	pdbinfo	=	NULL;
 		OV_INSTPTR_ov_domain	pCTree 	= 	NULL;
 		OV_INSTPTR_ov_domain pData = NULL;
 		OV_INSTPTR_fb_task pUrTask = NULL;
@@ -85,6 +86,19 @@
 		result = Ov_CreateObject(CTree_Transport, ptransport, pCTree, "Transport");
 		if (Ov_Fail(result)){
 			ov_logfile_error("Error: %s: couldnt create transport;", ov_result_getresulttext(result));
+		}
+	}
+
+	/*
+	 * dbinfo
+	 */
+	pdbinfo = Ov_StaticPtrCast(CTree_dbinfoExt,
+			Ov_SearchChild(ov_containment, pCTree, "dbinfo"));
+	if (!pdbinfo) {
+		result = Ov_CreateObject(CTree_dbinfoExt, pdbinfo, pCTree, "dbinfo");
+		if (Ov_Fail(result)) {
+			ov_logfile_error("Error: %s: couldnt create CTree in /data;",
+					ov_result_getresulttext(result));
 		}
 	}
 

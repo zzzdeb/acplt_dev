@@ -1,0 +1,59 @@
+#ifndef eks_OVF_INCLUDED
+#define eks_OVF_INCLUDED
+
+
+/* 
+	Declare your C functions here. 
+	Example:
+	typedef OV_DLLFNCEXPORT void MY_FUNC(
+		OV_STRING varName
+	);
+*/
+typedef OV_RESULT EKS_FNC_SETPAR(
+	OV_INSTPTR_eks_client	 				pobj,
+	OV_STRING 								serverHost,
+	OV_STRING								serverName
+);
+
+/* getvar */
+
+typedef void EKS_FNC_GETVAR(
+		OV_INSTPTR_eks_client					pobj,
+		const OV_GETVAR_PAR	* gvParam,
+		OV_GETVAR_RES 	* gvResult
+);
+
+typedef void EKS_FNC_SETPAR_GETVAR(
+		OV_INSTPTR_eks_client			 			pobj,
+		OV_STRING 									serverHost,
+		OV_STRING 									serverName,
+		const OV_GETVAR_PAR	* gvParam,
+		OV_GETVAR_RES 	* gvResult
+);
+
+typedef void EKS_FNC_GETVAR_CALLBACK(
+	const OV_INSTPTR_ov_domain	 			this,
+	const OV_INSTPTR_ov_domain	 			that
+);
+
+/* setvar */
+typedef void EKS_FNC_SETVAR(
+		OV_INSTPTR_eks_client					pobj,
+		const OV_SETVAR_PAR	* svParam,
+		OV_SETVAR_RES * svResult
+);
+
+typedef void EKS_FNC_SETPAR_SETVAR(
+		OV_INSTPTR_eks_client			 			pobj,
+		OV_STRING 									serverHost,
+		OV_STRING 									serverName,
+		const OV_SETVAR_PAR	* gvParam,
+		OV_SETVAR_RES * gvResult
+);
+
+typedef void EKS_FNC_SETVAR_CALLBACK(
+	const OV_INSTPTR_ov_domain	 			this,
+	const OV_INSTPTR_ov_domain	 			that
+);
+
+#endif

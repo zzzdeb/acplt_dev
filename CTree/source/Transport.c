@@ -49,7 +49,7 @@ OV_DLLFNCEXPORT void CTree_Transport_startup(OV_INSTPTR_ov_object pobj) {
 
 //	 do what
 	pinst->v_result = OV_ERR_OK;
-    pinst->v_status = CTREE_COMMON_INITIAL;
+	pinst->v_status = CTREE_COMMON_INITIAL;
 
 	return;
 }
@@ -70,33 +70,77 @@ OV_DLLFNCEXPORT void CTree_Transport_shutdown(OV_INSTPTR_ov_object pobj) {
 }
 
 OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING * serverHost,
-		OV_STRING * serverName, OV_STRING * path) {
+		OV_STRING * port, OV_STRING * serverName, OV_STRING * path) {
 	OV_RESULT result = OV_ERR_OK;
-	OV_STRING * splited = NULL;
-	OV_UINT len = 0;
 
-	if (kspath == NULL || serverName == NULL || serverHost == NULL
-			|| path == NULL)
+	if (kspath == NULL)
 		return OV_ERR_BADPARAM;
 
-	splited = ov_string_split(kspath, ":", &len);
-	if (len < 2)
-		return OV_ERR_BADPARAM;
+	OV_STRING serverNameStr = NULL;
+	OV_STRING pathStr = NULL;
 
-	result = ov_string_setvalue(serverHost, splited[0]);
-	if (Ov_Fail(result))
-		return OV_ERR_GENERIC;
-	result = ov_string_setvalue(serverName, splited[1]);
-	if (Ov_Fail(result))
-		return OV_ERR_GENERIC;
-	if(len>2){
-		result = ov_string_setvalue(path, splited[2]);
-		if (Ov_Fail(result))
-			return OV_ERR_GENERIC;
+	OV_STRING kspathcopy = NULL;
+	ov_string_setvalue(&kspathcopy, kspath);
+	OV_STRING portStr = strchr(kspathcopy, ':');
+	if (portStr) {
+		*portStr = 0;
+		portStr++;
+		serverNameStr = strchr(portStr, '/');
 	} else {
-		*path="";
+		serverNameStr = strchr(kspathcopy, '/');
+	}
+	if (serverNameStr) {
+		*serverNameStr = 0;
+		serverNameStr++;
 	}
 
+	if(serverNameStr){
+	pathStr = strchr(serverNameStr, '/');
+	if (pathStr) {
+		*pathStr = 0;
+		pathStr++;
+	}}else{
+		pathStr=NULL;
+	}
+
+//	if (len==){
+//		ov_string_freelist(splited);
+//		return OV_ERR_BADPARAM;
+//	}
+//
+	if (serverHost && !result) {
+		result = ov_string_setvalue(serverHost, kspathcopy);
+		if (Ov_Fail(result)) {
+			ov_string_setvalue(&kspathcopy, NULL);
+			result = OV_ERR_GENERIC;
+		}
+	}
+
+	if (port && !result) {
+		result = ov_string_setvalue(port, portStr);
+		;
+		if (Ov_Fail(result)) {
+			result = OV_ERR_GENERIC;
+		}
+	}
+
+	if (serverName  && !result) {
+		result = ov_string_setvalue(serverName, serverNameStr);
+		if (Ov_Fail(result)) {
+			result = OV_ERR_GENERIC;
+		}
+	}
+
+	if (path&& !result) {
+		result = ov_string_setvalue(path, pathStr);
+		if (Ov_Fail(result)) {
+			result=OV_ERR_GENERIC;
+		}
+	}
+	ov_string_setvalue(&kspathcopy, NULL);
+	ov_string_setvalue(&portStr, NULL);
+	ov_string_setvalue(&serverNameStr, NULL);
+	ov_string_setvalue(&pathStr, NULL);
 	return result;
 }
 
@@ -134,7 +178,7 @@ OV_RESULT CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport pCommon,
 		OV_INSTPTR_ksbase_ClientBase* pClient,
 		OV_VTBLPTR_ksbase_ClientBase* pVtblClient) {
 	OV_RESULT result = OV_ERR_OK;
-	OV_STRING tempstr = NULL;
+	OV_STRING tmpStr = NULL;
 
 	if (!pClient || !pVtblClient)
 		return OV_ERR_BADPARAM;
@@ -150,19 +194,19 @@ OV_RESULT CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport pCommon,
 		const char defaultClient[] = "xdrClient";
 		OV_INSTPTR_ov_class pClassClient = NULL;
 		ov_memstack_lock();
-		tempstr = ov_vendortree_getcmdlineoption_value("KS_USECLIENT");
-		if (!tempstr)
-			tempstr = ov_vendortree_getcmdlineoption_value("CTREE_USECLIENT");
+		tmpStr = ov_vendortree_getcmdlineoption_value("KS_USECLIENT");
+		if (!tmpStr)
+			tmpStr = ov_vendortree_getcmdlineoption_value("CTREE_USECLIENT");
 
-		if (!tempstr)
-			tempstr = (OV_STRING) defaultClient;
-		else if (!(*tempstr))
+		if (!tmpStr)
+			tmpStr = (OV_STRING) defaultClient;
+		else if (!(*tmpStr))
 			return OV_ERR_OK;
 
 		Ov_ForEachChild(ov_inheritance, pclass_ksbase_ClientBase, pClassClient)
 		{
 			if (ov_string_compare(pClassClient->v_identifier,
-					tempstr) == OV_STRCMP_EQUAL) {
+					tmpStr) == OV_STRCMP_EQUAL) {
 				result = ov_class_createobject(pClassClient,
 						Ov_StaticPtrCast(ov_domain, pCommon), "Client",
 						OV_PMH_DEFAULT, NULL, NULL, NULL,
@@ -198,7 +242,8 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_prepareSubmit(
 		pobj->v_result = OV_ERR_BADPARAM;
 		return OV_ERR_BADPARAM;
 	}
-	result = parse_kspath(pobj->v_targetKS, &serverHost, &serverName, &path);
+	result = parse_kspath(pobj->v_targetKS, &serverHost, NULL, &serverName,
+			&path);
 
 	if (!serverHost) {
 		ov_logfile_error("%s: no serverHost set. aborting", pobj->v_identifier);
@@ -235,6 +280,9 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_prepareSubmit(
 			return result;
 		}
 	}
+	ov_string_setvalue(&serverHost, NULL);
+	ov_string_setvalue(&serverName, NULL);
+	ov_string_setvalue(&path, NULL);
 
 	(*pClient)->v_holdConnection = pobj->v_holdConnection;
 	return OV_ERR_OK;
@@ -244,9 +292,8 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
 		OV_INSTPTR_CTree_Transport pinst, OV_STRING serverHost,
 		OV_STRING serverName, OV_STRING path) {
 	OV_RESULT result = OV_ERR_OK;
-	OV_STRING kstarget = NULL;
 
-	result = ov_string_print(&pinst->v_targetKS, "%s:%s:%s", serverHost,
+	result = ov_string_print(&pinst->v_targetKS, "%s/%s/%s", serverHost,
 			serverName, path);
 	if (Ov_Fail(result)) {
 		pinst->v_status = CTREE_COMMON_INTERNALERROR;
@@ -339,8 +386,6 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 	OV_SETVAR_ITEM* items = NULL;
 	OV_UINT numberOfItems = 2;
 	OV_STRING path = NULL;
-	OV_UINT len = 0;
-	OV_STRING * splited = NULL;
 
 	result = CTree_Transport_prepareSubmit(pinst, &pClient, &pVtblClient);
 	if (Ov_Fail(result))
@@ -353,35 +398,39 @@ OV_RESULT CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
 		return result;
 	}
 
-	splited = ov_string_split(pinst->v_targetKS, ":", &len);
-	if(len>2)
-		path= splited[2];
-	else
-		path = "/data/CTree/Download";
+	parse_kspath(pinst->v_targetKS, NULL, NULL, NULL, &path);
+	if (!path)
+		ov_string_setvalue(&path, "/data/CTree/Download");
 
 	if (pinst->v_tree) {
-		items[0].path_and_name = "";
+		items[0].path_and_name = NULL;
 		ov_string_print(&items[0].path_and_name, "%s.%s", path, "json"); /*	see comment below	*/
 		items[0].var_current_props.value.vartype = KS_VT_STRING;
 //		items[0].var_current_props.value.valueunion.val_string = "test";
 		items[0].var_current_props.value.valueunion.val_string = pinst->v_tree;
-		items[1].path_and_name = "";
+		items[1].path_and_name = NULL;
 		ov_string_print(&items[1].path_and_name, "%s.%s", path, "path");
 		items[1].var_current_props.value.vartype = KS_VT_STRING;
-		items[1].var_current_props.value.valueunion.val_string = pinst->v_targetPath;
-
+		items[1].var_current_props.value.valueunion.val_string =
+				pinst->v_targetPath;
 	} else {
-		ov_logfile_error(
-				"%s: submit: own Variable has empty path", pinst->v_identifier);
+		ov_logfile_error("%s: submit: own Variable has empty path",
+				pinst->v_identifier);
 		pinst->v_status = CTREE_COMMON_INTERNALERROR;
 		pinst->v_result = result;
+		ov_string_setvalue(&path, NULL);
 		Ov_HeapFree(items);
 		return result;
 	}
+	ov_string_setvalue(&path, NULL);
 
 	/*	do the actual submit	*/
 	pVtblClient->m_requestSetVar(pClient, NULL, numberOfItems, items,
 			(OV_INSTPTR_ov_domain) pinst, &CTree_Transport_exec_callback);
+
+	for (OV_UINT i = 1; i < numberOfItems; i++) {
+		ov_string_setvalue(&items[i].path_and_name, NULL);
+	}
 
 	if (!(pClient->v_state & KSBASE_CLST_ERROR))
 		pinst->v_status = CTREE_COMMON_WAITINGFORANSWER;
@@ -408,19 +457,19 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		return;
 	}
 	result = CTree_Transport_execute(pinst);
-		switch (result) {
-			case OV_ERR_OK:
-				pinst->v_result = result;
-				ov_logfile_info("Transport done.");
-				break;
-			case OV_ERR_BADPARAM:
-				pinst->v_result = result;
-				ov_logfile_error("Transport failed.");
-				break;
-			default:
-				pinst->v_result = OV_ERR_GENERIC;
-				ov_logfile_error("Transport failed.");
-			}
+	switch (result) {
+	case OV_ERR_OK:
+		pinst->v_result = result;
+		ov_logfile_info("Transport done.");
+		break;
+	case OV_ERR_BADPARAM:
+		pinst->v_result = result;
+		ov_logfile_error("Transport failed.");
+		break;
+	default:
+		pinst->v_result = OV_ERR_GENERIC;
+		ov_logfile_error("Transport failed.");
+	}
 
 	return;
 }
