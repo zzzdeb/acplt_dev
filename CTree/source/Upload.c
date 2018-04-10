@@ -181,10 +181,17 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 	case OV_VT_CTYPE:
 		return OV_ERR_NOTIMPLEMENTED;
 		break;
-
 		//		vector
 	case OV_VT_BYTE_VEC:
-		result = OV_ERR_NOTIMPLEMENTED;
+		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
+		value->valueunion.val_byte_vec.veclen = cJSON_GetArraySize(jstmp);
+		value->valueunion.val_byte_vec.value = ov_memstack_alloc(
+				value->valueunion.val_int_vec.veclen * sizeof(OV_BYTE));
+		cJSON_ArrayForEach(jselem, jstmp)
+		{
+			value->valueunion.val_byte_vec.value[i] = (OV_BYTE)jselem->valueint;
+			i++;
+		}
 		break;
 	case OV_VT_BOOL_VEC:
 		jstmp = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
@@ -250,7 +257,7 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 				value->valueunion.val_string_vec.veclen * sizeof(OV_STRING));
 		cJSON_ArrayForEach(jselem, jstmp)
 		{
-			value->valueunion.val_string_vec.value[i]=NULL;
+			value->valueunion.val_string_vec.value[i] = NULL;
 			result = ov_string_setvalue(
 					&value->valueunion.val_string_vec.value[i],
 					jselem->valuestring);
@@ -333,8 +340,8 @@ OV_ANY get_value_from_str(cJSON* jsvar) {
 	return value;
 }
 
-OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst, cJSON* jsvariables,
-		OV_INSTPTR_ov_object pobj) {
+OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
+		cJSON* jsvariables, OV_INSTPTR_ov_object pobj) {
 	/*
 	 *	parameter and result objects
 	 */
@@ -367,7 +374,8 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst, cJSON* jsvariable
 	if (!addrp) {
 		ov_memstack_unlock();
 		res = OV_ERR_TARGETGENERIC;
-		Download_log(pinst, res, OV_MT_ERROR, "%s", ": internal memory problem");
+		Download_log(pinst, res, OV_MT_ERROR, "%s",
+				": internal memory problem");
 		return res;
 	}
 
@@ -553,7 +561,8 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 				ov_logfile_info("variables set.");
 		}
 
-		res = download_children(pinst, cJSON_GetObjectItem(jschild, CHILDRENNAME),
+		res = download_children(pinst,
+				cJSON_GetObjectItem(jschild, CHILDRENNAME),
 				Ov_StaticPtrCast(ov_domain, pobj));
 		res = download_parts(pinst, cJSON_GetObjectItem(jschild, PARTSNAME),
 				Ov_StaticPtrCast(ov_domain, pobj));
@@ -576,7 +585,8 @@ OV_RESULT download_parts(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 	return download_tree(pinst, jsparent, pparent, CTREE_PARTS);
 }
 
-OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst, const cJSON* jslibs) {
+OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
+		const cJSON* jslibs) {
 	cJSON* current = NULL;
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
@@ -833,7 +843,8 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 //			return OV_ERR_ALREADYEXISTS;
 //		}
 	} else {
-		Download_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s", root_path);
+		Download_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s",
+				root_path);
 		return OV_ERR_GENERIC;
 	}
 	*(tmp) = '/';
@@ -873,7 +884,7 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		pinst->v_result = OV_ERR_GENERIC;
 		ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
 	}
-	cJSON_free(pinst->v_cache.jsbase);
+	cJSON_Delete(pinst->v_cache.jsbase);
 	pinst->v_path = NULL;
 	pinst->v_json = NULL;
 	return;

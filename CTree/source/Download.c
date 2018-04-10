@@ -138,8 +138,8 @@ OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 
 	//!!!check if root is accessable
 	if (pinst->v_cache.proot == NULL) {
-		Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
-				"%s could not be found", pinst->v_path);
+		Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "%s could not be found",
+				pinst->v_path);
 		return res;
 	}
 
@@ -210,7 +210,7 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		pinst->v_result = OV_ERR_GENERIC;
 		ov_logfile_error("Upload failed.");
 	}
-	cJSON_free(pinst->v_cache.jsbase);
+	cJSON_Delete(pinst->v_cache.jsbase);
 	return;
 }
 
@@ -253,7 +253,7 @@ OV_RESULT ovvalueToJSON(cJSON** pjsvalue, const OV_VAR_VALUE * value) {
 		*pjsvalue = cJSON_CreateNumber(value->valueunion.val_double);
 		break;
 	case OV_VT_STRING:
-		if (value->valueunion.val_string == NULL){
+		if (value->valueunion.val_string == NULL) {
 			*pjsvalue = cJSON_CreateNull();
 			break;
 		}
@@ -281,7 +281,12 @@ OV_RESULT ovvalueToJSON(cJSON** pjsvalue, const OV_VAR_VALUE * value) {
 		break;
 
 	case OV_VT_BYTE_VEC:
-		result = OV_ERR_NOTIMPLEMENTED;
+		*pjsvalue = cJSON_CreateArray();
+		for (OV_UINT i = 0; i < value->valueunion.val_uint_vec.veclen; i++) {
+			cJSON_AddItemToArray(*pjsvalue,
+					cJSON_CreateNumber(
+							value->valueunion.val_byte_vec.value[i]));
+		}
 		break;
 	case OV_VT_BOOL_VEC:
 		*pjsvalue = cJSON_CreateArray();
