@@ -35,6 +35,7 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_strlistcat(
 	//	for (int i = 0; i < vector->veclen; i++)
 	//		len += strlen(vector->value[i]);
 	//	res = (OV_STRING) ov_memstack_alloc(len + 1);
+
 	for (int i = 0; i < vector->veclen; i++) {
 		len += ov_string_getlength(vector->value[i]);
 		ov_string_append(&res, vector->value[i]);
