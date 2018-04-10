@@ -6,5 +6,6 @@
 /*/.settings
 /*/source/sourcetemplates
 /*/build
+/*/draft
 !/*/build/*/Makefile
 /*/Debug (Windows)
