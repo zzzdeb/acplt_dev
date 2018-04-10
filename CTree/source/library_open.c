@@ -28,10 +28,13 @@
 #include "libov/ov_logfile.h"
 #include "libov/ov_memstack.h"
 #include "libov/ov_result.h"
+#include "libov/ov_path.h"
 
  OV_RESULT ov_library_setglobalvars_CTree_new(void) {
 	OV_RESULT result = OV_ERR_OK;
-		OV_INSTPTR_CTree_Upload	pupload	=	NULL;
+		OV_INSTPTR_CTree_Download	pdownload	=	NULL;
+		OV_INSTPTR_CTree_Upload		pupload	=	NULL;
+		OV_INSTPTR_CTree_Transport	ptransport	=	NULL;
 		OV_INSTPTR_ov_domain	pCTree 	= 	NULL;
 		OV_INSTPTR_ov_domain pData = NULL;
 		OV_INSTPTR_fb_task pUrTask = NULL;
@@ -59,6 +62,13 @@
 			return result;
 		}
 	}
+	pdownload = Ov_StaticPtrCast(CTree_Download, Ov_SearchChild(ov_containment, pCTree, "Download"));
+	if(!pdownload){
+		result = Ov_CreateObject(CTree_Download, pdownload, pCTree, "Download");
+		if (Ov_Fail(result)){
+			ov_logfile_error("Error: %s: couldnt create download;", ov_result_getresulttext(result));
+		}
+	}
 	pupload = Ov_StaticPtrCast(CTree_Upload, Ov_SearchChild(ov_containment, pCTree, "Upload"));
 	if(!pupload){
 		result = Ov_CreateObject(CTree_Upload, pupload, pCTree, "Upload");
@@ -69,6 +79,13 @@
 		pUrTask = Ov_StaticPtrCast(fb_task, ptmp);
 //		if(pUrTask)
 //			Ov_Link(fb_tasklist, pUrTask, pupload);
+	}
+	ptransport = Ov_StaticPtrCast(CTree_Transport, Ov_SearchChild(ov_containment, pCTree, "Transport"));
+	if(!ptransport){
+		result = Ov_CreateObject(CTree_Transport, ptransport, pCTree, "Transport");
+		if (Ov_Fail(result)){
+			ov_logfile_error("Error: %s: couldnt create transport;", ov_result_getresulttext(result));
+		}
 	}
 
 //		result = Ov_CreateObject(CTree_Upload, pupload, pCTree, "Transport");

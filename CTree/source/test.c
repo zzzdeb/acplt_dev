@@ -30,6 +30,8 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	/* do what the base class does first */
 	ov_object_startup(pobj);
 
+	pinst->v_varByte.value.vartype = OV_VT_BYTE;
+	pinst->v_varByte.value.valueunion.val_byte = 1;
 	/* do what */
 	OV_UINT size = 0;
 	/*
@@ -42,6 +44,15 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varBoolVec.value[2] = 2;
 	pinst->v_varBoolVec.value[3] = 3;
 
+	pinst->v_varByteVec.value.vartype = OV_VT_BYTE_VEC;
+	Ov_SetDynamicVectorLength(&pinst->v_varByteVec.value.valueunion.val_byte_vec, size, BYTE);
+	pinst->v_varByteVec.value.valueunion.val_byte_vec.value[0] = 'a';
+	pinst->v_varByteVec.value.valueunion.val_byte_vec.value[1] = 1;
+	pinst->v_varByteVec.value.valueunion.val_byte_vec.value[2] = 1;
+	pinst->v_varByteVec.value.valueunion.val_byte_vec.value[3] = 1;
+	pinst->v_varByteVec.value.valueunion.val_byte_vec.value[4] = 1;
+
+
 	/*
 	 * int vec
 	 */
@@ -50,7 +61,7 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varIntVec.value[1] = 1;
 	pinst->v_varIntVec.value[2] = -1;
 	pinst->v_varIntVec.value[3] = OV_VL_MAXINT;
-	pinst->v_varIntVec.value[4] = OV_VL_MININT;
+	pinst->v_varIntVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varUintVec, size, UINT);
 	pinst->v_varUintVec.value[0] = 0;
@@ -64,14 +75,14 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varSingleVec.value[1] = -1;
 	pinst->v_varSingleVec.value[2] = -1.1;
 	pinst->v_varSingleVec.value[3] = 10;
-	pinst->v_varSingleVec.value[4] = OV_VL_MININT;
+	pinst->v_varSingleVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varDoubleVec, size, DOUBLE);
 	pinst->v_varDoubleVec.value[0] = 0;
 	pinst->v_varDoubleVec.value[1] = -1;
 	pinst->v_varDoubleVec.value[2] = -1.1;
 	pinst->v_varDoubleVec.value[3] = 10;
-	pinst->v_varDoubleVec.value[4] = OV_VL_MININT;
+	pinst->v_varDoubleVec.value[4] = 1;//OV_VL_MININT fixme
 
 	Ov_SetDynamicVectorLength(&pinst->v_varStringVec, size, STRING);
 //	pinst->v_varDoubleVec.value[0] = NULL;
@@ -107,14 +118,15 @@ OV_DLLFNCEXPORT void CTree_test_shutdown(OV_INSTPTR_ov_object pobj) {
 
 	/* set the object's state to "shut down" */
 	ov_object_shutdown(pobj);
-	ov_free(&pinst->v_varBoolVec);
-	ov_free(&pinst->v_varIntVec);
-	ov_free(&pinst->v_varUintVec);
-	ov_free(&pinst->v_varSingleVec);
-	ov_free(&pinst->v_varDoubleVec);
-	ov_free(&pinst->v_varStringVec);
-	ov_free(&pinst->v_varTimeVec);
-	ov_free(&pinst->v_varTimeSpanVec);
+	ov_database_free(&pinst->v_varBoolVec);
+	ov_database_free(&pinst->v_varIntVec);
+	ov_database_free(&pinst->v_varUintVec);
+	ov_database_free(&pinst->v_varSingleVec);
+	ov_database_free(&pinst->v_varDoubleVec);
+	ov_database_free(&pinst->v_varStringVec);
+	ov_database_free(&pinst->v_varTimeVec);
+	ov_database_free(&pinst->v_varTimeSpanVec);
+	ov_database_free(&pinst->v_varByteVec.value.valueunion.val_byte_vec);
 	return;
 }
 
@@ -125,7 +137,7 @@ OV_DLLFNCEXPORT OV_ACCESS CTree_test_getaccess(OV_INSTPTR_ov_object pobj,
 	 */
 	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pobj);
 
-	return OV_AC_READWRITE;
+	return OV_AC_READWRITE | OV_AC_DELETEABLE | OV_AC_RENAMEABLE;
 	return (OV_ACCESS) 0;
 }
 

@@ -408,7 +408,6 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		return;
 	}
 	result = CTree_Transport_execute(pinst);
-	if (Ov_Fail(result)) {
 		switch (result) {
 			case OV_ERR_OK:
 				pinst->v_result = result;
@@ -422,7 +421,6 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
 				pinst->v_result = OV_ERR_GENERIC;
 				ov_logfile_error("Transport failed.");
 			}
-	}
 
 	return;
 }

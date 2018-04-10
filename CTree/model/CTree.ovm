@@ -19,17 +19,22 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Upload : CLASS fb/functionblock
-		IS_INSTANTIABLE;
+	
+	CLASS Common : CLASS fb/functionblock
 		VARIABLES
-			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
-			path: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
-			
 			result		:	INT FLAGS="o"
 				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
 				INITIALVALUE	=	0;
 			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
-			
+			trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do"  INITIALVALUE=0;
+		END_VARIABLES;
+	END_CLASS;
+	
+	CLASS Upload : CLASS CTree/Common
+		IS_INSTANTIABLE;
+		VARIABLES
+			json: STRING FLAGS="i" COMMENT="Tree to upload as json format";
+			path: STRING FLAGS="i" COMMENT="where to upload" INITIALVALUE="/TechUnits";
 			cache: C_TYPE <CTreeUploadCache> COMMENT="Cache of Object";
 		END_VARIABLES;
 		OPERATIONS
@@ -42,7 +47,7 @@ LIBRARY CTree
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS Download : CLASS fb/functionblock
+	CLASS Download : CLASS CTree/Common
 		IS_INSTANTIABLE;
 		VARIABLES
 			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
@@ -50,11 +55,6 @@ LIBRARY CTree
 			
 			tree: STRING FLAGS="o" COMMENT="tree as json";
 			libs: STRING FLAGS="o" COMMENT="libs used in tree";
-			
-			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param;"
-				INITIALVALUE	=	0;
-			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
 			
 			cache:	C_TYPE <CTreeDownloadCache> COMMENT="Cache";
 		END_VARIABLES;
@@ -124,7 +124,7 @@ LIBRARY CTree
 	IS_INSTANTIABLE;
 	VARIABLES
 		//varVoid: C_TYPE<OV_VOID>;
-		varByte: C_TYPE<OV_BYTE>;
+		varByte: ANY;
 		varBool: BOOL;
 		varInt: INT INITIALVALUE=-1;
 		varUint: UINT INITIALVALUE=1;
@@ -136,7 +136,8 @@ LIBRARY CTree
 		varState:	C_TYPE<OV_STATE>;
 		varStruct:	C_TYPE<TestStruct>;
 		
-		varByteVec:	C_TYPE<OV_BYTE_VEC>;
+		
+		varByteVec:	ANY;
 		varBoolVec[]: BOOL;
 		varIntVec[]:	INT;
 		varUintVec[]:	UINT;
