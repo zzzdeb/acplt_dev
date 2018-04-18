@@ -278,7 +278,8 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 				value->valueunion.val_time_vec.veclen * sizeof(OV_TIME));
 		cJSON_ArrayForEach(jselem, jstmp)
 		{
-			ov_time_asciitotime(&value->valueunion.val_time_vec.value[i], jselem->valuestring);
+			ov_time_asciitotime(&value->valueunion.val_time_vec.value[i],
+					jselem->valuestring);
 			// value->valueunion.val_time_vec.value[i].secs = cJSON_GetArrayItem(
 			// 		jselem, 0)->valueint;
 			// value->valueunion.val_time_vec.value[i].usecs = cJSON_GetArrayItem(
@@ -617,34 +618,63 @@ OV_RESULT download_parts(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 
 OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 		const cJSON* jslibs) {
-	cJSON* current = NULL;
+	cJSON* jscurrent = NULL;
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
 
 	OV_STRING libname = NULL;
-	cJSON_ArrayForEach(current, jslibs)
-	{
-		if (!cJSON_IsString(current)) {
-			return OV_ERR_BADPARAM;
-		}
-		ov_string_setvalue(&libname, cJSON_GetStringValue(current));
-		plib = ov_library_search(libname);
-		res = Ov_CreateObject(ov_library, plib, &(pdb->acplt), libname);
 
-		//	2.3 check if loaded successfully?
-		switch (res) {
-		case OV_ERR_OK:
-			break;
-		case OV_ERR_ALREADYEXISTS:
-			ov_logfile_info("Library %s exists", libname);
-			break;
-		default:
-			return Download_log(pinst, OV_MT_ERROR, res,
-					"Could not load library %s", libname);
+	OV_UINT round = 0;
+	OV_UINT maxRound = 100;
+	OV_UINT deleted = 1;
+
+	while (cJSON_GetArraySize(jslibs) && deleted && round++ < maxRound) {
+		char * tmpStr = cJSON_Print(jslibs);
+		ov_logfile_info("round: %u: %s", round, tmpStr);
+		free(tmpStr);
+
+		OV_UINT currentIndex = 0;
+		deleted = 0;
+
+		for (jscurrent =
+				(jslibs != ((void *) 0)) ? (jslibs)->child : ((void *) 0);
+				jscurrent != ((void *) 0);) {
+			if (!cJSON_IsString(jscurrent)) {
+				ov_string_setvalue(&libname, NULL);
+				return OV_ERR_BADPARAM;
+			}
+			ov_string_setvalue(&libname, cJSON_GetStringValue(jscurrent));
+			res = Ov_CreateObject(ov_library, plib, &(pdb->acplt), libname);
+
+			//	2.3 check if loaded successfully?
+			switch (res) {
+			case OV_ERR_OK:
+				ov_logfile_info("Library %s loaded", libname);
+				jscurrent = jscurrent->next;
+				cJSON_DeleteItemFromArray(jslibs, currentIndex);
+				deleted++;
+				break;
+			case OV_ERR_ALREADYEXISTS:
+				ov_logfile_info("Library %s exists", libname);
+				jscurrent = jscurrent->next;
+				cJSON_DeleteItemFromArray(jslibs, currentIndex);
+				deleted++;
+				break;
+			default:
+				jscurrent = jscurrent->next;
+				currentIndex++;
+			}
 		}
 	}
+	if (cJSON_GetArraySize(jslibs)) {
+		char * tmpStr = cJSON_Print(jslibs);
+		Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC, "%i Libraries couldnt loaded: %s",
+				cJSON_GetArraySize(jslibs), tmpStr);
+		free(tmpStr);
+		return OV_ERR_GENERIC;
+	}
 	ov_string_setvalue(&libname, NULL);
-	return res;
+	return 0;
 }
 
 OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
