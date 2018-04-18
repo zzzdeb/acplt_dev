@@ -22,6 +22,9 @@ LIBRARY eks
 			result		:	UINT
 				COMMENT	=	"Result of last Operation in KS_ERR Codes"
 				INITIALVALUE	=	0;
+			reset		: 	BOOL HAS_SET_ACCESSOR
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0" INITIALVALUE=FALSE;
+
 			pGetVarRes	: 	C_TYPE <POV_GETVAR_RES>
 				COMMENT = "";
 			pSetVarRes	: 	C_TYPE <POV_SETVAR_RES>

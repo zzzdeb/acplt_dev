@@ -65,6 +65,32 @@ OV_DLLFNCEXPORT void eks_client_shutdown(OV_INSTPTR_ov_object pobj) {
 	return;
 }
 
+
+OV_DLLFNCEXPORT OV_RESULT eks_client_reset_set(OV_INSTPTR_eks_client pobj, OV_BOOL value)
+{
+	OV_INSTPTR_ksbase_ClientBase pClient = Ov_StaticPtrCast(ksbase_ClientBase, pobj);
+	OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
+	OV_RESULT result = OV_ERR_OK;
+
+	if(value && (!pobj->v_reset))
+	{
+		pobj->v_status = EKS_COMMON_INITIAL;
+		pobj->v_result = OV_ERR_OK;
+
+		if(pClient)
+		{
+			Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
+			if(pVtblClient)
+			{
+				result = pVtblClient->m_reset(pClient);
+			}
+		}
+	}
+
+	pobj->v_reset = value;
+	return result;
+}
+
 /*
  * set param
  */
@@ -184,6 +210,8 @@ OV_DLLFNCEXPORT void eks_client_getVarCallback(const OV_INSTPTR_ov_domain this,
 	ov_memstack_lock();
 	result = pVtblClient->m_processGetVar(pClient, NULL,
 			(OV_RESULT*) &(pinst->v_result), &itemsLength, &itemsVals);
+//	result = pVtblClient->m_processGetVar(pClient, NULL,
+//			(OV_RESULT*) &(pinst->v_pGetVarRes->result), &pinst->v_pGetVarRes->items_len, &pinst->v_pGetVarRes->items_val);
 	if (Ov_Fail(result)) {
 		pinst->v_status = EKS_COMMON_INTERNALERROR;
 		pinst->v_result = result;
@@ -211,13 +239,13 @@ OV_DLLFNCEXPORT void eks_client_getVarCallback(const OV_INSTPTR_ov_domain this,
 				&(itemsVals[i].var_current_props));
 	}
 
-//	pinst->v_pGetVarRes = NULL;
+	// pinst->v_pGetVarRes = NULL;
 	ov_memstack_unlock();
 	return;
 }
 
 /*
- * Getvar
+ * Setvar
  */
 
 OV_DLLFNCEXPORT void eks_client_setVar(OV_INSTPTR_eks_client pinst,
