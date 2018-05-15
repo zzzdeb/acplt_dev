@@ -6,8 +6,6 @@
 #include "ksapi.ovm"
 #include "kshttp.ovm"
 
-#include "eks.ovm"
-
 LIBRARY CTree
 	VERSION   = "V0.1 (15-Mon-2018)";
 	AUTHOR    = "Zolboo Erdenebayar";
@@ -45,6 +43,52 @@ LIBRARY CTree
 	END_CLASS;
 	
 	/**
+		Documentation of Writefiles.
+	*/
+	CLASS WriteFiles : CLASS CTree/Common
+		IS_INSTANTIABLE;
+		VARIABLES
+			filesToWrite[]: STRING FLAGS="i" COMMENT="Files to write";
+			filesPositions[]: UINT FLAGS= "i"	COMMENT="Positions of files in Bytevec"; 
+			byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			write		 : C_FUNCTION <CTREE_WRITEFILES_WRITE>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		Documentation of SendFiles.
+	*/
+	CLASS SendFiles : CLASS CTree/Common
+		IS_INSTANTIABLE;
+		VARIABLES
+			targetKS:	STRING FLAGS="i" COMMENT="IP(:PORT(default 7509))/serverName \n f.e. localhost/MANAGER" INITIALVALUE="";
+			filesToSend[]: STRING FLAGS="i" COMMENT="Files to send. /home/a/b/d.so or ../c/d";
+			whereToSend[]: STRING FLAGS="i" COMMENT="Where to save files on target server. /home/a/b/c/d or ../a/b/d";
+			//filesPositions[]: UINT FLAGS= "i"	COMMENT="Positions of files in Bytevec"; 
+			//byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
+			
+			reset		:	BOOL	HAS_SET_ACCESSOR
+				FLAGS="i"
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				INITIALVALUE	= FALSE;
+			status		:	INT FLAGS="o" 
+				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+				INITIALVALUE	=	0;
+			postCallback:		C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
+		END_VARIABLES;
+		PARTS
+			ks	:	CLASS ksxdr/xdrClient;
+		END_PARTS;
+		OPERATIONS
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	
+	/**
 		Documentation of Copy.
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
@@ -56,11 +100,50 @@ LIBRARY CTree
 			path: STRING FLAGS="i" COMMENT="path of object to upload as json" INITIALVALUE="/TechUnits";
 			
 			tree: STRING FLAGS="o" COMMENT="tree as json";
-			libs: STRING FLAGS="o" COMMENT="libs used in tree";
+			libs[]: STRING FLAGS="o" COMMENT="libs used in tree";
 			
 			cache:	C_TYPE <CTreeUploadCache> COMMENT="Cache";
 		END_VARIABLES;
 		OPERATIONS
+			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	CLASS LoadLibs : CLASS CTree/Common
+		IS_INSTANTIABLE;
+		VARIABLES
+			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="localhost/MANAGER";
+			status : UINT FLAGS="o"	COMMENT="State of object; 0: Initial; 1: Info requested; 2: Info received; 3: Data sent; 4: Done" INITIALVALUE=0;
+			targetOS: STRING FLAGS="ho" COMMENT="OS of target server";
+			targetArch: UINT FLAGS="ho" COMMENT="Architecture of target server";
+			targetLibs[]: STRING FLAGS="ho" COMMENT="Libraries on target server addonlibs"; 
+			OS: STRING FLAGS="ho" COMMENT="OS of current server";
+			Arch: UINT FLAGS="ho" COMMENT="Architecture of current server";
+			libsToSend[]: STRING FLAGS="i" COMMENT="Libraries to send";
+			
+			reset		:	BOOL	HAS_SET_ACCESSOR
+				FLAGS="i"
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				INITIALVALUE	= FALSE;
+			
+			postCallback:		C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
+			//autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
+			
+			//libsToDownload[]: STRING FLAGS="i" COMMENT="Libraries to download";
+			//libsPositions[]: UINT FLAGS= "i"	COMMENT="Positions of libraries in Bytevec"; 
+			//byteLibs: ANY FLAGS="i" COMMENT = "Libraries as Bytevec";
+			
+		END_VARIABLES;
+		PARTS
+			ks:		CLASS	ksxdr/xdrClient;
+			sendFiles:	CLASS	CTree/SendFiles;
+		END_PARTS;
+		OPERATIONS
+			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
+			startup      : C_FUNCTION <OV_FNC_STARTUP>;
+    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
+    		
 			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
@@ -76,14 +159,14 @@ LIBRARY CTree
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"
 				INITIALVALUE	=	FALSE;
-			Reset		:	BOOL	HAS_SET_ACCESSOR
+			reset		:	BOOL	HAS_SET_ACCESSOR
 				FLAGS="i"
 				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
 				INITIALVALUE	= FALSE;
 			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
 			
 			status		:	INT FLAGS="o" 
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed;"
 				INITIALVALUE	=	0;
 				
 			//serverName	:	STRING;
@@ -92,7 +175,10 @@ LIBRARY CTree
 			//	COMMENT	=	"Rising edge triggers submit function"
 			//	INITIALVALUE	= FALSE;
 		END_VARIABLES;
-		
+		PARTS
+			loadlibs	:	CLASS CTree/LoadLibs;
+			upload		:	CLASS CTree/Upload;
+		END_PARTS;
 		OPERATIONS
 			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
 			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
@@ -104,33 +190,14 @@ LIBRARY CTree
 		END_OPERATIONS;
 	END_CLASS;
 	
-	CLASS LoadLibs : CLASS CTree/Download
-		IS_INSTANTIABLE;
-		VARIABLES
-			libBytes: ANY FLAGS="hi" COMMENT="Bibliotheken as byte";
-			libNames[]: STRING FLAGS="i" COMMENT="Bibliotheken namen";
-			libPosition[]: UINT FLAGS="i" COMMENT="Bibliotheken positionen";
-		END_VARIABLES;
-		PARTS
-			eks:		CLASS	eks/client;
-		END_PARTS;
-		OPERATIONS
-			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
-			startup      : C_FUNCTION <OV_FNC_STARTUP>;
-    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
-    		
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	
+
 	CLASS dbinfoExt : CLASS ov/object
 		IS_INSTANTIABLE;
 		VARIABLES
 			serversystem : STRING             FLAGS = "o"  COMMENT = "Server-Plattform";
 			serversystemarch : UINT             FLAGS = "o"  COMMENT = "Server-Plattform architecture";
-			libraries[] : STRING   HAS_GET_ACCESSOR      FLAGS = "o"  COMMENT = "libs in ../addonlibs";
+			acplthome : STRING             FLAGS = "o"  COMMENT = "ACPLT-Home path";
+			addonlibs[] : STRING   HAS_GET_ACCESSOR      FLAGS = "o"  COMMENT = "libs in ../addonlibs";
 			lastUpdate : TIME   FLAGS = "o"  COMMENT = "Last update of libraries";
 		END_VARIABLES;
 		OPERATIONS
@@ -155,6 +222,8 @@ LIBRARY CTree
 			accessToStr	:	C_FUNCTION <ACCESS_TO_STRING>;
 			getfactory	: C_FUNCTION <GET_FACTORY>;
 			strlistcat: C_FUNCTION <STR_LIST_CAT>;
+			
+			setKSParam	:	C_FUNCTION <SET_KSPARAM>;
 		END_OPERATIONS;
 	END_CLASS;
 	

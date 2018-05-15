@@ -1,63 +1,56 @@
 #ifndef CTree_OVF_INCLUDED
 #define CTree_OVF_INCLUDED
 
-/* 
-	Declare your C functions here. 
-	Example:
-	typedef OV_DLLFNCEXPORT void MY_FUNC(
-		OV_STRING varName
-	);
+/*
+        Declare your C functions here.
+        Example:
+        typedef OV_DLLFNCEXPORT void MY_FUNC(
+                OV_STRING varName
+        );
 */
-	typedef OV_STRING GET_FACTORY(
-		OV_INSTPTR_ov_domain obj
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_RESULT VALUE_TO_STRING(
-		OV_STRING* valuestr, const OV_VAR_VALUE* value   
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_STRING OVTYPE_TO_STRING(
-		OV_VAR_TYPE vartype
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_RESULT KSTYPE_TO_STRING(
-		OV_STRING* typestr, const OV_VAR_TYPE * type
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_VALUE(
-		OV_VAR_VALUE* value, const OV_STRING valuestr
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_OVTYPE(
-		OV_VAR_TYPE * type, const OV_STRING typestr
-	);
-		
-	typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_KSTYPE(
-		OV_VAR_TYPE * type, const OV_STRING typestr
-	);
-	typedef OV_DLLFNCEXPORT OV_STRING STR_LIST_CAT(
-		const OV_STRING_VEC* const vector
-	);
-	
-	typedef OV_DLLFNCEXPORT OV_RESULT ACCESS_TO_STRING(
-		OV_STRING* accessstr, const OV_ACCESS * access
-	);
-	
-	typedef void CTREE_FNC_SUBMIT(
-		OV_INSTPTR_CTree_Transport	 			pobj
-	);
-	
-	typedef OV_RESULT CTREE_FNC_PREPSUBMIT(
-			OV_INSTPTR_CTree_Transport	 			pobj,
-			OV_INSTPTR_ksbase_ClientBase*				pClient,
-			OV_VTBLPTR_ksbase_ClientBase*				pVtblClient
-	);
-	
-	typedef OV_RESULT CTREE_FNC_GENSETFSUBMIT(
-			OV_INSTPTR_CTree_Transport	 			pobj,
-			OV_STRING 									serverHost,
-			OV_STRING 									serverName,
-			OV_STRING 									path
-	);
-		
+/* helper */
+typedef OV_STRING GET_FACTORY(OV_INSTPTR_ov_domain obj);
+
+typedef OV_DLLFNCEXPORT OV_RESULT VALUE_TO_STRING(OV_STRING *valuestr,
+                                                  const OV_VAR_VALUE *value);
+
+typedef OV_DLLFNCEXPORT OV_STRING OVTYPE_TO_STRING(OV_VAR_TYPE vartype);
+
+typedef OV_DLLFNCEXPORT OV_RESULT KSTYPE_TO_STRING(OV_STRING *typestr,
+                                                   const OV_VAR_TYPE *type);
+
+typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_VALUE(OV_VAR_VALUE *value,
+                                                  const OV_STRING valuestr);
+
+typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_OVTYPE(OV_VAR_TYPE *type,
+                                                   const OV_STRING typestr);
+
+typedef OV_DLLFNCEXPORT OV_RESULT STRING_TO_KSTYPE(OV_VAR_TYPE *type,
+                                                   const OV_STRING typestr);
+typedef OV_DLLFNCEXPORT OV_STRING
+STR_LIST_CAT(const OV_STRING_VEC *const vector);
+typedef OV_DLLFNCEXPORT OV_RESULT
+SET_KSPARAM(const OV_INSTPTR_ksbase_ClientBase pclient, const OV_STRING param);
+
+typedef OV_DLLFNCEXPORT OV_RESULT ACCESS_TO_STRING(OV_STRING *accessstr,
+                                                   const OV_ACCESS *access);
+
+typedef void CTREE_FNC_SUBMIT(OV_INSTPTR_CTree_Transport pobj);
+
+typedef OV_RESULT CTREE_LOADLIBS_SAVE(OV_INSTPTR_CTree_LoadLibs pobj);
+/* writefiles */
+typedef OV_RESULT CTREE_WRITEFILES_WRITE(OV_INSTPTR_CTree_WriteFiles pinst);
+
+/* sendfiles */
+typedef OV_RESULT CTREE_SENDFILES_SEND(OV_INSTPTR_CTree_SendFiles pinst);
+
+typedef OV_RESULT
+CTREE_FNC_PREPSUBMIT(OV_INSTPTR_CTree_Transport pobj,
+                     OV_INSTPTR_ksbase_ClientBase *pClient,
+                     OV_VTBLPTR_ksbase_ClientBase *pVtblClient);
+
+typedef OV_RESULT CTREE_FNC_GENSETFSUBMIT(OV_INSTPTR_CTree_Transport pobj,
+                                          OV_STRING serverHost,
+                                          OV_STRING serverName, OV_STRING path);
+
 #endif

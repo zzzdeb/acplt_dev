@@ -1,90 +1,88 @@
 #ifndef CTree_OVT_INCLUDED
 #define CTree_OVT_INCLUDED
 
-#include "cJSON.h"
 #include "CTree.h"
-/* 
-	Define your data types here. 
+#include "cJSON.h"
+/*
+        Define your data types here.
 */
-#define VERSION_FOR_CTREE 	2
+#define VERSION_FOR_CTREE 2
 
-#define CTREE_COMMON_INTERNALERROR			128
-#define CTREE_COMMON_EXTERNALERROR			64
-#define CTREE_COMMON_SUCCESS				0
-#define CTREE_COMMON_ERROR					1
+#define CTREE_COMMON_INTERNALERROR 128
+#define CTREE_COMMON_EXTERNALERROR 64
+#define CTREE_COMMON_SUCCESS 0
+#define CTREE_COMMON_ERROR 1
 
-typedef struct{
-	char msg[1024];
+typedef struct {
+  char msg[1024];
 } CTreeCache;
 
-typedef struct{
-	OV_INSTPTR_ov_domain proot;
-	cJSON* tree;
-	cJSON* jsbase;
-	cJSON* jstree;
-	cJSON* jslibs;
-	char msg[1024];
+typedef struct {
+  OV_INSTPTR_ov_domain proot;
+  cJSON *tree;
+  cJSON *jsbase;
+  cJSON *jstree;
+  cJSON *jslibs;
+  char msg[1024];
 } CTreeUploadCache;
 
 typedef struct {
-	OV_INSTPTR_ov_object proot;
-	OV_STRING root_path;
-	OV_STRING current_path;
-	cJSON * jsbase;
-	cJSON * jslibs;
-	//cJSON * jslinks;
-	cJSON * jstree;
-	cJSON * jspath;
-	char msg[1024];
+  OV_INSTPTR_ov_object proot;
+  OV_STRING root_path;
+  OV_STRING current_path;
+  cJSON *jsbase;
+  cJSON *jslibs;
+  // cJSON * jslinks;
+  cJSON *jstree;
+  cJSON *jspath;
+  char msg[1024];
 } CTreeDownloadCache;
 
 typedef struct {
-	OV_INSTPTR_ov_object proot;
-	OV_STRING root_path;
-	OV_STRING current_path;
-	cJSON * jsbase;
-	cJSON * jslibs;
-	//cJSON * jslinks;
-	cJSON * jstree;
-	cJSON * jspath;
-	char msg[1024];
+  OV_INSTPTR_ov_object proot;
+  OV_STRING root_path;
+  OV_STRING current_path;
+  cJSON *jsbase;
+  cJSON *jslibs;
+  // cJSON * jslinks;
+  cJSON *jstree;
+  cJSON *jspath;
+  char msg[1024];
 } CTreeTransportCache;
 
-#define TREENAME	"Tree"
-#define LINKSNAME	"links"
-	#define ASSOCNAME	"of_association"
-	#define LINKPARENTSNAME	"parents"
-	#define LINKCHILDRENNAME "children"
-	#define LINKTHIS	"this"
-#define CHILDRENNAME	"children"
-#define PARTSNAME	"parts"
-#define VARIABLESNAME	"variables"
-	#define VARTYPENAME "datatype"
-	#define VARVALUENAME	"value"
-	#define NUMBEROFVAR_TOIGNORE 6
-	enum JSON_FORMAT {
-	VARTYPE_POS = 0,
-	VARVAL_POS = 1,
-	VARIABLE_FORMAT_SIZE = 2
-	};
-	#define NOTSUPPORTEDTYPE "not supported"
+#define TREENAME "Tree"
+#define LINKSNAME "links"
+#define ASSOCNAME "of_association"
+#define LINKPARENTSNAME "parents"
+#define LINKCHILDRENNAME "children"
+#define LINKTHIS "this"
 
-#define FACTORYNAME		"class"
-#define PATHNAME		"Path"
+#define CHILDRENNAME "children"
+#define PARTSNAME "parts"
+#define VARIABLESNAME "variables"
 
+#define VARTYPENAME "datatype"
+#define VARVALUENAME "value"
+#define NUMBEROFVAR_TOIGNORE 6
+
+enum JSON_FORMAT { VARTYPE_POS = 0, VARVAL_POS = 1, VARIABLE_FORMAT_SIZE = 2 };
+#define NOTSUPPORTEDTYPE "not supported"
+
+#define FACTORYNAME "class"
+#define PATHNAME "Path"
 
 /*
-* Namedef
-*/
+ * Namedef
+ */
 #define DBINFO_PATH "/data/CTree/dbinfo"
 #define UPLOAD_PATH "/data/CTree/Upload"
 #define TRANSPORT_PATH "/data/CTree/Transport"
 #define DOWNLOAD_PATH "/data/CTree/Download"
 
 /*
-*	Plattformen...
-*	--------------
-*/
+ *	Plattformen...
+ *	--------------
+ */
 
 #if OV_SYSTEM_HPUX == 1
 #define SERVER_SYSTEM "hpux"
@@ -92,10 +90,12 @@ typedef struct {
 
 #if OV_SYSTEM_LINUX == 1
 #define SERVER_SYSTEM "linux"
+#define LIBEXTENSION ".so"
 #endif
 
 #if OV_SYSTEM_NT == 1
 #define SERVER_SYSTEM "nt"
+#define LIBEXTENSION ".dll"
 #endif
 
 #if OV_SYSTEM_OPENVMS == 1
@@ -110,12 +110,16 @@ typedef struct {
 #define SERVER_SYSTEM "mc164"
 #endif
 
+/*
+ * PARAM
+ */
+#define PACPLTHOME "$ACPLT_HOME"
+
 /************/
-//test struct
+// test struct
 typedef struct {
-	OV_UINT integ;
-	OV_SINGLE sin;
+  OV_UINT integ;
+  OV_SINGLE sin;
 } TestStruct;
 
-	
 #endif
