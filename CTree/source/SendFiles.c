@@ -26,6 +26,7 @@
 #include "libov/ov_ov.h"
 #include "libov/ov_result.h"
 
+#include "ksbase.h"
 #include "ksbase_helper.h"
 
 enum state {
@@ -194,10 +195,7 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
 }
 
 OV_RESULT
-CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst,
-                        OV_INSTPTR_ov_domain that,
-                        void (*callback)(OV_INSTPTR_ov_domain,
-                                         OV_INSTPTR_ov_domain)) {
+CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   OV_RESULT result = OV_ERR_OK;
 
   OV_STRING_VEC fileNames = {0, NULL};
@@ -293,10 +291,6 @@ CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst,
   libSend[TRIGGER].var_current_props.value.vartype = OV_VT_INT;
   libSend[TRIGGER].var_current_props.value.valueunion.val_bool = 1;
 
-  /* outer object to call after finished*/
-  pinst->v_postCallback.callbackFunction = callback;
-  pinst->v_postCallback.instanceCalled = that;
-
   /* setting var */
   result = pVtblClient->m_requestSetVar(pClient, NULL, SENDFORMATLEN, libSend,
                                         (OV_INSTPTR_ov_domain)pinst,
@@ -322,6 +316,16 @@ CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst,
   return result;
 }
 
+OV_RESULT CTree_SendFiles_execute_withCallback(OV_INSTPTR_CTree_SendFiles pinst,
+                        OV_INSTPTR_ov_domain that,
+                        void (*callback)(OV_INSTPTR_ov_domain,
+                                         OV_INSTPTR_ov_domain)){
+	/* outer object to call after finished*/
+	pinst->v_postCallback.callbackFunction = callback;
+	pinst->v_postCallback.instanceCalled = that;
+	return CTree_SendFiles_execute(pinst);
+}
+
 OV_DLLFNCEXPORT void CTree_SendFiles_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                                 OV_TIME *pltc) {
   /*
@@ -333,7 +337,7 @@ OV_DLLFNCEXPORT void CTree_SendFiles_typemethod(OV_INSTPTR_fb_functionblock pfb,
   ov_string_setvalue(&pinst->v_ErrorMsg, NULL);
   pinst->v_result = OV_ERR_OK;
 
-  result = CTree_SendFiles_execute(pinst, NULL, NULL);
+  result = CTree_SendFiles_execute(pinst);
   switch (result) {
   case OV_ERR_OK:
     pinst->v_result = -1;

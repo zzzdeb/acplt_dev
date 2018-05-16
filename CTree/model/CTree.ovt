@@ -50,6 +50,9 @@ typedef struct {
   char msg[1024];
 } CTreeTransportCache;
 
+typedef KSBASE_CALLBACKSTRUCT CTREE_KSBASE_CALLBACKSTRUCT;	  
+ 
+
 #define TREENAME "Tree"
 #define LINKSNAME "links"
 #define ASSOCNAME "of_association"

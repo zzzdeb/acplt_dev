@@ -151,9 +151,6 @@ CTree_LoadLibs_savelibs(OV_INSTPTR_CTree_LoadLibs pobj) {
 
 /* checks if str in vec is. */
 OV_BOOL strvec_contains(const OV_STRING_VEC *vec, const OV_STRING str) {
-  // todo: debug
-  return 0;
-
   if (!vec || !str)
     return 0;
 
@@ -462,7 +459,7 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
      * 6. send libs
      */
     ov_string_setvalue(&pinst->p_sendFiles.v_targetKS, pinst->v_targetKS);
-    result = CTree_SendFiles_execute(
+    result = CTree_SendFiles_execute_withCallback(
         &pinst->p_sendFiles, (OV_INSTPTR_ov_domain)pinst, &dataSend_callback);
     if (Ov_OK(result))
       pinst->v_status = DATA_SENT;
@@ -485,14 +482,18 @@ OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
    *   local variables
    */
   OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pfb);
+  pinst->v_result = -1;
   OV_RESULT result = CTree_LoadLibs_execute(pinst);
   switch (result) {
   case OV_ERR_OK:
+  	ov_logfile_info("SendFiles: sent. waiting for response.");
     break;
   case OV_ERR_BADPARAM:
+  	pinst->v_result = result;
     ov_logfile_error("LoadLibs failed.");
     break;
   default:
+  	pinst->v_result = result;
     return;
   }
 
