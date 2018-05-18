@@ -466,7 +466,7 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,
       ov_ksserver_getvar(VERSION_FOR_CTREE, pticket, &get_var_par,
                          &get_var_res);
 
-      if (get_var_res.result) {
+      if (Ov_Fail(get_var_res.result)) {
         ov_logfile_error("%s: from ks : %s",
                          ov_result_getresulttext(get_var_res.result), var_path);
         ov_string_setvalue(&var_path, NULL);
@@ -485,20 +485,15 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,
           ov_string_setvalue(&var_path, NULL);
           break;
         }
-        OV_VAR_VALUE value = get_var_res.items_val[i].var_current_props.value;
-        if (value.vartype == OV_VT_STRING) {
-          tmpStr = pathAbsToRel(pinst->v_path, value.valueunion.val_string);
+        OV_VAR_VALUE* value = &get_var_res.items_val[i].var_current_props.value;
+        if (value->vartype == OV_VT_STRING) {
+          tmpStr = pathAbsToRel(pinst->v_path, value->valueunion.val_string);
           cJSON_AddItemToArray(jslinksarray, cJSON_CreateString(tmpStr));
           ov_string_setvalue(&tmpStr, NULL);
         }
-        if (get_var_res.items_val[i].var_current_props.value.vartype ==
-            OV_VT_STRING_VEC)
-          for (unsigned j = 0;
-               j <
-               get_var_res.items_val[i]
-                   .var_current_props.value.valueunion.val_string_vec.veclen;
-               j++) {
-            tmpStr = pathAbsToRel(pinst->v_path, value.valueunion.val_string);
+        if (value->vartype == OV_VT_STRING_VEC)
+          for (unsigned j = 0; j < value->valueunion.val_string_vec.veclen; j++) {
+            tmpStr = pathAbsToRel(pinst->v_path, value->valueunion.val_string_vec.value[j]);
             cJSON_AddItemToArray(jslinksarray, cJSON_CreateString(tmpStr));
             ov_string_setvalue(&tmpStr, NULL);
           }
