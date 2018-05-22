@@ -27,11 +27,15 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
+#include "libov/ov_debug.h"
+
 #include "smscrmlogistic.h"
 
 
-enum Level { LEVEL0, LEVEL1 };
+enum Level { ROLLERPOS, LEVEL0, LEVEL1 };
 enum Direction { UP, RIGHT, DOWN, LEFT, MAXCHILDNUM };
+const OV_STRING dirToStr[MAXCHILDNUM] = {[UP]="up", [RIGHT] = "right", [DOWN]="down", [LEFT] = "left"};
+
 enum Nodetype { ROLLER, SCHIEBER };
 
 
@@ -44,169 +48,44 @@ typedef struct Node {
   enum Direction parentdirection;
 
   OV_INT depth;
-} Node_t;
+} Data_t;
+
+Data_t* constructData(){
+	Data_t* data = ov_memstack_alloc(sizeof(Data_t));
+	data->type = ROLLER;
+	data->pparent = NULL;
+	data->self = NULL;
+	data->position = LEVEL0;
+	data->parentdirection = UP;
+	data->depth = 1;
+	return data;
+}
+
+Data_t* copyData(Data_t* data){
+	if(!data)
+		return NULL;
+	Data_t* d = constructData();
+	*d = *data;
+	return d;
+}
 
 void printNode(struct listNode* node){
-	ov_logfile_info("%d, %d, %d", ((Node_t*)node->data)->type,
-	((Node_t*)node->data)->parentdirection,
-	((Node_t*)node->data)->position);
+	ov_logfile_info("%d, %d, %d, %s", ((Data_t*)node->data)->type,
+	((Data_t*)node->data)->parentdirection,
+	((Data_t*)node->data)->position,
+	((Data_t*)node->data)->self->v_identifier);
 }
 
-int compareNodes(struct listNode* node1, struct listNode* node2){
-	return !is_same((Node_t*)node1->data, (Node_t*)node2->data);
+int compareNodes(Data_t* d1, Data_t* d2){
+	return !is_same(d1, d2);
 }
 
 
-//OV_RESULT get_children(Node_t *parent, Node_t *children[0],
-//                       OV_UINT *numberOfChildren) {
-//  OV_INSTPTR_SMSTopologie_Rollgang pparentRG = NULL;
-//  OV_INSTPTR_SMSTopologie_Schieber pparentS = NULL;
-//
-//  OV_UINT numOfCreatedChildren = 0;
-//  Node_t* childrenArray = NULL;
-//
-//  Node_t *childNode = ov_memstack_alloc(sizeof(Node_t));
-//
-//  switch (parent->type) {
-//  case ROLLER:
-//    pparentRG = Ov_StaticPtrCast(SMSTopologie_Rollgang, parent->self);
-//    break;
-//  case SCHIEBER:
-//    pparentS = Ov_StaticPtrCast(SMSTopologie_Schieber, parent->self);
-//    break;
-//  default:
-//    return 1;
-//  }
-//  // check validity
-//  if (parent->position) {
-//    childNode;
-//  }
-//
-//  for (OV_UINT dir = 0; dir < MAXCHILDNUM; ++dir) {
-//    childNode->depth = parent->depth + 1;
-//    childNode->parentdirection = dir;
-//    childNode->position = parent->position;
-//    childNode->pparent = parent;
-//    childNode->self = NULL;
-//
-//    switch (parent->type) {
-//    case ROLLER:
-//      pparentRG = Ov_StaticPtrCast(SMSTopologie_Rollgang, parent->self);
-//      switch (dir) {
-//      case RIGHT:
-//        // if roller
-//        childNode->type = ROLLER;
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetChild(SMSTopologie_RG, pparentRG));
-//        if (childNode->self)
-//          break;
-//        // if schieber
-//        childNode->type = SCHIEBER;
-//
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetParent(SMSTopologie_SchieberUntenR, pparentRG));
-//        childNode->position = LEVEL0;
-//        if (childNode->self)
-//          break;
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetParent(SMSTopologie_SchieberObenR, pparentRG));
-//        childNode->position = LEVEL1;
-//        if (childNode->self)
-//          break;
-//        break;
-//      case LEFT:
-//        childNode->type = ROLLER;
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetParent(SMSTopologie_RG, pparentRG));
-//        if (childNode->self)
-//          break;
-//        // if schieber
-//        childNode->type = SCHIEBER;
-//
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetParent(SMSTopologie_SchieberUntenL, pparentRG));
-//        childNode->position = LEVEL0;
-//        if (childNode->self)
-//          break;
-//        childNode->self = Ov_StaticPtrCast(
-//            ov_object, Ov_GetParent(SMSTopologie_SchieberObenL, pparentRG));
-//        childNode->position = LEVEL1;
-//        if (childNode->self)
-//          break;
-//        break;
-//      }
-//      break;
-//
-//    case SCHIEBER:
-//      pparentS = Ov_StaticPtrCast(SMSTopologie_Schieber, parent->self);
-//      childNode->type = ROLLER;
-//      switch (parent->position) {
-//      case LEVEL0:
-//        switch (dir) {
-//        case UP:
-//          childNode->self = parent->self;
-//          childNode->position = LEVEL1;
-//          break;
-//        case RIGHT:
-//          childNode->self = Ov_StaticPtrCast(
-//              ov_object, Ov_GetChild(SMSTopologie_SchieberUntenL, pparentS));
-//          break;
-//        case DOWN:
-//          break;
-//        case LEFT:
-//          childNode->self = Ov_StaticPtrCast(
-//              ov_object, Ov_GetChild(SMSTopologie_SchieberUntenR, pparentS));
-//          break;
-//        }
-//        break;
-//      case LEVEL1:
-//        switch (dir) {
-//        case UP:
-//          break;
-//        case RIGHT:
-//          childNode->self = Ov_StaticPtrCast(
-//              ov_object, Ov_GetChild(SMSTopologie_SchieberObenL, pparentS));
-//          break;
-//        case DOWN:
-//          childNode->self = parent->self;
-//          childNode->position = LEVEL0;
-//          break;
-//        case LEFT:
-//          childNode->self = Ov_StaticPtrCast(
-//              ov_object, Ov_GetChild(SMSTopologie_SchieberObenR, pparentS));
-//          break;
-//        }
-//        break;
-//      }
-//      break;
-//    }
-//    // adding child if ok
-//    if (childNode->self) {
-//    	if(!childrenArray){
-//    		numOfCreatedChildren++;
-//    		childrenArray = Ov_HeapMalloc(sizeof(Node_t));
-//    	} else {
-//    		Ov_HeapRealloc(childrenArray,
-//                     sizeof(Node_t) * (++numOfCreatedChildren));
-//    	}
-//    	childrenArray[numOfCreatedChildren - 1] = *childNode;
-//    	childrenArray[numOfCreatedChildren - 1].self = childNode->self;
-//    }
-//  }
-//  *children = childrenArray;
-//  *numberOfChildren = numOfCreatedChildren;
-//  return 0;
-//}
 
-OV_RESULT get_children(Node_t *parent, Node_t *children[0],
-                       OV_UINT *numberOfChildren) {
+OV_RESULT get_children(list_t* children, Data_t *parent) {
   OV_INSTPTR_SMSTopologie_Rollgang pparentRG = NULL;
   OV_INSTPTR_SMSTopologie_Schieber pparentS = NULL;
 
-  OV_UINT numOfCreatedChildren = 0;
-  Node_t* childrenArray = NULL;
-
-  Node_t *childNode = ov_memstack_alloc(sizeof(Node_t));
 
   switch (parent->type) {
   case ROLLER:
@@ -219,14 +98,13 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
     return 1;
   }
   // check validity
-  if (parent->position) {
-    childNode;
-  }
+  //TODO:
 
   for (OV_UINT dir = 0; dir < MAXCHILDNUM; ++dir) {
+  	Data_t *childNode = ov_memstack_alloc(sizeof(Data_t));
     childNode->depth = parent->depth + 1;
     childNode->parentdirection = dir;
-    childNode->position = parent->position;
+    childNode->position = ROLLERPOS;
     childNode->pparent = parent;
     childNode->self = NULL;
 
@@ -238,7 +116,7 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
         // if roller
         childNode->type = ROLLER;
         childNode->self = Ov_StaticPtrCast(
-            ov_object, Ov_GetChild(SMSTopologie_RG, pparentRG));
+            ov_object, Ov_GetParent(SMSTopologie_RG, pparentRG));
         if (childNode->self)
           break;
         // if schieber
@@ -258,7 +136,7 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
       case LEFT:
         childNode->type = ROLLER;
         childNode->self = Ov_StaticPtrCast(
-            ov_object, Ov_GetParent(SMSTopologie_RG, pparentRG));
+            ov_object, Ov_GetChild(SMSTopologie_RG, pparentRG));
         if (childNode->self)
           break;
         // if schieber
@@ -286,6 +164,7 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
         switch (dir) {
         case UP:
           childNode->self = parent->self;
+          childNode->type = SCHIEBER;
           childNode->position = LEVEL1;
           break;
         case RIGHT:
@@ -310,6 +189,7 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
           break;
         case DOWN:
           childNode->self = parent->self;
+          childNode->type = SCHIEBER;
           childNode->position = LEVEL0;
           break;
         case LEFT:
@@ -323,24 +203,16 @@ OV_RESULT get_children(Node_t *parent, Node_t *children[0],
     }
     // adding child if ok
     if (childNode->self) {
-    	if(!childrenArray){
-    		numOfCreatedChildren++;
-    		childrenArray = Ov_HeapMalloc(sizeof(Node_t));
-    	} else {
-    		Ov_HeapRealloc(childrenArray,
-                     sizeof(Node_t) * (++numOfCreatedChildren));
-    	}
-    	childrenArray[numOfCreatedChildren - 1] = *childNode;
-    	childrenArray[numOfCreatedChildren - 1].self = childNode->self;
+    	insertFirst(children, childNode);
     }
   }
-  *children = childrenArray;
-  *numberOfChildren = numOfCreatedChildren;
   return 0;
 }
 
-OV_INT is_same(Node_t* r1, Node_t* r2){
-	if(r1->self!=r2->self && r1->type != r2->type);
+OV_INT is_same(Data_t* r1, Data_t* r2){
+	if(r1->self!=r2->self)
+		return 0;
+	if(r1->type != r2->type)
 		return 0;
 	if(r1->type==SCHIEBER)
 		if(r1->position!=r2->position)
@@ -348,58 +220,51 @@ OV_INT is_same(Node_t* r1, Node_t* r2){
 	return 1;
 }
 
-OV_RESULT find_path(Node_t **path,
-                    OV_UINT *pathLength,
-                    Node_t* proot,
-                    Node_t* ptarget) {
-  OV_UINT numberOfNodes = 1;
-  Node_t **explored = Ov_HeapMalloc(sizeof(Node_t*) * numberOfNodes);
-  Node_t **frontier = explored;
-  Node_t **endOfNodes = explored + 1;
+OV_RESULT find_path(list_t* path,
+                    Data_t* proot,
+                    Data_t* ptarget) {
 
-  // root
-  explored[0] = proot;
+  list_t *explored = constructList(sizeof(Data_t));
+  explored->compare = compareNodes;
+  explored->printNode = printNode;
 
-  while (endOfNodes != frontier) {
-    // pick
-    Node_t **current = frontier;
-    frontier++;
+  insertFirst(explored, proot);
 
+  listNode_t *frontier = explored->head;
+
+  while (frontier) {
     // explored
-    if (is_same(*current, ptarget)) {
+    if (is_same(frontier->data, ptarget)) {
     	ov_logfile_info("found path");
-    	*path = ov_memstack_alloc((*current)->depth*sizeof(Node_t));
 
-    	OV_INT i = (*current)->depth-1;
-			for (i; i >=0; i--) {
-				(*path)[i] = (**current);
-				current = &((*current)->pparent);
+			Data_t* currentNodeData = copyData(frontier->data);
+			while(currentNodeData){
+				insertFirst(path, currentNodeData);
+				currentNodeData = copyData(currentNodeData->pparent);
 			}
-//      *path = ov_memstack_alloc((current->depth) *
-//                                sizeof(OV_INSTPTR_smscrmlogistic_RollerTable));
-//      for (OV_UINT i = current->depth - 1; i > 0; i--) {
-//        (*path)[i] = current->self;
-//        ;
-//        current = current->pparent;
-//      }
       // free
-      Ov_HeapFree(explored);
+      destructList(explored);
       return 0;
     }
     // add
-    Node_t* children = NULL;
-    OV_UINT numberOfChildren = 0;
-		get_children(*current, &children, &numberOfChildren);
-		numberOfNodes += numberOfChildren;
-		Ov_HeapRealloc(explored, numberOfNodes * sizeof(Node_t*));
-		for (OV_UINT i = 0; i < numberOfChildren; ++i) {
-			explored[numberOfNodes-numberOfChildren+i] = &children[i];
-			endOfNodes+=numberOfChildren;
+    list_t* children = constructList(sizeof(Data_t));
+    children->compare = compareNodes;
+		get_children(children, frontier->data);
+		listNode_t * child = NULL;
+		listIterate(children, child){
+			if(!listFind(explored, child->data)){
+				insertLast(explored, copyData(child->data));
+			}
+			listPrint(explored);
 		}
+		destructList(children);
+
+		//next
+    frontier = frontier->next;
   }
 
-  // free
-  Ov_HeapFree(explored);
+  //free
+  destructList(explored);
   return 0;
 }
 
@@ -430,40 +295,46 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
     recipes[i+1] = ov_path_getobjectpointer(pathStr, 2);
   }
 
-  OV_UINT pathLength = 0;
+  OV_UINT pathLengthSum = 0;
   for (OV_UINT i = 0; i < numberOfStations - 1; ++i) {
-    OV_INSTPTR_ov_object *path = NULL;
-    OV_UINT numOfStats = 0;
-    Node_t from = {
+    Data_t from = {
     	.self = recipes[i],
 			.pparent = NULL,
 			.depth = 1,
 			.type = ROLLER
     };
-    Node_t to	=	{
+    Data_t to	=	{
     	.self = recipes[i+1],
     };
 
     //list
-    list_t* list =  constructList(sizeof(Node_t));
-    list->printNode = printNode;
-    insertLast(list, &from);
-    insertLast(list, &to);
-    displayForward(list);
-
-    result = find_path(&path, &numOfStats, &from, &to);
+    list_t* path =  constructList(sizeof(Data_t));
+    path->printNode = printNode;
+    result = find_path(path, &from, &to);
+    listPrint(path);
     if (Ov_Fail(result)) {
       ov_logfile_error("no path");
       return result;
     }
-    pathLength += numOfStats;
-    Ov_HeapRealloc(solution, solLength + numOfStats - 1);
-    memccpy(solution + solLength, path, 1000,
-            (numOfStats - 1) * sizeof(OV_INSTPTR_smscrmlogistic_RollerTable));
-  }
-  Ov_SetDynamicVectorLength(&pinst->v_path, pathLength, STRING);
-  for (OV_UINT i = 0; i < pathLength; ++i) {
-    ov_string_setvalue(&pinst->v_path.value[i], solution[i]->v_identifier);
+    //expanding arrays
+    OV_UINT pathLength = listLength(path);
+    pathLengthSum += pathLength-1;
+    Ov_SetDynamicVectorLength(&pinst->v_pathNode, pathLengthSum, STRING);
+    Ov_SetDynamicVectorLength(&pinst->v_pathDir, pathLengthSum, STRING);
+
+    //printing
+    listNode_t* element = NULL;
+    OV_STRING* currentNode = (pinst->v_pathNode.value) +(pathLengthSum-pathLength+1);
+    OV_STRING* currentDir	= (pinst->v_pathDir.value) + (pathLengthSum-pathLength+1);
+    listIterate(path, element){
+    	if(!element->prev){
+    		continue;
+    	}
+    	ov_string_setvalue(currentNode, ((Data_t*)element->data)->self->v_identifier);
+    	ov_string_setvalue(currentDir, dirToStr[((Data_t*)element->data)->parentdirection]);
+    	currentNode++;
+    	currentDir++;
+    }
   }
   return result;
 }
@@ -476,7 +347,8 @@ graphSearch_bfs_EN_set(OV_INSTPTR_graphSearch_bfs pobj, const OV_UINT value) {
     OV_INSTPTR_graphSearch_execute(pobj);
     break;
   case 3:
-    Ov_SetDynamicVectorLength(&pobj->v_path, 0, STRING);
+    Ov_SetDynamicVectorLength(&pobj->v_pathNode, 0, STRING);
+    Ov_SetDynamicVectorLength(&pobj->v_pathDir, 0, STRING);
     pobj->v_result = 0;
     break;
   default:

@@ -13,26 +13,32 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-struct listNode {
+typedef struct listNode {
    struct listNode *next;
    struct listNode *prev;
 
    void* data;
-};
+} listNode_t;
 
 typedef struct list {
 	//this link always point to first Link
-	struct listNode *head;
+	listNode_t *head;
 
 	//this link always point to last Link
-	struct listNode *last;
+	listNode_t *last;
 
 	int dataSize;
-  void (*printNode)(struct listNode*);
-  void (*compare)(struct listNode*, struct listNode*);
+  void (*printNode)(listNode_t*);
+  int (*compare)(void*, void*);
 } list_t;
 
-
+listNode_t* createNode(void* data){
+	listNode_t* node = (listNode_t*)malloc(sizeof(listNode_t));
+	node->data = data;
+	node->next = NULL;
+	node->prev = NULL;
+	return node;
+}
 
 list_t* constructList(size_t dataSize){
 	list_t* list = malloc(sizeof(list_t));
@@ -48,7 +54,7 @@ int destructList(list_t* list){
 	  }
 
 	  while (list->head!= NULL) {
-	    struct listNode *node = list->head;
+	    listNode_t *node = list->head;
 	    list->head = node->next;
 	    free(node);
 	  }
@@ -63,9 +69,9 @@ bool isEmpty(list_t* list) {
    return list->head == NULL;
 }
 
-int length(list_t* list) {
+int listLength(list_t* list) {
    int length = 0;
-   struct listNode *current;
+   listNode_t *current;
 
    for(current = list->head; current != NULL; current = current->next){
       length++;
@@ -75,10 +81,10 @@ int length(list_t* list) {
 }
 
 //display the list in from first to last
-void displayForward(list_t* list) {
+void listPrint(list_t* list) {
 
    //start from the beginning
-   struct listNode *ptr = list->head;
+   listNode_t *ptr = list->head;
 
    //navigate till the end of the list
    printf("\n[ ");
@@ -91,34 +97,11 @@ void displayForward(list_t* list) {
    printf(" ]");
 }
 
-//display the list from last to first
-void displayBackward(list_t* list) {
-
-   //start from the last
-   struct listNode *ptr = list->last;
-
-   //navigate till the start of the list
-   printf("\n[ ");
-
-   while(ptr != NULL) {
-
-      //print data
-  	 (*(list->printNode))(ptr);
-
-      //move to next item
-      ptr = ptr ->prev;
-
-   }
-
-}
-
 //insert link at the first location
 void insertFirst(list_t* list, void* data) {
 
    //create a link
-   struct listNode *link = (struct listNode*) malloc(sizeof(struct listNode));
-
-   link->data = data;
+   listNode_t *link = createNode(data);
 
    if(isEmpty(list)) {
       //make it the last link
@@ -140,8 +123,7 @@ void insertLast(list_t* list, void* data)
 {
 
    //create a link
-   struct listNode *link = (struct listNode*) malloc(sizeof(struct listNode));
-   link->data = data;
+   listNode_t *link = createNode(data);
 
    if(isEmpty(list)) {
       //make it the last link
@@ -160,10 +142,10 @@ void insertLast(list_t* list, void* data)
 
 
 //delete first item
-struct listNode* deleteFirst(list_t* list) {
+listNode_t* deleteFirst(list_t* list) {
 
    //save reference to first link
-   struct listNode *tempLink = list->head;
+   listNode_t *tempLink = list->head;
 
    //if only one link
    if(list->head->next == NULL){
@@ -179,9 +161,9 @@ struct listNode* deleteFirst(list_t* list) {
 
 //delete link at the last location
 
-struct listNode* deleteLast(list_t* list) {
+listNode_t* deleteLast(list_t* list) {
    //save reference to last link
-   struct listNode *tempLink = list->last;
+   listNode_t *tempLink = list->last;
 
    //if only one link
    if(list->head->next == NULL) {
@@ -196,52 +178,32 @@ struct listNode* deleteLast(list_t* list) {
    return tempLink;
 }
 
-//delete a link with given key
+//find a link with given key
 
-//struct node* delete(list_t* list, int key) {
-//
-//   //start from the first link
-//   struct node* current = list->head;
-//   struct node* previous = NULL;
-//
-//   //if list is empty
-//   if(list->head == NULL) {
-//      return NULL;
-//   }
-//
-//   //navigate through list
-//   while(current->key != key) {
-//      //if it is last node
-//
-//      if(current->next == NULL) {
-//         return NULL;
-//      } else {
-//         //store reference to current link
-//         previous = current;
-//
-//         //move to next link
-//         current = current->next;
-//      }
-//   }
-//
-//   //found a match, update the link
-//   if(current == list->head) {
-//      //change first to point to next link
-//  	 list->head = list->head->next;
-//   } else {
-//      //bypass the current link
-//      current->prev->next = current->next;
-//   }
-//
-//   if(current == list->last) {
-//      //change last to point to prev link
-//  	 list->last = current->prev;
-//   } else {
-//      current->next->prev = current->prev;
-//   }
-//
-//   return current;
-//}
+listNode_t* listFind(list_t* list, void* data) {
+
+   //start from the first link
+   listNode_t* current = list->head;
+
+   //if list is empty
+   if(list->head == NULL) {
+      return NULL;
+   }
+
+
+   //navigate through list
+   while((*(list->compare))(current->data, data)) {
+      //if it is last node
+      if(current->next == NULL) {
+         return NULL;
+      } else {
+         //move to next link
+         current = current->next;
+      }
+   }
+   //found a match
+   return current;
+}
 
 //bool insertAfter(int key, int newKey, int data) {
 //   //start from the first link
@@ -281,5 +243,15 @@ struct listNode* deleteLast(list_t* list) {
 //   current->next = newLink;
 //   return true;
 //}
+
+void listConcat(list_t* l1, list_t* l2){
+	l1->last->next = l2->head;
+	l2->head->prev = l1->last;
+	l1->last = l2->last;
+}
+
+
+//Macros
+#define listIterate(list, element) for(element = (list != NULL) ? (list)->head: NULL; element != NULL; element = element->next)
 
 #endif /* LIST_H_ */

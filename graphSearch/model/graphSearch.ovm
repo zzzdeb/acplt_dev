@@ -22,7 +22,8 @@ LIBRARY graphSearch
 			recipe[]	:		STRING 	FLAGS="i"		COMMENT="";
 			EN				: 	UINT		HAS_SET_ACCESSOR FLAGS="i"		COMMENT="0: done & ready 1: run 3: clean";
 			
-			path[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe";
+			pathNode[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Nodes";
+			pathDir[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Direction";
 			result		:		INT			FLAGS="o"		COMMENT="0: succes 1: error";
 		END_VARIABLES;
 		OPERATIONS

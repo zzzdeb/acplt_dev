@@ -2,6 +2,7 @@
 !/.gitignore
 !/CTree
 !/eks
+!/graphSearch
 /*/.cproject
 /*/.project
 /*/.settings
