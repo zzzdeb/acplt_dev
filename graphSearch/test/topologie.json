@@ -1,0 +1,1198 @@
+{
+    "Libraries": [
+        "ov",
+        "SMSTopologie"
+    ],
+    "Tree": {
+        "Topology": {
+            "class": "ov/domain",
+            "children": {
+                "PE031": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE030"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "SchieberUL": {
+                            "of_association": "SMSTopologie/SchieberUntenL",
+                            "parents": [
+                                "~/PE034"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE034": {
+                    "variables": {
+                        "CurrentLocation": [
+                            "BOOL",
+                            true
+                        ],
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:32:10.811384"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangOL": {
+                            "of_association": "SMSTopologie/SchieberObenR",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE004"
+                            ]
+                        },
+                        "RollgangOR": {
+                            "of_association": "SMSTopologie/SchieberObenL",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE005"
+                            ]
+                        },
+                        "RollgangUR": {
+                            "of_association": "SMSTopologie/SchieberUntenL",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE031"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Schieber"
+                },
+                "PE033": {
+                    "variables": {
+                        "CurrentLocation": [
+                            "BOOL",
+                            true
+                        ],
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:32:47.769095"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangOL": {
+                            "of_association": "SMSTopologie/SchieberObenR",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE011"
+                            ]
+                        },
+                        "RollgangOR": {
+                            "of_association": "SMSTopologie/SchieberObenL",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE018"
+                            ]
+                        },
+                        "RollgangUL": {
+                            "of_association": "SMSTopologie/SchieberUntenR",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE027"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Schieber"
+                },
+                "PE004": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "SchieberOR": {
+                            "of_association": "SMSTopologie/SchieberObenR",
+                            "parents": [
+                                "~/PE034"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE005": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE008"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "SchieberOL": {
+                            "of_association": "SMSTopologie/SchieberObenL",
+                            "parents": [
+                                "~/PE034"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE008": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE005"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE009"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE009": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE008"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE010"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE010": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE009"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE011"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE011": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE010"
+                            ]
+                        },
+                        "SchieberOR": {
+                            "of_association": "SMSTopologie/SchieberObenR",
+                            "parents": [
+                                "~/PE033"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE018": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "SchieberOL": {
+                            "of_association": "SMSTopologie/SchieberObenL",
+                            "parents": [
+                                "~/PE033"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE027": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE028"
+                            ]
+                        },
+                        "SchieberUR": {
+                            "of_association": "SMSTopologie/SchieberUntenR",
+                            "parents": [
+                                "~/PE033"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE028": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE025"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE027"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE025": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE030"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE028"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                },
+                "PE030": {
+                    "variables": {
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            true
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "proctime": [
+                            "TIME",
+                            "2018/05/18 17:31:28.579567"
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "calctime": [
+                            "TIME_SPAN", [
+                                0,
+                                0
+                            ]
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ]
+                    },
+                    "links": {
+                        "RollgangL": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "this"
+                            ],
+                            "children": [
+                                "~/PE031"
+                            ]
+                        },
+                        "RollgangR": {
+                            "of_association": "SMSTopologie/RG",
+                            "parents": [
+                                "~/PE025"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        },
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "/Tasks/UrTask"
+                            ],
+                            "children": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "class": "SMSTopologie/Rollgang"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/Topology"
+}
