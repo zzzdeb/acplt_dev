@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "libov/ov_ov.h"
+#include "libov/ov_macros.h"
 
 typedef struct listNode {
    struct listNode *next;
@@ -30,10 +32,11 @@ typedef struct list {
 	int dataSize;
   void (*printNode)(listNode_t*);
   int (*compare)(void*, void*);
+  OV_BOOL (*is_same)(void*, void*);
 } list_t;
 
 listNode_t* createNode(void* data){
-	listNode_t* node = (listNode_t*)malloc(sizeof(listNode_t));
+	listNode_t* node = (listNode_t*)Ov_HeapMalloc(sizeof(listNode_t));
 	node->data = data;
 	node->next = NULL;
 	node->prev = NULL;
@@ -41,11 +44,12 @@ listNode_t* createNode(void* data){
 }
 
 list_t* constructList(size_t dataSize){
-	list_t* list = malloc(sizeof(list_t));
+	list_t* list = Ov_HeapMalloc(sizeof(list_t));
 	list->head = NULL;
 	list->last = NULL;
 
 	list->dataSize = dataSize;
+	return list;
 }
 
 int destructList(list_t* list){
@@ -56,10 +60,10 @@ int destructList(list_t* list){
 	  while (list->head!= NULL) {
 	    listNode_t *node = list->head;
 	    list->head = node->next;
-	    free(node);
+	    Ov_HeapFree(node);
 	  }
 
-	  free(list);
+	  Ov_HeapFree(list);
 
 	  return 0;
 	}
@@ -192,7 +196,7 @@ listNode_t* listFind(list_t* list, void* data) {
 
 
    //navigate through list
-   while((*(list->compare))(current->data, data)) {
+   while(!(*(list->is_same))(current->data, data)) {
       //if it is last node
       if(current->next == NULL) {
          return NULL;
@@ -248,6 +252,7 @@ void listConcat(list_t* l1, list_t* l2){
 	l1->last->next = l2->head;
 	l2->head->prev = l1->last;
 	l1->last = l2->last;
+  Ov_HeapFree(l2);
 }
 
 
