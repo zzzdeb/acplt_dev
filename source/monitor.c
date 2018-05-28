@@ -7,7 +7,7 @@
 *
 *   History
 *   -------
-*   2018-05-17   File created
+*   2018-05-28   File created
 *
 *******************************************************************************
 *
@@ -24,6 +24,23 @@
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
 
+
+OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
+	OV_INSTPTR_ov_object 	pobj
+) {
+    /*    
+    *   local variables
+    */
+    OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pobj);
+
+    /* do what the base class does first */
+    fb_functionblock_startup(pobj);
+
+    /* do what */
+
+
+    return;
+}
 
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,

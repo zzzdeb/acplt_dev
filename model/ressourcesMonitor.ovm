@@ -8,35 +8,32 @@ LIBRARY ressourcesMonitor
 	COMMENT   = "";
 	
 	/**
-		Documentation of monitor.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+		Ressources & Environment Monitor
+		
+		Provides information about system environment and ressources usage in a Function Block interface. 
 	*/
 	CLASS monitor : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
 			// Add variables here. The syntax is:
 			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+			sysOS : STRING FLAGS="o" COMMENT="Operating System of this system (linux, nt, ...)";
+			sysOSVersion : STRING FLAGS="o" COMMENT="Operating System (Kernel) Version";
+			sysArch : STRING FLAGS="o" COMMENT="System Architecture (i386, amd64, armvX, arm64)";
+			cpuType : STRING FLAGS="o" COMMENT="Model name of this system's CPU.";
+			cpuUsage : SINGLE FLAGS="o" COMMENT="Average CPU usage (computation time/total time) during last update interval";
+			memSize : INT FLAGS="o" COMMENT="System memory in kiB";
+			memUsed : INT FLAGS="o" COMMENT="Used memory in kiB (does not include Buffers and Caches on Linuxes)";
+			ovDBLimit : INT FLAGS="o" COMMENT="Maximum size of the OV database in kiB";
+			ovDBSize : INT FLAGS="o" COMMENT="Current size of the OV database in kiB";
+			ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
+			ovFbUrCycTime : TIME_SPAN FLAGS="o" COMMENT="Cycle time of the Fb UrTask";
+			ovFbUrCalcTime : TIME_SPAN FLAGS="o" COMMENT="Required calculation time of the Fb UrTask's last execution";
 		END_VARIABLES;
 		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in ressourcesMonitor.ovf. Implement the functions in monitor.c.
-			// fb/functionblock based classes have to implement typemethod
+			startup     : C_FUNCTION <OV_FNC_STARTUP>;
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
-	
-	/**
-		Add associations and their documentation here.
-		Association syntax is:
-	*/
-	//ASSOCIATION assocName : ONE_TO_MANY
-	//	PARENT parentVarName : CLASS ov/object;
-	//	CHILD  childVarName : CLASS ov/object;
-	//END_ASSOCIATION;
 	
 END_LIBRARY;
