@@ -24,7 +24,8 @@ LIBRARY graphSearch
 			
 			pathNode[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Nodes";
 			pathDir[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Direction";
-			result		:		INT			FLAGS="o"		COMMENT="0: succes 1: error";
+			parameter[]		:		STRING	FLAGS="o"		COMMENT="parameters";
+			result		:		INT			FLAGS="o"		COMMENT="0: succes, 1: error, 4: badparam";
 		END_VARIABLES;
 		OPERATIONS
 			// Declare functions here. You may use your own function types, e.g. MY_FUNC,

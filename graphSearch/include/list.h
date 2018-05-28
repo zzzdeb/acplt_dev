@@ -52,6 +52,15 @@ list_t* constructList(size_t dataSize){
 	return list;
 }
 
+OV_RESULT ovlist_init(list_t* list){
+	list->head = NULL;
+	list->last = NULL;
+	list->printNode = NULL;
+	list->compare = NULL;
+	list->is_same = NULL;
+	return 0;
+}
+
 int destructList(list_t* list){
 	  if (list == NULL) {
 	    return 1;
