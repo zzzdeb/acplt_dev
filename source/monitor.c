@@ -23,7 +23,77 @@
 
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_config.h"
 
+#if OV_SYSTEM_NT
+#include <windows.h>
+#endif
+
+#if OV_SYSTEM_LINUX
+#include <sys/utsname.h>
+#endif
+
+// Macro for server OS
+// Copied from fb/fb_namedef.h
+#if OV_SYSTEM_HPUX == 1
+#define SERVER_SYSTEM "hpux"
+#elif OV_SYSTEM_LINUX == 1
+#define SERVER_SYSTEM "linux"
+#elif OV_SYSTEM_NT == 1
+#define SERVER_SYSTEM "nt"
+#elif OV_SYSTEM_OPENVMS == 1
+#define SERVER_SYSTEM "openvms"
+#elif OV_SYSTEM_SOLARIS == 1
+#define SERVER_SYSTEM "solaris"
+#elif OV_SYSTEM_MC164 == 1
+#define SERVER_SYSTEM "mc164"
+#else
+#define SERVER_SYSTEM "unknown"
+#endif
+
+// Macro for cpu architecture
+// See https://sourceforge.net/p/predef/wiki/Architectures/ for reference
+#if defined(__aarch64__)
+#define SERVER_ARCH "arm64"
+#elif defined (__arm__)
+#define SERVER_ARCH "arm"
+#elif defined(__amd64__) || defined(__x86_64__) || defined(_M_AMD64)
+#define SERVER_ARCH "amd64"
+#elif defined(__i386__) || defined(_X86_) || defined(__i686__) || defined(_M_ARM)
+#define SERVER_ARCH "i386"
+#else
+#define SERVER_ARCH "unknown"
+#endif
+
+#define MAX_VERSION_STRING_LEN 255
+
+OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
+	OV_INSTPTR_ov_object 	pobj
+) {
+    OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pobj);
+
+    /* do what the base class does first */
+    fb_functionblock_startup(pobj);
+
+    /* Initialize constant environment properties */
+    ov_string_setvalue(&pinst->v_sysOS, SERVER_SYSTEM);
+    ov_string_setvalue(&pinst->v_sysArch, SERVER_ARCH);
+
+    /* Read Linux/Windows version */
+#if OV_SYSTEM_LINUX
+    struct utsname buf;
+    uname(&buf);
+    ov_string_setvalue(&pinst->v_sysOSVersion, buf.release);
+#elif OV_SYSTEM_NT
+    // See https://msdn.microsoft.com/de-de/library/windows/desktop/ms724451(v=vs.85).aspx
+    // and https://msdn.microsoft.com/de-de/library/windows/desktop/ms724833(v=vs.85).aspx
+    OSVERSIONINFO osvi;
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osvi);
+    ov_string_print(&pinst->v_sysOSVersion, "%u.%u", osvi.dwMajorVersion, osvi.dwMinorVersion);
+#endif
+}
 
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
 	OV_INSTPTR_ov_object 	pobj
