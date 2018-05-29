@@ -347,6 +347,14 @@ OV_RESULT BFS(list_t *path, Data_t *proot, Data_t *ptarget) {
 	return 1;
 }
 
+OV_BOOL isDataOfen(const Data_t* data) {
+	return ov_string_compare(data->self->v_identifier, "PE009") == OV_STRCMP_EQUAL;
+}
+
+OV_BOOL isDataDrehtisch(Data_t* data) {
+	return ov_string_compare(data->self->v_identifier, "PE025") == OV_STRCMP_EQUAL;
+}
+
 #define SEPERATOR "_"
 OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 	if(!data || !path) return OV_ERR_BADPARAM;
@@ -375,24 +383,39 @@ OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 			return 0;
 			//todo: free mem
 		} else
+			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
 			return OV_ERR_BADPARAM;
 	}
 
 	//ofen || drehtisch
 	data->actions = constructList(sizeof(Data_t));
 	Data_t* actionNode = constructData();
-	if(ov_string_compare(splited[1], "heat") == OV_STRCMP_EQUAL
-			&& ov_string_compare(data->self->v_identifier, "PE009") == OV_STRCMP_EQUAL) {
-		data->type = OFEN;
-		*actionNode = *data;
-		actionNode->actionOfParent = HEAT;
-		insertLast(data->actions, actionNode);
-	} else if(ov_string_compare(splited[1], "turn") == OV_STRCMP_EQUAL
-			&& ov_string_compare(data->self->v_identifier, "PE025") == OV_STRCMP_EQUAL) {
-		data->type = DREHTISCH;
-		*actionNode = *data;
-		actionNode->actionOfParent = TURN;
-		insertLast(data->actions, actionNode);
+	if(ov_string_compare(splited[1], "heat") == OV_STRCMP_EQUAL) {
+		if(isDataOfen(data)) {
+			data->type = OFEN;
+			*actionNode = *data;
+			actionNode->actionOfParent = HEAT;
+			insertLast(data->actions, actionNode);
+		} else {
+			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+			ov_string_freelist(splited);
+			return OV_ERR_BADPARAM;
+		}
+	} else if(ov_string_compare(splited[1], "turn") == OV_STRCMP_EQUAL) {
+		if(isDataDrehtisch(data)) {
+			data->type = DREHTISCH;
+			*actionNode = *data;
+			actionNode->actionOfParent = TURN;
+			insertLast(data->actions, actionNode);
+		} else {
+			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+			ov_string_freelist(splited);
+			return OV_ERR_BADPARAM;
+		}
+	} else {
+		ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+		ov_string_freelist(splited);
+		return OV_ERR_BADPARAM;
 	}
 	ov_string_freelist(splited);
 	return 0;
@@ -419,27 +442,27 @@ OV_STRING get_param(Data_t* data) {
 }
 
 OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
-	// variables
+// variables
 	OV_RESULT result = OV_ERR_OK;
 	Data_t* recipes = NULL;
 
-	// param check
+// param check
 	if(!ov_path_getobjectpointer(pinst->v_topologie, 2)) {
 		ov_logfile_error("topology could not be found");
 		return OV_ERR_BADPARAM;
 	}
 
-	// get start
+// get start
 	OV_STRING pathStr = NULL;
 	ov_string_print(&pathStr, "%s/%s", pinst->v_topologie, pinst->v_start);
 	OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pathStr, 2);
-	// param check
+// param check
 	if(!proot) {
 		ov_logfile_error("start object could not be found");
 		return OV_ERR_BADPARAM;
 	}
 
-	// get recipes
+// get recipes
 	OV_UINT numberOfStations = 1 + pinst->v_recipe.veclen;
 	recipes = Ov_HeapMalloc(numberOfStations * sizeof(Data_t));
 	initData(&recipes[0], proot);
@@ -456,7 +479,7 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 	}
 	ov_string_setvalue(&pathStr, NULL);
 
-	// bfs
+// bfs
 	OV_UINT pathLengthSum = 0;
 	Data_t from;
 	from = recipes[0];
