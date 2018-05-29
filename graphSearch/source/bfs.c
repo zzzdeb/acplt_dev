@@ -33,7 +33,6 @@
 #include "smscrmlogistic.h"
 
 #include <stdlib.h>
-#include <sys/queue.h>
 
 enum RollerAction {
 	UP, RIGHT, DOWN, LEFT, HEAT, TURN, MAXCHILDNUM
@@ -129,7 +128,7 @@ OV_BOOL is_samedata_tmp(Data_t *r1, Data_t *r2) {
 
 /* how to print data in listPrint */
 void printData(struct listNode *node) {
-	printf("(%d, %s, %d, %s)", ((Data_t *) node->data)->type,
+	ov_logfile_info("(%d, %s, %d, %s)", ((Data_t *) node->data)->type,
 		actionToStr[((Data_t *) node->data)->actionOfParent],
 		((Data_t *) node->data)->position,
 		((Data_t *) node->data)->self->v_identifier);
@@ -141,6 +140,8 @@ OV_RESULT get_children(list_t *children, Data_t *parent) {
 	OV_INSTPTR_SMSTopologie_Schieber pparentS = NULL;
 
 	switch (parent->type) {
+		case OFEN:
+		case DREHTISCH:
 		case ROLLER:
 			pparentRG = Ov_StaticPtrCast(SMSTopologie_Rollgang, parent->self);
 			break;
@@ -345,6 +346,7 @@ OV_RESULT BFS(list_t *path, Data_t *proot, Data_t *ptarget) {
 	destructList(explored);
 	return 1;
 }
+
 #define SEPERATOR "_"
 OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 	if(!data || !path) return OV_ERR_BADPARAM;
@@ -379,12 +381,14 @@ OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 	//ofen || drehtisch
 	data->actions = constructList(sizeof(Data_t));
 	Data_t* actionNode = constructData();
-	if(ov_string_compare(splited[1], "heat") == OV_STRCMP_EQUAL) {
+	if(ov_string_compare(splited[1], "heat") == OV_STRCMP_EQUAL
+			&& ov_string_compare(data->self->v_identifier, "PE009") == OV_STRCMP_EQUAL) {
 		data->type = OFEN;
 		*actionNode = *data;
 		actionNode->actionOfParent = HEAT;
 		insertLast(data->actions, actionNode);
-	} else if(ov_string_compare(splited[1], "turn") == OV_STRCMP_EQUAL) {
+	} else if(ov_string_compare(splited[1], "turn") == OV_STRCMP_EQUAL
+			&& ov_string_compare(data->self->v_identifier, "PE025") == OV_STRCMP_EQUAL) {
 		data->type = DREHTISCH;
 		*actionNode = *data;
 		actionNode->actionOfParent = TURN;
@@ -462,7 +466,6 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 		list_t *path = constructList(sizeof(Data_t));
 		path->printNode = &printData;
 		result = BFS(path, &from, &recipes[i]);
-		listPrint(path);
 		if(Ov_Fail(result)) {
 			ov_logfile_error("No path found from %s to %s", from.self->v_identifier,
 				recipes[i].self->v_identifier);
@@ -471,39 +474,51 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 			destructList(path);
 			return result;
 		}
+		//debug
+		// listPrint(path);
+		//cut start element
+
+		if(((Data_t*) path->head->data)->actions)
+			destructList(((Data_t*) path->head->data)->actions);
+		deleteFirst(path);
+
 		// setting next from
 		from = *(Data_t *) (path->last->data);
 		from.pparent = NULL;
 		from.depth = 1;
+		from.actions = NULL;
 
 		// expanding arrays
 		listNode_t *element = NULL;
 		OV_UINT pathLength = listLength(path);
 		listIterate(path, element)
 		{
+			//debug
+			// if(((Data_t *) element->data)->actions) {
+			// 	((list_t*) ((Data_t *) element->data)->actions)->printNode = &printData;
+			// 	listPrint(((Data_t *) element->data)->actions);
+			// }
+
 			pathLength +=
 					((Data_t *) element->data)->actions ?
 							listLength(((Data_t *) element->data)->actions) : 0;
 		}
-		pathLengthSum += pathLength - 1;
+		pathLengthSum += pathLength;
 		Ov_SetDynamicVectorLength(&pinst->v_pathNode, pathLengthSum, STRING);
 		Ov_SetDynamicVectorLength(&pinst->v_pathDir, pathLengthSum, STRING);
 		Ov_SetDynamicVectorLength(&pinst->v_parameter, pathLengthSum, STRING);
 
 		// printing
 		OV_STRING *currentNode = (pinst->v_pathNode.value)
-				+ (pathLengthSum - (pathLength - 1));
+				+ (pathLengthSum - pathLength);
 		OV_STRING *currentAction = (pinst->v_pathDir.value)
-				+ (pathLengthSum - (pathLength - 1));
+				+ (pathLengthSum - pathLength);
 		OV_STRING *currentParam = (pinst->v_parameter.value)
-				+ (pathLengthSum - (pathLength - 1));
+				+ (pathLengthSum - pathLength);
 
 		OV_INT i = 0;
 		listIterate(path, element)
 		{
-			if(!element->prev) {
-				continue;
-			}
 			ov_string_setvalue(currentNode + i,
 				((Data_t *) element->data)->self->v_identifier);
 			ov_string_setvalue(currentAction + i,
@@ -539,7 +554,8 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 			}
 		}
 		//free
-		listIterate(path, element){
+		listIterate(path, element)
+		{
 			if(((Data_t *) element->data)->actions)
 				destructList(((Data_t *) element->data)->actions);
 		}
