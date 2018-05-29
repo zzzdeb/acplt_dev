@@ -24,6 +24,8 @@
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_config.h"
+#include "libov/ov_database.h"
+#include "fb_database.h"
 
 #if OV_SYSTEM_NT
 #include <windows.h>
@@ -67,6 +69,44 @@
 
 #define MAX_VERSION_STRING_LEN 255
 
+
+/**
+ * Uninlined function to update the list of currently loaded ov libraries on a monitor object.
+ *
+ * Code based on ov_vendortree_getlibraries()
+ *
+ * @param pinst The monitor instantce to update its library list
+ */
+static void monitor_update_libs(OV_INSTPTR_ressourcesMonitor_monitor pinst) {
+	/* count associations */
+	OV_UINT libs = 0;
+	OV_INSTPTR_ov_library plib;
+	Ov_ForEachChildEx(ov_instantiation, pclass_ov_library, plib, ov_library) {
+		libs++;
+	}
+	OV_INSTPTR_ov_class pclass;
+	Ov_ForEachChild(ov_inheritance, pclass_ov_library, pclass) {
+		Ov_ForEachChildEx(ov_instantiation, pclass, plib, ov_library) {
+			libs++;
+		}
+	}
+	Ov_SetDynamicVectorLength(&pinst->v_ovLibs, libs, STRING);
+
+	/* enter library paths into a string vector */
+	libs = 0;
+	Ov_ForEachChildEx(ov_instantiation, pclass_ov_library, plib, ov_library) {
+		ov_string_setvalue(&(pinst->v_ovLibs.value[libs++]), plib->v_identifier);
+	}
+	Ov_ForEachChild(ov_inheritance, pclass_ov_library, pclass) {
+		Ov_ForEachChildEx(ov_instantiation, pclass, plib, ov_library) {
+			ov_string_setvalue(&(pinst->v_ovLibs.value[libs++]), plib->v_identifier);
+		}
+	}
+}
+
+
+
+
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
 	OV_INSTPTR_ov_object 	pobj
 ) {
@@ -93,17 +133,29 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
     GetVersionEx(&osvi);
     ov_string_print(&pinst->v_sysOSVersion, "%u.%u", osvi.dwMajorVersion, osvi.dwMinorVersion);
 #endif
+
+    // TODO find cpu type
+    // TODO find mem size
 }
 
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
-    /*    
-    *   local variables
-    */
     OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pfb);
 
-    return;
+    /* Update database size and usage */
+    pinst->v_ovDBSize = ov_database_getsize() / 1024;
+    pinst->v_ovDBUsed = ov_database_getused() / 1024;
+
+    /* Update fb Urtask timings */
+    pinst->v_ovFbUrCycTime = ((OV_INSTPTR_fb_task)fb_database_geturtask())->v_cyctime;
+    pinst->v_ovFbUrCalcTime = ((OV_INSTPTR_fb_task)fb_database_geturtask())->v_calctime;
+
+    /* Update OV libs */
+    monitor_update_libs(pinst);
+
+    // TODO update CPU usage
+    // TODO update mem usage
 }
 
