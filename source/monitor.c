@@ -59,7 +59,7 @@
 #define SERVER_ARCH "arm"
 #elif defined(__amd64__) || defined(__x86_64__) || defined(_M_AMD64)
 #define SERVER_ARCH "amd64"
-#elif defined(__i386__) || defined(_X86_) || defined(__i686__) || defined(_M_ARM)
+#elif defined(__i386__) || defined(_X86_) || defined(__i686__) || defined(_M_ARM)
 #define SERVER_ARCH "i386"
 #else
 #define SERVER_ARCH "unknown"
@@ -93,23 +93,6 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
     GetVersionEx(&osvi);
     ov_string_print(&pinst->v_sysOSVersion, "%u.%u", osvi.dwMajorVersion, osvi.dwMinorVersion);
 #endif
-}
-
-OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
-	OV_INSTPTR_ov_object 	pobj
-) {
-    /*    
-    *   local variables
-    */
-    OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pobj);
-
-    /* do what the base class does first */
-    fb_functionblock_startup(pobj);
-
-    /* do what */
-
-
-    return;
 }
 
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
