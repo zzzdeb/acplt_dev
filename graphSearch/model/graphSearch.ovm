@@ -35,6 +35,16 @@ LIBRARY graphSearch
 		END_OPERATIONS;
 	END_CLASS;
 	
+	CLASS testBfs	: CLASS graphSearch/bfs
+		IS_INSTANTIABLE;
+		VARIABLES
+			
+		END_VARIABLES;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 	/**
 		Add associations and their documentation here.
 		Association syntax is:

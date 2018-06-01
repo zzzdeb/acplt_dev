@@ -115,7 +115,7 @@ OV_BOOL is_samedata(Data_t *r1, Data_t *r2) {
 
 OV_BOOL is_samedata_tmp(Data_t *r1, Data_t *r2) {
 	if(r1->self != r2->self) return 0;
-	switch (r1->type != SCHIEBER && r2->type != SCHIEBER) {
+	if (r1->type != SCHIEBER && r2->type != SCHIEBER) {
 		return 1;
 	}
 	if(r1->type == SCHIEBER) {
@@ -355,7 +355,7 @@ OV_BOOL isDataDrehtisch(Data_t* data) {
 	return ov_string_compare(data->self->v_identifier, "PE025") == OV_STRCMP_EQUAL;
 }
 
-#define SEPERATOR "_"
+#define SEPERATOR " "
 OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 	if(!data || !path) return OV_ERR_BADPARAM;
 
@@ -383,37 +383,41 @@ OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
 			return 0;
 			//todo: free mem
 		} else
-			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
-			return OV_ERR_BADPARAM;
+			ov_logfile_error("bad action %s on object %s", splited[1],
+				data->self->v_identifier);
+		return OV_ERR_BADPARAM;
 	}
 
 	//ofen || drehtisch
 	data->actions = constructList(sizeof(Data_t));
 	Data_t* actionNode = constructData();
-	if(ov_string_compare(splited[1], "heat") == OV_STRCMP_EQUAL) {
+	if(ov_string_compare(splited[1], "Heat") == OV_STRCMP_EQUAL) {
 		if(isDataOfen(data)) {
 			data->type = OFEN;
 			*actionNode = *data;
 			actionNode->actionOfParent = HEAT;
 			insertLast(data->actions, actionNode);
 		} else {
-			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+			ov_logfile_error("bad action %s on object %s", splited[1],
+				data->self->v_identifier);
 			ov_string_freelist(splited);
 			return OV_ERR_BADPARAM;
 		}
-	} else if(ov_string_compare(splited[1], "turn") == OV_STRCMP_EQUAL) {
+	} else if(ov_string_compare(splited[1], "Turn") == OV_STRCMP_EQUAL) {
 		if(isDataDrehtisch(data)) {
 			data->type = DREHTISCH;
 			*actionNode = *data;
 			actionNode->actionOfParent = TURN;
 			insertLast(data->actions, actionNode);
 		} else {
-			ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+			ov_logfile_error("bad action %s on object %s", splited[1],
+				data->self->v_identifier);
 			ov_string_freelist(splited);
 			return OV_ERR_BADPARAM;
 		}
 	} else {
-		ov_logfile_error("bad action %s on object %s", splited[1], data->self->v_identifier);
+		ov_logfile_error("bad action %s on object %s", splited[1],
+			data->self->v_identifier);
 		ov_string_freelist(splited);
 		return OV_ERR_BADPARAM;
 	}
@@ -441,7 +445,7 @@ OV_STRING get_param(Data_t* data) {
 	}
 }
 
-OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
+OV_RESULT graphSearch_bfs_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 // variables
 	OV_RESULT result = OV_ERR_OK;
 	Data_t* recipes = NULL;
@@ -501,9 +505,9 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 		// listPrint(path);
 		//cut start element
 
-		if(((Data_t*) path->head->data)->actions)
-			destructList(((Data_t*) path->head->data)->actions);
-		deleteFirst(path);
+//		if(((Data_t*) path->head->data)->actions)
+//			destructList(((Data_t*) path->head->data)->actions);
+//		deleteFirst(path);
 
 		// setting next from
 		from = *(Data_t *) (path->last->data);
@@ -513,9 +517,12 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 
 		// expanding arrays
 		listNode_t *element = NULL;
-		OV_UINT pathLength = listLength(path);
+		OV_UINT pathLength = listLength(path)-1;
 		listIterate(path, element)
 		{
+			//skipping first element
+			if(!element->prev)
+				continue;
 			//debug
 			// if(((Data_t *) element->data)->actions) {
 			// 	((list_t*) ((Data_t *) element->data)->actions)->printNode = &printData;
@@ -542,6 +549,10 @@ OV_RESULT OV_INSTPTR_graphSearch_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 		OV_INT i = 0;
 		listIterate(path, element)
 		{
+			//skipping first element
+			if(!element->prev)
+				continue;
+
 			ov_string_setvalue(currentNode + i,
 				((Data_t *) element->data)->self->v_identifier);
 			ov_string_setvalue(currentAction + i,
@@ -617,7 +628,7 @@ OV_DLLFNCEXPORT void graphSearch_bfs_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	 */
 	OV_INSTPTR_graphSearch_bfs pinst = Ov_StaticPtrCast(graphSearch_bfs, pfb);
 	OV_RESULT result = OV_ERR_OK;
-	result = OV_INSTPTR_graphSearch_execute(pinst);
+	result = graphSearch_bfs_execute(pinst);
 	switch (result) {
 		case OV_ERR_OK:
 			ov_logfile_info("bfs: done");
