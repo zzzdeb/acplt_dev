@@ -135,7 +135,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
 #endif
 
     // TODO find cpu type
-    // TODO find mem size
+    // TODO find mem size on Windows
 }
 
 OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
@@ -155,12 +155,13 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
     /* Update OV libs */
     monitor_update_libs(pinst);
 
-    /* Update CPU usage */
+    /* Update CPU and memory usage */
 #if OV_SYSTEM_LINUX
+    /* CPU usage on Linux (read /proc/stat) */
     FILE *fp = fopen("/proc/stat", "r");
     if (fp) {
 		char name[31];
-		OV_INT totalIdle, totalNonIdle, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+		OV_UINT totalIdle, totalNonIdle, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
 		// See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
 		// Section 1.8
 		fscanf(fp, "%30s %u %u %u %u %u %u %u %u %u %u",
@@ -176,10 +177,31 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
 		pinst->v_cpuLastTicks = totalIdle + totalNonIdle;
 		pinst->v_cpuLastIdleTicks = totalIdle;
     }
+
+    /* Memory usage on Linux (read /proc/meminfo) */
+    fp = fopen("/proc/meminfo", "r");
+	if (fp) {
+	    OV_UINT memTotal = 0, memAvail = 0;
+	    while (TRUE) {
+			char name[33];
+			unsigned long val;
+			int res = fscanf(fp, "%32s %lu kB", name, &val);
+			if (res <= 0)
+				break;
+			if (strcmp(name, "MemTotal:") == 0) {
+				memTotal = val;
+			} else if (strcmp(name, "MemAvailable:") == 0) {
+				memAvail = val;
+			}
+	    }
+		fclose(fp);
+
+		pinst->v_memSize = memTotal;
+		pinst->v_memUsed = memTotal - memAvail;
+	}
 #elif OV_SYSTEM_NT
     // TODO update CPU usage
-#endif
-
     // TODO update mem usage
+#endif
 }
 
