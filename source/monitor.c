@@ -104,6 +104,16 @@ static void monitor_update_libs(OV_INSTPTR_ressourcesMonitor_monitor pinst) {
 	}
 }
 
+#if OV_SYSTEM_NT && WINVER >= 0x0501
+/**
+ * Convert Windows API FILETIME structure to a simple uint64_t (alias unsigned long long)
+ *
+ * Source: https://stackoverflow.com/a/23148493
+ */
+static unsigned long long FileTimeToInt64(const FILETIME ft) {
+	return (((unsigned long long)(ft.dwHighDateTime)) << 32) | ((unsigned long long)(ft.dwLowDateTime));
+}
+#endif
 
 
 
@@ -199,8 +209,23 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
 		pinst->v_memSize = memTotal;
 		pinst->v_memUsed = memTotal - memAvail;
 	}
+
 #elif OV_SYSTEM_NT && WINVER >= 0x0501
-    // TODO update CPU usage
+	/* CPU usage on Windows (using GetSystemTimes()) */
+	unsigned long long scale_factor = 25000;
+	// See https://msdn.microsoft.com/de-de/library/windows/desktop/ms724400(v=vs.85).aspx
+	// and https://stackoverflow.com/a/23148493
+	// Requires WINVER >= 0x0501 (>= WinXP) to be set as compiler define flag
+	FILETIME idleTime, kernelTime, userTime;
+    GetSystemTimes(&idleTime, &kernelTime, &userTime);
+    OV_UINT totalIdle = FileTimeToInt64(idleTime) / scale_factor;
+    OV_UINT totalNonIdle = (FileTimeToInt64(kernelTime) - FileTimeToInt64(idleTime) + FileTimeToInt64(userTime)) / scale_factor;
+
+	pinst->v_cpuUsage = (OV_SINGLE)(totalNonIdle - pinst->v_cpuLastTicks + pinst->v_cpuLastIdleTicks)
+			/ (OV_SINGLE)(totalNonIdle + totalIdle - pinst->v_cpuLastTicks);
+	pinst->v_cpuLastTicks = totalIdle + totalNonIdle;
+	pinst->v_cpuLastIdleTicks = totalIdle;
+
 
 	/* Memory usage on Windows (using GlobalMemoryStatusEx()) */
 	// See https://msdn.microsoft.com/de-de/library/windows/desktop/aa366770(v=vs.85).aspx
