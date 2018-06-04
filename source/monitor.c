@@ -199,9 +199,17 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
 		pinst->v_memSize = memTotal;
 		pinst->v_memUsed = memTotal - memAvail;
 	}
-#elif OV_SYSTEM_NT
+#elif OV_SYSTEM_NT && WINVER >= 0x0501
     // TODO update CPU usage
-    // TODO update mem usage
+
+	/* Memory usage on Windows (using GlobalMemoryStatusEx()) */
+	// See https://msdn.microsoft.com/de-de/library/windows/desktop/aa366770(v=vs.85).aspx
+	// Requires WINVER >= 0x0501 (>= WinXP) to be set as compiler define flag
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	GlobalMemoryStatusEx(&memInfo);
+	pinst->v_memSize = memInfo.ullTotalPhys / 1024;
+	pinst->v_memUsed = (memInfo.ullTotalPhys - memInfo.ullAvailPhys) / 1024;
 #endif
 }
 
