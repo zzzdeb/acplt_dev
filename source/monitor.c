@@ -155,7 +155,31 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
     /* Update OV libs */
     monitor_update_libs(pinst);
 
+    /* Update CPU usage */
+#if OV_SYSTEM_LINUX
+    FILE *fp = fopen("/proc/stat", "r");
+    if (fp) {
+		char name[31];
+		OV_INT totalIdle, totalNonIdle, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+		// See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+		// Section 1.8
+		fscanf(fp, "%30s %u %u %u %u %u %u %u %u %u %u",
+				name, &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal, &guest, &guest_nice);
+		fclose(fp);
+		// See https://stackoverflow.com/questions/23367857
+		// or https://github.com/Leo-G/DevopsWiki/wiki/How-Linux-CPU-Usage-Time-and-Percentage-is-calculated
+		totalIdle = idle + iowait;
+		totalNonIdle = user + nice + system + irq + softirq + steal;
+
+		pinst->v_cpuUsage = (OV_SINGLE)(totalNonIdle - pinst->v_cpuLastTicks + pinst->v_cpuLastIdleTicks)
+				/ (OV_SINGLE)(totalNonIdle + totalIdle - pinst->v_cpuLastTicks);
+		pinst->v_cpuLastTicks = totalIdle + totalNonIdle;
+		pinst->v_cpuLastIdleTicks = totalIdle;
+    }
+#elif OV_SYSTEM_NT
     // TODO update CPU usage
+#endif
+
     // TODO update mem usage
 }
 

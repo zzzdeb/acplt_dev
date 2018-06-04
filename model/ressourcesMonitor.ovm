@@ -29,6 +29,9 @@ LIBRARY ressourcesMonitor
 			ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
 			ovFbUrCycTime : TIME_SPAN FLAGS="o" COMMENT="Cycle time of the Fb UrTask in s";
 			ovFbUrCalcTime : TIME_SPAN FLAGS="o" COMMENT="Required calculation time of the Fb UrTask's last execution in s";
+			
+			cpuLastTicks : UINT COMMENT="Saved number of total cpu time ticks at last measurement";
+			cpuLastIdleTicks : UINT COMMENT="Saved number of cpu idle time ticks at last measurement";
 		END_VARIABLES;
 		OPERATIONS
 			startup     : C_FUNCTION <OV_FNC_STARTUP>;
