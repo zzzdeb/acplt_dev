@@ -50,7 +50,7 @@
 #elif OV_SYSTEM_MC164 == 1
 #define SERVER_SYSTEM "mc164"
 #else
-#define SERVER_SYSTEM "unknown"
+#define SERVER_SYSTEM ""
 #endif
 
 // Macro for cpu architecture
@@ -64,7 +64,7 @@
 #elif defined(__i386__) || defined(_X86_) || defined(__i686__) || defined(_M_ARM)
 #define SERVER_ARCH "i386"
 #else
-#define SERVER_ARCH "unknown"
+#define SERVER_ARCH ""
 #endif
 
 #define MAX_VERSION_STRING_LEN 255
@@ -127,7 +127,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
 
     /* Initialize constant environment properties */
     ov_string_setvalue(&pinst->v_sysOS, SERVER_SYSTEM);
-    ov_string_setvalue(&pinst->v_sysArch, SERVER_ARCH);
+    ov_string_setvalue(&pinst->v_ovArch, SERVER_ARCH);
 
     /* Read Linux/Windows version */
 #if OV_SYSTEM_LINUX

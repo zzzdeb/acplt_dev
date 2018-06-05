@@ -2,8 +2,8 @@
 #include "fb.ovm"
 
 LIBRARY ressourcesMonitor
-	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
+	VERSION   = "V0.1 (Jun-2018)";
+	AUTHOR    = "Michael Thies";
 	COPYRIGHT = "";
 	COMMENT   = "";
 	
@@ -19,11 +19,11 @@ LIBRARY ressourcesMonitor
 			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
 			sysOS : STRING FLAGS="o" COMMENT="Operating System of this system (linux, nt, ...)";
 			sysOSVersion : STRING FLAGS="o" COMMENT="Operating System (Kernel) Version";
-			sysArch : STRING FLAGS="o" COMMENT="System Architecture (i386, amd64, armvX, arm64)";
 			cpuType : STRING FLAGS="o" COMMENT="Model name of this system's CPU.";
 			cpuUsage : SINGLE FLAGS="o" COMMENT="Average CPU usage (computation time/total time) during last update interval";
 			memSize : UINT FLAGS="o" COMMENT="System memory in kiB";
 			memUsed : UINT FLAGS="o" COMMENT="Used memory in kiB (does not include Buffers and Caches on Linuxes)";
+			ovArch : STRING FLAGS="o" COMMENT="OV cpu architecture (i386, amd64, arm, arm64)";
 			ovDBSize : UINT FLAGS="o" COMMENT="Maximum size of the OV database in kiB";
 			ovDBUsed : UINT FLAGS="o" COMMENT="Current size of the OV database in kiB";
 			ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
