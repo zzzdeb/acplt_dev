@@ -45,9 +45,7 @@ listNode_t* createNode(void* data){
 
 list_t* constructList(size_t dataSize){
 	list_t* list = Ov_HeapMalloc(sizeof(list_t));
-	list->head = NULL;
-	list->last = NULL;
-
+	ovlist_init(list);
 	list->dataSize = dataSize;
 	return list;
 }
@@ -73,7 +71,6 @@ int destructList(list_t* list){
 	  }
 
 	  Ov_HeapFree(list);
-
 	  return 0;
 	}
 

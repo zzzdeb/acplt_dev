@@ -4,10 +4,10 @@
 #include "SMSTopologie.ovm"
 
 LIBRARY graphSearch
-	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
-	COPYRIGHT = "";
-	COMMENT   = "";
+	VERSION   = "V0.1 (20-05-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "PLT";
+	COMMENT   = "Wegfinder für Topologie";
 	
 	/**
 		Documentation of bfs.
@@ -34,17 +34,7 @@ LIBRARY graphSearch
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
-	
-	CLASS testBfs	: CLASS graphSearch/bfs
-		IS_INSTANTIABLE;
-		VARIABLES
-			
-		END_VARIABLES;
-		OPERATIONS
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
+
 	/**
 		Add associations and their documentation here.
 		Association syntax is:
