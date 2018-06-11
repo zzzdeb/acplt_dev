@@ -12,7 +12,7 @@ LIBRARY ressourcesMonitor
 		
 		Provides information about system environment and ressources usage in a Function Block interface. 
 	*/
-	CLASS monitor : CLASS fb/functionblock
+	CLASS systemMonitor : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
 			// Add variables here. The syntax is:

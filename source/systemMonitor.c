@@ -77,7 +77,7 @@
  *
  * @param pinst The monitor instantce to update its library list
  */
-static void monitor_update_libs(OV_INSTPTR_ressourcesMonitor_monitor pinst) {
+static void monitor_update_libs(OV_INSTPTR_ressourcesMonitor_systemMonitor pinst) {
 	/* count associations */
 	OV_UINT libs = 0;
 	OV_INSTPTR_ov_library plib;
@@ -117,10 +117,10 @@ static unsigned long long FileTimeToInt64(const FILETIME ft) {
 
 
 
-OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
+OV_DLLFNCEXPORT void ressourcesMonitor_systemMonitor_startup(
 	OV_INSTPTR_ov_object 	pobj
 ) {
-    OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pobj);
+    OV_INSTPTR_ressourcesMonitor_systemMonitor pinst = Ov_StaticPtrCast(ressourcesMonitor_systemMonitor, pobj);
 
     /* do what the base class does first */
     fb_functionblock_startup(pobj);
@@ -145,14 +145,13 @@ OV_DLLFNCEXPORT void ressourcesMonitor_monitor_startup(
 #endif
 
     // TODO find cpu type
-    // TODO find mem size on Windows
 }
 
-OV_DLLFNCEXPORT void ressourcesMonitor_monitor_typemethod(
+OV_DLLFNCEXPORT void ressourcesMonitor_systemMonitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
-    OV_INSTPTR_ressourcesMonitor_monitor pinst = Ov_StaticPtrCast(ressourcesMonitor_monitor, pfb);
+    OV_INSTPTR_ressourcesMonitor_systemMonitor pinst = Ov_StaticPtrCast(ressourcesMonitor_systemMonitor, pfb);
 
     /* Update database size and usage */
     pinst->v_ovDBSize = ov_database_getsize() / 1024;
