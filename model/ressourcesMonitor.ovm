@@ -39,4 +39,24 @@ LIBRARY ressourcesMonitor
 		END_OPERATIONS;
 	END_CLASS;
 	
+	
+	/**
+		A functionblock to provide a list of this system's local network connections.
+		
+		It queries the operating system at each execution for a full list of local network addresses and derives unique
+		network identifiers.
+	*/
+	CLASS localNetMonitor : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			localNetworks[] : STRING FLAGS="o" COMMENT="A list of network identifiers of networks, this system is connected to";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 END_LIBRARY;
