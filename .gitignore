@@ -4,11 +4,14 @@
 !/eks
 !/graphSearch
 !/graphSearchTest
+!/wandelbareTopologie
+!/wandelbareTopologieTest
 /*/.cproject
 /*/.project
 /*/.settings
 /*/source/sourcetemplates
 /*/build
 /*/draft
+/*/.svn
 !/*/build/*/Makefile
 /*/Debug (Windows)
