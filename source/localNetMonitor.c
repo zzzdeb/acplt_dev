@@ -35,6 +35,7 @@
 #if OV_SYSTEM_NT
 #include <windows.h>
 #include <iphlpapi.h>
+#include <ws2tcpip.h>
 #define INET_ADDRSTRLEN 16
 #define INET6_ADDRSTRLEN 46
 #endif
@@ -58,7 +59,6 @@ static OV_BOOL cidr_match(const struct in_addr *addr, const struct in_addr *net,
   return !((addr->s_addr ^ net->s_addr) & htonl(0xFFFFFFFFu << (32 - mask)));
 }
 
-#if !OV_SYSTEM_NT
 /**
  * Check if an IPv6 address lies inside a specified network range
  *
@@ -70,8 +70,14 @@ static OV_BOOL cidr_match(const struct in_addr *addr, const struct in_addr *net,
  * @return TRUE if the given IPv6 address is in the network specified by net and mask
  */
 static OV_BOOL cidr6_match(const struct in6_addr *addr, const struct in6_addr *net, uint8_t mask) {
+#if OV_SYSTEM_LINUX
   const uint32_t *a = addr->__in6_u.__u6_addr32;
   const uint32_t *n = net->__in6_u.__u6_addr32;
+#else
+  const uint32_t *a = (uint32_t*)addr->_S6_un._S6_u32;
+  const uint32_t *n = (uint32_t*)net->_S6_un._S6_u32;
+#endif
+
   int bits_whole, bits_incomplete;
   bits_whole = mask >> 5;         // number of whole u32
   bits_incomplete = mask & 0x1F;  // number of bits in incomplete u32
@@ -87,7 +93,6 @@ static OV_BOOL cidr6_match(const struct in6_addr *addr, const struct in6_addr *n
   }
   return TRUE;
 }
-#endif
 
 /**
  * Check a sockaddr if it is a valid connection to an IPv4 or IPv6 network.
@@ -108,19 +113,17 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 	 */
 	#define IP4_LOCAL_NUM 4
 
-#if OV_SYSTEM_NT
+#if OV_SYSTEM_LINUX
+	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{0}, {htonl(127<<24)}, {htonl((172<<24) + (16<<16))}, {htonl(224<<24)}};
+#else
 	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {
 			{{.S_addr = 0}},
 			{{.S_addr = htonl(127<<24)}},
 			{{.S_addr = htonl(224<<24)}},
 			{{.S_addr = htonl((172<<24) + (16<<16))}}};
-	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8, 8, 16, 4};
-#else
-	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{0}, {htonl(127<<24)}, {htonl((172<<24) + (16<<16))}, {htonl(224<<24)}};
-	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,   8,                16,                            4};
 #endif
+	const uint8_t ip4_local_masks[IP4_LOCAL_NUM] = {8, 8, 16, 4};
 
-#if !OV_SYSTEM_NT
 	/* Local subnets for ipv6:
 	 * ::/128
 	 * ::1/128
@@ -130,13 +133,20 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 	 */
 	#define IP6_LOCAL_NUM 4
 	// Attention: little endian byte order in in6_addr
+#if OV_SYSTEM_LINUX
 	const struct in6_addr ip6_local[IP6_LOCAL_NUM] = {
 			{ { .__u6_addr32 = { 0, 0, 0, 0 } } },
 			{ { .__u6_addr32 = { 0, 0, 0, htonl(1) } } },
 			{ { .__u6_addr32 = { htonl(0xfc000000), 0, 0, 0 } } },
 			{ { .__u6_addr32 = { htonl(0xfe800000), 0, 0, 0 } } }};
-	const uint8_t ip6_local_masks[IP6_LOCAL_NUM] = {128, 128, 7, 10};
+#else
+	const struct in6_addr ip6_local[IP6_LOCAL_NUM] = {
+			{ { ._S6_u32 = { 0, 0, 0, 0 } } },
+			{ { ._S6_u32 = { 0, 0, 0, htonl(1) } } },
+			{ { ._S6_u32 = { htonl(0xfc000000), 0, 0, 0 } } },
+			{ { ._S6_u32 = { htonl(0xfe800000), 0, 0, 0 } } }};
 #endif
+	const uint8_t ip6_local_masks[IP6_LOCAL_NUM] = {128, 128, 7, 10};
 
 	if (addr == NULL)
 		return FALSE;
@@ -150,13 +160,11 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 				return FALSE;
 		}
 
-#if !OV_SYSTEM_NT
 	} else if (addr->sa_family == AF_INET6) {
 		for (int i=0; i < IP6_LOCAL_NUM; ++i) {
 			if (cidr6_match(&((struct sockaddr_in6*)addr)->sin6_addr, &ip6_local[i], ip6_local_masks[i]))
 				return FALSE;
 		}
-#endif
 	}
 
 	return TRUE;
@@ -270,7 +278,8 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 		for (pPrefix = pCurrAddresses->FirstPrefix; pPrefix; pPrefix = pPrefix->Next) {
 			if (!is_valid_address(pPrefix->Address.lpSockaddr))
 				continue;
-			if (pPrefix->Address.lpSockaddr->sa_family != AF_INET || pPrefix->PrefixLength == 32)
+			if ((pPrefix->Address.lpSockaddr->sa_family == AF_INET && pPrefix->PrefixLength == 32)
+					|| pPrefix->PrefixLength == 128)
 				continue;
 			++num_ips;
 		}
@@ -284,7 +293,8 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 		for (pPrefix = pCurrAddresses->FirstPrefix; pPrefix; pPrefix = pPrefix->Next) {
 			if (!is_valid_address(pPrefix->Address.lpSockaddr))
 				continue;
-			if (pPrefix->Address.lpSockaddr->sa_family != AF_INET || pPrefix->PrefixLength == 32)
+			if ((pPrefix->Address.lpSockaddr->sa_family == AF_INET && pPrefix->PrefixLength == 32)
+					|| pPrefix->PrefixLength == 128)
 				continue;
 
 			if (pPrefix->Address.lpSockaddr->sa_family == AF_INET) {
@@ -293,6 +303,17 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 				ov_string_setvalue(&pinst->v_localNetworks.value[num_ips], "ip4://");
 				if (addr)
 					ov_string_append(&pinst->v_localNetworks.value[num_ips], addr);
+				// TODO add cidr netmask suffix?
+
+			} else if (pPrefix->Address.lpSockaddr->sa_family == AF_INET6) {
+				// Get decimal representation of subnet's address
+				char addr[INET6_ADDRSTRLEN];
+				int res = getnameinfo(pPrefix->Address.lpSockaddr, sizeof(SOCKADDR_IN6), addr, INET6_ADDRSTRLEN, NULL,
+						0, NI_NUMERICHOST);
+				ov_string_setvalue(&pinst->v_localNetworks.value[num_ips], "ip6://");
+				if (res == 0) {
+					ov_string_append(&pinst->v_localNetworks.value[num_ips], addr);
+				}
 				// TODO add cidr netmask suffix?
 			}
 
