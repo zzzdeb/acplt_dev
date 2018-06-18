@@ -103,16 +103,21 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 	 * 0.0.0.0/8
 	 * 127.0.0.0/8
 	 * 169.254.0.0/16
+	 * 224.0.0.0/4
 	 * (See https://tools.ietf.org/html/rfc5735#section-4 for details)
 	 */
-	#define IP4_LOCAL_NUM 3
+	#define IP4_LOCAL_NUM 4
 
 #if OV_SYSTEM_NT
-	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{{.S_addr = 0}}, {{.S_addr = htonl(127<<24)}}, {{.S_addr = htonl((172<<24) + (16<<16))}}};
-	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,               8,                            16};
+	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {
+			{{.S_addr = 0}},
+			{{.S_addr = htonl(127<<24)}},
+			{{.S_addr = htonl(224<<24)}},
+			{{.S_addr = htonl((172<<24) + (16<<16))}}};
+	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8, 8, 16, 4};
 #else
-	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{0}, {htonl(127<<24)}, {htonl((172<<24) + (16<<16))}};
-	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,   8,                16};
+	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{0}, {htonl(127<<24)}, {htonl((172<<24) + (16<<16))}, {htonl(224<<24)}};
+	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,   8,                16,                            4};
 #endif
 
 #if !OV_SYSTEM_NT
