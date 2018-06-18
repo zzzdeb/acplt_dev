@@ -129,24 +129,27 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 	 * ::1/128
 	 * fc00::/7
 	 * fe80::/10
+	 * ff00::/8
 	 * (See https://tools.ietf.org/html/rfc6890#section-2.2.3 for details)
 	 */
-	#define IP6_LOCAL_NUM 4
+	#define IP6_LOCAL_NUM 5
 	// Attention: little endian byte order in in6_addr
 #if OV_SYSTEM_LINUX
 	const struct in6_addr ip6_local[IP6_LOCAL_NUM] = {
 			{ { .__u6_addr32 = { 0, 0, 0, 0 } } },
 			{ { .__u6_addr32 = { 0, 0, 0, htonl(1) } } },
 			{ { .__u6_addr32 = { htonl(0xfc000000), 0, 0, 0 } } },
-			{ { .__u6_addr32 = { htonl(0xfe800000), 0, 0, 0 } } }};
+			{ { .__u6_addr32 = { htonl(0xfe800000), 0, 0, 0 } } },
+			{ { .__u6_addr32 = { htonl(0xff000000), 0, 0, 0 } } }};
 #else
 	const struct in6_addr ip6_local[IP6_LOCAL_NUM] = {
 			{ { ._S6_u32 = { 0, 0, 0, 0 } } },
 			{ { ._S6_u32 = { 0, 0, 0, htonl(1) } } },
 			{ { ._S6_u32 = { htonl(0xfc000000), 0, 0, 0 } } },
-			{ { ._S6_u32 = { htonl(0xfe800000), 0, 0, 0 } } }};
+			{ { ._S6_u32 = { htonl(0xfe800000), 0, 0, 0 } } },
+			{ { ._S6_u32 = { htonl(0xff000000), 0, 0, 0 } } }};
 #endif
-	const uint8_t ip6_local_masks[IP6_LOCAL_NUM] = {128, 128, 7, 10};
+	const uint8_t ip6_local_masks[IP6_LOCAL_NUM] = {128, 128, 7, 10, 8};
 
 	if (addr == NULL)
 		return FALSE;
