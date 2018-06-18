@@ -235,7 +235,6 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 			if (res) {
 				ov_string_append(&pinst->v_localNetworks.value[num_ips], addr);
 			}
-			// TODO add cidr netmask suffix?
 		}
 		++num_ips;
 	}
@@ -310,11 +309,20 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 
 			} else if (pPrefix->Address.lpSockaddr->sa_family == AF_INET6) {
 				// Get decimal representation of subnet's address
-				char addr[INET6_ADDRSTRLEN];
-				int res = getnameinfo(pPrefix->Address.lpSockaddr, sizeof(SOCKADDR_IN6), addr, INET6_ADDRSTRLEN, NULL,
+				char addr[INET6_ADDRSTRLEN+4];
+				int res = getnameinfo(pPrefix->Address.lpSockaddr, sizeof(SOCKADDR_IN6), addr, INET6_ADDRSTRLEN+4, NULL,
 						0, NI_NUMERICHOST);
 				ov_string_setvalue(&pinst->v_localNetworks.value[num_ips], "ip6://");
 				if (res == 0) {
+					// cut the NetMask returned by getnameinfo
+					for (int i=0; i<INET6_ADDRSTRLEN+4; ++i) {
+						if (addr[i] == '%') {
+							addr[i] = '\0';
+							break;
+						} else if (addr[i] == '\0') {
+							break;
+						}
+					}
 					ov_string_append(&pinst->v_localNetworks.value[num_ips], addr);
 				}
 				// TODO add cidr netmask suffix?
