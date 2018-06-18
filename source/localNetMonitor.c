@@ -32,6 +32,13 @@
 #include <arpa/inet.h>
 #endif
 
+#if OV_SYSTEM_NT
+#include <windows.h>
+#include <iphlpapi.h>
+#define INET_ADDRSTRLEN 16
+#define INET6_ADDRSTRLEN 46
+#endif
+
 
 /**
  * Check if an IPv4 address lies inside a specified network range
@@ -51,6 +58,7 @@ static OV_BOOL cidr_match(const struct in_addr *addr, const struct in_addr *net,
   return !((addr->s_addr ^ net->s_addr) & htonl(0xFFFFFFFFu << (32 - mask)));
 }
 
+#if !OV_SYSTEM_NT
 /**
  * Check if an IPv6 address lies inside a specified network range
  *
@@ -79,6 +87,7 @@ static OV_BOOL cidr6_match(const struct in6_addr *addr, const struct in6_addr *n
   }
   return TRUE;
 }
+#endif
 
 /**
  * Check a sockaddr if it is a valid connection to an IPv4 or IPv6 network.
@@ -97,9 +106,16 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 	 * (See https://tools.ietf.org/html/rfc5735#section-4 for details)
 	 */
 	#define IP4_LOCAL_NUM 3
+
+#if OV_SYSTEM_NT
+	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{{.S_addr = 0}}, {{.S_addr = htonl(127<<24)}}, {{.S_addr = htonl((172<<24) + (16<<16))}}};
+	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,               8,                            16};
+#else
 	const struct in_addr ip4_local[IP4_LOCAL_NUM]         = {{0}, {htonl(127<<24)}, {htonl((172<<24) + (16<<16))}};
 	const uint8_t        ip4_local_masks[IP4_LOCAL_NUM]   = {8,   8,                16};
+#endif
 
+#if !OV_SYSTEM_NT
 	/* Local subnets for ipv6:
 	 * ::/128
 	 * ::1/128
@@ -115,6 +131,7 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 			{ { .__u6_addr32 = { htonl(0xfc000000), 0, 0, 0 } } },
 			{ { .__u6_addr32 = { htonl(0xfe800000), 0, 0, 0 } } }};
 	const uint8_t ip6_local_masks[IP6_LOCAL_NUM] = {128, 128, 7, 10};
+#endif
 
 	if (addr == NULL)
 		return FALSE;
@@ -127,11 +144,14 @@ OV_BOOL is_valid_address(const struct sockaddr *addr) {
 			if (cidr_match(&((struct sockaddr_in*)addr)->sin_addr, &ip4_local[i], ip4_local_masks[i]))
 				return FALSE;
 		}
+
+#if !OV_SYSTEM_NT
 	} else if (addr->sa_family == AF_INET6) {
 		for (int i=0; i < IP6_LOCAL_NUM; ++i) {
 			if (cidr6_match(&((struct sockaddr_in6*)addr)->sin6_addr, &ip6_local[i], ip6_local_masks[i]))
 				return FALSE;
 		}
+#endif
 	}
 
 	return TRUE;
@@ -192,7 +212,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 						((struct sockaddr_in6*)(ifa->ifa_netmask))->sin6_addr.__in6_u.__u6_addr32[i];
 			}
 
-			// Get decimal representation of subnet's address
+			// Get hex representation of subnet's address
 			char addr[INET6_ADDRSTRLEN];
 			const char *res = inet_ntop(AF_INET6, &subnet, addr, INET6_ADDRSTRLEN);
 			ov_string_setvalue(&pinst->v_localNetworks.value[num_ips], "ip6://");
@@ -206,6 +226,76 @@ OV_DLLFNCEXPORT void ressourcesMonitor_localNetMonitor_typemethod(
 
 	// Free ifaddrs data
     freeifaddrs(ifaddr);
+
+#elif OV_SYSTEM_NT && WINVER >= 0x0501
+    // Code from https://msdn.microsoft.com/de-de/library/windows/desktop/aa365915(v=vs.85).aspx
+
+    // Try to get AdapterAddresses until allocated memory is sufficient
+    // Start with 15k
+    unsigned long outBufLen = 15000;
+    unsigned long dwRetVal = NULL;
+    unsigned int iterations = 0;
+    IP_ADAPTER_ADDRESSES *pAddresses;
+	do {
+		++iterations;
+		pAddresses = (IP_ADAPTER_ADDRESSES *) malloc(outBufLen);
+		if (pAddresses == NULL) {
+			// Allocating memory failed
+			return;
+		}
+
+		dwRetVal = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
+
+		if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
+			free(pAddresses);
+			pAddresses = NULL;
+		} else {
+			break;
+		}
+	} while (iterations < 5);
+	if (pAddresses == NULL)
+		// Getting IP addresses failed
+		return;
+
+	// Iterate linked pAddresses list once, to resize string vector to number of ipaddresses
+	IP_ADAPTER_ADDRESSES *pCurrAddresses;
+	OV_UINT num_ips = 0;
+	for (pCurrAddresses = pAddresses; pCurrAddresses; pCurrAddresses = pCurrAddresses->Next) {
+		IP_ADAPTER_PREFIX *pPrefix;
+		for (pPrefix = pCurrAddresses->FirstPrefix; pPrefix; pPrefix = pPrefix->Next) {
+			if (!is_valid_address(pPrefix->Address.lpSockaddr))
+				continue;
+			if (pPrefix->Address.lpSockaddr->sa_family != AF_INET || pPrefix->PrefixLength == 32)
+				continue;
+			++num_ips;
+		}
+	}
+	Ov_SetDynamicVectorLength(&pinst->v_localNetworks, num_ips, STRING);
+
+	// Iterate list again to fill vector
+	num_ips = 0;
+	for (pCurrAddresses = pAddresses; pCurrAddresses; pCurrAddresses = pCurrAddresses->Next) {
+		IP_ADAPTER_PREFIX *pPrefix;
+		for (pPrefix = pCurrAddresses->FirstPrefix; pPrefix; pPrefix = pPrefix->Next) {
+			if (!is_valid_address(pPrefix->Address.lpSockaddr))
+				continue;
+			if (pPrefix->Address.lpSockaddr->sa_family != AF_INET || pPrefix->PrefixLength == 32)
+				continue;
+
+			if (pPrefix->Address.lpSockaddr->sa_family == AF_INET) {
+				// Get decimal representation of subnet's address
+				char *addr = inet_ntoa(((struct sockaddr_in*)(pPrefix->Address.lpSockaddr))->sin_addr);
+				ov_string_setvalue(&pinst->v_localNetworks.value[num_ips], "ip4://");
+				if (addr)
+					ov_string_append(&pinst->v_localNetworks.value[num_ips], addr);
+				// TODO add cidr netmask suffix?
+			}
+
+			++num_ips;
+		}
+	}
+
+	free(pAddresses);
 #endif
 }
 

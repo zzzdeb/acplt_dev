@@ -9,9 +9,9 @@ lc = $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(s
 SERVERSTARTKEYS = -w fb -w ksbase -w ressourcesMonitor
 #/Project config parameters that are accessed by Eclipse
 MAKMAKOPTIONS = 
-EXTRA_CC_FLAGS = -DWINVER=0x0501
+EXTRA_CC_FLAGS = -DWINVER=0x0501 -DPLT_USE_WINSOCK2
 EXTRA_LIBS = 
-LD_FLAGS = 
+LD_FLAGS = -liphlpapi -lws2_32
 COMPILER = GCC
 PREBUILD = ../prebuild.tcl
 POSTBUILD = ../postbuild.tcl
