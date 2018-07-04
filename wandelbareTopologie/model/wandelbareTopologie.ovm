@@ -43,7 +43,7 @@ LIBRARY wandelbareTopologie
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
-
+	
 	/**
 		Add associations and their documentation here.
 		Association syntax is:

@@ -1,0 +1,645 @@
+{
+	"Libraries":	["ov", "wandelbareTopologie"],
+	"Tree":	{
+		"TechUnits":	{
+			"class":	"ov/domain",
+			"children":	{
+				"WandelbareTopologie":	{
+					"class":	"ov/domain",
+					"children":	{
+						"PE018":	{
+							"variables":	{
+								"x":	["SINGLE", 850],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE019":	{
+							"variables":	{
+								"x":	["SINGLE", 450],
+								"y":	["SINGLE", 15],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 0, 0]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", ["HEAT"]],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE005":	{
+							"variables":	{
+								"x":	["SINGLE", 250],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE008":	{
+							"variables":	{
+								"x":	["SINGLE", 350],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE010":	{
+							"variables":	{
+								"x":	["SINGLE", 550],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE011":	{
+							"variables":	{
+								"x":	["SINGLE", 650],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE004":	{
+							"variables":	{
+								"x":	["SINGLE", 50],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE031":	{
+							"variables":	{
+								"x":	["SINGLE", 250],
+								"y":	["SINGLE", 315],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE030":	{
+							"variables":	{
+								"x":	["SINGLE", 350],
+								"y":	["SINGLE", 315],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE028":	{
+							"variables":	{
+								"x":	["SINGLE", 550],
+								"y":	["SINGLE", 315],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE027":	{
+							"variables":	{
+								"x":	["SINGLE", 650],
+								"y":	["SINGLE", 315],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE026":	{
+							"variables":	{
+								"x":	["SINGLE", 650],
+								"y":	["SINGLE", 15],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE021":	{
+							"variables":	{
+								"x":	["SINGLE", 550],
+								"y":	["SINGLE", 15],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE016":	{
+							"variables":	{
+								"x":	["SINGLE", 350],
+								"y":	["SINGLE", 15],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE013":	{
+							"variables":	{
+								"x":	["SINGLE", 250],
+								"y":	["SINGLE", 15],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE009":	{
+							"variables":	{
+								"x":	["SINGLE", 450],
+								"y":	["SINGLE", 415],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, false]],
+								"CSV":	["BOOL_VEC", [true, false, true]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 0]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, 0]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 180]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, -180]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						},
+						"PE025":	{
+							"variables":	{
+								"x":	["SINGLE", 450],
+								"y":	["SINGLE", 315],
+								"ThetaZ":	["SINGLE", 0],
+								"Xlength":	["SINGLE", 90],
+								"Ylength":	["SINGLE", 30],
+								"TPSV":	["BOOL_VEC", [false, false, true]],
+								"CSV":	["BOOL_VEC", [true, false, false]],
+								"CostsC":	["SINGLE_VEC", [5, 6, 7]],
+								"CostsT":	["SINGLE_VEC", [3, 0, 0]],
+								"TTPSVP":	["SINGLE_VEC", [0, 0, 180]],
+								"TTPSVM":	["SINGLE_VEC", [0, 0, -180]],
+								"TCSVP":	["SINGLE_VEC", [50, 0, 0]],
+								"TCSVM":	["SINGLE_VEC", [-50, 0, 0]],
+								"PSkills":	["STRING_VEC", []],
+								"iexreq":	["BOOL", false],
+								"eexreq":	["BOOL", true],
+								"maxcalctime":	["TIME_SPAN", [0, 0]],
+								"methcount":	["UINT", 0],
+								"actimode":	["INT", 0],
+								"proctime":	["TIME", "2018/06/13 10:30:47.960223"],
+								"cyctime":	["TIME_SPAN", [0, 0]],
+								"ErrState":	["INT", 0],
+								"calctime":	["TIME_SPAN", [0, 0]],
+								"Xpos":	["INT", 0],
+								"Ypos":	["INT", 0]
+							},
+							"links":	{
+								"taskparent":	{
+									"of_association":	"fb/tasklist",
+									"parents":	["/Tasks/UrTask"],
+									"children":	["this"]
+								}
+							},
+							"class":	"wandelbareTopologie/Node"
+						}
+					}
+				}
+			}
+		}
+	},
+	"Path":	"/TechUnits"
+}
