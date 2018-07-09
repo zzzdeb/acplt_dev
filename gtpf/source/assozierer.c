@@ -29,7 +29,7 @@
 #include <math.h>
 
 #define PNG_DEBUG 3
-#include <png.h>
+//#include <png.h>
 
 #ifndef OV_COMPILE_LIBRARY_gtpf
 #define OV_COMPILE_LIBRARY_gtpf
@@ -168,90 +168,90 @@ void reachable(Gitter_t* gitter, Point_t* pos, int dir, OV_SINGLE range) {
 	cell->abgebbar = 1;
 }
 
-static int gitter2png(Gitter_t* gitter, OV_STRING name) {
-	FILE * fp;
-	png_structp png_ptr = NULL;
-	png_infop info_ptr = NULL;
-	size_t x, y;
-	png_byte ** row_pointers = NULL;
-	/* "status" contains the return value of this function. At first
-	 it is set to a value which means 'failure'. When the routine
-	 has finished its work, it is set to a value which means
-	 'success'. */
-	int status = -1;
-	/* The following number is set by trial and error only. I cannot
-	 see where it it is documented in the libpng manual.
-	 */
-	int pixel_size = 1;
-	int depth = 8;
-
-	OV_STRING path = NULL;
-	ov_string_print(&path, "/home/zzz/test/gtpf/%s.png", name);
-
-	fp = fopen(path, "wb");
-	if(!fp) {
-		goto fopen_failed;
-	}
-
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if(png_ptr == NULL) {
-		goto png_create_write_struct_failed;
-	}
-
-	info_ptr = png_create_info_struct(png_ptr);
-	if(info_ptr == NULL) {
-		goto png_create_info_struct_failed;
-	}
-
-	/* Set up error handling. */
-
-	if(setjmp(png_jmpbuf (png_ptr))) {
-		goto png_failure;
-	}
-
-	/* Set image attributes. */
-
-	png_set_IHDR(png_ptr, info_ptr, gitter->width, gitter->height, depth,
-	PNG_COLOR_TYPE_GRAY,
-	PNG_INTERLACE_NONE,
-	PNG_COMPRESSION_TYPE_DEFAULT,
-	PNG_FILTER_TYPE_DEFAULT);
-
-	/* Initialize rows of PNG. */
-
-	row_pointers = png_malloc(png_ptr, gitter->height * sizeof(png_byte *));
-	for (y = 0; y < gitter->height; y++) {
-		png_byte *row = png_malloc(png_ptr,
-			sizeof(uint8_t) * gitter->width * pixel_size);
-		row_pointers[gitter->height - y - 1] = row;
-		for (x = 0; x < gitter->width; x++) {
-			Cell_t * pixel = cell_at(gitter, x, y);
-			*row++ = 255 * pixel->abnehmbar;
-			//todo: init all abgebbar to zero
-		}
-	}
-
-	/* Write the image data to "fp". */
-
-	png_init_io(png_ptr, fp);
-	png_set_rows(png_ptr, info_ptr, row_pointers);
-	png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
-	/* The routine has successfully written the file, so we set
-	 "status" to a value which indicates success. */
-
-	status = 0;
-
-	for (int y = 0; y < gitter->height; y++) {
-		png_free(png_ptr, row_pointers[y]);
-	}
-	png_free(png_ptr, row_pointers);
-
-	png_failure: png_create_info_struct_failed: png_destroy_write_struct(&png_ptr,
-		&info_ptr);
-	png_create_write_struct_failed: fclose(fp);
-	fopen_failed: return status;
-}
+//static int gitter2png(Gitter_t* gitter, OV_STRING name) {
+//	FILE * fp;
+//	png_structp png_ptr = NULL;
+//	png_infop info_ptr = NULL;
+//	size_t x, y;
+//	png_byte ** row_pointers = NULL;
+//	/* "status" contains the return value of this function. At first
+//	 it is set to a value which means 'failure'. When the routine
+//	 has finished its work, it is set to a value which means
+//	 'success'. */
+//	int status = -1;
+//	/* The following number is set by trial and error only. I cannot
+//	 see where it it is documented in the libpng manual.
+//	 */
+//	int pixel_size = 1;
+//	int depth = 8;
+//
+//	OV_STRING path = NULL;
+//	ov_string_print(&path, "/home/zzz/test/gtpf/%s.png", name);
+//
+//	fp = fopen(path, "wb");
+//	if(!fp) {
+//		goto fopen_failed;
+//	}
+//
+//	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+//	if(png_ptr == NULL) {
+//		goto png_create_write_struct_failed;
+//	}
+//
+//	info_ptr = png_create_info_struct(png_ptr);
+//	if(info_ptr == NULL) {
+//		goto png_create_info_struct_failed;
+//	}
+//
+//	/* Set up error handling. */
+//
+//	if(setjmp(png_jmpbuf (png_ptr))) {
+//		goto png_failure;
+//	}
+//
+//	/* Set image attributes. */
+//
+//	png_set_IHDR(png_ptr, info_ptr, gitter->width, gitter->height, depth,
+//	PNG_COLOR_TYPE_GRAY,
+//	PNG_INTERLACE_NONE,
+//	PNG_COMPRESSION_TYPE_DEFAULT,
+//	PNG_FILTER_TYPE_DEFAULT);
+//
+//	/* Initialize rows of PNG. */
+//
+//	row_pointers = png_malloc(png_ptr, gitter->height * sizeof(png_byte *));
+//	for (y = 0; y < gitter->height; y++) {
+//		png_byte *row = png_malloc(png_ptr,
+//			sizeof(uint8_t) * gitter->width * pixel_size);
+//		row_pointers[gitter->height - y - 1] = row;
+//		for (x = 0; x < gitter->width; x++) {
+//			Cell_t * pixel = cell_at(gitter, x, y);
+//			*row++ = 255 * pixel->abnehmbar;
+//			//todo: init all abgebbar to zero
+//		}
+//	}
+//
+//	/* Write the image data to "fp". */
+//
+//	png_init_io(png_ptr, fp);
+//	png_set_rows(png_ptr, info_ptr, row_pointers);
+//	png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+//
+//	/* The routine has successfully written the file, so we set
+//	 "status" to a value which indicates success. */
+//
+//	status = 0;
+//
+//	for (int y = 0; y < gitter->height; y++) {
+//		png_free(png_ptr, row_pointers[y]);
+//	}
+//	png_free(png_ptr, row_pointers);
+//
+//	png_failure: png_create_info_struct_failed: png_destroy_write_struct(&png_ptr,
+//		&info_ptr);
+//	png_create_write_struct_failed: fclose(fp);
+//	fopen_failed: return status;
+//}
 
 void canTakeAtPoint(Gitter_t* gitter, OV_SINGLE x, OV_SINGLE y) {
 	Cell_t* cell = cell_at_rel2global(gitter, x, y);
@@ -322,7 +322,7 @@ Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 		}
 	}
 
-	gitter2png(w1Gitter, w1->v_identifier);
+//	gitter2png(w1Gitter, w1->v_identifier);
 
 //		for (OV_UINT i = 0; i < numOfTops - 1; ++i) {
 //			for (OV_UINT j = i + 1; j < numOfTops; ++j) {
@@ -588,55 +588,55 @@ void drawAssoc(Gitter_t* gitter,
 	canTakeBetweenPoints(gitter, &rect1->pos.pos, &rect2->pos.pos);
 }
 
-void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
-	Gitter_t* gitter = gitterConstruct();
-
-	OV_INSTPTR_wandelbareTopologie_Node pchild = NULL;
-	Ov_ForEachChild(ov_containment, ptop, pchild)
-	{
-		Rectangular_t* rect = rectConstruct();
-		rect->b = pchild->v_Xlength;
-		rect->h = pchild->v_Ylength;
-
-//		rect->pos.pos.x = pchild->v_x;
-//		rect->pos.pos.y = pchild->v_y;
-//		rect->pos.dir = degToRad(pchild->v_ThetaZ);
-//		drawRect(gitter, rect);
-
-		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
-				x += 1) {
-			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
-					y += 1) {
-				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
-						v += 1) {
-					//todo: type conversion correction
-					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
-
-					Point_t* schiebe = pointConstruct();
-					schiebe->x = x;
-					schiebe->y = y;
-					pointRotate(schiebe, rect->pos.dir);
-					rect->pos.pos.x = pchild->v_x + schiebe->x;
-					rect->pos.pos.y = pchild->v_y + schiebe->y;
-
-					drawRect(gitter, rect);
-				}
-			}
-		}
-	}
-	OV_INSTPTR_wandelbareTopologie_Node neighbour = NULL;
-	pchild = NULL;
-	Ov_ForEachChild(ov_containment, ptop, pchild)
-	{
-		neighbour = NULL;
-		Ov_Association_DefineIteratorNM(pit);
-		Ov_ForEachChildNM(wandelbareTopologie_Neighbour, pit, pchild, neighbour)
-		{
-			if(neighbour) drawAssoc(gitter, pchild, neighbour);
-		}
-	}
-	gitter2png(gitter, "visualization");
-}
+//void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
+//	Gitter_t* gitter = gitterConstruct();
+//
+//	OV_INSTPTR_wandelbareTopologie_Node pchild = NULL;
+//	Ov_ForEachChild(ov_containment, ptop, pchild)
+//	{
+//		Rectangular_t* rect = rectConstruct();
+//		rect->b = pchild->v_Xlength;
+//		rect->h = pchild->v_Ylength;
+//
+////		rect->pos.pos.x = pchild->v_x;
+////		rect->pos.pos.y = pchild->v_y;
+////		rect->pos.dir = degToRad(pchild->v_ThetaZ);
+////		drawRect(gitter, rect);
+//
+//		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
+//				x += 1) {
+//			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
+//					y += 1) {
+//				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
+//						v += 1) {
+//					//todo: type conversion correction
+//					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
+//
+//					Point_t* schiebe = pointConstruct();
+//					schiebe->x = x;
+//					schiebe->y = y;
+//					pointRotate(schiebe, rect->pos.dir);
+//					rect->pos.pos.x = pchild->v_x + schiebe->x;
+//					rect->pos.pos.y = pchild->v_y + schiebe->y;
+//
+//					drawRect(gitter, rect);
+//				}
+//			}
+//		}
+//	}
+//	OV_INSTPTR_wandelbareTopologie_Node neighbour = NULL;
+//	pchild = NULL;
+//	Ov_ForEachChild(ov_containment, ptop, pchild)
+//	{
+//		neighbour = NULL;
+//		Ov_Association_DefineIteratorNM(pit);
+//		Ov_ForEachChildNM(wandelbareTopologie_Neighbour, pit, pchild, neighbour)
+//		{
+//			if(neighbour) drawAssoc(gitter, pchild, neighbour);
+//		}
+//	}
+////	gitter2png(gitter, "visualization");
+//}
 
 //
 OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
@@ -676,7 +676,7 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 				createAssoc((Gitter_t*) elem1->data, (Gitter_t*) elem2->data);
 		}
 	}
-	visualize_topologie(ptop);
+//	visualize_topologie(ptop);
 	listIterate(picList, elem1)
 	{
 		gitterDestruct(elem1->data);
