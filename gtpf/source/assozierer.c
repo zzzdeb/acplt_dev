@@ -37,14 +37,18 @@
 
 #include "gtpf.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_path.h"
 #include "wandelbareTopologie.h"
+#include "CTree.h"
 
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
 #include "list.h"
 #include "geometry2d.h"
 
-#define MAXGAP 30
+#include "CException.h"
+
+#define MAXGAP 20
 #define DISCRETFACTOR 10
 #define M_PI 3.14159265358979323846
 
@@ -78,7 +82,7 @@ typedef struct Gitter {
 /*
  * Gitter Functions
  */
-Gitter_t* constructGitter() {
+Gitter_t* gitterConstruct() {
 	Gitter_t* w1Gitter = ov_memstack_alloc(sizeof(Gitter_t));
 	w1Gitter->pWagon = NULL;
 	w1Gitter->x = 0;
@@ -95,7 +99,7 @@ Gitter_t* constructGitter() {
 	return w1Gitter;
 }
 
-void destructGitter(Gitter_t* gitter) {
+void gitterDestruct(Gitter_t* gitter) {
 	Ov_HeapFree(gitter->A);
 }
 
@@ -148,6 +152,7 @@ Gitter_t Global;
 Cell_t* cell_at_rel2global(Gitter_t* gitter, OV_INT x, OV_INT y) {
 	OV_INT cellx = (x - gitter->x) / gitter->step;
 	OV_INT celly = (y - gitter->y) / gitter->step;
+	if(cellx > gitter->width || celly > gitter->height) Throw(OV_ERR_BADPARAM);
 	return gitter->A + celly * (gitter->width) + cellx;
 }
 
@@ -178,7 +183,7 @@ static int gitter2png(Gitter_t* gitter, OV_STRING name) {
 	int depth = 8;
 
 	OV_STRING path = NULL;
-	ov_string_print(&path, "%s.png", name);
+	ov_string_print(&path, "/home/zzz/test/gtpf/%s.png", name);
 
 	fp = fopen(path, "wb");
 	if(!fp) {
@@ -215,7 +220,7 @@ static int gitter2png(Gitter_t* gitter, OV_STRING name) {
 	for (y = 0; y < gitter->height; y++) {
 		png_byte *row = png_malloc(png_ptr,
 			sizeof(uint8_t) * gitter->width * pixel_size);
-		row_pointers[y] = row;
+		row_pointers[gitter->height - y - 1] = row;
 		for (x = 0; x < gitter->width; x++) {
 			Cell_t * pixel = cell_at(gitter, x, y);
 			*row++ = 255 * pixel->abnehmbar;
@@ -279,7 +284,7 @@ Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 //		Gitter_t _
 //		int Factory[i][y][x] = alloc(size(uint16) * x * y)
 
-	Gitter_t* w1Gitter = constructGitter();
+	Gitter_t* w1Gitter = gitterConstruct();
 
 	w1Gitter->pWagon = w1;
 
@@ -297,9 +302,13 @@ Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 			for (OV_INT v = w1->v_TCSVM.value[2]; v <= w1->v_TCSVP.value[2]; v +=
 					VRATE) {
 				//todo: type conversion correction
-				rect->pos.pos.x = w1->v_x + x;
-				rect->pos.pos.y = w1->v_y + y;
 				rect->pos.dir = degToRad(w1->v_ThetaZ + v);
+				Point_t* schiebe = pointConstruct();
+				schiebe->x = x;
+				schiebe->y = y;
+				pointRotate(schiebe, rect->pos.dir);
+				rect->pos.pos.x = w1->v_x + schiebe->x;
+				rect->pos.pos.y = w1->v_y + schiebe->y;
 
 				canTakeRect(w1Gitter, rect);
 //				if(w1->v_CSV.value[0])
@@ -323,6 +332,11 @@ Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 	return w1Gitter;
 }
 
+void copyWagen(OV_INSTPTR_wandelbareTopologie_Node copy,
+		OV_INSTPTR_wandelbareTopologie_Node orig) {
+	if(!copy || !orig) Throw(OV_ERR_BADPARAM);
+}
+
 void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 	int XRATE = 1;
 	int YRATE = 1;
@@ -333,17 +347,25 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 	Rectangular_t* rect1 = createRectFromNode(w1);
 	Rectangular_t* rect2 = createRectFromNode(w2);
 
-	for (OV_INT x = w1->v_TTPSVM.value[0]; x <= w1->v_TTPSVP.value[0]; x +=
-			XRATE) {
-		for (OV_INT y = w1->v_TTPSVM.value[1]; y <= w1->v_TTPSVP.value[1]; y +=
-				YRATE) {
-			for (OV_INT v = w1->v_TCSVM.value[2]; v <= w1->v_TCSVP.value[2]; v +=
-					VRATE) {
-				//todo: type conversion correction
+	OV_BOOL w1_new_pos = 0;
+	OV_BOOL w2_new_pos = 0;
+	OV_BOOL found = 0;
 
-				rect1->pos.pos.x = w1->v_x + x;
-				rect1->pos.pos.y = w1->v_y + y;
+	for (OV_INT x1 = w1->v_TTPSVM.value[0]; x1 <= w1->v_TTPSVP.value[0] && !found;
+			x1 += XRATE) {
+		for (OV_INT y1 = w1->v_TTPSVM.value[1];
+				y1 <= w1->v_TTPSVP.value[1] && !found; y1 += YRATE) {
+			for (OV_INT v = w1->v_TCSVM.value[2]; v <= w1->v_TCSVP.value[2] && !found;
+					v += VRATE) {
+				//todo: type conversion correction
 				rect1->pos.dir = degToRad(w1->v_ThetaZ + v);
+
+				Point_t* schiebe = pointConstruct();
+				schiebe->x = x1;
+				schiebe->y = y1;
+				pointRotate(schiebe, rect1->pos.dir);
+				rect1->pos.pos.x = w1->v_x + schiebe->x;
+				rect1->pos.pos.y = w1->v_y + schiebe->y;
 
 				Point_t* c1 = pointConstruct();
 				Point_t* c2 = pointConstruct();
@@ -351,46 +373,45 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 				Point_t* c4 = pointConstruct();
 				rectGetCorners(rect1, c1, c2, c3, c4);
 
-				for (OV_INT x2 = w2->v_TTPSVM.value[0]; x2 <= w2->v_TTPSVP.value[0];
-						x2 += XRATE) {
-					for (OV_INT y2 = w2->v_TTPSVM.value[1]; y2 <= w2->v_TTPSVP.value[1];
-							y2 += YRATE) {
-						for (OV_INT v2 = w2->v_TCSVM.value[2]; v2 <= w2->v_TCSVP.value[2];
-								v2 += VRATE) {
-
-							rect2->pos.pos.x = w2->v_x + x2;
-							rect2->pos.pos.y = w2->v_y + y2;
+				for (OV_INT x2 = w2->v_TTPSVM.value[0];
+						x2 <= w2->v_TTPSVP.value[0] && !found; x2 += XRATE) {
+					for (OV_INT y2 = w2->v_TTPSVM.value[1];
+							y2 <= w2->v_TTPSVP.value[1] && !found; y2 += YRATE) {
+						for (OV_INT v2 = w2->v_TCSVM.value[2];
+								v2 <= w2->v_TCSVP.value[2] && !found; v2 += VRATE) {
 							rect2->pos.dir = degToRad(w2->v_ThetaZ + v2);
 
+							schiebe->x = x2;
+							schiebe->y = y2;
+							pointRotate(schiebe, rect2->pos.dir);
+							rect2->pos.pos.x = w2->v_x + schiebe->x;
+							rect2->pos.pos.y = w2->v_y + schiebe->y;
+
 							Degree_t dirs[4] = { 0, 90, 180, 270 };
-							OV_SINGLE dist[4] = { w2->v_Xlength / 2, w2->v_Ylength / 2,
-									w1->v_Xlength / 2, w1->v_Ylength / 2 };
+							OV_SINGLE dist[4] = { w2->v_Xlength, w2->v_Ylength };
 							Point_t* corners[4] = { c1, c2, c3, c4 };
 
 							Rectangular_t* abnehmRect = rectConstruct();
 
-							//0
 							for (OV_UINT i = 0; i < 4; ++i) {
-								abnehmRect->h = dist[i];
+								abnehmRect->h = dist[(i + 1) % 2];
 								abnehmRect->b = MAXGAP;
 								abnehmRect->pos.dir = rect2->pos.dir + degToRad(dirs[i]);
 
 								Point_t* gapVector = pointConstruct();
-								gapVector->x = MAXGAP / 2 + dist[i];
+								gapVector->x = MAXGAP / 2 + dist[i % 2] / 2;
 								pointRotate(gapVector, abnehmRect->pos.dir);
 								abnehmRect->pos.pos = *pointAdd(&rect2->pos.pos, gapVector);
 
 								if(isPointInRect(abnehmRect, corners[i])) {
 									if(isPointInRect(abnehmRect, corners[(i + 1) % 4])) {
 										//seite1
-										Ov_Link(wandelbareTopologie_Neighbour, w1, w2);
-										ov_logfile_info("linking %s %s", w1->v_identifier,
-											w2->v_identifier);
+										found = 1;
+										break;
 									} else if(isPointInRect(abnehmRect, corners[(i + 3) % 4])) {
 										//seite4
-										Ov_Link(wandelbareTopologie_Neighbour, w1, w2);
-										ov_logfile_info("linking %s %s", w1->v_identifier,
-											w2->v_identifier);
+										found = 1;
+										break;
 									} else {
 										continue;
 									}
@@ -398,14 +419,12 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 									if(isPointInRect(abnehmRect, corners[(i + 2) % 4]))
 										if(isPointInRect(abnehmRect, corners[(i + 1) % 4])) {
 											//seite2
-											Ov_Link(wandelbareTopologie_Neighbour, w1, w2);
-											ov_logfile_info("linking %s %s", w1->v_identifier,
-												w2->v_identifier);
+											found = 1;
+											break;
 										} else if(isPointInRect(abnehmRect, corners[(i + 3) % 4])) {
 											//seite3
-											Ov_Link(wandelbareTopologie_Neighbour, w1, w2);
-											ov_logfile_info("linking %s %s", w1->v_identifier,
-												w2->v_identifier);
+											found = 1;
+											break;
 										} else {
 											continue;
 										}
@@ -414,17 +433,81 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 									}
 								}
 							}
-
 						}
 					}
 				}
-
 			}
 		}
 	}
+
+	OV_INSTPTR_wandelbareTopologie_Node wagens[] = { w1, w2 };
+	OV_INSTPTR_wandelbareTopologie_Node copies[] = { w1, w2 };
+	Rectangular_t* rects[] = { rect1, rect2 };
+
+	OV_SINGLE eps = 0.01;
+	for (OV_UINT i = 0; i < 2; ++i) {
+		OV_BOOL new_pos = 0;
+		if(abs(rects[i]->pos.pos.x - wagens[i]->v_x) > eps
+				|| abs(rects[i]->pos.pos.y - wagens[i]->v_y) > eps
+				|| abs(radToDeg(rects[i]->pos.dir) - wagens[i]->v_ThetaZ) > eps)
+			new_pos = 1;
+
+		if(found) {
+			if(new_pos) {
+				OV_STRING newObjPath = NULL;
+				OV_STRING objpath = ov_path_getcanonicalpath(
+					Ov_StaticPtrCast(ov_object, wagens[i]), 2);
+				for (OV_UINT j = 1; j < 100; ++j) {
+					ov_string_print(&newObjPath, "%s_%d", objpath, j);
+					OV_INSTPTR_wandelbareTopologie_Node pvariant =
+							ov_path_getobjectpointer(newObjPath, 2);
+					if(!pvariant) {
+						OV_INSTPTR_CTree_Transport ptransport = Ov_StaticPtrCast(
+							CTree_Transport,
+							ov_path_getobjectpointer("/data/CTree/Transport", 2));
+						ptransport->v_getVar = 1;
+						ov_string_setvalue(&ptransport->v_path, objpath);
+						ov_string_setvalue(&ptransport->v_targetPath, newObjPath);
+						ov_string_setvalue(&ptransport->v_targetKS, "~");
+						CTree_Transport_execute(ptransport);
+						break;
+					}
+					if(abs(rects[i]->pos.pos.x - pvariant->v_x) <= eps
+							&& abs(rects[i]->pos.pos.y - pvariant->v_y) <= eps
+							&& abs(radToDeg(rects[i]->pos.dir) - pvariant->v_ThetaZ) <= eps) {
+						break;
+					}
+				}
+				//			ov_string_print(&newObjPath, "%s_%f_%f_%f", objpath,
+				//				rect1->pos.pos.x, rect1->pos.pos.y, radToDeg(rect1->pos.dir));
+				copies[i] = ov_path_getobjectpointer(newObjPath, 2);
+				if(copies[i]) Throw(OV_ERR_GENERIC);
+				copies[i]->v_x = rects[i]->pos.pos.x;
+				copies[i]->v_y = rects[i]->pos.pos.y;
+				copies[i]->v_ThetaZ = radToDeg(rects[i]->pos.dir);
+
+				copies[i]->v_TTPSVM.value[0] = wagens[i]->v_TTPSVM.value[0]+ wagens[i]->v_x - copies[i]->v_x;
+				copies[i]->v_TTPSVM.value[1] = wagens[i]->v_TTPSVM.value[1]+ wagens[i]->v_y - copies[i]->v_y;
+				copies[i]->v_TCSVM.value[2] = wagens[i]->v_TCSVM.value[2]+ wagens[i]->v_ThetaZ
+						- copies[i]->v_ThetaZ;
+				copies[i]->v_TTPSVP.value[0] = wagens[i]->v_TTPSVP.value[0]+ wagens[i]->v_x - copies[i]->v_x;
+				copies[i]->v_TTPSVP.value[1] = wagens[i]->v_TTPSVP.value[1] + wagens[i]->v_y - copies[i]->v_y;
+				copies[i]->v_TCSVP.value[2] = wagens[i]->v_TCSVM.value[2]+ wagens[i]->v_ThetaZ
+						- copies[i]->v_ThetaZ;
+			}
+		}
+	}
+	if(found){
+//		Ov_Link
+		OV_RESULT res = Ov_Link(wandelbareTopologie_Neighbour, copies[0], copies[1]);
+		ov_logfile_info("linking %s %s at position w1: [%f,%f,%f] w2: [%f,%f,%f]",
+			copies[0]->v_identifier, copies[1]->v_identifier, rect1->pos.pos.x,
+			rect1->pos.pos.y, radToDeg(rect1->pos.dir), rect2->pos.pos.x,
+			rect2->pos.pos.y, radToDeg(rect2->pos.dir));
+	}
 }
 
-void drawRect(Gitter_t* gitter, Rectangular_t* rect) {
+void drawRect(Gitter_t* gitter, const Rectangular_t* rect) {
 	Point_t* c1 = pointConstruct();
 	Point_t* c2 = pointConstruct();
 	Point_t* c3 = pointConstruct();
@@ -437,7 +520,7 @@ void drawRect(Gitter_t* gitter, Rectangular_t* rect) {
 	canTakeBetweenPoints(gitter, c4, c1);
 }
 
-void drawAssoc(Gitter_t* gitter, OV_INSTPTR_wandelbareTopologie_Node wagon1,
+void drawAssoc(Gitter_t* gitter, const OV_INSTPTR_wandelbareTopologie_Node wagon1,
 		OV_INSTPTR_wandelbareTopologie_Node wagon2) {
 	Rectangular_t* rect1 = createRectFromNode(wagon1);
 	Rectangular_t* rect2 = createRectFromNode(wagon2);
@@ -445,7 +528,7 @@ void drawAssoc(Gitter_t* gitter, OV_INSTPTR_wandelbareTopologie_Node wagon1,
 }
 
 void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
-	Gitter_t* gitter = constructGitter();
+	Gitter_t* gitter = gitterConstruct();
 
 	OV_INSTPTR_wandelbareTopologie_Node pchild = NULL;
 	Ov_ForEachChild(ov_containment, ptop, pchild)
@@ -454,6 +537,11 @@ void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 		rect->b = pchild->v_Xlength;
 		rect->h = pchild->v_Ylength;
 
+//		rect->pos.pos.x = pchild->v_x;
+//		rect->pos.pos.y = pchild->v_y;
+//		rect->pos.dir = degToRad(pchild->v_ThetaZ);
+//		drawRect(gitter, rect);
+
 		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
 				x += 1) {
 			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
@@ -461,26 +549,31 @@ void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
 						v += 1) {
 					//todo: type conversion correction
-					rect->pos.pos.x = pchild->v_x + x;
-					rect->pos.pos.y = pchild->v_y + y;
 					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
+
+					Point_t* schiebe = pointConstruct();
+					schiebe->x = x;
+					schiebe->y = y;
+					pointRotate(schiebe, rect->pos.dir);
+					rect->pos.pos.x = pchild->v_x + schiebe->x;
+					rect->pos.pos.y = pchild->v_y + schiebe->y;
 
 					drawRect(gitter, rect);
 				}
 			}
 		}
-//	wandelbareTopologie_Neighbour,)
-//
-//	OV_INSTPTR_wandelbareTopologie_Node
-//	neighbour =
-//Ov_GetChild(
-//		;
-//		if(neighbour) {
-//			drawAssoc(gitter, pchild, neighbour);
-//		}
-//	}
-		gitter2png(gitter, "visualization");
 	}
+	OV_INSTPTR_wandelbareTopologie_Node neighbour = NULL;
+	pchild = NULL;
+	Ov_ForEachChild(ov_containment, ptop, pchild)
+	{
+		neighbour = NULL;
+		Ov_ForEachChild(wandelbareTopologie_Neighbour, pchild, neighbour)
+		{
+			if(neighbour) drawAssoc(gitter, pchild, neighbour);
+		}
+	}
+	gitter2png(gitter, "visualization");
 }
 
 //
@@ -522,6 +615,10 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 		}
 	}
 	visualize_topologie(ptop);
+	listIterate(picList, elem1)
+	{
+		gitterDestruct(elem1->data);
+	}
 	destructList(picList);
 
 	ov_memstack_unlock();
@@ -537,6 +634,7 @@ OV_DLLFNCEXPORT void gtpf_assozierer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
 	OV_RESULT result = OV_ERR_OK;
 	result = gtpf_assozierer_execute(pinst);
+	ov_memstack_lock();
 	switch (result) {
 		case OV_ERR_OK:
 			ov_logfile_info("gtpf: done");
@@ -552,6 +650,7 @@ OV_DLLFNCEXPORT void gtpf_assozierer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 			pinst->v_result = 1;
 	}
 
+	ov_memstack_unlock();
 	return;
 }
 

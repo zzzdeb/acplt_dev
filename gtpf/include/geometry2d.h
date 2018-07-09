@@ -32,10 +32,10 @@ typedef struct {
  */
 
 // Converts degrees to radians.
-#define degToRad(angleDegrees) (angleDegrees * M_PI / 180.0)
+#define degToRad(angleDegrees) ((angleDegrees) * M_PI / 180.0)
 
 // Converts radians to degrees.
-#define radToDeg(angleRadians) (angleRadians * 180.0 / M_PI)
+#define radToDeg(angleRadians) ((angleRadians) * 180.0 / M_PI)
 
 /*
 Point functions
@@ -69,7 +69,7 @@ void pointRotate(Point_t* pnt, Radian_t alpha){
 	OV_SINGLE x = pnt->x;
 	OV_SINGLE y = pnt->y;
 	pnt->x = x*cos(alpha) - y*sin(alpha);
-	pnt->y = x*cos(alpha) + y*sin(alpha);
+	pnt->y = x*sin(alpha) + y*cos(alpha);
 }
 /*
  * Position functions
@@ -99,24 +99,26 @@ void rectGetCorners(Rectangular_t* rect, Point_t* c1, Point_t* c2, Point_t* c3, 
 	OV_SINGLE ch = cos(rect->pos.dir + M_PI_2) * rect->h / 2;
 	OV_SINGLE sb = sin(rect->pos.dir) * rect->b / 2;
 	OV_SINGLE sh = sin(rect->pos.dir + M_PI_2) * rect->h / 2;
-	c1->x = rect->pos.pos.x + cb - ch;
+	c1->x = rect->pos.pos.x + cb + ch;
 	c1->y	=	rect->pos.pos.y + sb + sh;
 
-	c2->x = rect->pos.pos.x + cb + ch;
+	c2->x = rect->pos.pos.x + cb - ch;
 	c2->y = rect->pos.pos.y + sb - sh;
 
-	c3->x = rect->pos.pos.x - cb + ch;
+	c3->x = rect->pos.pos.x - cb - ch;
 	c3->y = rect->pos.pos.y - sb - sh;
 
-	c4->x = rect->pos.pos.x - cb - ch;
+	c4->x = rect->pos.pos.x - cb + ch;
 	c4->y = rect->pos.pos.y - sb + sh;
 	return;
 }
 
+#define EPSILON 1
+
 OV_RESULT isPointInRect(Rectangular_t* rect, Point_t* pnt) {
 	Point_t* diff = pointSubtract(pnt, &rect->pos.pos);
 	pointRotate(diff, -rect->pos.dir);
-	return (rect->b/2)>= diff->x && (-rect->b/2)<= diff->x && (rect->h/2)>= diff->y && (-rect->h/2)<= diff->y;
+	return (rect->b/2)+EPSILON>= diff->x && (-rect->b/2)-EPSILON<= diff->x && (rect->h/2)+EPSILON>= diff->y && (-rect->h/2)-EPSILON<= diff->y;
 }
 
 #endif

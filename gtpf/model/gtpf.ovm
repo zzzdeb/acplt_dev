@@ -1,5 +1,6 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "CTree.ovm"
 
 #include "wandelbareTopologie.ovm"
 
@@ -27,6 +28,9 @@ LIBRARY gtpf
 			// Example for a fb/functionblock based class
 			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
 		END_VARIABLES;
+		PARTS
+			//copy : CLASS CTree/Transport;
+		END_PARTS;
 		OPERATIONS
 			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
 			// if MY_FUNC is declared in gtpf.ovf. Implement the functions in assozierer.c.

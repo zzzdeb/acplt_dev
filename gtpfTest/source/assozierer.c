@@ -177,7 +177,7 @@ TEST_TEAR_DOWN(assozierer) {
 
 TEST(assozierer, assozierer_default) {
 	load_test_data("default.json");
-	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case2");
+	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case_default");
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpinst), gpltc);
 
 	TEST_ASSERT_EQUAL(gpinst->v_result, 0);
@@ -185,7 +185,15 @@ TEST(assozierer, assozierer_default) {
 
 TEST(assozierer, assozierer_2neighbour) {
 	load_test_data("2Neighbour.json");
-	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case1");
+	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case_2neighbour_fix");
+	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpinst), gpltc);
+
+	TEST_ASSERT_EQUAL(gpinst->v_result, 0);
+}
+
+TEST(assozierer, assozierer_schieber) {
+	load_test_data("schieber.json");
+	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case_schieber");
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpinst), gpltc);
 
 	TEST_ASSERT_EQUAL(gpinst->v_result, 0);
@@ -282,8 +290,9 @@ TEST(assozierer, assozierer_2neighbour) {
 //}
 //
 TEST_GROUP_RUNNER(assozierer) {
-//	RUN_TEST_CASE(assozierer, assozierer_default);
-	RUN_TEST_CASE(assozierer, assozierer_2neighbour);
+	RUN_TEST_CASE(assozierer, assozierer_default);
+//	RUN_TEST_CASE(assozierer, assozierer_2neighbour);
+//	RUN_TEST_CASE(assozierer, assozierer_schieber);
 //  RUN_TEST_CASE(assozierer, assozierer_badstart);
 //  RUN_TEST_CASE(assozierer, assozierer_badtopo);
 //  RUN_TEST_CASE(assozierer, assozierer_start_same_end);
