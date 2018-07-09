@@ -52,7 +52,7 @@ LIBRARY wandelbareTopologie
 	//	PARENT parentVarName : CLASS ov/object;
 	//	CHILD  childVarName : CLASS ov/object; 
 	//END_ASSOCIATION;
-		ASSOCIATION Neighbour : ONE_TO_MANY 
+		ASSOCIATION Neighbour : MANY_TO_MANY 
 		PARENT parentNeighbour   : CLASS wandelbareTopologie/Node; 
 		CHILD  childNeighbour   : CLASS wandelbareTopologie/Node;
 		END_ASSOCIATION;

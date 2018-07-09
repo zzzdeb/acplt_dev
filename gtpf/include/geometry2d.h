@@ -37,6 +37,12 @@ typedef struct {
 // Converts radians to degrees.
 #define radToDeg(angleRadians) ((angleRadians) * 180.0 / M_PI)
 
+OV_BOOL radInRange(Radian_t angle, Radian_t min, Radian_t max){
+	if(min<=max)
+			return angle>=min && angle<=max;
+	return	angle<=max || angle>=min;
+}
+
 /*
 Point functions
 */
@@ -70,6 +76,13 @@ void pointRotate(Point_t* pnt, Radian_t alpha){
 	OV_SINGLE y = pnt->y;
 	pnt->x = x*cos(alpha) - y*sin(alpha);
 	pnt->y = x*sin(alpha) + y*cos(alpha);
+}
+
+OV_SINGLE pointNorm(Point_t* p){
+	return pow(pow(p->x,2)+pow(p->y, 2), 0.5);
+}
+OV_SINGLE pointDist(Point_t* p1, Point_t* p2){
+	return pointNorm(pointSubtract(p1, p2));
 }
 /*
  * Position functions
