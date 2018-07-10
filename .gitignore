@@ -13,7 +13,7 @@
 /*/.settings
 /*/source/sourcetemplates
 /*/build
+!/*/build/*/Makefile
 /*/draft
 /*/.svn
-!/*/build/*/Makefile
 /*/Debug (Windows)

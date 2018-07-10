@@ -185,7 +185,8 @@ TEST(assozierer, assozierer_default) {
 
 TEST(assozierer, assozierer_2neighbour) {
 	load_test_data("2Neighbour.json");
-	ov_string_setvalue(&gpinst->v_Path, "/TechUnits/gtpfTest/case_2neighbour_fix");
+	ov_string_setvalue(&gpinst->v_Path,
+		"/TechUnits/gtpfTest/case_2neighbour_fix");
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpinst), gpltc);
 
 	TEST_ASSERT_EQUAL(gpinst->v_result, 0);
