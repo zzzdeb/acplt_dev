@@ -854,8 +854,8 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 		ov_string_setvalue(&pinst->v_path,
 				cJSON_GetObjectItem(jsbase, PATHNAME)->valuestring);
 	} else {
-		strcpy(cJSON_GetObjectItem(jsbase, PATHNAME)->valuestring,
-				pinst->v_path);
+		cJSON_DeleteItemFromObjectCaseSensitive(jsbase, PATHNAME);
+		cJSON_AddStringToObject(jsbase, PATHNAME, pinst->v_path);
 	}
 
 //   2. Load Libraries
@@ -900,6 +900,8 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	OV_INSTPTR_ov_object proot = NULL;
 	if (strlen(root_path)) {
 		proot = ov_path_getobjectpointer(root_path, VERSION_FOR_CTREE);
+		free(jstree->child->string);
+		jstree->child->string = malloc(ov_string_getlength(tmp+1)+1);
 		strcpy(jstree->child->string, tmp + 1);
 	} else
 		proot = (OV_INSTPTR_ov_object) &pdb->root;
@@ -925,6 +927,9 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 
 	// 5. Free
 	ov_string_setvalue(&root_path, NULL);
+	cJSON_Delete(pinst->v_cache.jsbase);
+	ov_string_setvalue(&pinst->v_path, NULL);
+	ov_string_setvalue(&pinst->v_json, NULL);
 	return res;
 }
 
@@ -955,8 +960,5 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		pinst->v_result = OV_ERR_GENERIC;
 		ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
 	}
-	cJSON_Delete(pinst->v_cache.jsbase);
-	ov_string_setvalue(&pinst->v_path, NULL);
-	ov_string_setvalue(&pinst->v_json, NULL);
 	return;
 }
