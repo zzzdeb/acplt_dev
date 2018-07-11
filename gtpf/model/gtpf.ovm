@@ -1,8 +1,9 @@
 #include "ov.ovm"
 #include "fb.ovm"
-#include "CTree.ovm"
 
 #include "wandelbareTopologie.ovm"
+#include "TGraph.ovm"
+#include "CTree.ovm"
 
 LIBRARY gtpf
 	VERSION   = "V0.1 (DD-Mon-YYYY)";

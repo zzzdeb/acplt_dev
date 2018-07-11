@@ -1,6 +1,8 @@
 #ifndef GEOMETRY2D_H_
 #define GEOMETRY2D_H_
 
+//version 1.0
+
 #include "libov/ov_macros.h"
 #include <math.h>
 
@@ -91,6 +93,13 @@ void positionInit(Position_t* pos) {
 	pos->dir = 0;
 	pointInit(&pos->pos);
 }
+
+Position_t* positionConstruct() {
+	Position_t* pos = ov_memstack_alloc(sizeof(Position_t));
+	positionInit(pos);
+	return pos;
+}
+
 
 /*
  * Rect functions

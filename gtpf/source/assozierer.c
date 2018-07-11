@@ -39,8 +39,9 @@
 
 #include "fb.h"
 
-#include "wandelbareTopologie.h"
 #include "CTree.h"
+#include "wandelbareTopologie.h"
+#include "TGraph.h"
 
 #include "list.h"
 #include "geometry2d.h"
@@ -52,6 +53,8 @@
 #define M_PI 3.14159265358979323846
 
 #define MAX(a, b)	(((a)<(b))?(b):(a))
+
+OV_INSTPTR_TGraph_graph ggraph = NULL;
 
 //#define XRATE 5
 //#define YRATE	5
@@ -329,11 +332,6 @@ Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 	return w1Gitter;
 }
 
-//void copyWagen(OV_INSTPTR_wandelbareTopologie_Node copy,
-//		OV_INSTPTR_wandelbareTopologie_Node orig) {
-//	if(!copy || !orig) Throw(OV_ERR_BADPARAM);
-//}
-
 OV_BOOL canAssosiate(Rectangular_t* rect1, Rectangular_t* rect2) {
 	//ecken der abgabe rechteck
 	Point_t* c1 = pointConstruct();
@@ -390,6 +388,37 @@ OV_BOOL canAssosiate(Rectangular_t* rect1, Rectangular_t* rect2) {
 		}
 	}
 	return 0;
+}
+
+OV_INSTPTR_TGraph_Node createPOI(
+		const OV_INSTPTR_wandelbareTopologie_Node wagen, const Rectangular_t* rect,
+		const OV_STRING name) {
+	OV_INSTPTR_TGraph_Node poi = NULL;
+	OV_RESULT result = Ov_CreateObject(TGraph_Node, poi, &(ggraph->p_Nodes),
+		name);
+	if(result) {
+		Throw(result);
+	}
+	//set var
+	poi->v_Position.value[0] = rect->pos.pos.x;
+	poi->v_Position.value[1] = rect->pos.pos.y;
+	poi->v_Position.value[2] = radToDeg(rect->pos.dir);
+
+	//linking with wagen
+	Ov_Link(wandelbareTopologie_POI, wagen, poi);
+	if(result) {
+		Throw(result);
+	}
+	//linking with other pois
+	OV_INSTPTR_TGraph_Node poiChild = NULL;
+	Ov_ForEachChildEx(wandelbareTopologie_POI, wagen, poiChild, TGraph_Node)
+	{
+		if(poi != poiChild) {
+			TGraph_graph_linkNodes(ggraph, poi, poiChild);
+			TGraph_graph_linkNodes(ggraph, poiChild, poi);
+		}
+	}
+	return poi;
 }
 
 void createAssoc(Gitter_t* g1, Gitter_t* g2) {
@@ -452,125 +481,49 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 		}
 	}
 
-	OV_INSTPTR_wandelbareTopologie_Node wagens[] = { w1, w2 };
-	OV_INSTPTR_wandelbareTopologie_Node copies[] = { w1, w2 };
-	Rectangular_t* rects[] = { rect1, rect2 };
+	if(found) {
+		OV_INSTPTR_wandelbareTopologie_Node wagens[] = { w1, w2 };
+		OV_INSTPTR_TGraph_Node poi[] = { NULL, NULL };
+		Rectangular_t* rects[] = { rect1, rect2 };
 
-	Radian_t piRotatedDir =
-			rects[0]->pos.dir >= 0 ?
-					rects[0]->pos.dir - M_PI : rects[0]->pos.dir + M_PI;
-	OV_BOOL angleCheck = radInRange(piRotatedDir,
-		degToRad(wagens[0]->v_ThetaZ + wagens[0]->v_TCSVM.value[2]),
-		degToRad(wagens[0]->v_TCSVP.value[2] + wagens[0]->v_ThetaZ));
-	do {
-		OV_SINGLE eps = 0.01;
-		for (OV_UINT i = 0; i < 2; ++i) {
-			OV_BOOL new_pos = 0;
-			if(abs(rects[i]->pos.pos.x - wagens[i]->v_x) > eps
-					|| abs(rects[i]->pos.pos.y - wagens[i]->v_y) > eps
-					|| abs(radToDeg(rects[i]->pos.dir) - wagens[i]->v_ThetaZ) > eps)
-				new_pos = 1;
-
-			if(found) {
-				if(new_pos) {
-					OV_STRING newObjPath = NULL;
-					OV_STRING objpath = ov_path_getcanonicalpath(
-						Ov_StaticPtrCast(ov_object, wagens[i]), 2);
-
-					ov_string_setvalue(&newObjPath, objpath);
-					OV_INSTPTR_wandelbareTopologie_Node prevar = NULL;
-					for (OV_UINT j = 1; j < 100; ++j) {
-						OV_INSTPTR_wandelbareTopologie_Node pvariant = Ov_StaticPtrCast(
-							wandelbareTopologie_Node,
-							ov_path_getobjectpointer(newObjPath, 2));
-						if(!pvariant) {
-							OV_INSTPTR_CTree_Transport ptransport = Ov_StaticPtrCast(
-								CTree_Transport,
-								ov_path_getobjectpointer("/data/CTree/Transport", 2));
-							ptransport->v_getVar = 1;
-							ov_string_setvalue(&ptransport->v_path, objpath);
-							ov_string_setvalue(&ptransport->v_targetPath, newObjPath);
-							ov_string_setvalue(&ptransport->v_targetKS, "~");
-							CTree_Transport_execute(ptransport);
-
-							copies[i] = Ov_StaticPtrCast(wandelbareTopologie_Node,
-								ov_path_getobjectpointer(newObjPath, 2));
-							//unlinking
-							Ov_Association_DefineIteratorNM(pit);
-							OV_INSTPTR_wandelbareTopologie_Node pneighbour = NULL;
-							pneighbour = Ov_GetFirstChildNM(wandelbareTopologie_Neighbour,
-								pit, copies[i]);
-							while (pneighbour) {
-								Ov_UnlinkNM(wandelbareTopologie_Neighbour, copies[i],
-									pneighbour);
-								pneighbour = Ov_GetFirstChildNM(wandelbareTopologie_Neighbour,
-									pit, copies[i]);
-							}
-							pneighbour = Ov_GetFirstParentNM(wandelbareTopologie_Neighbour,
-								pit, copies[i]);
-							while (pneighbour) {
-								Ov_UnlinkNM(wandelbareTopologie_Neighbour, pneighbour,
-									copies[i]);
-								pneighbour = Ov_GetFirstParentNM(wandelbareTopologie_Neighbour,
-									pit, copies[i]);
-							}
-							//linking with pre
-							Ov_Link(wandelbareTopologie_Neighbour, prevar, copies[i]);
-							Ov_Link(wandelbareTopologie_Neighbour, copies[i], prevar);
-
-							//new position
-							copies[i]->v_x = rects[i]->pos.pos.x;
-							copies[i]->v_y = rects[i]->pos.pos.y;
-							copies[i]->v_ThetaZ = radToDeg(rects[i]->pos.dir);
-
-							copies[i]->v_TTPSVM.value[0] = wagens[i]->v_TTPSVM.value[0]
-									+ wagens[i]->v_x - copies[i]->v_x;
-							copies[i]->v_TTPSVM.value[1] = wagens[i]->v_TTPSVM.value[1]
-									+ wagens[i]->v_y - copies[i]->v_y;
-							copies[i]->v_TCSVM.value[2] = wagens[i]->v_TCSVM.value[2]
-									+ wagens[i]->v_ThetaZ - copies[i]->v_ThetaZ;
-							copies[i]->v_TTPSVP.value[0] = wagens[i]->v_TTPSVP.value[0]
-									+ wagens[i]->v_x - copies[i]->v_x;
-							copies[i]->v_TTPSVP.value[1] = wagens[i]->v_TTPSVP.value[1]
-									+ wagens[i]->v_y - copies[i]->v_y;
-							copies[i]->v_TCSVP.value[2] = wagens[i]->v_TCSVM.value[2]
-									+ wagens[i]->v_ThetaZ - copies[i]->v_ThetaZ;
-							break;
-						}
-						if(abs(rects[i]->pos.pos.x - pvariant->v_x) <= eps
-								&& abs(rects[i]->pos.pos.y - pvariant->v_y) <= eps
-								&& abs(radToDeg(rects[i]->pos.dir) - pvariant->v_ThetaZ)
-										<= eps) {
-							copies[i] = pvariant;
-							break;
-						}
-						prevar = pvariant;
-						ov_string_print(&newObjPath, "%s_%d", objpath, j);
-					}
+		Radian_t piRotatedDir =
+				rects[0]->pos.dir >= 0 ?
+						rects[0]->pos.dir - M_PI : rects[0]->pos.dir + M_PI;
+		OV_BOOL angleCheck = radInRange(piRotatedDir,
+			degToRad(wagens[0]->v_ThetaZ + wagens[0]->v_TCSVM.value[2]),
+			degToRad(wagens[0]->v_TCSVP.value[2] + wagens[0]->v_ThetaZ));
+		do {
+			OV_SINGLE eps = 0.01;
+			for (OV_UINT i = 0; i < 2; ++i) {
+				//create
+				OV_UINT j = 0;
+				poi[i] = NULL;
+				Ov_ForEachChildEx(wandelbareTopologie_POI, wagens[i], poi[i], TGraph_Node)
+				{
+					if(abs(rects[i]->pos.pos.x - poi[i]->v_Position.value[0]) < eps
+							&& abs(rects[i]->pos.pos.y - poi[i]->v_Position.value[1]) < eps
+							&& abs(radToDeg(rects[i]->pos.dir) - poi[i]->v_Position.value[2])
+									< eps) break;
+					j++;
+				}
+				if(!poi[i]) {
+					OV_STRING poiName = NULL;
+					ov_string_print(&poiName, "%s_%d", wagens[i]->v_identifier, j);
+					poi[i] = createPOI(wagens[i], rects[i], poiName);
 				}
 			}
-		}
-		if(found) {
-//		Ov_Link
-			OV_RESULT res = Ov_Link(wandelbareTopologie_Neighbour, copies[0],
-				copies[1]);
-			if(!res) {
+			//linking
+			if(!TGraph_graph_areNodesLinked(poi[0], poi[1])) {
+				TGraph_graph_linkNodes(ggraph, poi[0], poi[1]);
 				ov_logfile_info(
 					"linking %s %s at position w1: [%f,%f,%f] w2: [%f,%f,%f]",
-					copies[0]->v_identifier, copies[1]->v_identifier, rect1->pos.pos.x,
+					poi[0]->v_identifier, poi[1]->v_identifier, rect1->pos.pos.x,
 					rect1->pos.pos.y, radToDeg(rect1->pos.dir), rect2->pos.pos.x,
 					rect2->pos.pos.y, radToDeg(rect2->pos.dir));
-			} else {
-				ov_logfile_warning(
-					"cannot link %s %s (result: %s) at position w1: [%f,%f,%f] w2: [%f,%f,%f]",
-					copies[0]->v_identifier, copies[1]->v_identifier,
-					ov_result_getresulttext(res), rect1->pos.pos.x, rect1->pos.pos.y,
-					radToDeg(rect1->pos.dir), rect2->pos.pos.x, rect2->pos.pos.y,
-					radToDeg(rect2->pos.dir));
 			}
-		}
-		rects[0]->pos.dir = piRotatedDir;
-	} while (0 < angleCheck--);
+			rects[0]->pos.dir = piRotatedDir;
+		} while (0 < angleCheck--);
+	}
 }
 
 void drawRect(Gitter_t* gitter, const Rectangular_t* rect) {
@@ -630,15 +583,20 @@ void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 //			}
 //		}
 	}
-	OV_INSTPTR_wandelbareTopologie_Node neighbour = NULL;
 	pchild = NULL;
 	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
 	{
-		neighbour = NULL;
-		Ov_Association_DefineIteratorNM(pit);
-		Ov_ForEachChildNM(wandelbareTopologie_Neighbour, pit, pchild, neighbour)
+		OV_INSTPTR_TGraph_Node poi = NULL;
+		Ov_ForEachChildEx(ov_containment, pchild, poi, TGraph_Node)
 		{
-			if(neighbour) drawAssoc(gitter, pchild, neighbour);
+			OV_INSTPTR_TGraph_Edge poiEdgeOut = NULL;
+			Ov_ForEachChildEx(ov_containment, poi, poiEdgeOut, TGraph_Edge)
+			{
+				OV_INSTPTR_TGraph_Node poiChild = NULL;
+//			Ov_ForEachChildEx(TGraph_End, poi, poiChild, TGraph_Node)
+//				if(neighbour) drawAssoc(gitter, pchild, neighbour);
+			}
+
 		}
 	}
 	gitter2png(gitter, "visualization");
@@ -664,13 +622,25 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 		ov_logfile_error("topology could not be found");
 		return OV_ERR_BADPARAM;
 	}
+	ggraph = NULL;
+	result = Ov_CreateObject(TGraph_graph, ggraph, ptop, "Graph");
+	if(result){
+		if(result == OV_ERR_ALREADYEXISTS) {
+		OV_STRING pathToGraph = NULL;
+		ov_string_print(&pathToGraph, "%s/%s", pinst->v_Path, "Graph");
+		ggraph = ov_path_getobjectpointer(pathToGraph, 2);
+	} else {
+		Throw(result);
+	}}
 
-	//creating list ov objects (no '_' in identifier)
+//safe
+	if(!ggraph) Throw(OV_ERR_GENERIC);
+
+//creating list ov objects (no '_' in identifier)
 	list_t* picList = constructList(sizeof(Gitter_t));
 	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
 	{
-		if(!strchr(pchild->v_identifier, '_'))
-			insertFirst(picList, createPics(pchild));
+		insertFirst(picList, createPics(pchild));
 	}
 //	listSort(picList, relation);
 	listNode_t* elem1 = NULL;
@@ -703,7 +673,13 @@ OV_DLLFNCEXPORT void gtpf_assozierer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	OV_INSTPTR_gtpf_assozierer pinst = Ov_StaticPtrCast(gtpf_assozierer, pfb);
 
 	OV_RESULT result = OV_ERR_OK;
-	result = gtpf_assozierer_execute(pinst);
+	CEXCEPTION_T err;
+	Try{
+		result = gtpf_assozierer_execute(pinst);
+	}
+	Catch(err){
+		ov_logfile_error("%s", ov_result_getresulttext(err));
+	}
 	ov_memstack_lock();
 	switch (result) {
 		case OV_ERR_OK:

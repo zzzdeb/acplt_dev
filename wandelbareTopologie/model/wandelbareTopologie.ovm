@@ -1,5 +1,6 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "TGraph.ovm"
 
 LIBRARY wandelbareTopologie
 	VERSION   = "V0.1 (DD-Mon-YYYY)";
@@ -52,8 +53,13 @@ LIBRARY wandelbareTopologie
 	//	PARENT parentVarName : CLASS ov/object;
 	//	CHILD  childVarName : CLASS ov/object; 
 	//END_ASSOCIATION;
-		ASSOCIATION Neighbour : MANY_TO_MANY 
-		PARENT parentNeighbour   : CLASS wandelbareTopologie/Node; 
-		CHILD  childNeighbour   : CLASS wandelbareTopologie/Node;
+	//	ASSOCIATION Neighbour : MANY_TO_MANY 
+	//		PARENT parentNeighbour   : CLASS wandelbareTopologie/Node; 
+	//		CHILD  childNeighbour   : CLASS wandelbareTopologie/Node;
+	//	END_ASSOCIATION;
+		
+		ASSOCIATION POI : ONE_TO_MANY 
+			PARENT self   : CLASS wandelbareTopologie/Node; 
+			CHILD  poi   : CLASS TGraph/Node;
 		END_ASSOCIATION;
 END_LIBRARY;
