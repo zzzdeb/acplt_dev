@@ -6,7 +6,7 @@
  *
  *   History
  *   -------
- *   2018-03-02   File created
+ *   2018-03-02   File created by Zolboo Erdenebayar
  *
  *******************************************************************************
  *
@@ -26,8 +26,9 @@
 #include <string.h>
 
 #define VERSION_FOR_CTREE 2
-
-// string
+/*
+ * String
+ */
 OV_DLLFNCEXPORT OV_STRING
 CTree_helper_strlistcat(const OV_STRING_VEC *const vector) {
   OV_STRING res = NULL;
@@ -42,9 +43,9 @@ CTree_helper_strlistcat(const OV_STRING_VEC *const vector) {
   }
   return res;
 }
-
-// value
-
+/*
+ * Functions
+ */
 OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
   if (pobj == NULL)
     return NULL;
@@ -59,333 +60,117 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
   return factory;
 }
 
-//#define CTree_valuevecToString(valuestr, vartype, varvalue)					\
-//	cJSON * jsvalarray = cJSON_CreateArray();								\
-//	OV_STRING varstr = NULL;\
-//	for(OV_UINT i=0; i< varvalue->veclen; i++)											\
-//		cJSON_AddItemToArray(jsvalue, cJSON_CreateString(CTree_helper_valueToStr(varvalue->valueunion.val_##valuestr_vec[i])));\									\
-//	cJSON_print(jsvalarry);
-//
-
-// OV_RESULT vectorToStr(OV_STRING* valuestr, const OV_VAR_VALUE* value){
-//	OV_RESULT result = OV_ERR_OK;
-//	OV_STRING tmp = NULL;
-//	if(!(value->vartype & OV_VT_ISVECTOR) || !valuestr){
-//		return OV_ERR_BADPARAM;
-//	}
-//	OV_VAR_VALUE tmpVar = { .vartype=value->vartype & !OV_VT_ISVECTOR };
-//	cJSON * jsvalarray = cJSON_CreateArray();
-//	for(OV_UINT i=0; i<value->valueunion.val_bool_vec.veclen; i++){
-//		tmpVar.valueunion.val_bool =
-// value->valueunion.val_bool_vec.value[i]; 		result =
-// CTree_helper_valueToStr(&tmp, tmpVar);
-// cJSON_AddItemToArray(jsvalarray, cJSON_CreateString(tmp));
-//	}
-//	result = ov_string_setvalue(valuestr, cJSON_Print(jsvalarray));
-//	cJSON_free(jsvalarray);
-//	return result;
-//}
-
-OV_RESULT CTree_helper_strVecToValue(OV_VAR_VALUE *value, cJSON *jsvarlist) {
+OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
+                       OV_STRING *port, OV_STRING *serverName,
+                       OV_STRING *path) {
   OV_RESULT result = OV_ERR_OK;
-  if (!value || !jsvarlist || !(value->vartype & OV_VT_ISVECTOR))
+
+  if (kspath == NULL)
     return OV_ERR_BADPARAM;
 
-  OV_UINT size = cJSON_GetArraySize(jsvarlist);
+  OV_STRING serverNameStr = NULL;
+  OV_STRING pathStr = NULL;
 
-  cJSON *jselem = NULL;
-  OV_UINT i = 0;
-  char *endPtr = NULL;
-
-  switch (value->vartype) {
-  case OV_VT_BYTE_VEC:
-    value->valueunion.val_byte_vec.veclen = size;
-    value->valueunion.val_byte_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_byte_vec, size, BYTE);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_byte_vec.value[i] =
-          strtol(jselem->valuestring, &endPtr, 0);
-      i++;
-    }
-    break;
-  case OV_VT_BOOL_VEC:
-    value->valueunion.val_bool_vec.veclen = size;
-    value->valueunion.val_bool_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_bool_vec, size, BOOL);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_bool_vec.value[i] =
-          strtol(jselem->valuestring, &endPtr, 0);
-      i++;
-    }
-    break;
-  case OV_VT_INT_VEC:
-    value->valueunion.val_int_vec.veclen = size;
-    value->valueunion.val_int_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_int_vec, size, INT);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_int_vec.value[i] =
-          strtol(jselem->valuestring, &endPtr, 0);
-      i++;
-    }
-    break;
-  case OV_VT_UINT_VEC:
-    value->valueunion.val_uint_vec.veclen = size;
-    value->valueunion.val_uint_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_uint_vec, size, UINT);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_uint_vec.value[i] =
-          strtoul(jselem->valuestring, &endPtr, 0);
-      i++;
-    }
-    break;
-  case OV_VT_SINGLE_VEC:
-    value->valueunion.val_single_vec.veclen = size;
-    value->valueunion.val_single_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_single_vec, size, SINGLE);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_single_vec.value[i] =
-          strtod(jselem->valuestring, &endPtr);
-      i++;
-    }
-    break;
-  case OV_VT_DOUBLE_VEC:
-    value->valueunion.val_double_vec.veclen = size;
-    value->valueunion.val_double_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_double_vec, size, DOUBLE);
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      value->valueunion.val_double_vec.value[i] =
-          strtod(jselem->valuestring, &endPtr);
-      i++;
-    }
-    break;
-  case OV_VT_STRING_VEC:
-    value->valueunion.val_string_vec.veclen = size;
-    value->valueunion.val_string_vec.value = NULL;
-    Ov_SetDynamicVectorLength(&value->valueunion.val_string_vec, size, STRING);
-    ov_memstack_lock();
-    cJSON_ArrayForEach(jselem, jsvarlist) {
-      result = ov_string_setvalue(&value->valueunion.val_string_vec.value[i],
-                                  jselem->valuestring);
-      i++;
-    }
-    ov_memstack_unlock();
-    break;
-  case OV_VT_TIME_VEC:
-    result = OV_ERR_NOTIMPLEMENTED;
-    break;
-  case OV_VT_TIME_SPAN_VEC:
-    result = OV_ERR_NOTIMPLEMENTED;
-    break;
-  case OV_VT_STRUCT_VEC:
-    value->valueunion.val_struct_vec.veclen = 0;
-    value->valueunion.val_struct_vec.value = NULL;
-    return OV_ERR_NOTIMPLEMENTED;
-    break;
-  default:
-    return OV_ERR_UNKNOWNOPTYPEDEF;
+  OV_STRING kspathcopy = NULL;
+  ov_string_setvalue(&kspathcopy, kspath);
+  OV_STRING portStr = strchr(kspathcopy, ':');
+  if (portStr) {
+    *portStr = 0;
+    portStr++;
+    serverNameStr = strchr(portStr, '/');
+  } else {
+    serverNameStr = strchr(kspathcopy, '/');
   }
+  if (serverNameStr) {
+    *serverNameStr = 0;
+    serverNameStr++;
+  }
+
+  if (serverNameStr) {
+    pathStr = strchr(serverNameStr, '/');
+    if (pathStr) {
+      *pathStr = 0;
+      pathStr++;
+    }
+  } else {
+    pathStr = NULL;
+  }
+
+  //	if (len==){
+  //		ov_string_freelist(splited);
+  //		return OV_ERR_BADPARAM;
+  //	}
+  //
+  if (serverHost && !result) {
+    result = ov_string_setvalue(serverHost, kspathcopy);
+    if (Ov_Fail(result)) {
+      ov_string_setvalue(&kspathcopy, NULL);
+      result = OV_ERR_GENERIC;
+    }
+  }
+
+  if (port && !result) {
+    result = ov_string_setvalue(port, portStr);
+    ;
+    if (Ov_Fail(result)) {
+      result = OV_ERR_GENERIC;
+    }
+  }
+
+  if (serverName && !result) {
+    result = ov_string_setvalue(serverName, serverNameStr);
+    if (Ov_Fail(result)) {
+      result = OV_ERR_GENERIC;
+    }
+  }
+
+  if (path && !result) {
+    result = ov_string_setvalue(path, pathStr);
+    if (Ov_Fail(result)) {
+      result = OV_ERR_GENERIC;
+    }
+  }
+  ov_string_setvalue(&kspathcopy, NULL);
+  ov_string_setvalue(&portStr, NULL);
+  ov_string_setvalue(&serverNameStr, NULL);
+  ov_string_setvalue(&pathStr, NULL);
   return result;
 }
 
-#define VALUETOSTR(S, V)                                                       \
-  _Generic((V), OV_BOOL                                                        \
-           : ov_string_print(S, "%" OV_PRINT_BOOL, !!V), OV_UINT               \
-           : ov_string_print(S, "%" OV_PRINT_UINT, V), default                 \
-           : S = NULL)
-
-#define STRTO(V, S)                                                            \
-  _Generic((S), OV_BOOL                                                        \
-           : ov_string_print(S, "%" OV_PRINT_BOOL, V), OV_UINT                 \
-           : ov_string_print(S, "%" OV_PRINT_UINT, V), default                 \
-           : S = NULL)
-
-// OV_RESULT ovvalueToJSON(cJSON* jsvalue, const OV_VAR_VALUE * value) {
-//	OV_RESULT result = OV_ERR_OK;
-//	OV_STRING valuestr = NULL;
-//
-//	switch (value->vartype){
-//	case OV_VT_VOID:
-//		break;
-//	case OV_VT_BYTE:
-//		jsvalue = cJSON_CreateNumber(value->valueunion.val_byte);
-//		break;
-//	case OV_VT_BOOL_VEC:
-//		jsvalue = cJSON_CreateArray();
-//		for (OV_UINT i = 0; i < value->valueunion.val_bool_vec.veclen;
-// i++) { 			cJSON_AddItemToArray(jsvalue,
-// cJSON_CreateBool(value->valueunion.val_bool_vec.value[i]));
-//		}
-//	break;
-//	default:
-//		return OV_ERR_BADPARAM;
-//	}
-//}
-
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_valueToStr(OV_STRING *valuestr,
-                                                  const OV_VAR_VALUE *value) {
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
+    const OV_INSTPTR_ksbase_ClientBase pclient, const OV_STRING param) {
   OV_RESULT result = OV_ERR_OK;
+  OV_STRING serverHost = NULL;
+  OV_STRING serverPort = NULL;
+  OV_STRING serverName = NULL;
+  OV_STRING serverPath = NULL;
+  result =
+      parse_kspath(param, &serverHost, &serverPort, &serverName, &serverPath);
 
-  //	check validity of input
-  if (value == NULL || valuestr == NULL) {
-    result = OV_ERR_BADPARAM;
+  if (!serverHost) {
+    return OV_ERR_BADPARAM;
+  }
+
+  result = ksbase_ClientBase_serverHost_set(
+      (OV_INSTPTR_ksbase_ClientBase)pclient, serverHost);
+  if (Ov_Fail(result)) {
     return result;
   }
-
-  //	check
-  *valuestr = NULL;
-  switch (value->vartype) {
-  case OV_VT_VOID:
-    result = ov_string_setvalue(valuestr, "");
-    break;
-  case OV_VT_BYTE:
-    result = ov_string_print(valuestr, "%d", value->valueunion.val_byte);
-    break;
-  case OV_VT_BOOL:
-    result = VALUETOSTR(valuestr, value->valueunion.val_bool);
-    //		result = ov_string_print(valuestr, "%s",
-    //				(value->valueunion.val_bool ? "TRUE" :
-    //"FALSE"));
-    break;
-  case OV_VT_INT:
-    result =
-        ov_string_print(valuestr, "%" OV_PRINT_INT, value->valueunion.val_int);
-    break;
-  case OV_VT_UINT:
-    result = VALUETOSTR(valuestr, value->valueunion.val_uint);
-    //		result = ov_string_print(valuestr, "%" OV_PRINT_UINT,
-    //				value->valueunion.val_uint); /* if
-    // vartype == OV_VT_UINT */
-    break;
-  case OV_VT_SINGLE:
-    result = ov_string_print(
-        valuestr, "%" OV_PRINT_SINGLE,
-        value->valueunion.val_single); /* if vartype == OV_VT_SINGLE */
-    break;
-  case OV_VT_DOUBLE:
-    result = ov_string_print(valuestr, "%" OV_PRINT_DOUBLE,
-                             value->valueunion.val_double);
-    break;
-  case OV_VT_STRING:
-    if (value->valueunion.val_string == NULL)
-      result = ov_string_setvalue(valuestr, "");
-    else
-      result = ov_string_print(
-          valuestr, "%s",
-          value->valueunion.val_string); /* if vartype == OV_VT_STRING */
-    break;
-  case OV_VT_TIME:
-    result = ov_string_print(
-        valuestr, "%u.%u", value->valueunion.val_time.secs,
-        value->valueunion.val_time.usecs); /* if vartype == OV_VT_STRING */
-    break;
-  case OV_VT_TIME_SPAN:
-    result = ov_string_print(
-        valuestr, "%u.%u", value->valueunion.val_time_span.secs,
-        value->valueunion.val_time_span.usecs); /* if vartype == OV_VT_STRING */
-    break;
-  case OV_VT_STATE:
-    result = ov_string_setvalue(valuestr, NOTSUPPORTEDTYPE);
-    break;
-  case OV_VT_STRUCT:
-    result = ov_string_setvalue(valuestr, NOTSUPPORTEDTYPE);
-    break;
-
-  case OV_VT_BYTE_VEC:
-    result = OV_ERR_NOTIMPLEMENTED;
-    break;
-  case OV_VT_BOOL_VEC:
-  case OV_VT_INT_VEC:
-  case OV_VT_UINT_VEC:
-  case OV_VT_SINGLE_VEC:
-  case OV_VT_DOUBLE_VEC:
-  case OV_VT_STRING_VEC:
-  case OV_VT_TIME_VEC:
-  case OV_VT_TIME_SPAN_VEC:
-  case OV_VT_TIME_SERIES:
-  case OV_VT_STATE_VEC:
-
-  case OV_VT_STRUCT_VEC:
-
-  case OV_VT_BOOL_PV:
-  case OV_VT_INT_PV:
-  case OV_VT_UINT_PV:
-  case OV_VT_SINGLE_PV:
-  case OV_VT_DOUBLE_PV:
-  case OV_VT_STRING_PV:
-  case OV_VT_TIME_PV:
-  case OV_VT_TIME_SPAN_PV:
-
-  case OV_VT_BOOL_PV_VEC:
-  case OV_VT_INT_PV_VEC:
-  case OV_VT_UINT_PV_VEC:
-  case OV_VT_SINGLE_PV_VEC:
-  case OV_VT_DOUBLE_PV_VEC:
-  case OV_VT_STRING_PV_VEC:
-  case OV_VT_TIME_PV_VEC:
-  case OV_VT_TIME_SPAN_PV_VEC:
-
-  case OV_VT_ANY:
-
-  default:
-    fprintf(stderr, "Unknown value type.\n");
-    exit(EXIT_FAILURE);
+  if (serverName) {
+    result = ksbase_ClientBase_serverName_set(
+        (OV_INSTPTR_ksbase_ClientBase)pclient, serverName);
+    if (Ov_Fail(result)) {
+      return result;
+    }
   }
-  return result;
+
+  return OV_ERR_OK;
 }
 
-////		vector
-//	case OV_VT_BYTE_VEC:
-//
-//	case OV_VT_BOOL_VEC:
-//		for (OV_UINT i = 0; i < value->valueunion.val_bool_vec.veclen;
-// i++) { 			result =
-// ov_string_print(&varstr, "%s",
-// (value->valueunion.val_bool_vec.value[i] ?
-//"TRUE" : "FALSE")); 			if (Ov_OK(result)) {
-// cJSON_AddItemToArray(jsvalarray,
-// cJSON_CreateString(varstr)); 			} else {
-// cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
-//			}
-//		}
-//		break;
-//	case OV_VT_INT_VEC:
-//		for (OV_UINT i = 0; i < value->valueunion.val_int_vec.veclen;
-// i++) { 			result = ov_string_print(&varstr, "%i",
-//					value->valueunion.val_int_vec.value[i]);
-//			if (Ov_OK(result)) {
-//				cJSON_AddItemToArray(jsvalarray,
-// cJSON_CreateString(varstr)); 			} else {
-// cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
-//			}
-//		}
-//		break;
-//	case OV_VT_UINT_VEC:
-//		for (OV_UINT i = 0; i < value->valueunion.val_uint_vec.veclen;
-// i++) { 			result = ov_string_print(&varstr, "%u",
-//					value->valueunion.val_uint_vec.value[i]);
-//			if (Ov_OK(result)) {
-//				cJSON_AddItemToArray(jsvalarray,
-// cJSON_CreateString(varstr)); 			} else {
-// cJSON_AddItemToArray(jsvalarray, cJSON_CreateString("error"));
-//			}
-//		}
-//		break;
-//	case OV_VT_SINGLE_VEC:
-//
-//	case OV_VT_DOUBLE_VEC:
-//	case OV_VT_STRING_VEC:
-//	case OV_VT_TIME_VEC:
-//	case OV_VT_TIME_SPAN_VEC:
-//
-//	case OV_VT_POINTER:
-//	case OV_VT_VOID:
-//		ov_string_setvalue(valuestr, "CANT");
-//		break;
-//	default:
-//		result = ov_string_setvalue(valuestr, "-");
-//	}
-//	return result;
-//}
+/*
+ *  Value
+ */
+
 typedef struct {
   OV_UINT veclen;
   OV_VAR_TYPE value[];
@@ -460,85 +245,6 @@ const KS_VARTYPE_VEC KS_VAR_TYPE_LIST = {.veclen = 39,
 
                                                    KS_VT_ANY}};
 
-const OV_STRING const KS_TYPE_TO_STR[] = {
-    [KS_VT_VOID] = "VOID",
-    [KS_VT_BOOL] = "BOOL",
-    [KS_VT_INT] = "INT",
-    [KS_VT_UINT] = "UINT",
-    [KS_VT_SINGLE] = "SINGLE",
-    [KS_VT_DOUBLE] = "DOUBLE",
-    [KS_VT_STRING] = "STRING",
-    [KS_VT_TIME] = "TIME",
-    [KS_VT_TIME_SPAN] = "TIME_SPAN",
-    [KS_VT_STATE] = "STATE",
-    [KS_VT_STRUCT] = "STRUCT",
-
-    [KS_VT_BYTE_VEC] = "BYTE_VEC",
-    [KS_VT_BOOL_VEC] = "BOOL_VEC",
-    [KS_VT_INT_VEC] = "INT_VEC",
-    [KS_VT_UINT_VEC] = "UINT_VEC",
-    [KS_VT_SINGLE_VEC] = "SINGLE_VEC",
-    [KS_VT_DOUBLE_VEC] = "DOUBLE_VEC",
-    [KS_VT_STRING_VEC] = "STRING_VEC",
-    [KS_VT_TIME_VEC] = "TIME_VEC",
-    [KS_VT_TIME_SPAN_VEC] = "TIME_SPAN_VEC",
-    [KS_VT_TIME_SERIES] = "TIME_SERIES",
-    [KS_VT_STATE_VEC] = "STATE_VEC",
-
-    [KS_VT_BOOL_PV] = "BOOL_PV",
-    [KS_VT_INT_PV] = "INT_PV",
-    [KS_VT_UINT_PV] = "UINT_PV",
-    [KS_VT_SINGLE_PV] = "SINGLE_PV",
-    [KS_VT_DOUBLE_PV] = "DOUBLE_PV",
-    [KS_VT_STRING_PV] = "STRING_PV",
-    [KS_VT_TIME_PV] = "TIME_PV",
-    [KS_VT_TIME_SPAN_PV] = "TIME_SPAN_PV",
-
-    [KS_VT_BOOL_PV_VEC] = "BOOL_PV_VEC",
-    [KS_VT_INT_PV_VEC] = "INT_PV_VEC",
-    [KS_VT_UINT_PV_VEC] = "UINT_PV_VEC",
-    [KS_VT_SINGLE_PV_VEC] = "SINGLE_PV_VEC",
-    [KS_VT_DOUBLE_PV_VEC] = "DOUBLE_PV_VEC",
-    [KS_VT_STRING_PV_VEC] = "STRING_PV_VEC",
-    [KS_VT_TIME_PV_VEC] = "TIME_PV_VEC",
-    [KS_VT_TIME_SPAN_PV_VEC] = "TIME_SPAN_PV_VEC",
-
-    [KS_VT_ANY] = "ANY",
-};
-
-const OV_STRING const OV_TYPE_TO_STR[] = {
-    [OV_VT_VOID] = "VOID",
-    [OV_VT_BYTE] = "BYTE",
-    [OV_VT_BOOL] = "BOOL",
-    [OV_VT_INT] = "INT",
-    [OV_VT_UINT] = "UINT",
-    [OV_VT_SINGLE] = "SINGLE",
-    [OV_VT_DOUBLE] = "DOUBLE",
-    [OV_VT_STRING] = "STRING",
-    [OV_VT_TIME] = "TIME",
-    [OV_VT_TIME_SPAN] = "TIME_SPAN",
-    [OV_VT_STATE] = "STATE",
-    [OV_VT_STRUCT] = "STRUCT",
-
-    [OV_VT_CTYPE] = "CTYPE",
-    [OV_VT_POINTER] = "POINTER",
-    [OV_VT_ISVECTOR] = "ISVECTOR",
-
-    [OV_VT_BYTE_VEC] = "BYTE_VEC",
-    [OV_VT_BOOL_VEC] = "BOOL_VEC",
-    [OV_VT_INT_VEC] = "INT_VEC",
-    [OV_VT_UINT_VEC] = "UINT_VEC",
-    [OV_VT_SINGLE_VEC] = "SINGLE_VEC",
-    [OV_VT_DOUBLE_VEC] = "DOUBLE_VEC",
-    [OV_VT_STRING_VEC] = "STRING_VEC",
-    [OV_VT_TIME_VEC] = "TIME_VEC",
-    [OV_VT_TIME_SPAN_VEC] = "TIME_SPAN_VEC",
-    [OV_VT_STATE_VEC] = "STATE_VEC",
-    [OV_VT_STRUCT_VEC] = "STRUCT_VEC",
-};
-
-enum VARTYPES { OV, KS };
-typedef enum VARTYPES VARTYPES;
 
 /*	----------------------------------------------------------------------
  */
@@ -741,152 +447,6 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE *vartype,
   return OV_ERR_OK;
 }
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToKSType(KS_VAR_TYPE *type,
-                                                   const OV_STRING typestr) {
-  for (size_t i = 0; i < KS_VAR_TYPE_LIST.veclen; i++) {
-    if (!ov_string_compare(typestr,
-                           KS_TYPE_TO_STR[KS_VAR_TYPE_LIST.value[i]])) {
-      *type = KS_VAR_TYPE_LIST.value[i];
-      return OV_ERR_OK;
-    }
-  }
-  return OV_ERR_BADPARAM;
-}
-
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_kstypeToStr(OV_STRING *typestr,
-                                                   const OV_VAR_TYPE *type) {
-  return OV_ERR_OK;
-}
-
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToValue(OV_VAR_VALUE *value,
-                                                  const OV_STRING valuestr) {
-  OV_RESULT result = OV_ERR_OK;
-  //	check validity of input
-  if (value == NULL || valuestr == NULL) {
-    result = OV_ERR_BADPARAM;
-    return result;
-  }
-
-  OV_UINT len;
-  char *endPtr = NULL;
-  OV_STRING *tmp = NULL;
-  //	check
-  switch (value->vartype) {
-  case OV_VT_VOID:
-    break;
-  case OV_VT_BYTE:
-    value->valueunion.val_byte = strtol(valuestr, &endPtr, 0);
-    break;
-  case OV_VT_BOOL:
-    value->valueunion.val_bool = strtol(valuestr, &endPtr, 0);
-    //	value->valueunion.val_bool = !ov_string_compare("TRUE",
-    // valuestr);
-    break;
-  case OV_VT_INT:
-    value->valueunion.val_int = strtol(valuestr, &endPtr, 0);
-    break;
-  case OV_VT_UINT:
-    value->valueunion.val_uint = strtoul(valuestr, &endPtr, 0);
-    break;
-  case OV_VT_SINGLE:
-    value->valueunion.val_single = strtod(valuestr, &endPtr);
-    break;
-  case OV_VT_DOUBLE:
-    value->valueunion.val_double = strtod(valuestr, &endPtr);
-    break;
-  case OV_VT_STRING:
-    result = ov_string_setvalue(&value->valueunion.val_string, valuestr);
-    break;
-  case OV_VT_TIME:
-  case OV_VT_TIME_SPAN:
-    tmp = ov_string_split(valuestr, ".", &len);
-    value->valueunion.val_time.secs = strtol(tmp[0], &endPtr, 0);
-    value->valueunion.val_time.usecs = strtol(tmp[1], &endPtr, 0);
-    break;
-  case OV_VT_STATE:
-  case OV_VT_STRUCT:
-  case OV_VT_CTYPE:
-    return OV_ERR_NOTIMPLEMENTED;
-    break;
-
-    //		vector
-  case OV_VT_BYTE_VEC:
-  case OV_VT_BOOL_VEC:
-  case OV_VT_INT_VEC:
-  case OV_VT_UINT_VEC:
-  case OV_VT_SINGLE_VEC:
-  case OV_VT_DOUBLE_VEC:
-  case OV_VT_STRING_VEC:
-  case OV_VT_TIME_VEC:
-  case OV_VT_TIME_SPAN_VEC:
-  case OV_VT_STRUCT_VEC:
-    result = OV_ERR_NOTIMPLEMENTED;
-    break;
-
-  case OV_VT_BOOL_PV:
-  case OV_VT_INT_PV:
-  case OV_VT_UINT_PV:
-  case OV_VT_SINGLE_PV:
-  case OV_VT_DOUBLE_PV:
-  case OV_VT_STRING_PV:
-  case OV_VT_TIME_PV:
-  case OV_VT_TIME_SPAN_PV:
-
-  case OV_VT_BOOL_PV_VEC:
-  case OV_VT_INT_PV_VEC:
-  case OV_VT_UINT_PV_VEC:
-  case OV_VT_SINGLE_PV_VEC:
-  case OV_VT_DOUBLE_PV_VEC:
-  case OV_VT_STRING_PV_VEC:
-  case OV_VT_TIME_PV_VEC:
-  case OV_VT_TIME_SPAN_PV_VEC:
-
-  case OV_VT_ANY:
-
-  case OV_VT_POINTER:
-    return OV_ERR_NOTIMPLEMENTED;
-
-  default:
-    return OV_ERR_BADPARAM; // TODO: revise it
-  }
-  return result;
-}
-// typedef struct {
-//	OV_UINT veclen;
-//	OV_ACCESS value[];
-//} OV_ACCESSTYPE_VEC;
-//
-// const KS_VARTYPE_VEC KS_VAR_TYPE_LIST = { .veclen = 39, .value = {
-//#define OV_AC_NONE          ENUMVAL(OV_ACCESS, 0) /* no access at all, element
-// is not visible */ #define OV_AC_READ          ENUMVAL(OV_ACCESS, 1) /* read
-// access           */ #define OV_AC_WRITE         ENUMVAL(OV_ACCESS, 2) /*
-// write access          */ #define OV_AC_READWRITE     (OV_AC_READ |
-// OV_AC_WRITE) /* both read and write access */
-//
-//#define OV_AC_DELETEABLE    ENUMVAL(OV_ACCESS, 0x10000000) /* object can be
-// deleted */ #define OV_AC_RENAMEABLE    ENUMVAL(OV_ACCESS, 0x08000000) /*
-// object can be renamed */ #define OV_AC_LINKABLE      ENUMVAL(OV_ACCESS,
-// 0x04000000) /* parent/child can be linked */ #define OV_AC_UNLINKABLE
-// ENUMVAL(OV_ACCESS, 0x02000000) /* parent/child can be unlinked */
-//
-//#define OV_AC_INSTANTIABLE  ENUMVAL(OV_ACCESS, 0x20000000) /* object can act
-// as a factory */ #define OV_AC_PART
-//
-// KS_VT_ANY } };
-
-OV_STRING ACCESS_TO_STR[] = {
-    [OV_AC_NONE] = "OV_AC_NONE",
-    [OV_AC_READ] = "OV_AC_READ",
-    [OV_AC_WRITE] = "OV_AC_WRITE",
-    [OV_AC_READWRITE] = "OV_AC_READWRITE",
-    //[OV_AC_DELETEABLE] = "OV_AC_DELETABLE",
-    //[OV_AC_RENAMEABLE] = "OV_AC_RENAMEABLE",
-    //[OV_AC_LINKABLE] = "OV_AC_LINKABLE",
-    //[OV_AC_UNLINKABLE] = "OV_AC_UNLINKABLE",
-    //[OV_AC_INSTANTIABLE] = "OV_AC_INSTANTIABLE",
-    //[OV_AC_PART] = "OV_AC_PART",
-};
-
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(OV_STRING *accessstr,
                                                    const OV_ACCESS *access) {
   ov_string_setvalue(accessstr, "");
@@ -911,518 +471,3 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(OV_STRING *accessstr,
 
   return OV_ERR_OK;
 }
-
-OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
-                       OV_STRING *port, OV_STRING *serverName,
-                       OV_STRING *path) {
-  OV_RESULT result = OV_ERR_OK;
-
-  if (kspath == NULL)
-    return OV_ERR_BADPARAM;
-
-  OV_STRING serverNameStr = NULL;
-  OV_STRING pathStr = NULL;
-
-  OV_STRING kspathcopy = NULL;
-  ov_string_setvalue(&kspathcopy, kspath);
-  OV_STRING portStr = strchr(kspathcopy, ':');
-  if (portStr) {
-    *portStr = 0;
-    portStr++;
-    serverNameStr = strchr(portStr, '/');
-  } else {
-    serverNameStr = strchr(kspathcopy, '/');
-  }
-  if (serverNameStr) {
-    *serverNameStr = 0;
-    serverNameStr++;
-  }
-
-  if (serverNameStr) {
-    pathStr = strchr(serverNameStr, '/');
-    if (pathStr) {
-      *pathStr = 0;
-      pathStr++;
-    }
-  } else {
-    pathStr = NULL;
-  }
-
-  //	if (len==){
-  //		ov_string_freelist(splited);
-  //		return OV_ERR_BADPARAM;
-  //	}
-  //
-  if (serverHost && !result) {
-    result = ov_string_setvalue(serverHost, kspathcopy);
-    if (Ov_Fail(result)) {
-      ov_string_setvalue(&kspathcopy, NULL);
-      result = OV_ERR_GENERIC;
-    }
-  }
-
-  if (port && !result) {
-    result = ov_string_setvalue(port, portStr);
-    ;
-    if (Ov_Fail(result)) {
-      result = OV_ERR_GENERIC;
-    }
-  }
-
-  if (serverName && !result) {
-    result = ov_string_setvalue(serverName, serverNameStr);
-    if (Ov_Fail(result)) {
-      result = OV_ERR_GENERIC;
-    }
-  }
-
-  if (path && !result) {
-    result = ov_string_setvalue(path, pathStr);
-    if (Ov_Fail(result)) {
-      result = OV_ERR_GENERIC;
-    }
-  }
-  ov_string_setvalue(&kspathcopy, NULL);
-  ov_string_setvalue(&portStr, NULL);
-  ov_string_setvalue(&serverNameStr, NULL);
-  ov_string_setvalue(&pathStr, NULL);
-  return result;
-}
-
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
-    const OV_INSTPTR_ksbase_ClientBase pclient, const OV_STRING param) {
-  OV_RESULT result = OV_ERR_OK;
-  OV_STRING serverHost = NULL;
-  OV_STRING serverPort = NULL;
-  OV_STRING serverName = NULL;
-  OV_STRING serverPath = NULL;
-  result =
-      parse_kspath(param, &serverHost, &serverPort, &serverName, &serverPath);
-
-  if (!serverHost) {
-    return OV_ERR_BADPARAM;
-  }
-
-  result = ksbase_ClientBase_serverHost_set(
-      (OV_INSTPTR_ksbase_ClientBase)pclient, serverHost);
-  if (Ov_Fail(result)) {
-    return result;
-  }
-  if (serverName) {
-    result = ksbase_ClientBase_serverName_set(
-        (OV_INSTPTR_ksbase_ClientBase)pclient, serverName);
-    if (Ov_Fail(result)) {
-      return result;
-    }
-  }
-
-  return OV_ERR_OK;
-}
-
-// http
-//		switch (addrp->var_current_props.value.vartype & OV_VT_KSMASK){
-//			case OV_VT_BOOL:
-//				if (CHECK_BOOLTRUE(newvaluematch.value[i])){
-//					addrp->var_current_props.value.valueunion.val_bool
-//= TRUE; 				}else if
-//(CHECK_BOOLFALSE(newvaluematch.value[i])){
-//					addrp->var_current_props.value.valueunion.val_bool
-//= FALSE; 				}else{ fr = OV_ERR_BADPARAM;
-// kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not detected as bool");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//				break;
-//
-//			case OV_VT_INT:
-//				tempLong =
-// strtol(newvaluematch.value[i],&endPtr,10); 				if
-// (endPtr
-// == newvaluematch.value[i]) {
-//					//not a number
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}else if (ERANGE == errno || tempLong >
-// OV_VL_MAXINT
-//|| tempLong < OV_VL_MININT) {
-//					//not in range
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in INT range");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//				addrp->var_current_props.value.valueunion.val_int
-//=
-//(OV_INT) tempLong; 				break; 			case
-// OV_VT_UINT: 				tempUlong =
-// strtoul(newvaluematch.value[i],&endPtr,10); 				if
-// (endPtr
-// == newvaluematch.value[i]) {
-//					//not a number
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}else if (ERANGE == errno || tempUlong >
-// OV_VL_MAXUINT) {
-//					//not in range
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in UINT range");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//				addrp->var_current_props.value.valueunion.val_uint
-//= (OV_UINT) tempUlong; 				break;
-//
-//			case OV_VT_SINGLE:
-//			case OV_VT_DOUBLE:
-//				tempDouble = strtod(newvaluematch.value[i],
-//&endPtr); 				if (endPtr == newvaluematch.value[i]) {
-//					//not a number
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}else if (ERANGE == errno) {
-//					//not in range
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in range");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//				switch (addrp->var_current_props.value.vartype &
-// OV_VT_KSMASK){ 					case OV_VT_SINGLE:
-//						addrp->var_current_props.value.valueunion.val_single
-//= (OV_SINGLE) tempDouble; 						break;
-// default:
-// addrp->var_current_props.value.valueunion.val_double = (OV_DOUBLE)
-// tempDouble; break;
-//				}
-//			break;
-//
-//			case OV_VT_STRING:
-//				//setting the content of the pointer to null,
-//				//otherwise setvalue() crashes as it wants to
-// free memory from a garbage pointer
-//				//we have a new object, so no memory is
-// allocated and the setting to NULL is save
-//				addrp->var_current_props.value.valueunion.val_string
-//= NULL; 				fr =
-// ov_string_setvalue(&addrp->var_current_props.value.valueunion.val_string,
-// newvaluematch.value[i]); 				if (Ov_Fail(fr)){
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Setting string value failed");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				};
-//				break;
-//
-//			case OV_VT_VOID:
-//				if(ov_string_getlength(newvaluematch.value[i]) >
-// 0){ 					fr = OV_ERR_BADTYPE;
-// kshttp_print_result_array(&response->contentString, request.response_format,
-// &fr, 1, ": Variable is/should be void, but a newvalue is given");
-// ov_memstack_unlock(); EXEC_SETVAR_RETURN fr;
-//				}
-//				break;
-//
-//			case OV_VT_TIME:
-//				fr =
-// kshttp_asciitotime(&addrp->var_current_props.value.valueunion.val_time,
-// newvaluematch.value[i]); 				if (Ov_Fail(fr)){
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Setting time value failed");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				};
-//				break;
-//
-//			case OV_VT_TIME_SPAN:
-//				//can be 42.1241 or P42.123456S or -P23.42S
-//				ov_string_setvalue(&Temp,
-// newvaluematch.value[i]); 				if(Temp[0] == 'P'){
-// stringOffset = 1; 					isNegative = FALSE;
-// }else if(Temp[0] == '-' && Temp[1] == 'P'){
-// stringOffset = 2; 					isNegative = TRUE;
-//				}
-//				tempDouble = strtod(Temp+stringOffset, &endPtr);
-//				if (endPtr == Temp+stringOffset) {
-//					//not a number
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a valid date");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}else if (ERANGE == errno) {
-//					//not in range
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in range");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//				if(isNegative == TRUE){
-//					tempDouble = -tempDouble;
-//				}
-//				Ov_DoubleToTimeSpan((OV_DOUBLE) tempDouble,
-// addrp->var_current_props.value.valueunion.val_time_span);
-// break;
-//
-//			case OV_VT_STRUCT:
-//				//deprecated as KS2.0r
-//				fr = OV_ERR_NOTIMPLEMENTED;
-//				kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": STRUCT is deprecated with KS2.0r");
-//				ov_memstack_unlock();
-//				EXEC_SETVAR_RETURN fr;
-//			break;
-//
-//			//****************** VEC: *******************
-//			/* request could be "{1}%20{10}"
-//			 * split at "%20", discard the "{" via pointer
-// arithmetic
-//(+1)
-//			 * the strtol command ignore the last "}"
-//			 * with STRING_VEC we have to do some more
-//			 */
-//
-//	/*		todo implement base64encoded set
-//			case OV_VT_BYTE_VEC:
-//			case (OV_VT_BYTE_VEC | OV_VT_HAS_STATE |
-// OV_VT_HAS_TIMESTAMP):
-//	*/
-//
-//			case OV_VT_BOOL_VEC:
-//				pArgumentList =
-// ov_string_split(newvaluematch.value[i], "%20", &len);
-//				addrp->var_current_props.value.valueunion.val_bool_vec.veclen
-//= 0;
-// addrp->var_current_props.value.valueunion.val_bool_vec.value = NULL;
-//				Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_bool_vec,
-// len, BOOL); 				for(i = 0; i < len; i++){
-//					//killing the first character
-//					ov_string_setvalue(&Temp,
-// pArgumentList[i]+1);
-//					//kill the last character, now we have
-// two null
-// bytes at the end
-// Temp[ov_string_getlength(Temp)-1]
-// =
-// '\0';
-//
-//					if (CHECK_BOOLTRUE(Temp)){
-//						addrp->var_current_props.value.valueunion.val_bool_vec.value[i]
-//= TRUE; 					}else if
-//(CHECK_BOOLFALSE(Temp)){
-//						addrp->var_current_props.value.valueunion.val_bool_vec.value[i]
-//= FALSE; 					}else{
-//						//default
-//						addrp->var_current_props.value.valueunion.val_bool_vec.value[i]
-//= FALSE;
-//					}
-//				}
-//				ov_string_freelist(pArgumentList);
-//				break;
-//
-//			case OV_VT_INT_VEC:
-//				pArgumentList =
-// ov_string_split(newvaluematch.value[i], "%20", &len);
-//				addrp->var_current_props.value.valueunion.val_int_vec.veclen
-//= 0;
-// addrp->var_current_props.value.valueunion.val_int_vec.value = NULL;
-//				Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_int_vec,
-// len, INT); 				for(i = 0; i < len; i++){
-// tempLong =
-// strtol(pArgumentList[i]+1,&endPtr,10); 					if
-// (endPtr
-// == pArgumentList[i]+1) {
-//						//not a number
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//						ov_string_freelist(pArgumentList);
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}else if (ERANGE == errno || tempLong >
-// OV_VL_MAXINT || tempLong < OV_VL_MININT) {
-//						//not in range
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in INT range");
-//						ov_string_freelist(pArgumentList);
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}
-//					addrp->var_current_props.value.valueunion.val_int_vec.value[i]
-//= (OV_INT) tempLong;
-//				}
-//				ov_string_freelist(pArgumentList);
-//				break;
-//
-//			case OV_VT_UINT_VEC:
-//				pArgumentList =
-// ov_string_split(newvaluematch.value[i], "%20", &len);
-//				addrp->var_current_props.value.valueunion.val_uint_vec.veclen
-//= 0;
-// addrp->var_current_props.value.valueunion.val_uint_vec.value = NULL;
-//				Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_uint_vec,
-// len, UINT); 				for(i = 0; i < len; i++){
-// tempUlong =
-// strtoul(pArgumentList[i]+1,&endPtr,10); if (endPtr
-// == pArgumentList[i]+1) {
-//						//not a number
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}else if (ERANGE == errno || tempUlong >
-// OV_VL_MAXUINT) {
-//						//not in range
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in UINT range");
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}
-//					addrp->var_current_props.value.valueunion.val_uint_vec.value[i]
-//= (OV_UINT) tempUlong;
-//				}
-//				ov_string_freelist(pArgumentList);
-//				break;
-//
-//			case OV_VT_SINGLE_VEC:
-//			case OV_VT_DOUBLE_VEC:
-//				pArgumentList =
-// ov_string_split(newvaluematch.value[i], "%20", &len);
-// for(i = 0; i < len;
-// i++){ 					tempDouble =
-// strtod(pArgumentList[i]+1,
-// &endPtr); 					if (endPtr ==
-// pArgumentList[i]+1) {
-//						//not a number
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not a number");
-//						ov_string_freelist(pArgumentList);
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}else if (ERANGE == errno) {
-//						//not in range
-//						fr = OV_ERR_BADPARAM;
-//						kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Input not in range");
-//						ov_string_freelist(pArgumentList);
-//						ov_memstack_unlock();
-//						EXEC_SETVAR_RETURN fr;
-//					}
-//					switch
-//(addrp->var_current_props.value.vartype
-//&
-// OV_VT_KSMASK){ 						case
-// OV_VT_SINGLE: if(i==0){
-// addrp->var_current_props.value.valueunion.val_single_vec.veclen = 0;
-// addrp->var_current_props.value.valueunion.val_single_vec.value = NULL;
-//								Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_single_vec,
-// len, SINGLE);
-//							}
-//							addrp->var_current_props.value.valueunion.val_single_vec.value[i]
-//= (OV_SINGLE) tempDouble; break; default:
-// if(i==0){
-// addrp->var_current_props.value.valueunion.val_double_vec.veclen = 0;
-// addrp->var_current_props.value.valueunion.val_double_vec.value = NULL;
-//								Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_double_vec,
-// len, DOUBLE);
-//							}
-//							addrp->var_current_props.value.valueunion.val_double_vec.value[i]
-//= (OV_DOUBLE) tempDouble; break;
-//					}
-//				}
-//				ov_string_freelist(pArgumentList);
-//				break;
-//
-//			case OV_VT_STRING_VEC:
-//				//request could be "{hello}%20{world}"
-//				pArgumentList =
-// ov_string_split(newvaluematch.value[i], "%20", &len);
-//				addrp->var_current_props.value.valueunion.val_string_vec.veclen
-//= 0;
-// addrp->var_current_props.value.valueunion.val_string_vec.value = NULL;
-//				Ov_SetDynamicVectorLength(&addrp->var_current_props.value.valueunion.val_string_vec,
-// len, STRING);
-//
-//				if(*pArgumentList[i] != '{' && len > 2){
-//					fr = OV_ERR_BADPARAM;
-//					kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": VEC entries should be urlencoded,
-// separated with a space and wrapped with curly brackets");
-//					ov_memstack_unlock();
-//					EXEC_SETVAR_RETURN fr;
-//				}
-//
-//				for(i = 0; i < len; i++){
-//					//setting the content of the pointers to
-// null
-//					//otherwise setvalue() crashes as it
-// wants to free memory from a garbage pointer
-//					addrp->var_current_props.value.valueunion.val_string_vec.value[i]
-//= NULL; 					ov_memstack_lock();
-// if(*pArgumentList[i] != '{'){ Temp2 = pArgumentList[i];
-//}else{
-//						//killing the first character
-// aka
-//{ 						ov_string_setvalue(&Temp,
-// pArgumentList[i]+1);
-//						//kill the last character aka },
-// now we have two null bytes at the end
-// Temp[ov_string_getlength(Temp)-1] = '\0';
-//						//finally decode URLencoding
-//						Temp2 = url_decode(Temp);
-//						//Temp2 = Temp;
-//					}
-//					fr =
-// ov_string_setvalue(&addrp->var_current_props.value.valueunion.val_string_vec.value[i],
-// Temp2); 					ov_memstack_unlock();
-//				}
-//				Temp2 = NULL; //had a memstack pointer only
-//				ov_string_freelist(pArgumentList);
-//				break;
-//
-//			case OV_VT_STRUCT_VEC:
-//				//deprecated as KS2.0r
-//				fr = OV_ERR_NOTIMPLEMENTED;
-//				kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": STRUCT is deprecated with KS2.0r");
-//				ov_memstack_unlock();
-//				EXEC_SETVAR_RETURN fr;
-//
-//	/*	TODO Time* VEC
-//			case OV_VT_TIME_VEC:
-//
-//			case OV_VT_TIME_SPAN_VEC:
-//
-//			case OV_VT_STATE_VEC:
-//	*/
-//			default:
-//	/*				ov_logfile_error("%s:%d -
-// GestureReaction
-//- target: %s, Userinput (%s), DataType %" OV_PRINT_UINT " not implemented.",
-//__FILE__, __LINE__, 					*varname,
-// newvaluematch.value[i],
-// addrp->var_current_props.value.vartype);
-//	*/
-//				fr = OV_ERR_NOTIMPLEMENTED;
-//				kshttp_print_result_array(&response->contentString,
-// request.response_format, &fr, 1, ": Vartype not supported");
-//				ov_memstack_unlock();
-//				EXEC_SETVAR_RETURN fr;
-//		}

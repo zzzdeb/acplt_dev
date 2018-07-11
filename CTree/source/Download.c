@@ -6,7 +6,7 @@
  *
  *   History
  *   -------
- *   2018-02-23   File created
+ *   2018-02-23   File created by Zolboo Erdenebayar
  *
  *******************************************************************************
  *
@@ -333,20 +333,6 @@ OV_RESULT jsonToOVValue(OV_VAR_VALUE * value, const cJSON* const jsvalue) {
 		return OV_ERR_BADPARAM; //TODO: revise it
 	}
 	return result;
-}
-
-OV_ANY get_value_from_str(cJSON* jsvar) {
-	OV_ANY value = { 0 };
-	value.state = OV_ST_GOOD;
-	CTree_helper_strToOVType(&value.value.vartype,
-			cJSON_GetArrayItem(jsvar, VARTYPE_POS)->valuestring);
-	if (cJSON_IsString(cJSON_GetArrayItem(jsvar, VARVAL_POS)))
-		CTree_helper_strToValue(&value.value,
-				cJSON_GetArrayItem(jsvar, VARVAL_POS)->valuestring);
-	else if (cJSON_IsArray(cJSON_GetArrayItem(jsvar, VARVAL_POS)))
-		CTree_helper_strVecToValue(&value.value,
-				cJSON_GetArrayItem(jsvar, VARVAL_POS));
-	return value;
 }
 
 OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
