@@ -21,6 +21,8 @@
 #include "libov/ov_string.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <memory.h>
 
 OV_DLLFNCEXPORT OV_RESULT strget(OV_STRING* str1, OV_STRING str2, OV_INT beg, OV_INT end){
 	/*

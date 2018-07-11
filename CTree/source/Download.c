@@ -439,159 +439,7 @@ typedef enum {
 } TYPE_OF_MEMBER;
 
 OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
-		OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type) {
-
-	OV_RESULT res = OV_ERR_OK;
-
-	OV_INSTPTR_ov_class pclass = NULL;
-	OV_INSTPTR_ov_object pobj = NULL;
-	OV_INSTPTR_ov_class pclassobj = NULL;
-	OV_STRING identifier = NULL;
-
-	cJSON* jschild = NULL;
-	cJSON* jscurrent = NULL;
-	OV_STRING parentpath = NULL;
-	OV_STRING elementpath = NULL;
-
-	/*
-	 *	for parts
-	 */
-	OV_PATH path;
-	OV_ELEMENT element;
-
-//TODO: find more elegant solution to get path
-	ov_memstack_lock();
-	ov_string_setvalue(&parentpath,
-			ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pparent),
-			VERSION_FOR_CTREE));
-	ov_memstack_unlock();
-
-	cJSON_ArrayForEach(jschild, jsparent)
-	{
-//		1. Getting identifier
-		ov_string_setvalue(&identifier, jschild->string);
-		if (!identifier) {
-			return OV_ERR_BADPARAM;
-		}
-
-		switch (type) {
-		case CTREE_CHILDREN:
-//		2. Getting class pointer
-			jscurrent = cJSON_GetObjectItemCaseSensitive(jschild, FACTORYNAME);
-			if (jscurrent == NULL) {
-				ov_logfile_warning("malformed json at %s/%s", parentpath,
-						jschild->string);
-				continue;
-			}
-			// OV_STRING factory = NULL;
-			// ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
-			pclass = inverse_neutralpath(cJSON_GetStringValue(jscurrent));
-			if (pclass == NULL) {
-				Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
-						"There is no class : %s",
-						cJSON_GetStringValue(jscurrent));
-				continue;
-			}
-
-//		3. Creating Object
-			res =
-					ov_class_createobject(pclass,
-							((OV_INSTPTR_ov_domain) ((pparent)
-									+ (0
-											* ((pparent)->__classinfo.is_of_class_ov_domain)))),
-							identifier, ((OV_PLACEMENT_HINT) 0), ((void *) 0),
-							((void *) 0), ((void *) 0),
-							((OV_INSTPTR_ov_object*) &(pobj)));
-			if (Ov_Fail(res)) {
-				if (res == OV_ERR_ALREADYEXISTS) {
-					//TODO: check if it is from same class
-					OV_ELEMENT pelparent = { .elemtype = OV_ET_OBJECT, .pobj =
-							Ov_StaticPtrCast(ov_object, pparent) };
-					OV_ELEMENT pelobj = { .elemtype = OV_ET_OBJECT };
-					ov_element_searchchild(&pelparent, &pelobj, identifier);
-					pobj = pelobj.pobj;
-					Download_log(pinst, OV_MT_WARNING, res, "%s already exists",
-							identifier);
-				} else {
-					//TODO: free identifier
-					res = Download_log(pinst, res, OV_MT_ERROR,
-							"Could not create %s in %s", identifier,
-							parentpath);
-					ov_string_setvalue(&identifier, NULL);
-					ov_string_setvalue(&parentpath, NULL);
-					return res;
-				}
-			} else {
-//			Download_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
-//					identifier);
-				ov_logfile_info("created %s/%s", parentpath, identifier);
-			}
-			break;
-		case CTREE_PARTS:
-			ov_string_print(&elementpath, "%s.%s", parentpath, identifier);
-			/*
-			 *	instructions
-			 */
-			element.pobj = NULL;
-			ov_memstack_lock();
-			if (Ov_Fail(
-					ov_path_resolve(&path, NULL, elementpath, VERSION_FOR_CTREE))) {
-				/*
-				 *	bad path
-				 */
-				ov_memstack_unlock();
-				if (pobj == NULL) {
-					Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
-							"couldnt find part %s.%s", parentpath, identifier);
-					ov_string_setvalue(&identifier, NULL);
-					ov_string_setvalue(&parentpath, NULL);
-					ov_string_setvalue(&elementpath, NULL);
-					return OV_ERR_BADPARAM;
-				}
-			}
-			element = path.elements[path.size - 1];
-			ov_memstack_unlock();
-			pobj = element.pobj;
-			break;
-		default:
-			Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "bad CTREE type");
-			ov_string_setvalue(&identifier, NULL);
-			ov_string_setvalue(&parentpath, NULL);
-			ov_string_setvalue(&elementpath, NULL);
-			return OV_ERR_BADPARAM;
-		}
-
-		//	4. Set Variables
-		cJSON* jsvariables = cJSON_GetObjectItemCaseSensitive(jschild,
-				"variables");
-		if (jsvariables != NULL) {
-			res = set_variable_values(pinst, jsvariables, pobj);
-
-			if (Ov_OK(res))
-				//			Download_log_exit(pinst, OV_MT_INFO, res, "variables set.");
-				ov_logfile_info("variables set.");
-		}
-
-		res = download_children(pinst,
-				cJSON_GetObjectItem(jschild, CHILDRENNAME),
-				Ov_StaticPtrCast(ov_domain, pobj));
-		res = download_parts(pinst, cJSON_GetObjectItem(jschild, PARTSNAME),
-				Ov_StaticPtrCast(ov_domain, pobj));
-
-		if (Ov_Fail(res)) {
-			//TODO: give more info
-			ov_string_setvalue(&identifier, NULL);
-			ov_string_setvalue(&parentpath, NULL);
-			ov_string_setvalue(&elementpath, NULL);
-			return Download_log(pinst, OV_MT_ERROR, res,
-					"Could not load tree. error at %s", parentpath);
-		}
-	}
-	ov_string_setvalue(&identifier, NULL);
-	ov_string_setvalue(&parentpath, NULL);
-	ov_string_setvalue(&elementpath, NULL);
-	return res;
-}
+		OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type);
 
 OV_RESULT download_children(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 		OV_INSTPTR_ov_domain pparent) {
@@ -607,6 +455,7 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 	cJSON* jscurrent = NULL;
 	OV_INSTPTR_ov_library plib = NULL;
 	OV_RESULT res = 0;
+	cJSON* jslibs_cpy = cJSON_Duplicate(jslibs, TRUE);
 
 	OV_STRING libname = NULL;
 
@@ -614,8 +463,8 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 	OV_UINT maxRound = 100;
 	OV_UINT deleted = 1;
 
-	while (cJSON_GetArraySize(jslibs) && deleted && round++ < maxRound) {
-		char * tmpStr = cJSON_Print(jslibs);
+	while (cJSON_GetArraySize(jslibs_cpy) && deleted && round++ < maxRound) {
+		char * tmpStr = cJSON_Print(jslibs_cpy);
 		ov_logfile_info("round: %u: %s", round, tmpStr);
 		free(tmpStr);
 
@@ -623,7 +472,7 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 		deleted = 0;
 
 		for (jscurrent =
-				(jslibs != ((void *) 0)) ? (jslibs)->child : ((void *) 0);
+				(jslibs_cpy != ((void *) 0)) ? (jslibs_cpy)->child : ((void *) 0);
 				jscurrent != ((void *) 0);) {
 			if (!cJSON_IsString(jscurrent)) {
 				ov_string_setvalue(&libname, NULL);
@@ -637,13 +486,13 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 			case OV_ERR_OK:
 				ov_logfile_info("Library %s loaded", libname);
 				jscurrent = jscurrent->next;
-				cJSON_DeleteItemFromArray(jslibs, currentIndex);
+				cJSON_DeleteItemFromArray(jslibs_cpy, currentIndex);
 				deleted++;
 				break;
 			case OV_ERR_ALREADYEXISTS:
 				ov_logfile_info("Library %s exists", libname);
 				jscurrent = jscurrent->next;
-				cJSON_DeleteItemFromArray(jslibs, currentIndex);
+				cJSON_DeleteItemFromArray(jslibs_cpy, currentIndex);
 				deleted++;
 				break;
 			default:
@@ -652,10 +501,10 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 			}
 		}
 	}
-	if (cJSON_GetArraySize(jslibs)) {
-		char * tmpStr = cJSON_Print(jslibs);
+	if (cJSON_GetArraySize(jslibs_cpy)) {
+		char * tmpStr = cJSON_Print(jslibs_cpy);
 		Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC, "%i Libraries couldnt loaded: %s",
-				cJSON_GetArraySize(jslibs), tmpStr);
+				cJSON_GetArraySize(jslibs_cpy), tmpStr);
 		free(tmpStr);
 		return OV_ERR_GENERIC;
 	}
@@ -806,6 +655,161 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 	return res;
 }
 
+OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
+		OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type) {
+
+	OV_RESULT res = OV_ERR_OK;
+
+	OV_INSTPTR_ov_class pclass = NULL;
+	OV_INSTPTR_ov_object pobj = NULL;
+//	OV_INSTPTR_ov_class pclassobj = NULL;
+	OV_STRING identifier = NULL;
+
+	cJSON* jschild = NULL;
+	cJSON* jscurrent = NULL;
+	OV_STRING parentpath = NULL;
+	OV_STRING elementpath = NULL;
+
+	/*
+	 *	for parts
+	 */
+	OV_PATH path;
+	OV_ELEMENT element;
+
+//TODO: find more elegant solution to get path
+	ov_memstack_lock();
+	ov_string_setvalue(&parentpath,
+			ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pparent),
+			VERSION_FOR_CTREE));
+	ov_memstack_unlock();
+
+	cJSON_ArrayForEach(jschild, jsparent)
+	{
+//		1. Getting identifier
+		ov_string_setvalue(&identifier, jschild->string);
+		if (!identifier) {
+			return OV_ERR_BADPARAM;
+		}
+
+		switch (type) {
+		case CTREE_CHILDREN:
+//		2. Getting class pointer
+			jscurrent = cJSON_GetObjectItemCaseSensitive(jschild, FACTORYNAME);
+			if (jscurrent == NULL) {
+				ov_logfile_warning("malformed json at %s/%s", parentpath,
+						jschild->string);
+				continue;
+			}
+			// OV_STRING factory = NULL;
+			// ov_string_setvalue(&factory, cJSON_GetStringValue(jscurrent));
+			pclass = inverse_neutralpath(cJSON_GetStringValue(jscurrent));
+			if (pclass == NULL) {
+				Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM,
+						"There is no class : %s",
+						cJSON_GetStringValue(jscurrent));
+				continue;
+			}
+
+//		3. Creating Object
+			res =
+					ov_class_createobject(pclass,
+							((OV_INSTPTR_ov_domain) ((pparent)
+									+ (0
+											* ((pparent)->__classinfo.is_of_class_ov_domain)))),
+							identifier, ((OV_PLACEMENT_HINT) 0), ((void *) 0),
+							((void *) 0), ((void *) 0),
+							((OV_INSTPTR_ov_object*) &(pobj)));
+			if (Ov_Fail(res)) {
+				if (res == OV_ERR_ALREADYEXISTS) {
+					//TODO: check if it is from same class
+					OV_ELEMENT pelparent = { .elemtype = OV_ET_OBJECT, .pobj =
+							Ov_StaticPtrCast(ov_object, pparent) };
+					OV_ELEMENT pelobj = { .elemtype = OV_ET_OBJECT };
+					ov_element_searchchild(&pelparent, &pelobj, identifier);
+					pobj = pelobj.pobj;
+					Download_log(pinst, OV_MT_WARNING, res, "%s already exists",
+							identifier);
+				} else {
+					//TODO: free identifier
+					res = Download_log(pinst, res, OV_MT_ERROR,
+							"Could not create %s in %s", identifier,
+							parentpath);
+					ov_string_setvalue(&identifier, NULL);
+					ov_string_setvalue(&parentpath, NULL);
+					return res;
+				}
+			} else {
+//			Download_log_exit(pinst, OV_MT_INFO, res, "created %s/%s", parentpath,
+//					identifier);
+				ov_logfile_info("created %s/%s", parentpath, identifier);
+			}
+			break;
+		case CTREE_PARTS:
+			ov_string_print(&elementpath, "%s.%s", parentpath, identifier);
+			/*
+			 *	instructions
+			 */
+			element.pobj = NULL;
+			ov_memstack_lock();
+			if (Ov_Fail(
+					ov_path_resolve(&path, NULL, elementpath, VERSION_FOR_CTREE))) {
+				/*
+				 *	bad path
+				 */
+				ov_memstack_unlock();
+				if (pobj == NULL) {
+					Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+							"couldnt find part %s.%s", parentpath, identifier);
+					ov_string_setvalue(&identifier, NULL);
+					ov_string_setvalue(&parentpath, NULL);
+					ov_string_setvalue(&elementpath, NULL);
+					return OV_ERR_BADPARAM;
+				}
+			}
+			element = path.elements[path.size - 1];
+			ov_memstack_unlock();
+			pobj = element.pobj;
+			break;
+		default:
+			Download_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "bad CTREE type");
+			ov_string_setvalue(&identifier, NULL);
+			ov_string_setvalue(&parentpath, NULL);
+			ov_string_setvalue(&elementpath, NULL);
+			return OV_ERR_BADPARAM;
+		}
+
+		//	4. Set Variables
+		cJSON* jsvariables = cJSON_GetObjectItemCaseSensitive(jschild,
+				"variables");
+		if (jsvariables != NULL) {
+			res = set_variable_values(pinst, jsvariables, pobj);
+
+			if (Ov_OK(res))
+				//			Download_log_exit(pinst, OV_MT_INFO, res, "variables set.");
+				ov_logfile_info("variables set.");
+		}
+
+		res = download_children(pinst,
+				cJSON_GetObjectItem(jschild, CHILDRENNAME),
+				Ov_StaticPtrCast(ov_domain, pobj));
+		res = download_parts(pinst, cJSON_GetObjectItem(jschild, PARTSNAME),
+				Ov_StaticPtrCast(ov_domain, pobj));
+
+		if (Ov_Fail(res)) {
+			//TODO: give more info
+			ov_string_setvalue(&identifier, NULL);
+			ov_string_setvalue(&parentpath, NULL);
+			ov_string_setvalue(&elementpath, NULL);
+			return Download_log(pinst, OV_MT_ERROR, res,
+					"Could not load tree. error at %s", parentpath);
+		}
+	}
+	ov_string_setvalue(&identifier, NULL);
+	ov_string_setvalue(&parentpath, NULL);
+	ov_string_setvalue(&elementpath, NULL);
+	return res;
+}
+
 OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	/*
 	 * Init
@@ -865,7 +869,6 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	}
 
 //	3. CreateObjects Iteratively
-	OV_STRING root_factory = NULL;
 	jstree = cJSON_GetObjectItem(jsbase, TREENAME);
 	jscurrent = cJSON_GetObjectItem(jstree->child, FACTORYNAME);
 	if (jscurrent == NULL) {
@@ -873,9 +876,7 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 				"malformed root factory");
 		return OV_ERR_BADPARAM;
 	}
-	ov_string_setvalue(&root_factory, jscurrent->valuestring);
-	OV_INSTPTR_ov_class proot_class = inverse_neutralpath(root_factory);
-	ov_string_setvalue(&root_factory, NULL);
+//	OV_INSTPTR_ov_class proot_class = inverse_neutralpath(jscurrent->valuestring);
 
 	OV_STRING root_path = NULL;
 	ov_string_setvalue(&root_path,
