@@ -1,0 +1,99 @@
+#include "ov.ovm"
+#include "fb.ovm"
+
+LIBRARY TGraph
+	VERSION   = "V0.1 (DD-Mon-YYYY)";
+	AUTHOR    = "";
+	COPYRIGHT = "";
+	COMMENT   = "";
+	
+	/**
+		Documentation of Node.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/ 
+	CLASS Node : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES			
+			Position[]:	SINGLE	 FLAGS = "i" 		COMMENT = "Location of the node" 	;
+			POI:		BOOL 	 FLAGS = "i" 		COMMENT = "is a Point of Interest?" 	INITIALVALUE = FALSE;
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in TGraph.ovf. Implement the functions in Node.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+		CLASS Edge : CLASS fb/functionblock
+		IS_INSTANTIABLE; 
+		VARIABLES
+			Length : 		SINGLE 	 FLAGS = "i" 		COMMENT = "Distance between nodes" 	INITIALVALUE = 0.0;				
+			Direction[] : 	UINT 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
+			Actuator:		STRING	 FLAGS = "i" 		COMMENT = "PnID Actuator ID" 		INITIALVALUE = "N";
+			actVelocity:	SINGLE	 FLAGS = "i" 		COMMENT = "Actuator speed and direction" 		INITIALVALUE = 5.0;
+			physicalCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
+			trafficCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to traffice" 	INITIALVALUE = 0.0;
+			totalCost:		SINGLE HAS_GET_ACCESSOR FLAGS = "i" 		COMMENT = "Total weight";// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES; 
+		OPERATIONS 
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in TGraph.ovf. Implement the functions in Node.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+		CLASS OpEdge : CLASS fb/functionblock
+		IS_INSTANTIABLE; 
+		VARIABLES
+			Length : 		SINGLE 	 FLAGS = "i" 		COMMENT = "Distance between nodes" 	INITIALVALUE = 0.0;
+			Actuator[]:		STRING	 FLAGS = "i" 		COMMENT = "PnID Actuator ID";			
+			physicalCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
+			trafficCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to traffice" 	INITIALVALUE = 0.0;
+			totalCost:		SINGLE HAS_GET_ACCESSOR FLAGS = "i" 		COMMENT = "Total weight";// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			// Example:
+			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
+			// Example for a fb/functionblock based class 
+			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
+		END_VARIABLES;  
+		OPERATIONS 
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in TGraph.ovf. Implement the functions in Node.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS; 
+	END_CLASS;
+	
+	ASSOCIATION Start : ONE_TO_MANY 
+		PARENT nodePortStart   : CLASS TGraph/Node;  
+		CHILD  edgePortStart   : CLASS TGraph/Edge;
+	END_ASSOCIATION;
+	
+	ASSOCIATION End : ONE_TO_MANY 
+		PARENT nodePortEnd  : CLASS TGraph/Node; 
+		CHILD  edgePortEnd   : CLASS TGraph/Edge;
+	END_ASSOCIATION;
+	
+	/**
+		Add associations and their documentation here.
+		Association syntax is:
+	*/
+	//ASSOCIATION assocName : ONE_TO_MANY
+	//	PARENT parentVarName : CLASS ov/object;
+	//	CHILD  childVarName : CLASS ov/object;
+	//END_ASSOCIATION;
+	
+END_LIBRARY;

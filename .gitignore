@@ -8,6 +8,8 @@
 !/wandelbareTopologieTest
 !/gtpf
 !/gtpfTest
+!/TGraph
+!/TGraphTest
 /*/.cproject
 /*/.project
 /*/.settings
