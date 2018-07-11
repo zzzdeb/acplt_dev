@@ -18,16 +18,20 @@
 #define OV_COMPILE_LIBRARY_gtpfTest
 #endif
 
+#include <stdarg.h>
+#include <stdio.h>
+
 #include "gtpfTest.h"
 #include "gtpf.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_result.h"
-#include "stdarg.h"
 #include "ksbase.h"
 #include "NoneTicketAuthenticator.h"
 
 #include "unity.h"
 #include "unity_fixture.h"
+
+#include "CException.h"
 
 OV_INSTPTR_gtpfTest_assozierer gpinst;
 OV_TIME *gpltc;
@@ -44,11 +48,10 @@ OV_RESULT ov_string_set_vecvalue_one(OV_STRING_VEC* vec, OV_UINT len, ...) {
 	return 0;
 }
 
-OV_STRING ReadFile(OV_STRING filename) {
-	char *buffer = NULL;
-	int string_size, read_size;
-	OV_STRING res = NULL;
-	FILE *handler = fopen(filename, "r");
+OV_STRING ReadFile1(OV_STRING filename) {
+	OV_STRING buffer = NULL;
+	long int string_size, read_size;
+	FILE *handler = fopen(filename, "rb");
 
 	if(handler) {
 		// Seek the last byte of the file
@@ -59,7 +62,8 @@ OV_STRING ReadFile(OV_STRING filename) {
 		rewind(handler);
 
 		// Allocate a string that can hold it all
-		buffer = (char*) malloc(sizeof(char) * (string_size + 1));
+		buffer = (OV_STRING) ov_database_malloc(sizeof(char) * (string_size + 1));
+
 
 		// Read it all in one operation
 		read_size = fread(buffer, sizeof(char), string_size, handler);
@@ -71,17 +75,16 @@ OV_STRING ReadFile(OV_STRING filename) {
 		if(string_size != read_size) {
 			// Something went wrong, throw away the memory and set
 			// the buffer to NULL
-			free(buffer);
-			buffer = NULL;
+			ov_string_setvalue(&buffer, NULL);
+			fclose(handler);
+			Throw(OV_ERR_GENERIC);
 		}
 
 		// Always remember to close the file.
 		fclose(handler);
 	}
-	ov_string_setvalue(&res, buffer);
-	free(buffer);
 
-	return res;
+	return buffer;
 }
 
 void load_test_data(OV_STRING name) {
@@ -111,7 +114,7 @@ void load_test_data(OV_STRING name) {
 	items[0].path_and_name = NULL;
 	ov_string_print(&items[0].path_and_name, "%s.%s", uploadPath, "json"); /*	see comment below	*/
 	items[0].var_current_props.value.vartype = KS_VT_STRING;
-	items[0].var_current_props.value.valueunion.val_string = ReadFile(dataPath);
+	items[0].var_current_props.value.valueunion.val_string = ReadFile1(dataPath);
 
 	items[1].path_and_name = NULL;
 	ov_string_print(&items[1].path_and_name, "%s.%s", uploadPath, "path");
@@ -292,7 +295,7 @@ TEST(assozierer, assozierer_schieber) {
 //
 TEST_GROUP_RUNNER(assozierer) {
 	RUN_TEST_CASE(assozierer, assozierer_default);
-//	RUN_TEST_CASE(assozierer, assozierer_2neighbour);
+	// RUN_TEST_CASE(assozierer, assozierer_2neighbour);
 //	RUN_TEST_CASE(assozierer, assozierer_schieber);
 //  RUN_TEST_CASE(assozierer, assozierer_badstart);
 //  RUN_TEST_CASE(assozierer, assozierer_badtopo);
@@ -319,7 +322,12 @@ OV_TIME *pltc) {
 	gpltc = pltc;
 
 	const OV_STRING argv[] = { "assozierer", "-v" };
-	UnityMain(2, argv, RunAllTests);
+	CEXCEPTION_T e;
+	Try {
+		UnityMain(2, argv, RunAllTests);
+	} Catch(e) {
+		ov_logfile_error("mega catch");
+	}
 	return;
 }
 
