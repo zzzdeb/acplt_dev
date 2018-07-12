@@ -47,8 +47,8 @@ LIBRARY TGraph
 			Direction[] : 	UINT 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
 			Actuator:		STRING	 FLAGS = "i" 		COMMENT = "PnID Actuator ID" 		INITIALVALUE = "N";
 			actVelocity:	SINGLE	 FLAGS = "i" 		COMMENT = "Actuator speed and direction" 		INITIALVALUE = 5.0;
-			physicalCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
-			trafficCost:	SINGLE 	 FLAGS = "i" 		COMMENT = "Weight due to traffice" 	INITIALVALUE = 0.0;
+			physicalCost:	SINGLE 	HAS_GET_ACCESSOR FLAGS = "i" 			COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
+			trafficCost:	SINGLE 	 FLAGS = "i"  		COMMENT = "Weight due to traffice" 	INITIALVALUE = 0.0;
 			totalCost:		SINGLE HAS_GET_ACCESSOR FLAGS = "i" 		COMMENT = "Total weight";// Add variables here. The syntax is:
 			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
 			// Example:
@@ -56,11 +56,11 @@ LIBRARY TGraph
 			// Example for a fb/functionblock based class
 			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
 		END_VARIABLES; 
-		OPERATIONS 
+		OPERATIONS  
 			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
-	END_CLASS;
+	END_CLASS; 
 	
 		CLASS OpEdge : CLASS fb/functionblock
 		IS_INSTANTIABLE; 
