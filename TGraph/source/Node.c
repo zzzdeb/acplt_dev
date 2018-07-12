@@ -39,8 +39,8 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_Node_constructor(
          return result;
 
     /* do what */
-    pinst->v_Position.veclen = 3;
-    pinst->v_Position.value = ov_memstack_alloc(pinst->v_Position.veclen*sizeof(OV_SINGLE));
+    Ov_SetDynamicVectorLength(&pinst->v_Position, 3, SINGLE);
+
     for (OV_UINT i = 0; i < pinst->v_Position.veclen; ++i) {
     	pinst->v_Position.value[i] = 0;
 		}
