@@ -88,7 +88,7 @@ Gitter_t* gitterConstruct() {
 	w1Gitter->y = 0;
 	w1Gitter->height = 1000;
 	w1Gitter->width = 1000;
-	w1Gitter->step = 2;
+	w1Gitter->step = 1;
 	w1Gitter->A = Ov_HeapMalloc(
 		sizeof(Cell_t) * w1Gitter->height * w1Gitter->width);
 	for (OV_UINT i = 0; i < w1Gitter->height * w1Gitter->width; ++i) {
@@ -207,7 +207,7 @@ static int gitter2png(Gitter_t* gitter, OV_STRING name) {
 	/* The following number is set by trial and error only. I cannot
 	 see where it it is documented in the libpng manual.
 	 */
-	int pixel_size = 1;
+	int pixel_size = 4;
 	int depth = 8;
 
 	OV_STRING path = NULL;
@@ -238,7 +238,7 @@ static int gitter2png(Gitter_t* gitter, OV_STRING name) {
 	/* Set image attributes. */
 
 	png_set_IHDR(png_ptr, info_ptr, gitter->width, gitter->height, depth,
-	PNG_COLOR_TYPE_GRAY,
+	PNG_COLOR_TYPE_RGBA,
 	PNG_INTERLACE_NONE,
 	PNG_COMPRESSION_TYPE_DEFAULT,
 	PNG_FILTER_TYPE_DEFAULT);
@@ -252,6 +252,9 @@ static int gitter2png(Gitter_t* gitter, OV_STRING name) {
 		row_pointers[gitter->height - y - 1] = row;
 		for (x = 0; x < gitter->width; x++) {
 			Cell_t * pixel = cell_at(gitter, x, y);
+			*row++ = 0 * pixel->abnehmbar;
+			*row++ = 255 * pixel->abnehmbar;
+			*row++ = 255 * pixel->abnehmbar;
 			*row++ = 255 * pixel->abnehmbar;
 			//todo: init all abgebbar to zero
 		}
@@ -547,6 +550,99 @@ void drawAssoc(Gitter_t* gitter,
 	canTakeBetweenPoints(gitter, &rect1->pos.pos, &rect2->pos.pos);
 }
 
+//visualize_graph(OV_INSTPTR_TGraph_graph Graph){
+//		FILE * fp;
+//		png_structp png_ptr = NULL;
+//		png_infop info_ptr = NULL;
+//		size_t x, y;
+//		png_byte ** row_pointers = NULL;
+//		/* "status" contains the return value of this function. At first
+//		 it is set to a value which means 'failure'. When the routine
+//		 has finished its work, it is set to a value which means
+//		 'success'. */
+//		int status = -1;
+//		/* The following number is set by trial and error only. I cannot
+//		 see where it it is documented in the libpng manual.
+//		 */
+//		int pixel_size = 4;
+//		int depth = 8;
+//
+//		OV_STRING path = NULL;
+//		char* ahome = getenv("ACPLT_HOME");
+//		ov_string_print(&path, "%s/dev/gtpfTest/test/%s.png", ahome, name);
+//
+//		fp = fopen(path, "wb");
+//		if(!fp) {
+//			goto fopen_failed;
+//		}
+//
+//		png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+//		if(png_ptr == NULL) {
+//			goto png_create_write_struct_failed;
+//		}
+//
+//		info_ptr = png_create_info_struct(png_ptr);
+//		if(info_ptr == NULL) {
+//			goto png_create_info_struct_failed;
+//		}
+//
+//		/* Set up error handling. */
+//
+//		if(setjmp(png_jmpbuf (png_ptr))) {
+//			goto png_failure;
+//		}
+//
+//		/* Set image attributes. */
+//		int width = 1000;
+//		int height = 1000;
+//
+//		png_set_IHDR(png_ptr, info_ptr, width, height, depth,
+//		PNG_COLOR_TYPE_RGBA,
+//		PNG_INTERLACE_NONE,
+//		PNG_COMPRESSION_TYPE_DEFAULT,
+//		PNG_FILTER_TYPE_DEFAULT);
+//
+//		/* Initialize rows of PNG. */
+//
+//		row_pointers = png_malloc(png_ptr, height * sizeof(png_byte *));
+//		for (y = 0; y < height; y++) {
+//			png_byte *row = png_malloc(png_ptr,
+//				sizeof(uint8_t) * width * pixel_size);
+//			row_pointers[height - y - 1] = row;
+//			for (x = 0; x < width; x++) {
+//				*row++ = 0;
+//				*row++ = 0;
+//				*row++ = 0;
+//				*row++ = 0;
+//				//todo: init all abgebbar to zero
+//			}
+//		}
+//
+//
+//
+//
+//		/* Write the image data to "fp". */
+//
+//		png_init_io(png_ptr, fp);
+//		png_set_rows(png_ptr, info_ptr, row_pointers);
+//		png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+//
+//		/* The routine has successfully written the file, so we set
+//		 "status" to a value which indicates success. */
+//
+//		status = 0;
+//
+//		for (int y = 0; y < gitter->height; y++) {
+//			png_free(png_ptr, row_pointers[y]);
+//		}
+//		png_free(png_ptr, row_pointers);
+//
+//		png_failure: png_create_info_struct_failed: png_destroy_write_struct(&png_ptr,
+//			&info_ptr);
+//		png_create_write_struct_failed: fclose(fp);
+//		fopen_failed: return status;
+//}
+
 void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 	Gitter_t* gitter = gitterConstruct();
 
@@ -562,26 +658,26 @@ void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 		rect->pos.dir = degToRad(pchild->v_ThetaZ);
 		drawRect(gitter, rect);
 
-//		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
-//				x += 1) {
-//			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
-//					y += 1) {
-//				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
-//						v += 1) {
-//					//todo: type conversion correction
-//					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
-//
-//					Point_t* schiebe = pointConstruct();
-//					schiebe->x = x;
-//					schiebe->y = y;
-//					pointRotate(schiebe, rect->pos.dir);
-//					rect->pos.pos.x = pchild->v_x + schiebe->x;
-//					rect->pos.pos.y = pchild->v_y + schiebe->y;
-//
-//					drawRect(gitter, rect);
-//				}
-//			}
-//		}
+		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
+				x += 1) {
+			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
+					y += 1) {
+				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
+						v += 1) {
+					//todo: type conversion correction
+					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
+
+					Point_t* schiebe = pointConstruct();
+					schiebe->x = x;
+					schiebe->y = y;
+					pointRotate(schiebe, rect->pos.dir);
+					rect->pos.pos.x = pchild->v_x + schiebe->x;
+					rect->pos.pos.y = pchild->v_y + schiebe->y;
+
+					drawRect(gitter, rect);
+				}
+			}
+		}
 	}
 	pchild = NULL;
 	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
@@ -628,7 +724,7 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 		if(result == OV_ERR_ALREADYEXISTS) {
 		OV_STRING pathToGraph = NULL;
 		ov_string_print(&pathToGraph, "%s/%s", pinst->v_Path, "Graph");
-		ggraph = ov_path_getobjectpointer(pathToGraph, 2);
+		ggraph = Ov_StaticPtrCast(TGraph_graph, ov_path_getobjectpointer(pathToGraph, 2));
 	} else {
 		Throw(result);
 	}}
