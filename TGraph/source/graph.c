@@ -23,6 +23,8 @@
 #include "geometry2d.h"
 #include "CException.h"
 #include "libov/ov_ov.h"
+#include "dijkstra.h"
+//#include <png.h>
 
 OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 	/*
@@ -72,7 +74,7 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 	ov_string_setvalue(&name, NULL);
 	Ov_Link(TGraph_Start, n1, edge);
 	Ov_Link(TGraph_End, n2, edge);
-	edge->v_trafficCost = dist;
+	edge->v_Length = dist;
 	return edge;
 }
 
