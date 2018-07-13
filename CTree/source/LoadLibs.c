@@ -113,6 +113,7 @@ CTree_LoadLibs_reset_set(OV_INSTPTR_CTree_LoadLibs pobj, const OV_BOOL value) {
   OV_RESULT result = OV_ERR_OK;
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
+  OV_VTBLPTR_CTree_SendFiles pVtblSendfiles = NULL;
   if (value && (!pobj->v_reset)) {
     pobj->v_status = INITIAL;
     pobj->v_result = OV_ERR_OK;
@@ -138,6 +139,8 @@ CTree_LoadLibs_reset_set(OV_INSTPTR_CTree_LoadLibs pobj, const OV_BOOL value) {
         result = pVtblClient->m_reset(pClient);
       }
     }
+
+    pobj->p_sendFiles.v_reset = 1;
   }
   pobj->v_reset = value;
   return OV_ERR_OK;

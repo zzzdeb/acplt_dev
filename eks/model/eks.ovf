@@ -20,7 +20,7 @@ typedef OV_RESULT EKS_FNC_SETPAR(
 typedef void EKS_FNC_GETVAR(
 		OV_INSTPTR_eks_client					pobj,
 		const OV_GETVAR_PAR	* gvParam,
-		OV_GETVAR_RES 	* gvResult
+		OV_RESULT (*callback)(const OV_INSTPTR_ov_domain pparent)
 );
 
 typedef void EKS_FNC_SETPAR_GETVAR(
