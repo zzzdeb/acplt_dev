@@ -64,9 +64,12 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 
 	OV_INSTPTR_TGraph_Edge edge = NULL;
 	OV_STRING name = NULL;
-	ov_string_print(&name, "%s_to_%s", n1->v_identifier, n2->v_identifier);
-	res = Ov_CreateObject(TGraph_Edge, edge, (&pinst->p_Edges), name);
-	if(!res) Throw(res);
+	for (OV_UINT i = 0; i < 100; ++i) {
+		ov_string_print(&name, "%s_to_%s_%d", n1->v_identifier, n2->v_identifier, i);
+		res = Ov_CreateObject(TGraph_Edge, edge, (&pinst->p_Edges), name);
+		if(!res) break;
+		if(res && res!=OV_ERR_ALREADYEXISTS) Throw(res);
+	}
 	ov_string_setvalue(&name, NULL);
 	Ov_Link(TGraph_Start, n1, edge);
 	Ov_Link(TGraph_End, n2, edge);

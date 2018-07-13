@@ -1,6 +1,7 @@
 #ifndef TGraph_OVF_INCLUDED
 #define TGraph_OVF_INCLUDED
 
+
 /* 
 	Declare your C functions here. 
 	Example:
@@ -10,6 +11,6 @@
 */
 
 typedef OV_DLLFNCEXPORT OV_INSTPTR_TGraph_Edge TGRAPH_FNC_LINKNODES(OV_INSTPTR_TGraph_graph, OV_INSTPTR_TGraph_Node, OV_INSTPTR_TGraph_Node);
-typedef OV_DLLFNCEXPORT OV_BOOL TGRAPH_FNC_ARENODESLINKED(OV_INSTPTR_TGraph_Node, OV_INSTPTR_TGraph_Node);
+typedef OV_DLLFNCEXPORT OV_INSTPTR_TGraph_Edge TGRAPH_FNC_ARENODESLINKED(OV_INSTPTR_TGraph_Node, OV_INSTPTR_TGraph_Node);
 
 #endif

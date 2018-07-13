@@ -1,5 +1,6 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "ovdatastruct.ovm"
 
 LIBRARY TGraph
 	VERSION   = "V0.1 (DD-Mon-YYYY)";

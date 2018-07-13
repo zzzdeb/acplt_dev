@@ -2,6 +2,8 @@
 #include "ov.ovm"
 #include "fb.ovm"
 
+#include "ovunity.ovm"
+
 LIBRARY gtpfTest
 	VERSION   = "V0.1 (DD-Mon-YYYY)";
 	AUTHOR    = "";
@@ -13,7 +15,7 @@ LIBRARY gtpfTest
 		@note Javadoc syntax is allowed here.
 		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
 	*/
-	CLASS assozierer : CLASS gtpf/assozierer
+	CLASS assoziererTest : CLASS ovunity/main
 		IS_INSTANTIABLE;
 		VARIABLES
 			// Add variables here. The syntax is:
@@ -23,6 +25,9 @@ LIBRARY gtpfTest
 			// Example for a fb/functionblock based class
 			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
 		END_VARIABLES;
+		PARTS
+			obj	: CLASS gtpf/assozierer;
+		END_PARTS;
 		OPERATIONS
 			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
 			// if MY_FUNC is declared in gtpfTest.ovf. Implement the functions in assozierer.c.
