@@ -1,6 +1,9 @@
 /*
 !/.gitignore
 !/ovdatastruct
+!/unity
+!/ovunity
+!/cexception
 !/CTree
 !/eks
 !/graphSearch
@@ -20,3 +23,5 @@
 /*/draft
 /*/.svn
 /*/Debug (Windows)
+/*/Debug
+/*/Release
