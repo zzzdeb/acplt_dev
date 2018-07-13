@@ -2,6 +2,7 @@
 #include "fb.ovm"
 #include "smscrmlogistic.ovm"
 #include "SMSTopologie.ovm"
+#include "ovdatastruct.ovm"
 
 LIBRARY graphSearch
 	VERSION   = "V0.1 (20-05-2018)";

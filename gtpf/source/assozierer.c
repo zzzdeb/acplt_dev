@@ -42,6 +42,7 @@
 #include "CTree.h"
 #include "wandelbareTopologie.h"
 #include "TGraph.h"
+#include "tgraph_geometry.h"
 
 #include "list.h"
 #include "geometry2d.h"
@@ -542,12 +543,11 @@ void drawRect(Gitter_t* gitter, const Rectangular_t* rect) {
 	canTakeBetweenPoints(gitter, c4, c1);
 }
 
-void drawAssoc(Gitter_t* gitter,
-		const OV_INSTPTR_wandelbareTopologie_Node wagon1,
-		OV_INSTPTR_wandelbareTopologie_Node wagon2) {
-	Rectangular_t* rect1 = createRectFromNode(wagon1);
-	Rectangular_t* rect2 = createRectFromNode(wagon2);
-	canTakeBetweenPoints(gitter, &rect1->pos.pos, &rect2->pos.pos);
+void drawAssoc(Gitter_t* gitter, const OV_INSTPTR_TGraph_Node wagon1,
+		const OV_INSTPTR_TGraph_Node wagon2) {
+	Position_t* pos1 = positionFromNode(wagon1);
+	Position_t* pos2 = positionFromNode(wagon2);
+	canTakeBetweenPoints(gitter, &pos1->pos, &pos2->pos);
 }
 
 //visualize_graph(OV_INSTPTR_TGraph_graph Graph){
@@ -643,9 +643,7 @@ void drawAssoc(Gitter_t* gitter,
 //		fopen_failed: return status;
 //}
 
-void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
-	Gitter_t* gitter = gitterConstruct();
-
+void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop) {
 	OV_INSTPTR_wandelbareTopologie_Node pchild = NULL;
 	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
 	{
@@ -680,22 +678,21 @@ void visualize_topologie(OV_INSTPTR_ov_domain ptop) {
 		}
 	}
 	pchild = NULL;
-	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
+	OV_INSTPTR_TGraph_graph pgraph = NULL;
+	Ov_ForEachChildEx(ov_containment, ptop, pgraph, TGraph_graph)
 	{
+		OV_INSTPTR_ov_domain Nodes = &pgraph->p_Nodes;
 		OV_INSTPTR_TGraph_Node poi = NULL;
-		Ov_ForEachChildEx(ov_containment, pchild, poi, TGraph_Node)
+		Ov_ForEachChildEx(ov_containment, Nodes, poi, TGraph_Node)
 		{
 			OV_INSTPTR_TGraph_Edge poiEdgeOut = NULL;
-			Ov_ForEachChildEx(ov_containment, poi, poiEdgeOut, TGraph_Edge)
+			Ov_ForEachChildEx(TGraph_Start, poi, poiEdgeOut, TGraph_Edge)
 			{
-				OV_INSTPTR_TGraph_Node poiChild = NULL;
-//			Ov_ForEachChildEx(TGraph_End, poi, poiChild, TGraph_Node)
-//				if(neighbour) drawAssoc(gitter, pchild, neighbour);
+				OV_INSTPTR_TGraph_Node poiChild = Ov_StaticPtrCast(TGraph_Node, Ov_GetParent(TGraph_End, poiEdgeOut));
+				drawAssoc(gitter, poi, poiChild);
 			}
-
 		}
 	}
-	gitter2png(gitter, "visualization");
 }
 
 //
@@ -720,14 +717,16 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 	}
 	ggraph = NULL;
 	result = Ov_CreateObject(TGraph_graph, ggraph, ptop, "Graph");
-	if(result){
+	if(result) {
 		if(result == OV_ERR_ALREADYEXISTS) {
-		OV_STRING pathToGraph = NULL;
-		ov_string_print(&pathToGraph, "%s/%s", pinst->v_Path, "Graph");
-		ggraph = Ov_StaticPtrCast(TGraph_graph, ov_path_getobjectpointer(pathToGraph, 2));
-	} else {
-		Throw(result);
-	}}
+			OV_STRING pathToGraph = NULL;
+			ov_string_print(&pathToGraph, "%s/%s", pinst->v_Path, "Graph");
+			ggraph = Ov_StaticPtrCast(TGraph_graph,
+				ov_path_getobjectpointer(pathToGraph, 2));
+		} else {
+			Throw(result);
+		}
+	}
 
 //safe
 	if(!ggraph) Throw(OV_ERR_GENERIC);
@@ -750,7 +749,10 @@ OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
 				createAssoc((Gitter_t*) elem1->data, (Gitter_t*) elem2->data);
 		}
 	}
-	visualize_topologie(ptop);
+	Gitter_t* gitter = gitterConstruct();
+	draw_top(gitter, ptop);
+	gitter2png(gitter, "visualization");
+
 	listIterate(picList, elem1)
 	{
 		gitterDestruct(elem1->data);
@@ -770,10 +772,12 @@ OV_DLLFNCEXPORT void gtpf_assozierer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
 	OV_RESULT result = OV_ERR_OK;
 	CEXCEPTION_T err;
-	Try{
-		result = gtpf_assozierer_execute(pinst);
-	}
-	Catch(err){
+	Try
+			{
+				result = gtpf_assozierer_execute(pinst);
+			}
+				Catch(err)
+	{
 		ov_logfile_error("%s", ov_result_getresulttext(err));
 	}
 	ov_memstack_lock();

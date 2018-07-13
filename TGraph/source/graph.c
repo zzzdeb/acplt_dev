@@ -24,6 +24,8 @@
 #include "CException.h"
 #include "libov/ov_ov.h"
 #include "dijkstra.h"
+#include "TGraph_visualization.h"
+#include "tgraph_geometry.h"
 //#include <png.h>
 
 OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
@@ -51,13 +53,7 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 //		}\
 //	(pchild)=Ov_GetNextChild(assoc, (pchild)))
 
-Position_t* positionFromNode(OV_INSTPTR_TGraph_Node node) {
-	Position_t* pos = positionConstruct();
-	pos->pos.x = node->v_Position.value[0];
-	pos->pos.y = node->v_Position.value[1];
-	pos->dir = degToRad(node->v_Position.value[2]);
-	return pos;
-}
+
 
 OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
@@ -81,16 +77,16 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 /*
  * only in one direction. To change iterate 2 times;
  */
-OV_DLLFNCEXPORT OV_BOOL TGraph_graph_areNodesLinked(OV_INSTPTR_TGraph_Node n1,
-		OV_INSTPTR_TGraph_Node n2) {
+OV_DLLFNCEXPORT OV_INSTPTR_TGraph_Edge TGraph_graph_areNodesLinked(
+		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 	OV_INSTPTR_TGraph_Node nodes[] = { n1, n2 };
 	for (OV_UINT i = 0; i < 1; ++i) {
 		OV_INSTPTR_TGraph_Edge out = NULL;
 		Ov_ForEachChildEx(TGraph_Start, (nodes[i]), out, TGraph_Edge)
 		{
 			OV_INSTPTR_TGraph_Node child = Ov_GetParent(TGraph_End, out);
-			if(child == nodes[(i + 1) % 2]) return TRUE;
+			if(child == nodes[(i + 1) % 2]) return out;
 		}
 	}
-	return FALSE;
+	return NULL;
 }

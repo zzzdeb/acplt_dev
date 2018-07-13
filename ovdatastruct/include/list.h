@@ -43,13 +43,6 @@ listNode_t* createNode(void* data){
 	return node;
 }
 
-list_t* constructList(size_t dataSize){
-	list_t* list = Ov_HeapMalloc(sizeof(list_t));
-	ovlist_init(list);
-	list->dataSize = dataSize;
-	return list;
-}
-
 OV_RESULT ovlist_init(list_t* list){
 	list->head = NULL;
 	list->last = NULL;
@@ -58,6 +51,15 @@ OV_RESULT ovlist_init(list_t* list){
 	list->is_same = NULL;
 	return 0;
 }
+
+list_t* constructList(size_t dataSize){
+	list_t* list = Ov_HeapMalloc(sizeof(list_t));
+	ovlist_init(list);
+	list->dataSize = dataSize;
+	return list;
+}
+
+
 
 int destructList(list_t* list){
 	  if (list == NULL) {
@@ -186,6 +188,10 @@ listNode_t* deleteLast(list_t* list) {
 
    //return the deleted link
    return tempLink;
+}
+
+listNode_t* listRemove(list_t* list, void* data){
+	return NULL;
 }
 
 //find a link with given key
