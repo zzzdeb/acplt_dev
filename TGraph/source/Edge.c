@@ -24,6 +24,11 @@
 #include "TGraph.h"
 #include "libov/ov_macros.h"
 
+OV_DLLFNCEXPORT OV_SINGLE TGraph_Edge_physicalCost_get(
+    OV_INSTPTR_TGraph_Edge          pobj
+) {
+    return pobj->v_actVelocity*pobj->v_Length;
+}
 OV_DLLFNCEXPORT OV_RESULT TGraph_Edge_constructor(
 	OV_INSTPTR_ov_object 	pobj
 ) {
