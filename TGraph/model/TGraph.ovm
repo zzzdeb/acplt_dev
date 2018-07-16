@@ -24,6 +24,7 @@ LIBRARY TGraph
 			areNodesLinked  : C_FUNCTION <TGRAPH_FNC_ARENODESLINKED>;
 		END_OPERATIONS;
 	END_CLASS;
+	
 	/**
 		Documentation of Node.
 		@note Javadoc syntax is allowed here.
