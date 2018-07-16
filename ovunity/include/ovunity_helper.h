@@ -70,7 +70,7 @@ OV_STRING ReadFile1(OV_STRING filename) {
 }
 
 
-void load_test_data(OV_STRING name) {
+void load_test_data(OV_STRING projname, OV_STRING name) {
 //	OV_RESULT res = 0;
 	OV_SETVAR_PAR params = { 0 };
 	OV_SETVAR_RES result = { 0 };
@@ -89,7 +89,7 @@ void load_test_data(OV_STRING name) {
 //process multiple variables at once
 	OV_STRING dataPath = NULL;
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&dataPath, "%s/dev/gtpfTest/test/%s", ahome, name);
+	ov_string_print(&dataPath, "%s/dev/%s/test/%s", ahome, projname, name);
 
 	OV_SETVAR_ITEM items[3];
 	OV_STRING uploadPath = "/data/CTree/Download";
