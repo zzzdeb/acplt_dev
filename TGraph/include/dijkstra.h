@@ -17,6 +17,7 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
+#include "libov/ov_logfile.h"
 #include "list.h"
 #include "CException.h"
 
@@ -36,19 +37,31 @@ enum Level {
 	LEVEL0, LEVEL1, NEUTRAL
 };
 
+enum Color {
+	WHITE, GRAY, BLACK, COLORNUM
+};
+
+const OV_STRING const colorToStr[COLORNUM] = { [WHITE] = "white", [GRAY
+		] = "gray", [BLACK] = "black" };
+
 /* data type for list */
 typedef struct Data_s {
 	OV_INSTPTR_TGraph_Node self;
 
-	struct Data_s *pparent;
+	struct Data_s *prev;
 	OV_SINGLE dist;
+	enum Color color;
+	list_t* neighbours;
+	enum RollerAction actions;
 } Data_t;
 
 void initData(Data_t *d, OV_INSTPTR_TGraph_Node obj) {
 	Ov_AbortIf(!d);
 	d->self = obj;
-	d->pparent = NULL;
+	d->prev = NULL;
 	d->dist = -1;
+	d->color = WHITE;
+	d->neighbours = constructList(sizeof(Data_t));
 	return;
 }
 
@@ -65,23 +78,26 @@ OV_BOOL is_samedata(Data_t *r1, Data_t *r2) {
 }
 
 /* how to print data in listPrint */
-//void printData(struct listNode *node) {
-//	ov_logfile_info("(%d, %s, %d, %s)", ((Data_t *) node->data)->type,
-//		actionToStr[((Data_t *) node->data)->actionOfParent],
-//		((Data_t *) node->data)->self->v_identifier);
-//}
+void printData(struct listNode *node) {
+	ov_logfile_info("(%s: %f, %s)", ((Data_t *) node->data)->self->v_identifier,
+		((Data_t *) node->data)->dist, colorToStr[((Data_t *) node->data)->color]);
+}
+
+/* print Node */
+void printNode(struct listNode* node){
+	ov_logfile_info("(%s)", ((OV_INSTPTR_TGraph_Node) node->data)->v_identifier);
+}
 /* get children of parent for bfs and adds it to children*/
 //list_t* get_children(Data_t *parent) {
 //	list_t *children = constructList(sizeof(Data_t));
 //	children->is_same = &is_samedata;
 //
-//	OV_INSTPTR_TGraph_Node pparent = NULL;
+//	OV_INSTPTR_TGraph_Node prev = NULL;
 //
-//	pparent = Ov_StaticPtrCast(TGraph_Node, parent->self);
-//// check validity
+//	prev = Ov_StaticPtrCast(TGraph_Node, parent->self);
 //// TODO:
 //	OV_INSTPTR_TGraph_Edge out = NULL;
-//	Ov_ForEachChildEx(TGraph_Start, pparent, out, TGraph_Edge)
+//	Ov_ForEachChildEx(TGraph_Start, prev, out, TGraph_Edge)
 //	{
 //		OV_INSTPTR_TGraph_Node child = Ov_GetParent(TGraph_End, out);
 //		if(child == nodes[(i + 1) % 2]) return TRUE;
@@ -93,20 +109,35 @@ OV_BOOL is_samedata(Data_t *r1, Data_t *r2) {
 //	}
 //	return children;
 //}
-OV_BOOL is_same_int(){
-	return 0;
+OV_BOOL is_same_int(OV_INT* i1, OV_INT* i2) {
+	return *i1==*i2;
 }
 
 int int_relation(void* a, void* b) {
-	OV_INT a1 = *(OV_INT*)a;
-	OV_INT b1 = *(OV_INT*)b;
+	OV_INT a1 = *(OV_INT*) a;
+	OV_INT b1 = *(OV_INT*) b;
 	if(a1 > b1) return 1;
 	if(a1 == b1) return 0;
 	return -1;
 }
 
-OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist){
-	return -1;
+OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist) {
+	if(!listLength(Nodes))
+		return -1;
+
+	listNode_t* child = NULL;
+	OV_INT minChild = -1;
+	OV_SINGLE minDist = -1;
+	listIterate(Nodes, child){
+		OV_INT current = *(OV_INT*)child->data;
+		if(dist[current]==-1)
+			continue;
+		if(dist[current]<minDist || minDist==-1){
+			minChild = current;
+			minDist = dist[current];
+		}
+	}
+	return minChild;
 }
 
 //dijkstra
@@ -162,13 +193,27 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 	list_t* Unexplored = constructList(sizeof(OV_INT));
 	Unexplored->is_same = &is_same_int;
 	Unexplored->compare = &int_relation;
+	for (OV_UINT i = 0; i < n; ++i) {
+		OV_INT* tmp = ov_memstack_alloc(sizeof(OV_INT));
+		*tmp = i;
+		insertFirst(Unexplored, tmp);
+	}
 	dist[source] = 0;
 
 	while (listLength(Unexplored)) {
 		OV_INT current = getMinChild(Unexplored, dist);
+		if(current==-1)
+			break;
 
 		if(current == target) {
-			break;
+			list_t* path = constructList(sizeof(OV_INSTPTR_TGraph_Node));
+			path->printNode =	&printNode;
+			do{
+				insertFirst(path, V[current]);
+				current = prev[current];
+			} while(current>=0);
+			listPrint(path);
+			return path;
 		}
 		// Node with the least distance
 		// will be selected first
@@ -180,12 +225,155 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 			if(adj[current][v] < 0) continue;
 
 			OV_SINGLE alt = dist[current] + adj[current][v];
-			if(alt < dist[current]) {            // A shorter path to v has been found
+			if(alt < dist[v] || dist[v]==-1) {            // A shorter path to v has been found
 				dist[v] = alt;
 				prev[v] = current;
 			}
 		}
 	}
+	return NULL;
 }
+
+/* execute dijksta */
+//OV_RESULT dijkstra(list_t* graph, list_t *path, Data_t *proot, Data_t *ptarget) {
+//
+//	Ov_AbortIf(proot->prev);
+//
+//	list_t *explored = constructList(sizeof(Data_t));
+//	explored->is_same = &is_samedata;
+//	explored->printNode = &printData;
+//
+//	insertFirst(explored, proot);
+//
+//	listNode_t *frontier = explored->head;
+//
+//	while (frontier) {
+//		// explored
+//		if(is_samedata(frontier->data, ptarget)) {
+//			//    	ov_logfile_info("found path");
+//
+//			Data_t *currentNodeData = frontier->data;
+//			do{
+//				insertFirst(path, currentNodeData);
+//				currentNodeData = currentNodeData->prev;
+//			} while (currentNodeData!=proot);
+//			//			Data_t* currentNodeData =
+//			//copyData(frontier->data); 			while(currentNodeData){ 				insertFirst(path,
+//			//currentNodeData); 				currentNodeData = copyData(currentNodeData->prev);
+//			//			}
+//			// free
+//			destructList(explored);
+//			return 0;
+//		}
+//		// add
+//		listNode_t * = NULL;
+//		listIterate(((Data_t*)frontier->data)->neighbours, child)
+//		{
+//			if(!listFind(explored, child->data)) {
+//				insertLast(explored, child->data);
+//			}
+//			//			listPrint(explored);
+//		}
+//
+//		// next
+//		frontier = frontier->next;
+//	}
+//
+//// free
+//	destructList(explored);
+//	return 1;
+//}
+//
+//#define SEPERATOR " "
+//OV_RESULT initDataFromStr(Data_t* data, OV_STRING path) {
+//	if(!data || !path) return OV_ERR_BADPARAM;
+//
+//	OV_UINT len = 0;
+//	OV_STRING* splited = ov_string_split(path, SEPERATOR, &len);
+//
+//	OV_INSTPTR_ov_object pobj = ov_path_getobjectpointer(splited[0], 2);
+//// param check
+//	if(!pobj) {
+//		ov_string_freelist(splited);
+//		return OV_ERR_BADPARAM;
+//	}
+//	initData(data, pobj);
+//	if(len == 1) {
+//		ov_string_freelist(splited);
+//		return 0;
+//	}
+////schieber
+//	if(data->type == SCHIEBER) {
+//		if(ov_string_compare(splited[1], "1") == OV_STRCMP_EQUAL) {
+//			data->position = LEVEL1;
+//			return 0;
+//		} else if(ov_string_compare(splited[1], "0") == OV_STRCMP_EQUAL) {
+//			data->position = LEVEL0;
+//			return 0;
+//			//todo: free mem
+//		} else
+//			ov_logfile_error("bad action %s on object %s", splited[1],
+//				data->self->v_identifier);
+//		return OV_ERR_BADPARAM;
+//	}
+//
+////ofen || drehtisch
+//	data->actions = constructList(sizeof(Data_t));
+//	Data_t* actionNode = constructData();
+//	if(ov_string_compare(splited[1], "Heat") == OV_STRCMP_EQUAL) {
+//		if(isDataOfen(data)) {
+//			data->type = OFEN;
+//			*actionNode = *data;
+//			actionNode->actionOfParent = HEAT;
+//			insertLast(data->actions, actionNode);
+//		} else {
+//			ov_logfile_error("bad action %s on object %s", splited[1],
+//				data->self->v_identifier);
+//			ov_string_freelist(splited);
+//			return OV_ERR_BADPARAM;
+//		}
+//	} else if(ov_string_compare(splited[1], "Turn") == OV_STRCMP_EQUAL) {
+//		if(isDataDrehtisch(data)) {
+//			data->type = DREHTISCH;
+//			*actionNode = *data;
+//			actionNode->actionOfParent = TURN;
+//			insertLast(data->actions, actionNode);
+//		} else {
+//			ov_logfile_error("bad action %s on object %s", splited[1],
+//				data->self->v_identifier);
+//			ov_string_freelist(splited);
+//			return OV_ERR_BADPARAM;
+//		}
+//	} else {
+//		ov_logfile_error("bad action %s on object %s", splited[1],
+//			data->self->v_identifier);
+//		ov_string_freelist(splited);
+//		return OV_ERR_BADPARAM;
+//	}
+//	ov_string_freelist(splited);
+//	return 0;
+//}
+//
+//OV_STRING get_param(Data_t* data) {
+//	if(!data) return NULL;
+//	switch (data->type) {
+//		case ROLLER:
+//			return NULL;
+//			break;
+//		case SCHIEBER:
+//			return NULL;
+//			break;
+//		case OFEN:
+//			return NULL;
+//			break;
+//		case DREHTISCH:
+//			return NULL;
+//			break;
+//		default:
+//			return NULL;
+//	}
+//}
+
+
 
 #endif /* DIJKSTRA_H_ */

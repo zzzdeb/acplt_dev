@@ -32,7 +32,7 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_TGraph_graph pinst = Ov_StaticPtrCast(TGraph_graph, pobj);
+//	OV_INSTPTR_TGraph_graph pinst = Ov_StaticPtrCast(TGraph_graph, pobj);
 	OV_RESULT result;
 
 	/* do what the base class does first */

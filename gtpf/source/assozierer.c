@@ -49,12 +49,20 @@
 
 #include "CException.h"
 
-#define MAXGAP 20
+OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_MAXGAP_set(
+    OV_INSTPTR_gtpf_assozierer          pobj,
+    const OV_SINGLE  value
+) {
+    pobj->v_MAXGAP = value;
+    return OV_ERR_OK;
+}
+
 #define DISCRETFACTOR 10
 #define M_PI 3.14159265358979323846
 
 #define MAX(a, b)	(((a)<(b))?(b):(a))
 
+OV_INSTPTR_gtpf_assozierer gpinst = NULL;
 OV_INSTPTR_TGraph_graph ggraph = NULL;
 
 //#define XRATE 5
@@ -353,11 +361,11 @@ OV_BOOL canAssosiate(Rectangular_t* rect1, Rectangular_t* rect2) {
 
 	for (OV_UINT i = 0; i < 4; ++i) {
 		abnehmRect->h = dist[(i + 1) % 2];
-		abnehmRect->b = MAXGAP;
+		abnehmRect->b = gpinst->v_MAXGAP;
 		abnehmRect->pos.dir = rect2->pos.dir + degToRad(dirs[i]);
 
 		Point_t* gapVector = pointConstruct();
-		gapVector->x = MAXGAP / 2 + dist[i % 2] / 2;
+		gapVector->x = gpinst->v_MAXGAP / 2 + dist[i % 2] / 2;
 		pointRotate(gapVector, abnehmRect->pos.dir);
 		abnehmRect->pos.pos = *pointAdd(&rect2->pos.pos, gapVector);
 
@@ -463,7 +471,7 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 
 					//check distanz
 					if(pointDist(&rect1->pos.pos, &rect2->pos.pos)
-							> (MAXGAP + MAX(rect1->b,rect1->h) / 2
+							> (gpinst->v_MAXGAP + MAX(rect1->b,rect1->h) / 2
 									+ MAX(rect2->b, rect2->h) / 2)) {
 						continue;
 					}
@@ -769,6 +777,7 @@ OV_DLLFNCEXPORT void gtpf_assozierer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	 *   local variables
 	 */
 	OV_INSTPTR_gtpf_assozierer pinst = Ov_StaticPtrCast(gtpf_assozierer, pfb);
+	gpinst = pinst;
 
 	OV_RESULT result = OV_ERR_OK;
 	CEXCEPTION_T err;

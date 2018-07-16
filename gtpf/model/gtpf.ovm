@@ -20,6 +20,7 @@ LIBRARY gtpf
 		IS_INSTANTIABLE;
 		VARIABLES
 			Path : STRING 		FLAGS="i" 	COMMENT = "Topologie Verzeichnis" INITIALVALUE="";
+			MAXGAP : SINGLE 	HAS_SET_ACCESSOR	FLAGS="i" 	COMMENT = "Gap zwischen Wagens" INITIALVALUE=10.0;
 			ResultAsJson: STRING FLAGS="i"	COMMENT = "result as json";
 			result		:		INT				FLAGS="o"		COMMENT="0: succes, 1: error, 4: badparam";
 			// Add variables here. The syntax is:
@@ -35,6 +36,27 @@ LIBRARY gtpf
 		OPERATIONS
 			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
 			// if MY_FUNC is declared in gtpf.ovf. Implement the functions in assozierer.c.
+			// fb/functionblock based classes have to implement typemethod
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	CLASS dijkstra : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			start 		: 	STRING 	FLAGS="i" 	COMMENT="root"	INITIALVALUE="PE004";
+			topologie	: 	STRING 	FLAGS="i" 	COMMENT=""	INITIALVALUE="/TechUnits/Topology";
+			recipe[]	:		STRING 	FLAGS="i"		COMMENT="";
+			EN				: 	UINT		HAS_SET_ACCESSOR FLAGS="i"		COMMENT="0: done & ready 1: run 3: clean";
+			
+			pathNode[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Nodes";
+			pathDir[]		:		STRING	FLAGS="o"		COMMENT="path from start through recipe in Direction";
+			parameter[]		:		STRING	FLAGS="o"		COMMENT="parameters";
+			result		:		INT			FLAGS="o"		COMMENT="0: succes, 1: error, 4: badparam";
+		END_VARIABLES;
+		OPERATIONS
+			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
+			// if MY_FUNC is declared in graphSearch.ovf. Implement the functions in bfs.c.
 			// fb/functionblock based classes have to implement typemethod
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
