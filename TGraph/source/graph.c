@@ -19,10 +19,14 @@
 #endif
 
 #include "TGraph.h"
-#include "libov/ov_macros.h"
-#include "geometry2d.h"
-#include "CException.h"
+
 #include "libov/ov_ov.h"
+#include "libov/ov_macros.h"
+#include "libov/ov_vector.h"
+
+#include "CException.h"
+#include "geometry2d_.h"
+
 #include "dijkstra.h"
 #include "TGraph_visualization.h"
 #include "tgraph_geometry.h"
@@ -54,12 +58,11 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 //	(pchild)=Ov_GetNextChild(assoc, (pchild)))
 
 
-
 OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 	OV_RESULT res = 0;
-	Position_t* p1 = positionFromNode(n1);
-	Position_t* p2 = positionFromNode(n2);
+	Position_p p1 = positionFromNode(n1);
+	Position_p p2 = positionFromNode(n2);
 	OV_SINGLE dist = pointDist(&p1->pos, &p2->pos);
 
 	OV_INSTPTR_TGraph_Edge edge = NULL;
@@ -74,6 +77,13 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 	Ov_Link(TGraph_Start, n1, edge);
 	Ov_Link(TGraph_End, n2, edge);
 	edge->v_Length = dist;
+
+	//getting direction
+	Position_p diff = positionSubstract(p2, p1);
+	edge->v_Direction.value[0] = diff->pos.x;
+	edge->v_Direction.value[1] = diff->pos.y;
+	edge->v_Direction.value[2] = radToDeg(diff->dir);
+//	edge->v_trafficCost = edge->v_Length/edge->v_Actuator
 	return edge;
 }
 

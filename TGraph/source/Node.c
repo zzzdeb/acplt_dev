@@ -23,6 +23,7 @@
 
 #include "TGraph.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_vector.h"
 
 OV_DLLFNCEXPORT OV_RESULT TGraph_Node_constructor(
 	OV_INSTPTR_ov_object 	pobj
@@ -39,11 +40,8 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_Node_constructor(
          return result;
 
     /* do what */
-    Ov_SetDynamicVectorLength(&pinst->v_Position, 3, SINGLE);
-
-    for (OV_UINT i = 0; i < pinst->v_Position.veclen; ++i) {
-    	pinst->v_Position.value[i] = 0;
-		}
+    OV_SINGLE val[3] = {0};
+    Ov_SetDynamicVectorValue(&pinst->v_Position, val, 3, SINGLE);
 
     return OV_ERR_OK;
 }

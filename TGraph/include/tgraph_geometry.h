@@ -8,7 +8,7 @@
 #ifndef TGRAPH_GEOMETRY_H_
 #define TGRAPH_GEOMETRY_H_
 
-#include "geometry2d.h"
+#include "geometry2d_.h"
 
 Position_t* positionFromNode(const OV_INSTPTR_TGraph_Node node) {
 	Position_t* pos = positionConstruct();

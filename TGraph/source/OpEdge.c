@@ -38,7 +38,7 @@ OV_DLLFNCEXPORT void TGraph_OpEdge_typemethod(
     /*    
     *   local variables
     */
-    OV_INSTPTR_TGraph_OpEdge pinst = Ov_StaticPtrCast(TGraph_OpEdge, pfb);
+//    OV_INSTPTR_TGraph_OpEdge pinst = Ov_StaticPtrCast(TGraph_OpEdge, pfb);
 
     return;
 }

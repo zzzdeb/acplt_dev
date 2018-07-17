@@ -22,6 +22,9 @@
 #include "gtpf.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_result.h"
+#include "libov/ov_path.h"
+
+#include "gitter.h"
 
 #include "unity.h"
 #include "unity_fixture.h"
@@ -30,6 +33,7 @@
 #include "ovunity_helper.h"
 
 #include "CException.h"
+
 
 OV_INSTPTR_gtpfTest_assoziererTest gpinst;
 OV_INSTPTR_gtpf_assozierer gpobj;
@@ -51,25 +55,49 @@ TEST_TEAR_DOWN(assozierer) {
 
 TEST(assozierer, assozierer_default) {
 	load_test_data("gtpfTest", "default.json");
-	ov_string_setvalue(&gpobj->v_Path, "/TechUnits/gtpfTest/case_default");
+	OV_STRING case_path = "/TechUnits/gtpfTest/case_default";
+	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+
+	//image
+	Gitter_t* gitter = gitterConstruct();
+	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
+		ov_path_getobjectpointer(case_path, 2));
+	draw_top(gitter, ptop);
+	gitter2png(gitter, "case_default/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_2neighbour) {
-	load_test_data("gtpfTest","2Neighbour.json");
-	ov_string_setvalue(&gpobj->v_Path,
-		"/TechUnits/gtpfTest/case_2neighbour_fix");
+	load_test_data("gtpfTest", "2Neighbour.json");
+	OV_STRING case_path = "/TechUnits/gtpfTest/case_2neighbour_fix";
+	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+
+	//image
+	Gitter_t* gitter = gitterConstruct();
+	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
+		ov_path_getobjectpointer(case_path, 2));
+	draw_top(gitter, ptop);
+	gitter2png(gitter, "case_2neighbour_fix/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_schieber) {
-	load_test_data("gtpfTest","schieber.json");
-	ov_string_setvalue(&gpobj->v_Path, "/TechUnits/gtpfTest/case_schieber");
+	load_test_data("gtpfTest", "schieber.json");
+	gpobj->v_MAXGAP = 20;
+	OV_STRING case_path = "/TechUnits/gtpfTest/case_schieber";
+	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+
+	//image
+	Gitter_t* gitter = gitterConstruct();
+	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
+		ov_path_getobjectpointer(case_path, 2));
+	draw_top(gitter, ptop);
+	gitter2png(gitter, "case_schieber/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
@@ -166,8 +194,8 @@ TEST(assozierer, assozierer_schieber) {
 //
 TEST_GROUP_RUNNER(assozierer) {
 	RUN_TEST_CASE(assozierer, assozierer_default);
-	// RUN_TEST_CASE(assozierer, assozierer_2neighbour);
-//	RUN_TEST_CASE(assozierer, assozierer_schieber);
+	RUN_TEST_CASE(assozierer, assozierer_2neighbour);
+	RUN_TEST_CASE(assozierer, assozierer_schieber);
 //  RUN_TEST_CASE(assozierer, assozierer_badstart);
 //  RUN_TEST_CASE(assozierer, assozierer_badtopo);
 //  RUN_TEST_CASE(assozierer, assozierer_start_same_end);
@@ -195,9 +223,12 @@ OV_TIME *pltc) {
 
 	const char* argv[] = { "assozierer", "-v" };
 	CEXCEPTION_T e;
-	Try {
-		UnityMain(2, argv, RunAllTests);
-	} Catch(e) {
+	Try
+			{
+				UnityMain(2, argv, RunAllTests);
+			}
+				Catch(e)
+	{
 		ov_logfile_error("mega catch");
 	}
 	return;

@@ -23,6 +23,7 @@
 
 #include "TGraph.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_vector.h"
 
 OV_DLLFNCEXPORT OV_SINGLE TGraph_Edge_physicalCost_get(
     OV_INSTPTR_TGraph_Edge          pobj
@@ -44,7 +45,8 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_Edge_constructor(
          return result;
 
     /* do what */
-
+    OV_INT val[3] = {0};
+    Ov_SetDynamicVectorValue(&pinst->v_Direction, val, 3, INT);
 
     return OV_ERR_OK;
 }
@@ -62,7 +64,7 @@ OV_DLLFNCEXPORT void TGraph_Edge_typemethod(
     /*    
     *   local variables
     */
-    OV_INSTPTR_TGraph_Edge pinst = Ov_StaticPtrCast(TGraph_Edge, pfb);
+//    OV_INSTPTR_TGraph_Edge pinst = Ov_StaticPtrCast(TGraph_Edge, pfb);
 
     return;
 }
