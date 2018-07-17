@@ -80,6 +80,7 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 
 	//getting direction
 	Position_p diff = positionSubstract(p2, p1);
+	pointRotate(&diff->pos, p1->dir);
 	edge->v_Direction.value[0] = diff->pos.x;
 	edge->v_Direction.value[1] = diff->pos.y;
 	edge->v_Direction.value[2] = radToDeg(diff->dir);

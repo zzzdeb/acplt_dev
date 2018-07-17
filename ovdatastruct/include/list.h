@@ -38,6 +38,8 @@ typedef struct list {
 	OV_BOOL (*is_same)(void*, void*);
 } list_t;
 
+typedef list_t* list_p;
+
 listNode_t* createNode(void* data);
 
 OV_RESULT ovlist_init(list_t* list);

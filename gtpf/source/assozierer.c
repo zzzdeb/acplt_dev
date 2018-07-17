@@ -47,13 +47,10 @@
 #include "gitter.h"
 #include "CException.h"
 
-
 OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_MAXGAP_set(
-    OV_INSTPTR_gtpf_assozierer          pobj,
-    const OV_SINGLE  value
-) {
-    pobj->v_MAXGAP = value;
-    return OV_ERR_OK;
+		OV_INSTPTR_gtpf_assozierer pobj, const OV_SINGLE value) {
+	pobj->v_MAXGAP = value;
+	return OV_ERR_OK;
 }
 
 #define DISCRETFACTOR 10
@@ -256,10 +253,10 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 			}
 			//linking
 			if(!TGraph_graph_areNodesLinked(poi[0], poi[1])) {
-				OV_INSTPTR_TGraph_Edge pedge = TGraph_graph_linkNodes(ggraph, poi[0], poi[1]);
+				OV_INSTPTR_TGraph_Edge pedge = TGraph_graph_linkNodes(ggraph, poi[0],
+					poi[1]);
 				/*if wagons r different, set rotation to 0*/
-				if(wagens[0]!=wagens[1])
-					pedge->v_Direction.value[2]=0;
+				if(wagens[0] != wagens[1]) pedge->v_Direction.value[2] = 0;
 
 				ov_logfile_info(
 					"linking %s %s at position w1: [%f,%f,%f] w2: [%f,%f,%f]",
@@ -272,7 +269,8 @@ void createAssoc(Gitter_t* g1, Gitter_t* g2) {
 	}
 }
 
-OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pinst) {
+OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
+		OV_INSTPTR_gtpf_assozierer pinst) {
 // variables
 	OV_RESULT result = OV_ERR_OK;
 //	Data_t* recipes = NULL;
@@ -312,6 +310,11 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(OV_INSTPTR_gtpf_assozierer pin
 	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
 	{
 		insertFirst(picList, createPics(pchild));
+		//creating poi of current position
+		OV_STRING poiName = NULL;
+		ov_string_print(&poiName, "%s_0", pchild->v_identifier);
+		Rectangular_p rect = createRectFromNode(pchild);
+		createPOI(pchild, rect, poiName);
 	}
 //	listSort(picList, relation);
 	listNode_t* elem1 = NULL;
