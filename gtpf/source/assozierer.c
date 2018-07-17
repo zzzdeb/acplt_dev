@@ -33,6 +33,7 @@
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
 #include "libov/ov_association.h"
+#include "libov/ov_class.h"
 
 #include "fb.h"
 
@@ -314,7 +315,16 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
 		OV_STRING poiName = NULL;
 		ov_string_print(&poiName, "%s_0", pchild->v_identifier);
 		Rectangular_p rect = createRectFromNode(pchild);
-		createPOI(pchild, rect, poiName);
+		OV_INSTPTR_TGraph_Node poi = createPOI(pchild, rect, poiName);
+		//Product skill
+		for (OV_UINT i = 0; i < pchild->v_PSkills.veclen; ++i) {
+			OV_STRING psname = NULL;
+			OV_INSTPTR_TGraph_Edge edge = TGraph_graph_linkNodes(ggraph, poi, poi);
+			ov_string_print(&psname, "%s_%s", pchild->v_identifier,
+				pchild->v_PSkills.value[i]);
+			ov_class_renameobject(Ov_StaticPtrCast(ov_object, edge), &ggraph->p_Edges, psname, OV_PMH_DEFAULT,
+				NULL);
+		}
 	}
 //	listSort(picList, relation);
 	listNode_t* elem1 = NULL;
