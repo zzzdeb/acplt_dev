@@ -32,7 +32,7 @@ OV_DLLFNCEXPORT void wandelbareTopologie_Node_typemethod(
     /*    
     *   local variables
     */
-    OV_INSTPTR_wandelbareTopologie_Node pinst = Ov_StaticPtrCast(wandelbareTopologie_Node, pfb);
+//    OV_INSTPTR_wandelbareTopologie_Node pinst = Ov_StaticPtrCast(wandelbareTopologie_Node, pfb);
 
     return;
 }

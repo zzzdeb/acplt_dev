@@ -35,7 +35,7 @@
 #include "CException.h"
 
 
-OV_INSTPTR_gtpfTest_assoziererTest gpinst;
+OV_INSTPTR_ovunity_main gpinst;
 OV_INSTPTR_gtpf_assozierer gpobj;
 OV_TIME *gpltc;
 
@@ -54,8 +54,8 @@ TEST_TEAR_DOWN(assozierer) {
 }
 
 TEST(assozierer, assozierer_default) {
-	load_test_data("gtpfTest", "default.json");
-	OV_STRING case_path = "/TechUnits/gtpfTest/case_default";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_default");
+	ovunity_loadEnv(gpinst, "default.json", case_path);
 	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
 
@@ -64,14 +64,14 @@ TEST(assozierer, assozierer_default) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "case_default/visualization");
+	gitter2png(gitter, "assozierer/case_default/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_2neighbour) {
-	load_test_data("gtpfTest", "2Neighbour.json");
-	OV_STRING case_path = "/TechUnits/gtpfTest/case_2neighbour_fix";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_2neighbour_fix");
+	ovunity_loadEnv(gpinst, "2Neighbour.json", case_path);
 	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
 
@@ -80,15 +80,15 @@ TEST(assozierer, assozierer_2neighbour) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "case_2neighbour_fix/visualization");
+	gitter2png(gitter, "assozierer/case_2neighbour_fix/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_schieber) {
-	load_test_data("gtpfTest", "schieber.json");
+	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_schieber");
+	ovunity_loadEnv(gpinst, "schieber.json", case_path);
 	gpobj->v_MAXGAP = 20;
-	OV_STRING case_path = "/TechUnits/gtpfTest/case_schieber";
 	ov_string_setvalue(&gpobj->v_Path, case_path);
 	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
 
@@ -97,7 +97,7 @@ TEST(assozierer, assozierer_schieber) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "case_schieber/visualization");
+	gitter2png(gitter, "assozierer/case_schieber/visualization");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
@@ -217,8 +217,8 @@ OV_TIME *pltc) {
 	/*
 	 *   local variables
 	 */
-	gpinst = Ov_StaticPtrCast(gtpfTest_assoziererTest, pfb);
-	gpobj = &gpinst->p_obj;
+	gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
+	gpobj = &Ov_StaticPtrCast(gtpfTest_assoziererTest,gpinst)->p_obj;
 	gpltc = pltc;
 
 	const char* argv[] = { "assozierer", "-v" };

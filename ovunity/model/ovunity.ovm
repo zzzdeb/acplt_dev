@@ -3,42 +3,28 @@
 #include "ksbase.ovm"
 
 LIBRARY ovunity
-	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
-	COPYRIGHT = "";
-	COMMENT   = "";
+	VERSION   = "V0.1 (30-Juni-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "PLT RWTH Aachen";
+	COMMENT   = "Basis Library um die Testframework Unity mit OV anzuwenden.";
 	
 	/**
 		Documentation of main.
 		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+		@bestpractice
+		1. Erstelle einen Projekt um eine andere zu testen (mit der Name wie projtotestTest)  
+		2. Erstelle für die zu testenden Klassen, Klassen inheritiert von dieser Klasse
+		3. Erstelle Umgebung in json Format.
+		4. Erstelle Projekt/test/class Verzeichnisse. Speichere json Datein hier.
+		5. Erstelle tests eine json Umgebung verwendet.  
 	*/
 	CLASS main : CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		VARIABLES
-			// Add variables here. The syntax is:
-			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
 		END_VARIABLES;
 		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in ovunity.ovf. Implement the functions in main.c.
-			// fb/functionblock based classes have to implement typemethod
-			//constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
 			typemethod:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
-	
-	/**
-		Add associations and their documentation here.
-		Association syntax is:
-	*/
-	//ASSOCIATION assocName : ONE_TO_MANY
-	//	PARENT parentVarName : CLASS ov/object;
-	//	CHILD  childVarName : CLASS ov/object;
-	//END_ASSOCIATION;
 	
 END_LIBRARY;

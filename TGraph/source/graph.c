@@ -48,15 +48,6 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 	return OV_ERR_OK;
 }
 
-//#define TGraph_ForEachChild(pparent, pchild)								\
-//				OV_INSTPTR_TGraph_Edge out = NULL;									\
-//				Ov_ForEachChildEx(TGraph_Start, nodes[i], out, TGraph_Edge)
-//				{
-//					OV_INSTPTR_TGraph_Node child = Ov_GetParent(TGraph_End, out);
-//					if(child == nodes[(i + 1) % 2]) return TRUE;
-//		}\
-//	(pchild)=Ov_GetNextChild(assoc, (pchild)))
-
 
 OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
@@ -93,6 +84,9 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
  */
 OV_DLLFNCEXPORT OV_INSTPTR_TGraph_Edge TGraph_graph_areNodesLinked(
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+	if(!n1 || !n2)
+		Throw(OV_ERR_BADPARAM);
+
 	OV_INSTPTR_TGraph_Node nodes[] = { n1, n2 };
 	for (OV_UINT i = 0; i < 1; ++i) {
 		OV_INSTPTR_TGraph_Edge out = NULL;

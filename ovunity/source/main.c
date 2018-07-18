@@ -22,14 +22,17 @@
 
 
 #include "ovunity.h"
+#include "libov/ov_ov.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_path.h"
+#include "libov/ov_class.h"
 #include "unity.h"
 #include "unity_fixture.h"
 #include "unity_internals.h"
 #include "unity_fixture_internals.h"
 #include "ovunity_helper.h"
 
-OV_DLLFNCEXPORT OV_STRING ReadFile1(OV_STRING filename) {
+OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 	OV_STRING buffer = NULL;
 	long int string_size, read_size;
 	FILE *handler = fopen(filename, "rb");
@@ -68,7 +71,13 @@ OV_DLLFNCEXPORT OV_STRING ReadFile1(OV_STRING filename) {
 	return buffer;
 }
 
-OV_DLLFNCEXPORT void load_test_data(OV_STRING projname, OV_STRING name) {
+OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const OV_STRING what, const OV_STRING where){
+	/* getting libname and classname */
+	OV_INSTPTR_ov_domain pclass = Ov_GetParent(ov_instantiation, pinst);
+	OV_STRING classname = ov_strdup(pclass->v_identifier);
+	OV_INSTPTR_ov_object plib = Ov_GetParent(ov_containment, pclass);
+	OV_STRING projname = ov_strdup(plib->v_identifier);
+
 //	OV_RESULT res = 0;
 	OV_SETVAR_PAR params = { 0 };
 	OV_SETVAR_RES result = { 0 };
@@ -87,7 +96,7 @@ OV_DLLFNCEXPORT void load_test_data(OV_STRING projname, OV_STRING name) {
 //process multiple variables at once
 	OV_STRING dataPath = NULL;
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&dataPath, "%s/dev/%s/test/%s", ahome, projname, name);
+	ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname, classname, what);
 
 	OV_SETVAR_ITEM items[3];
 	OV_STRING uploadPath = "/data/CTree/Download";
@@ -95,12 +104,12 @@ OV_DLLFNCEXPORT void load_test_data(OV_STRING projname, OV_STRING name) {
 	items[0].path_and_name = NULL;
 	ov_string_print(&items[0].path_and_name, "%s.%s", uploadPath, "json"); /*	see comment below	*/
 	items[0].var_current_props.value.vartype = KS_VT_STRING;
-	items[0].var_current_props.value.valueunion.val_string = ReadFile1(dataPath);
+	items[0].var_current_props.value.valueunion.val_string = ovunity_helper_data2str(dataPath);
 
 	items[1].path_and_name = NULL;
 	ov_string_print(&items[1].path_and_name, "%s.%s", uploadPath, "path");
 	items[1].var_current_props.value.vartype = KS_VT_STRING;
-	items[1].var_current_props.value.valueunion.val_string = NULL;
+	items[1].var_current_props.value.valueunion.val_string = where;
 
 	items[2].path_and_name = NULL;
 	ov_string_print(&items[2].path_and_name, "%s.%s", uploadPath, "trigger");
@@ -142,16 +151,28 @@ OV_DLLFNCEXPORT void load_test_data(OV_STRING projname, OV_STRING name) {
 //		fr = kshttp_print_result_array(&response->contentString, request.response_format, result.results_val, result.results_len, "");
 
 	ov_memstack_unlock();
+	ov_free(classname);
+	ov_free(projname);
 	return;
+}
+
+/* getting case path */
+/*
+ * gives path under the object to simulate environment
+ */
+OV_DLLFNCEXPORT OV_STRING ovunity_getCasePath(const OV_INSTPTR_ovunity_main pinst,
+		const OV_STRING case_name) {
+	OV_STRING path = ov_path_getcanonicalpath((void*) pinst, 2);
+	ov_string_print(&path, "%s/%s", path, case_name);
+	return path;
 }
 
 OV_DLLFNCEXPORT void ovunity_main_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
-    /*    
+    /*
     *   local variables
     */
     return;
 }
-

@@ -18,11 +18,20 @@
 
 
 /* reads file and gives it as OV_STRING */
-OV_STRING ReadFile1(OV_STRING filename);
+OV_STRING ovunity_helper_data2str(OV_STRING filename);
 
 /* loads json file as tree */
-void load_test_data(OV_STRING projname, OV_STRING name);
+/*
+ * gives path under the object to simulate environment
+ */
+void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const OV_STRING what, const OV_STRING where);
 
+/* getting case path */
+/*
+ * gives path under the object to simulate environment
+ */
+OV_STRING ovunity_getCasePath(const OV_INSTPTR_ovunity_main pinst,
+		const OV_STRING case_name);
 
 
 #endif /* HELPER_H_ */
