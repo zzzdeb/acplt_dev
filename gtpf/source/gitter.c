@@ -6,6 +6,8 @@
  */
 
 #include "gitter.h"
+#include "tgraph_geometry.h"
+#include "CException.h"
 
 OV_DLLFNCEXPORT int gitter2png(Gitter_t* gitter, OV_STRING name) {
 	FILE * fp;
@@ -237,12 +239,16 @@ OV_DLLFNCEXPORT void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop) {
 
 OV_DLLFNCEXPORT Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 
+
 //		Gitter_t _
 //		int Factory[i][y][x] = alloc(size(uint16) * x * y)
 
 	Gitter_t* w1Gitter = gitterConstruct();
 
 	w1Gitter->pWagon = w1;
+
+	//todo: zur zeit keine verwendung von einzel bilder
+	return w1Gitter;
 
 	int XRATE = 1;
 	int YRATE = 1;

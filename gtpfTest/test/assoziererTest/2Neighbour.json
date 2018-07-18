@@ -1,9 +1,6 @@
 {
 	"Libraries":	["ov", "wandelbareTopologie"],
 	"Tree":	{
-		"TechUnits":	{
-			"class":	"ov/domain",
-			"children":	{
 				"case_2neighbour_fix":	{
 					"class":	"ov/domain",
 					"children":	{
@@ -83,8 +80,6 @@
 						}
 					}
 				}
-			}
-		}
 	},
-	"Path":	"/TechUnits/gtpfTest"
+	"Path":	"/TechUnits/gtpfTest/case_2neighbour_fix"
 }

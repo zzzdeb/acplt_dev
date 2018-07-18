@@ -1,0 +1,85 @@
+{
+	"Libraries": ["ov", "wandelbareTopologie"],
+	"Tree": {
+		"case_schieber": {
+			"class": "ov/domain",
+			"children": {
+				"SCHIEBER1": {
+					"variables": {
+						"x": ["SINGLE", 300],
+						"y": ["SINGLE", 400],
+						"ThetaZ": ["SINGLE", 45],
+						"Xlength": ["SINGLE", 130],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, true, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, -200, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 10:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"WAGON1": {
+					"variables": {
+						"x": ["SINGLE", 300],
+						"y": ["SINGLE", 200],
+						"ThetaZ": ["SINGLE", 45],
+						"Xlength": ["SINGLE", 130],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 10:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				}
+			}
+		}
+	},
+	"Path": "/TechUnits/gtpfTest/case_schieber"
+}

@@ -1,0 +1,5444 @@
+{
+	"Libraries": ["ov", "wandelbareTopologie", "TGraph"],
+	"Tree": {
+		"case_default": {
+			"class": "ov/domain",
+			"children": {
+				"SCHIEBER1": {
+					"variables": {
+						"x": ["SINGLE", 150],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, true, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, -400, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/SCHIEBER1_0", "~/Graph.Nodes/SCHIEBER1_1", "~/Graph.Nodes/SCHIEBER1_2"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"SCHIEBER2": {
+					"variables": {
+						"x": ["SINGLE", 750],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, true, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, -400, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/SCHIEBER2_0", "~/Graph.Nodes/SCHIEBER2_1", "~/Graph.Nodes/SCHIEBER2_2"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE018": {
+					"variables": {
+						"x": ["SINGLE", 850],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE018_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE019": {
+					"variables": {
+						"x": ["SINGLE", 450],
+						"y": ["SINGLE", 15],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 0, 0]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", ["HEAT"]],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE019_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE005": {
+					"variables": {
+						"x": ["SINGLE", 250],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE005_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE008": {
+					"variables": {
+						"x": ["SINGLE", 350],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE008_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE010": {
+					"variables": {
+						"x": ["SINGLE", 550],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE010_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE011": {
+					"variables": {
+						"x": ["SINGLE", 650],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE011_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE004": {
+					"variables": {
+						"x": ["SINGLE", 50],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE004_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE031": {
+					"variables": {
+						"x": ["SINGLE", 250],
+						"y": ["SINGLE", 315],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE031_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE030": {
+					"variables": {
+						"x": ["SINGLE", 350],
+						"y": ["SINGLE", 315],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE030_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE028": {
+					"variables": {
+						"x": ["SINGLE", 550],
+						"y": ["SINGLE", 315],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE028_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE027": {
+					"variables": {
+						"x": ["SINGLE", 650],
+						"y": ["SINGLE", 315],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE027_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE026": {
+					"variables": {
+						"x": ["SINGLE", 650],
+						"y": ["SINGLE", 15],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE026_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE021": {
+					"variables": {
+						"x": ["SINGLE", 550],
+						"y": ["SINGLE", 15],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE021_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE016": {
+					"variables": {
+						"x": ["SINGLE", 350],
+						"y": ["SINGLE", 15],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE016_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE013": {
+					"variables": {
+						"x": ["SINGLE", 250],
+						"y": ["SINGLE", 15],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE013_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE009": {
+					"variables": {
+						"x": ["SINGLE", 450],
+						"y": ["SINGLE", 415],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, true]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 180]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, -180]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE009_0", "~/Graph.Nodes/PE009_1", "~/Graph.Nodes/PE009_2", "~/Graph.Nodes/PE009_3", "~/Graph.Nodes/PE009_4"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"PE025": {
+					"variables": {
+						"x": ["SINGLE", 450],
+						"y": ["SINGLE", 315],
+						"ThetaZ": ["SINGLE", 0],
+						"Xlength": ["SINGLE", 90],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, true]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 180]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, -180]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/PE025_0", "~/Graph.Nodes/PE025_1", "~/Graph.Nodes/PE025_2", "~/Graph.Nodes/PE025_3", "~/Graph.Nodes/PE025_4"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"Graph": {
+					"class": "TGraph/graph",
+					"parts": {
+						"Nodes": {
+							"class": "ov/domain",
+							"children": {
+								"SCHIEBER1_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [150, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.223847"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_1_0", "~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_2_0", "~/Graph.Edges/SCHIEBER1_0_to_PE004_0_0", "~/Graph.Edges/SCHIEBER1_0_to_PE005_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_0_0", "~/Graph.Edges/SCHIEBER1_2_to_SCHIEBER1_0_0", "~/Graph.Edges/PE004_0_to_SCHIEBER1_0_0", "~/Graph.Edges/PE005_0_to_SCHIEBER1_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER2_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [750, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.246244"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_0_to_SCHIEBER2_1_0", "~/Graph.Edges/SCHIEBER2_0_to_SCHIEBER2_2_0", "~/Graph.Edges/SCHIEBER2_0_to_PE011_0_0", "~/Graph.Edges/SCHIEBER2_0_to_PE018_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_1_to_SCHIEBER2_0_0", "~/Graph.Edges/SCHIEBER2_2_to_SCHIEBER2_0_0", "~/Graph.Edges/PE011_0_to_SCHIEBER2_0_0", "~/Graph.Edges/PE018_0_to_SCHIEBER2_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE018_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [850, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.267581"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE018_0_to_SCHIEBER2_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_0_to_PE018_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE018"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE019_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.288330"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE019_HEAT", "~/Graph.Edges/PE019_0_to_PE016_0_0", "~/Graph.Edges/PE019_0_to_PE021_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE019_HEAT", "~/Graph.Edges/PE016_0_to_PE019_0_0", "~/Graph.Edges/PE021_0_to_PE019_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE019"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE005_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [250, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.309571"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE005_0_to_PE008_0_0", "~/Graph.Edges/PE005_0_to_SCHIEBER1_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE008_0_to_PE005_0_0", "~/Graph.Edges/SCHIEBER1_0_to_PE005_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE005"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE008_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [350, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.330167"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE008_0_to_PE009_0_0", "~/Graph.Edges/PE008_0_to_PE005_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE008_0_0", "~/Graph.Edges/PE009_4_to_PE008_0_0", "~/Graph.Edges/PE005_0_to_PE008_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE008"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE010_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [550, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.350505"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE010_0_to_PE009_0_0", "~/Graph.Edges/PE010_0_to_PE011_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE010_0_0", "~/Graph.Edges/PE009_4_to_PE010_0_0", "~/Graph.Edges/PE011_0_to_PE010_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE010"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE011_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [650, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.373489"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE011_0_to_PE010_0_0", "~/Graph.Edges/PE011_0_to_SCHIEBER2_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE010_0_to_PE011_0_0", "~/Graph.Edges/SCHIEBER2_0_to_PE011_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE011"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE004_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [50, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.395825"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE004_0_to_SCHIEBER1_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_PE004_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE004"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE031_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [250, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.420191"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE031_0_to_PE030_0_0", "~/Graph.Edges/PE031_0_to_SCHIEBER1_2_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE030_0_to_PE031_0_0", "~/Graph.Edges/SCHIEBER1_2_to_PE031_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE031"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE030_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [350, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.444125"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE030_0_to_PE025_0_0", "~/Graph.Edges/PE030_0_to_PE031_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE030_0_0", "~/Graph.Edges/PE025_3_to_PE030_0_0", "~/Graph.Edges/PE031_0_to_PE030_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE030"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE028_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [550, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.468437"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE028_0_to_PE025_0_0", "~/Graph.Edges/PE028_0_to_PE027_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE028_0_0", "~/Graph.Edges/PE025_3_to_PE028_0_0", "~/Graph.Edges/PE027_0_to_PE028_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE028"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE027_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [650, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.491475"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE027_0_to_PE028_0_0", "~/Graph.Edges/PE027_0_to_SCHIEBER2_2_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE028_0_to_PE027_0_0", "~/Graph.Edges/SCHIEBER2_2_to_PE027_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE027"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE026_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [650, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.513262"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE026_0_to_PE021_0_0", "~/Graph.Edges/PE026_0_to_SCHIEBER2_1_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE021_0_to_PE026_0_0", "~/Graph.Edges/SCHIEBER2_1_to_PE026_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE026"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE021_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [550, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.538777"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE021_0_to_PE026_0_0", "~/Graph.Edges/PE021_0_to_PE019_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE026_0_to_PE021_0_0", "~/Graph.Edges/PE019_0_to_PE021_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE021"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE016_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [350, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.564530"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE016_0_to_PE013_0_0", "~/Graph.Edges/PE016_0_to_PE019_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE013_0_to_PE016_0_0", "~/Graph.Edges/PE019_0_to_PE016_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE016"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE013_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [250, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.592913"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE013_0_to_PE016_0_0", "~/Graph.Edges/PE013_0_to_SCHIEBER1_1_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE016_0_to_PE013_0_0", "~/Graph.Edges/SCHIEBER1_1_to_PE013_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE013"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE009_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 415, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.617877"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE009_1_0", "~/Graph.Edges/PE009_0_to_PE009_2_0", "~/Graph.Edges/PE009_0_to_PE009_3_0", "~/Graph.Edges/PE009_0_to_PE010_0_0", "~/Graph.Edges/PE009_0_to_PE009_4_0", "~/Graph.Edges/PE009_0_to_PE008_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_1_to_PE009_0_0", "~/Graph.Edges/PE009_2_to_PE009_0_0", "~/Graph.Edges/PE009_3_to_PE009_0_0", "~/Graph.Edges/PE009_4_to_PE009_0_0", "~/Graph.Edges/PE010_0_to_PE009_0_0", "~/Graph.Edges/PE008_0_to_PE009_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE009"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE025_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.643505"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE025_1_0", "~/Graph.Edges/PE025_0_to_PE025_2_0", "~/Graph.Edges/PE025_0_to_PE028_0_0", "~/Graph.Edges/PE025_0_to_PE025_3_0", "~/Graph.Edges/PE025_0_to_PE030_0_0", "~/Graph.Edges/PE025_0_to_PE025_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_1_to_PE025_0_0", "~/Graph.Edges/PE025_2_to_PE025_0_0", "~/Graph.Edges/PE025_3_to_PE025_0_0", "~/Graph.Edges/PE025_4_to_PE025_0_0", "~/Graph.Edges/PE028_0_to_PE025_0_0", "~/Graph.Edges/PE030_0_to_PE025_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE025"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE025_1": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 315, -92]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705128"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_1_to_PE025_0_0", "~/Graph.Edges/PE025_1_to_PE009_1_0", "~/Graph.Edges/PE025_1_to_PE025_2_0", "~/Graph.Edges/PE025_1_to_PE025_3_0", "~/Graph.Edges/PE025_1_to_PE025_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE025_1_0", "~/Graph.Edges/PE025_2_to_PE025_1_0", "~/Graph.Edges/PE025_3_to_PE025_1_0", "~/Graph.Edges/PE025_4_to_PE025_1_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE025"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE009_1": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 415, -89]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705177"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_1_to_PE009_0_0", "~/Graph.Edges/PE009_1_to_PE009_2_0", "~/Graph.Edges/PE009_1_to_PE009_3_0", "~/Graph.Edges/PE009_1_to_PE009_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE009_1_0", "~/Graph.Edges/PE025_1_to_PE009_1_0", "~/Graph.Edges/PE025_2_to_PE009_1_0", "~/Graph.Edges/PE009_2_to_PE009_1_0", "~/Graph.Edges/PE009_3_to_PE009_1_0", "~/Graph.Edges/PE009_4_to_PE009_1_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE009"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE025_2": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 315, 88]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705251"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_2_to_PE025_0_0", "~/Graph.Edges/PE025_2_to_PE025_1_0", "~/Graph.Edges/PE025_2_to_PE009_1_0", "~/Graph.Edges/PE025_2_to_PE025_3_0", "~/Graph.Edges/PE025_2_to_PE025_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE025_2_0", "~/Graph.Edges/PE025_1_to_PE025_2_0", "~/Graph.Edges/PE025_3_to_PE025_2_0", "~/Graph.Edges/PE025_4_to_PE025_2_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE025"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE025_3": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 315, -180]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705409"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_3_to_PE025_0_0", "~/Graph.Edges/PE025_3_to_PE025_1_0", "~/Graph.Edges/PE025_3_to_PE025_2_0", "~/Graph.Edges/PE025_3_to_PE028_0_0", "~/Graph.Edges/PE025_3_to_PE030_0_0", "~/Graph.Edges/PE025_3_to_PE025_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE025_3_0", "~/Graph.Edges/PE025_1_to_PE025_3_0", "~/Graph.Edges/PE025_2_to_PE025_3_0", "~/Graph.Edges/PE025_4_to_PE025_3_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE025"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE009_2": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 415, -92]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767510"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_2_to_PE009_0_0", "~/Graph.Edges/PE009_2_to_PE009_1_0", "~/Graph.Edges/PE009_2_to_PE025_4_0", "~/Graph.Edges/PE009_2_to_PE009_3_0", "~/Graph.Edges/PE009_2_to_PE009_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE009_2_0", "~/Graph.Edges/PE009_1_to_PE009_2_0", "~/Graph.Edges/PE009_3_to_PE009_2_0", "~/Graph.Edges/PE009_4_to_PE009_2_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE009"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE025_4": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 315, -89]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767601"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_4_to_PE025_0_0", "~/Graph.Edges/PE025_4_to_PE025_1_0", "~/Graph.Edges/PE025_4_to_PE025_2_0", "~/Graph.Edges/PE025_4_to_PE025_3_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE025_0_to_PE025_4_0", "~/Graph.Edges/PE025_1_to_PE025_4_0", "~/Graph.Edges/PE025_2_to_PE025_4_0", "~/Graph.Edges/PE025_3_to_PE025_4_0", "~/Graph.Edges/PE009_2_to_PE025_4_0", "~/Graph.Edges/PE009_3_to_PE025_4_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE025"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE009_3": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 415, 88]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767765"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_3_to_PE009_0_0", "~/Graph.Edges/PE009_3_to_PE009_1_0", "~/Graph.Edges/PE009_3_to_PE009_2_0", "~/Graph.Edges/PE009_3_to_PE025_4_0", "~/Graph.Edges/PE009_3_to_PE009_4_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE009_3_0", "~/Graph.Edges/PE009_1_to_PE009_3_0", "~/Graph.Edges/PE009_2_to_PE009_3_0", "~/Graph.Edges/PE009_4_to_PE009_3_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE009"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"PE009_4": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [450, 415, -180]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768051"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_4_to_PE009_0_0", "~/Graph.Edges/PE009_4_to_PE009_1_0", "~/Graph.Edges/PE009_4_to_PE009_2_0", "~/Graph.Edges/PE009_4_to_PE009_3_0", "~/Graph.Edges/PE009_4_to_PE010_0_0", "~/Graph.Edges/PE009_4_to_PE008_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/PE009_0_to_PE009_4_0", "~/Graph.Edges/PE009_1_to_PE009_4_0", "~/Graph.Edges/PE009_2_to_PE009_4_0", "~/Graph.Edges/PE009_3_to_PE009_4_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/PE009"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER1_1": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [150, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768931"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_0_0", "~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_2_0", "~/Graph.Edges/SCHIEBER1_1_to_PE013_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_1_0", "~/Graph.Edges/PE013_0_to_SCHIEBER1_1_0", "~/Graph.Edges/SCHIEBER1_2_to_SCHIEBER1_1_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER2_1": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [750, 15, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769774"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_1_to_SCHIEBER2_0_0", "~/Graph.Edges/SCHIEBER2_1_to_SCHIEBER2_2_0", "~/Graph.Edges/SCHIEBER2_1_to_PE026_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_0_to_SCHIEBER2_1_0", "~/Graph.Edges/PE026_0_to_SCHIEBER2_1_0", "~/Graph.Edges/SCHIEBER2_2_to_SCHIEBER2_1_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER2_2": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [750, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770159"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_2_to_SCHIEBER2_0_0", "~/Graph.Edges/SCHIEBER2_2_to_SCHIEBER2_1_0", "~/Graph.Edges/SCHIEBER2_2_to_PE027_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER2_0_to_SCHIEBER2_2_0", "~/Graph.Edges/SCHIEBER2_1_to_SCHIEBER2_2_0", "~/Graph.Edges/PE027_0_to_SCHIEBER2_2_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER1_2": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [150, 315, 0]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771287"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_2_to_SCHIEBER1_0_0", "~/Graph.Edges/SCHIEBER1_2_to_SCHIEBER1_1_0", "~/Graph.Edges/SCHIEBER1_2_to_PE031_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_2_0", "~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_2_0", "~/Graph.Edges/PE031_0_to_SCHIEBER1_2_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								}
+							}
+						},
+						"Edges": {
+							"class": "ov/domain",
+							"children": {
+								"PE019_HEAT": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.288361"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_1_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705147"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE025_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705162"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_1_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 89]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705193"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -89]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705207"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_1_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [99, -3, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705222"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_2_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705265"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE025_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705283"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_2_to_PE025_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705304"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_1_to_PE025_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705326"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_2_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-99, 3, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705344"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE028_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705386"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE028_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705424"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE025_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705439"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE025_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705465"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_1_to_PE025_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705480"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE025_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705494"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_2_to_PE025_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705509"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE028_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705524"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE028_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE030_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705549"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE030_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE030_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.705572"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE030_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_2_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767540"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE009_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767556"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_2_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 2]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767572"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_1_to_PE009_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -2]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767587"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_4_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 89]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767615"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_0_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -89]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767629"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_4_to_PE025_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -2]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767644"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_1_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 2]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767660"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_4_to_PE025_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 177]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767674"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_2_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -177]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767689"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_4_to_PE025_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767703"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE025_3_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767718"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE025_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_2_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-99, 3, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767733"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_3_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767788"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE009_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767829"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_3_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -177]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767845"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_1_to_PE009_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 177]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767862"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_3_to_PE009_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767885"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_2_to_PE009_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767924"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_3_to_PE025_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [99, -3, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.767945"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE010_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768022"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE010_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768093"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE009_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 179]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768129"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE009_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768154"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_1_to_PE009_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768192"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE009_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768218"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_2_to_PE009_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -88]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768240"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE009_3_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, -91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768263"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_3_to_PE009_4_0": {
+									"variables": {
+										"Length": ["SINGLE", 0],
+										"Direction": ["INT_VEC", [0, 0, 91]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 0],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768305"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_3"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE010_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768332"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE010_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_0_to_PE008_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768401"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE008_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE009_4_to_PE008_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768432"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE009_4"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE008_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE013_0_to_PE016_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768716"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE013_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE016_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_1_to_SCHIEBER1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 400],
+										"Direction": ["INT_VEC", [0, 400, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 2000],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768957"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_0_to_SCHIEBER1_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 400],
+										"Direction": ["INT_VEC", [0, -400, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 2000],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.768982"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE013_0_to_SCHIEBER1_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769007"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE013_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE016_0_to_PE013_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769052"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE016_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE013_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE016_0_to_PE019_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769118"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE016_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE021_0_to_PE026_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769369"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE021_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE026_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE021_0_to_PE019_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769444"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE021_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE026_0_to_PE021_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769709"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE026_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE021_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_1_to_SCHIEBER2_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 400],
+										"Direction": ["INT_VEC", [0, 400, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 2000],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769798"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_0_to_SCHIEBER2_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 400],
+										"Direction": ["INT_VEC", [0, -400, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 2000],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769825"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE026_0_to_SCHIEBER2_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.769852"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE026_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE027_0_to_PE028_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770002"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE027_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE028_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_2_to_SCHIEBER2_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [0, 100, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770182"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_0_to_SCHIEBER2_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [0, -100, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770206"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_2_to_SCHIEBER2_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 300],
+										"Direction": ["INT_VEC", [0, -300, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 1500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770228"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_1_to_SCHIEBER2_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 300],
+										"Direction": ["INT_VEC", [0, 300, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 1500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770251"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE027_0_to_SCHIEBER2_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770275"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE027_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE028_0_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770423"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE028_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE028_0_to_PE027_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770494"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE028_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE027_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE030_0_to_PE025_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770753"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE030_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE025_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE030_0_to_PE031_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.770806"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE030_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE031_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE031_0_to_PE030_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771073"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE031_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE030_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_2_to_SCHIEBER1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [0, 100, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771312"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_0_to_SCHIEBER1_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [0, -100, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771337"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_2_to_SCHIEBER1_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 300],
+										"Direction": ["INT_VEC", [0, -300, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 1500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771372"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_1_to_SCHIEBER1_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 300],
+										"Direction": ["INT_VEC", [0, 300, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 1500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771398"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE031_0_to_SCHIEBER1_2_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771424"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE031_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE004_0_to_SCHIEBER1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771653"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE004_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE011_0_to_PE010_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771758"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE011_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE010_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE011_0_to_SCHIEBER2_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771824"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE011_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE010_0_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.771965"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE010_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE010_0_to_PE011_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772032"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE010_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE011_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE008_0_to_PE009_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772284"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE008_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE009_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE008_0_to_PE005_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772351"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE008_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE005_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE005_0_to_PE008_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772617"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE005_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE008_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE005_0_to_SCHIEBER1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772752"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE005_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE019_0_to_PE016_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772794"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE016_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE019_0_to_PE021_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.772829"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE019_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE021_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"PE018_0_to_SCHIEBER2_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.773123"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/PE018_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_1_to_PE026_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.773764"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE026_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_2_to_PE027_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.773887"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE027_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_0_to_PE011_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.774320"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE011_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER2_0_to_PE018_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.774769"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER2_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE018_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_1_to_PE013_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.804206"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE013_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_2_to_PE031_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.804709"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_2"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE031_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_0_to_PE004_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [-100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.804736"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE004_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_0_to_PE005_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 100],
+										"Direction": ["INT_VEC", [100, 0, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 500],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/18 13:02:06.804961"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/PE005_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"Path": "/TechUnits/gtpfTest/case_default"
+}

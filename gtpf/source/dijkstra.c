@@ -46,66 +46,173 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_dijkstra_EN_set(OV_INSTPTR_gtpf_dijkstra pobj,
 	return OV_ERR_OK;
 }
 
-//OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
+
+#define SEPERATOR " "
+OV_BOOL ov_vector_contains(const OV_POINTER pvalue1, const OV_POINTER pvalue2,
+		const OV_UINT veclen, const OV_VAR_TYPE vartype) {
+	OV_UINT i;
+	OV_STRING *pstring1, *pstring2;
+
+	OV_INT result;
+	/*
+	 *	compare values
+	 */
+	switch (vartype) {
+		case OV_VT_STRING:
+			pstring2 = (OV_STRING*) pvalue2;
+			for (i = 0, pstring1 = (OV_STRING*) pvalue1; i < veclen;
+					i++, pstring1++) {
+				result = ov_string_compare(*pstring1, *pstring2);
+				if(result == OV_STRCMP_EQUAL) {
+					return 1;
+				}
+			}
+			return 0;
+			break;
+	}
+	return 0;
+}
+
+OV_RESULT getNodeAction(OV_STRING path,
+		OV_INSTPTR_wandelbareTopologie_Node* pnode, OV_STRING* action) {
+	if(!path) return OV_ERR_BADPARAM;
+
+	OV_UINT len = 0;
+	OV_STRING* splited = ov_string_split(path, SEPERATOR, &len);
+
+	OV_INSTPTR_ov_object pobjtmp = ov_path_getobjectpointer(splited[0], 2);
+// param check
+	if(!pobjtmp) {
+		ov_string_freelist(splited);
+		return OV_ERR_BADPARAM;
+	}
+	if(!Ov_CanCastTo(wandelbareTopologie_Node, pobjtmp)) {
+		ov_string_freelist(splited);
+		return OV_ERR_BADPARAM;
+	}
+	*pnode = Ov_StaticPtrCast(wandelbareTopologie_Node, pobjtmp);
+	if(len == 1) {
+		ov_string_freelist(splited);
+		return 0;
+	}
+
+//ofen || drehtisch
+	if(ov_vector_contains((*pnode)->v_PSkills.value, &splited[1],
+		(*pnode)->v_PSkills.veclen, OV_VT_STRING))
+		ov_string_setvalue(action, splited[1]);
+	else {
+		ov_logfile_error("bad action %s on object %s", splited[1],
+			(*pnode)->v_identifier);
+		ov_string_freelist(splited);
+		return OV_ERR_BADPARAM;
+	}
+	ov_string_freelist(splited);
+	return 0;
+}
+
+OV_INSTPTR_TGraph_Node getSelfNode(OV_INSTPTR_wandelbareTopologie_Node proot) {
+	/* param check */
+	if(!proot) Throw(OV_ERR_BADPARAM);
+
+	OV_INSTPTR_TGraph_Node nodetmp = NULL;
+	Ov_ForEachChildEx(wandelbareTopologie_POI, proot, nodetmp, TGraph_Node)
+	{
+		OV_STRING tmp = &nodetmp->v_identifier[ov_string_getlength(
+			nodetmp->v_identifier) - 2];
+		if(ov_string_compare(tmp, "_0") == OV_STRCMP_EQUAL) {
+			break;
+		}
+	}
+	return nodetmp;
+}
+
+OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
+//	OV_RESULT result = OV_ERR_OK;
+// param check
 //	OV_INSTPTR_TGraph_graph pgraph = ov_path_getobjectpointer(pinst->v_topologie,
 //		2);
-//	// param check
 //	if(!pgraph) {
 //		ov_logfile_error("topology could not be found");
 //		return OV_ERR_BADPARAM;
 //	}
-//
-//	OV_RESULT result = OV_ERR_OK;
-//	OV_INSTPTR_TGraph_Node* recipes = NULL;
-//
-//	// get start
-//	OV_STRING pathStr = NULL;
-//	ov_string_print(&pathStr, "%s/%s", pinst->v_topologie, pinst->v_start);
-//	OV_INSTPTR_TGraph_Node proot = ov_path_getobjectpointer(pathStr, 2);
-//	// param check
-//	if(!proot) {
-//		ov_logfile_error("start object could not be found");
-//		return OV_ERR_BADPARAM;
-//	}
-//
-//	// get recipes
-//	OV_UINT numberOfStations = 1 + pinst->v_recipe.veclen;
-//	recipes = ov_memstack_alloc(
-//		numberOfStations * sizeof(OV_INSTPTR_TGraph_Node));
-//	for (OV_UINT i = 0; i < pinst->v_recipe.veclen; ++i) {
-//		ov_string_print(&pathStr, "%s/%s", pinst->v_topologie,
-//			pinst->v_recipe.value[i]);
-//		result = initDataFromStr(&recipes[i + 1], pathStr);
-//		// check
-//		if(Ov_Fail(result)) {
-//			return result;
-//		}
-//	}
-//	ov_string_setvalue(&pathStr, NULL);
-//
-//	// bfs
-//	OV_UINT pathLengthSum = 0;
-//	Data_t from;
-//	from = recipes[0];
-//
-//	for (OV_UINT i = 1; i < numberOfStations; ++i) {
-//		// list
-//		list_t *path = constructList(sizeof(Data_t));
-//		path->printNode = &printData;
-//		result = BFS(path, &from, &recipes[i]);
-//		if(Ov_Fail(result)) {
-//			ov_logfile_error("No path found from %s to %s", from.self->v_identifier,
-//				recipes[i].self->v_identifier);
-//			//free
-//			Ov_HeapFree(recipes);
-//			destructList(path);
-//			return result;
-//		}
-//		OV_INSTPTR_TGraph_Node psource = OV_INSTPTR_TGraph_Node
-//		ptarget
-//		dijkstra_get_path( pgraph,);
-//	}
-//}
+// param check
+	if(!ov_path_getobjectpointer(pinst->v_topologie, 2)) {
+		ov_logfile_error("topology could not be found");
+		return OV_ERR_BADPARAM;
+	}
+
+// get start
+	OV_STRING pathStr = NULL;
+	ov_string_print(&pathStr, "%s/%s", pinst->v_topologie, pinst->v_start);
+	OV_INSTPTR_wandelbareTopologie_Node proot = NULL;
+
+	OV_STRING action = NULL;
+	OV_INSTPTR_TGraph_Node node = NULL;
+	getNodeAction(pathStr, &proot, &action);
+// param check
+	if(!proot) {
+		ov_logfile_error("start object could not be found");
+		return OV_ERR_BADPARAM;
+	}
+	node = getSelfNode(proot);
+
+	OV_UINT currentLen = 0;
+	if(action) {
+		currentLen++;
+		Ov_SetDynamicVectorValue(&pinst->v_pathNode, proot->v_identifier,
+			currentLen, STRING);
+		Ov_SetDynamicVectorValue(&pinst->v_pathDir, action, currentLen, STRING);
+	}
+
+	//dijkstra
+	OV_INSTPTR_TGraph_Node psource = node;
+	for (OV_UINT i = 0; i < pinst->v_recipe.veclen; ++i) {
+		OV_INSTPTR_wandelbareTopologie_Node pobj = NULL;
+		OV_INSTPTR_TGraph_Node ptarget = NULL;
+		ov_string_print(&pathStr, "%s/%s", pinst->v_topologie,
+			pinst->v_recipe.value[i]);
+		getNodeAction(pathStr, &pobj, &action);
+		if(!pobj) {
+			ov_logfile_error("recipe[%d] could not be found", i);
+			return OV_ERR_BADPARAM;
+		}
+		ptarget = getSelfNode(pobj);
+		list_p path = dijkstra_get_path(psource, ptarget);
+		if(!path) {
+			ov_logfile_error("no path between %s %s", psource->v_identifier,
+				ptarget->v_identifier);
+			return OV_ERR_GENERIC;
+		}
+		if(listLength(path)) {
+			currentLen += listLength(path);
+			Ov_SetDynamicVectorLength(&pinst->v_pathNode, currentLen, STRING);
+			Ov_SetDynamicVectorLength(&pinst->v_pathDir, currentLen, STRING);
+
+			OV_INT i = currentLen - 1;
+			listNode_p elem = NULL;
+			listIterateR(path, elem)
+			{
+				OV_INSTPTR_TGraph_Edge edge = (OV_INSTPTR_TGraph_Edge) elem->data;
+				OV_INSTPTR_TGraph_Node source = Ov_GetParent(TGraph_Start, edge);
+				ov_string_setvalue(&pinst->v_pathNode.value[i], source->v_identifier);
+				ov_string_print(&pinst->v_pathDir.value[i], "[%f, %f, %f]",
+					edge->v_Direction.value[0], edge->v_Direction.value[1],
+					edge->v_Direction.value[2]);
+				i--;
+			}
+		}
+		if(action) {
+			currentLen++;
+			Ov_SetDynamicVectorLength(&pinst->v_pathNode, currentLen, STRING);
+			ov_string_setvalue(&pinst->v_pathNode.value[currentLen - 1],
+				pobj->v_identifier);
+			Ov_SetDynamicVectorLength(&pinst->v_pathDir, currentLen, STRING);
+			ov_string_setvalue(&pinst->v_pathDir.value[currentLen - 1], action);
+		}
+		psource = ptarget;
+	}
+	return 0;
+}
 
 OV_DLLFNCEXPORT void gtpf_dijkstra_typemethod(OV_INSTPTR_fb_functionblock pfb,
 		OV_TIME *pltc) {
@@ -114,20 +221,37 @@ OV_DLLFNCEXPORT void gtpf_dijkstra_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	 */
 	OV_INSTPTR_gtpf_dijkstra pinst = Ov_StaticPtrCast(gtpf_dijkstra, pfb);
 	OV_RESULT result = OV_ERR_OK;
-	result = gtpf_dijkstra_execute(pinst);
-	switch (result) {
-		case OV_ERR_OK:
-			ov_logfile_info("dijkstra: done");
-			pinst->v_result = result;
-			break;
-		case OV_ERR_BADPARAM:
-			ov_logfile_error("dijkstra: bad param");
-			pinst->v_result = result;
-			break;
-		default:
-			ov_logfile_error("dijkstra: failed \n error: %s",
-				ov_result_getresulttext(result));
-			pinst->v_result = 1;
+	CEXCEPTION_T err;
+	Try
+			{
+				result = gtpf_dijkstra_execute(pinst);
+				switch (result) {
+					case OV_ERR_OK:
+						ov_logfile_info("dijkstra: done");
+						pinst->v_result = result;
+						break;
+					case OV_ERR_BADPARAM:
+						ov_logfile_error("dijkstra: bad param");
+						pinst->v_result = result;
+						break;
+					default:
+						ov_logfile_error("dijkstra: failed \n error: %s",
+							ov_result_getresulttext(result));
+						pinst->v_result = 1;
+				}
+			}
+				Catch(err)
+	{
+		switch (err) {
+			case OV_ERR_BADPARAM:
+				ov_logfile_error("dijkstra: bad param");
+				pinst->v_result = err;
+				break;
+			default:
+				ov_logfile_error("dijkstra: failed \n error: %s",
+					ov_result_getresulttext(err));
+				pinst->v_result = 1;
+		}
 	}
 
 	return;
