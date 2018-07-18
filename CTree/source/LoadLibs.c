@@ -31,6 +31,7 @@
 #include "libov/ov_string.h"
 
 #include "ksapi.h"
+#include "ksbase.h"
 #include "ksbase_helper.h"
 
 enum format { OS, ARCH, LIBS, ACPLTHOME, FORMATLEN };
@@ -113,7 +114,7 @@ CTree_LoadLibs_reset_set(OV_INSTPTR_CTree_LoadLibs pobj, const OV_BOOL value) {
   OV_RESULT result = OV_ERR_OK;
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
-  OV_VTBLPTR_CTree_SendFiles pVtblSendfiles = NULL;
+//  OV_VTBLPTR_CTree_SendFiles pVtblSendfiles = NULL;
   if (value && (!pobj->v_reset)) {
     pobj->v_status = INITIAL;
     pobj->v_result = OV_ERR_OK;
@@ -143,7 +144,7 @@ CTree_LoadLibs_reset_set(OV_INSTPTR_CTree_LoadLibs pobj, const OV_BOOL value) {
     pobj->p_sendFiles.v_reset = 1;
   }
   pobj->v_reset = value;
-  return OV_ERR_OK;
+  return result;
 }
 
 OV_DLLFNCEXPORT OV_RESULT
@@ -301,13 +302,13 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
   OV_RESULT result = OV_ERR_OK;
 
   OV_STRING_VEC libsToSend = {0};
-  OV_STRING_VEC libs = {0};
+//  OV_STRING_VEC libs = {0};
 
-  OV_STRING_VEC *ptarget_libs = NULL;
+//  OV_STRING_VEC *ptarget_libs = NULL;
 
   OV_BYTE_VEC blibs = {0, NULL};
   OV_BYTE_VEC *paddonlibs = {0, NULL};
-  OV_UINT_VEC libPositions = {0, NULL};
+//  OV_UINT_VEC libPositions = {0, NULL};
 
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, &pinst->p_ks);

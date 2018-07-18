@@ -23,6 +23,7 @@
 
 #include "CTree.h"
 #include "libov/ov_macros.h"
+#include "fb_namedef.h"
 
 
 OV_DLLFNCEXPORT OV_RESULT CTree_Common_trigger_set(
@@ -38,7 +39,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Common_trigger_set(
 			return OV_ERR_BADOBJTYPE;
 		OV_TIME pltc = {0, 0};
 		ov_time_gettime(&pltc);
-		fb_functionblock_execTypeMethod(pobj, &pltc);
+		fb_functionblock_execTypeMethod((void*) pobj, &pltc);
 	}
 
     pobj->v_trigger = 0;

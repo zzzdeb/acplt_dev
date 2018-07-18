@@ -80,7 +80,7 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_destructor(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+//  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
 
   /* do what */
 
@@ -94,7 +94,7 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_startup(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+//  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
 
   /* do what the base class does first */
   ov_object_startup(pobj);
@@ -108,7 +108,7 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_shutdown(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+//  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
 
   /* do what */
 
@@ -132,7 +132,7 @@ OV_DLLFNCEXPORT OV_ACCESS CTree_dbinfoExt_getaccess(OV_INSTPTR_ov_object pobj,
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+//  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
   /*
    *	switch based on the element's type
    */
@@ -209,7 +209,7 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
           ov_logfile_error("cant open librarie %s", dir->d_name);
         i++;
       }
-      ov_string_setvalue(tmpFilename, NULL);
+      ov_string_setvalue(&tmpFilename, NULL);
       closedir(daddonlibs);
     }
   }

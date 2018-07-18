@@ -19,6 +19,7 @@
 
 #include "CTree.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_result.h"
 
 /* create path without variable. $ACPLT_HOME/dev -> /home/zzz/....../acplt/dev.
  * works for now only for first*/

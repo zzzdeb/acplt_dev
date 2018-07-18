@@ -135,7 +135,7 @@ OV_DLLFNCEXPORT OV_ACCESS CTree_test_getaccess(OV_INSTPTR_ov_object pobj,
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pobj);
+//	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pobj);
 
 	return OV_AC_READWRITE | OV_AC_DELETEABLE | OV_AC_RENAMEABLE;
 	return (OV_ACCESS) 0;

@@ -628,24 +628,28 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
 		}
 	}
 	jschildren = cJSON_GetObjectItem(jsobj, CHILDRENNAME);
-	if(jschildren == NULL);
-	OV_STRING childpath = NULL;
-	cJSON_ArrayForEach(jschild, jschildren)
-	{
-		ov_string_print(&childpath, "%s/%s", objpath, jschild->string);
-		link_objects(pinst, jschild, childpath);
+	if(jschildren) {
+		OV_STRING childpath = NULL;
+		cJSON_ArrayForEach(jschild, jschildren)
+		{
+			ov_string_print(&childpath, "%s/%s", objpath, jschild->string);
+			link_objects(pinst, jschild, childpath);
 
+		}
+		ov_string_setvalue(&childpath, NULL);
 	}
+
 	jschildren = cJSON_GetObjectItem(jsobj, PARTSNAME);
-	if(jschildren == NULL);
-	OV_STRING partpath = NULL;
-	cJSON_ArrayForEach(jschild, jschildren)
-	{
-		ov_string_print(&partpath, "%s.%s", objpath, jschild->string);
-		link_objects(pinst, jschild, partpath);
+	if(jschildren) {
+		OV_STRING partpath = NULL;
+		cJSON_ArrayForEach(jschild, jschildren)
+		{
+			ov_string_print(&partpath, "%s.%s", objpath, jschild->string);
+			link_objects(pinst, jschild, partpath);
 
+		}
+		ov_string_setvalue(&partpath, NULL);
 	}
-	ov_string_setvalue(&childpath, NULL);
 	return res;
 }
 
