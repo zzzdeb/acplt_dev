@@ -46,7 +46,7 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_Edge_constructor(
 
     /* do what */
     OV_INT val[3] = {0};
-    Ov_SetDynamicVectorValue(&pinst->v_Direction, val, 3, INT);
+    Ov_SetDynamicVectorValue(&pinst->v_Direction, val, 3, SINGLE);
 
     return OV_ERR_OK;
 }

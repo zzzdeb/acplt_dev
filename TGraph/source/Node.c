@@ -53,7 +53,7 @@ OV_DLLFNCEXPORT void TGraph_Node_typemethod(
     /*    
     *   local variables
     */
-    OV_INSTPTR_TGraph_Node pinst = Ov_StaticPtrCast(TGraph_Node, pfb);
+//    OV_INSTPTR_TGraph_Node pinst = Ov_StaticPtrCast(TGraph_Node, pfb);
 
     return;
 }

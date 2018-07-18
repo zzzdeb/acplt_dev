@@ -47,7 +47,7 @@ LIBRARY TGraph
 		IS_INSTANTIABLE; 
 		VARIABLES
 			Length : 		SINGLE 	 FLAGS = "i" 		COMMENT = "Distance between nodes" 	INITIALVALUE = 0.0;				
-			Direction[] : 	INT 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
+			Direction[] : 	SINGLE 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
 			Actuator:		STRING	 FLAGS = "i" 		COMMENT = "PnID Actuator ID" 		INITIALVALUE = "N";
 			actVelocity:	SINGLE	 FLAGS = "i" 		COMMENT = "Actuator speed and direction" 		INITIALVALUE = 5.0;
 			physicalCost:	SINGLE 	HAS_GET_ACCESSOR FLAGS = "i" 			COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
