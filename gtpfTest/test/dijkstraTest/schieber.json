@@ -1,0 +1,355 @@
+{
+	"Libraries": ["ov", "wandelbareTopologie", "TGraph"],
+	"Tree": {
+		"case_schieber": {
+			"class": "ov/domain",
+			"children": {
+				"SCHIEBER1": {
+					"variables": {
+						"x": ["SINGLE", 300],
+						"y": ["SINGLE", 400],
+						"ThetaZ": ["SINGLE", 45],
+						"Xlength": ["SINGLE", 130],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, true, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, -200, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/SCHIEBER1_0", "~/Graph.Nodes/SCHIEBER1_1"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"WAGON1": {
+					"variables": {
+						"x": ["SINGLE", 300],
+						"y": ["SINGLE", 200],
+						"ThetaZ": ["SINGLE", 45],
+						"Xlength": ["SINGLE", 130],
+						"Ylength": ["SINGLE", 30],
+						"TPSV": ["BOOL_VEC", [false, false, false]],
+						"CSV": ["BOOL_VEC", [true, false, false]],
+						"CostsC": ["SINGLE_VEC", [5, 6, 7]],
+						"CostsT": ["SINGLE_VEC", [3, 0, 0]],
+						"TTPSVP": ["SINGLE_VEC", [0, 0, 0]],
+						"TTPSVM": ["SINGLE_VEC", [0, 0, 0]],
+						"TCSVP": ["SINGLE_VEC", [50, 0, 0]],
+						"TCSVM": ["SINGLE_VEC", [-50, 0, 0]],
+						"PSkills": ["STRING_VEC", []],
+						"iexreq": ["BOOL", false],
+						"eexreq": ["BOOL", true],
+						"maxcalctime": ["TIME_SPAN", [0, 0]],
+						"methcount": ["UINT", 0],
+						"actimode": ["INT", 0],
+						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
+						"cyctime": ["TIME_SPAN", [0, 0]],
+						"ErrState": ["INT", 0],
+						"calctime": ["TIME_SPAN", [0, 0]],
+						"Xpos": ["INT", 0],
+						"Ypos": ["INT", 0]
+					},
+					"links": {
+						"poi": {
+							"of_association": "wandelbareTopologie/POI",
+							"parents": ["this"],
+							"children": ["~/Graph.Nodes/WAGON1_0"]
+						},
+						"taskparent": {
+							"of_association": "fb/tasklist",
+							"parents": ["/Tasks/UrTask"],
+							"children": ["this"]
+						}
+					},
+					"class": "wandelbareTopologie/Node"
+				},
+				"Graph": {
+					"class": "TGraph/graph",
+					"parts": {
+						"Nodes": {
+							"class": "ov/domain",
+							"children": {
+								"SCHIEBER1_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [300, 400, 45]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.549059"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_1_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"WAGON1_0": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [300, 200, 45]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.555752"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/WAGON1_0_to_SCHIEBER1_1_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_1_to_WAGON1_0_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/WAGON1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								},
+								"SCHIEBER1_1": {
+									"variables": {
+										"Position": ["SINGLE_VEC", [400.4091796875, 299.5908203125, 45]],
+										"POI": ["BOOL", false],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.555906"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"edgePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_1_to_SCHIEBER1_0_0", "~/Graph.Edges/SCHIEBER1_1_to_WAGON1_0_0"]
+										},
+										"edgePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["this"],
+											"children": ["~/Graph.Edges/SCHIEBER1_0_to_SCHIEBER1_1_0", "~/Graph.Edges/WAGON1_0_to_SCHIEBER1_1_0"]
+										},
+										"self": {
+											"of_association": "wandelbareTopologie/POI",
+											"parents": ["~/SCHIEBER1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Node"
+								}
+							}
+						},
+						"Edges": {
+							"class": "ov/domain",
+							"children": {
+								"SCHIEBER1_1_to_SCHIEBER1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 142.00003051757812],
+										"Direction": ["SINGLE_VEC", [-142.00003051757812, -3.1035092433739919e-06, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 710.0001220703125],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.555929"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_0_to_SCHIEBER1_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 142.00003051757812],
+										"Direction": ["SINGLE_VEC", [142.00003051757812, 3.1035092433739919e-06, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 710.0001220703125],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.555951"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"WAGON1_0_to_SCHIEBER1_1_0": {
+									"variables": {
+										"Length": ["SINGLE", 141.42254638671875],
+										"Direction": ["SINGLE_VEC", [0.57866436243057251, 141.42135620117188, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 707.11273193359375],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.555973"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/WAGON1_0"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								},
+								"SCHIEBER1_1_to_WAGON1_0_0": {
+									"variables": {
+										"Length": ["SINGLE", 141.42254638671875],
+										"Direction": ["SINGLE_VEC", [-0.57866436243057251, -141.42135620117188, 0]],
+										"Actuator": ["STRING", "N"],
+										"actVelocity": ["SINGLE", 5],
+										"physicalCost": ["SINGLE", 707.11273193359375],
+										"trafficCost": ["SINGLE", 0],
+										"totalCost": ["SINGLE", 0],
+										"iexreq": ["BOOL", false],
+										"eexreq": ["BOOL", false],
+										"maxcalctime": ["TIME_SPAN", [0, 0]],
+										"methcount": ["UINT", 0],
+										"actimode": ["INT", 0],
+										"proctime": ["TIME", "2018/07/19 08:42:09.556159"],
+										"cyctime": ["TIME_SPAN", [0, 0]],
+										"ErrState": ["INT", 0],
+										"calctime": ["TIME_SPAN", [0, 0]],
+										"Xpos": ["INT", 0],
+										"Ypos": ["INT", 0]
+									},
+									"links": {
+										"nodePortStart": {
+											"of_association": "TGraph/Start",
+											"parents": ["~/Graph.Nodes/SCHIEBER1_1"],
+											"children": ["this"]
+										},
+										"nodePortEnd": {
+											"of_association": "TGraph/End",
+											"parents": ["~/Graph.Nodes/WAGON1_0"],
+											"children": ["this"]
+										}
+									},
+									"class": "TGraph/Edge"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"Path": "/TechUnits/gtpfTest/case_schieber"
+}

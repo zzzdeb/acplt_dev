@@ -28,7 +28,8 @@
 OV_DLLFNCEXPORT OV_SINGLE TGraph_Edge_physicalCost_get(
     OV_INSTPTR_TGraph_Edge          pobj
 ) {
-    return pobj->v_actVelocity*pobj->v_Length;
+	pobj->v_physicalCost = pobj->v_Length / pobj->v_actVelocity;
+	return pobj->v_physicalCost;
 }
 OV_DLLFNCEXPORT OV_RESULT TGraph_Edge_constructor(
 	OV_INSTPTR_ov_object 	pobj
@@ -54,7 +55,7 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_Edge_constructor(
 OV_DLLFNCEXPORT OV_SINGLE TGraph_Edge_totalCost_get(
     OV_INSTPTR_TGraph_Edge          pobj
 ) {
-    return (pobj->v_trafficCost + pobj->v_physicalCost);
+	return (pobj->v_trafficCost + TGraph_Edge_physicalCost_get(pobj));
 }
 
 OV_DLLFNCEXPORT void TGraph_Edge_typemethod(

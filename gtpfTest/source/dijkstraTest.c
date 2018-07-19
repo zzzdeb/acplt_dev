@@ -30,7 +30,7 @@
 #include "ovunity.h"
 #include "ovunity_helper.h"
 
-OV_INSTPTR_gtpfTest_dijkstraTest gpinst;
+OV_INSTPTR_ovunity_main gpinst;
 OV_INSTPTR_gtpf_dijkstra gpobj;
 OV_TIME *gpltc;
 
@@ -39,6 +39,7 @@ TEST_GROUP(dijkstra);
 TEST_SETUP(dijkstra) {
 	ov_memstack_lock();
 	//This is run before EACH TEST
+	gpobj->v_EN = 0;
 	ov_string_setvalue(&gpobj->v_start, "PE004");
 	ov_string_setvalue(&gpobj->v_topologie, NULL);
 
@@ -54,14 +55,12 @@ TEST_TEAR_DOWN(dijkstra) {
 
 TEST(dijkstra, dijkstra_default) {
 	//loading env
-	OV_STRING case_path = ovunity_getCasePath(Ov_StaticPtrCast(ovunity_main, gpinst),
-		"case_default");
-	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
-		case_path);
+	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_schieber");
+	ovunity_loadEnv(gpinst, "schieber.json", case_path);
 	//setting param
-	ov_string_setvalue(&gpobj->v_start, "PE004");
+	ov_string_setvalue(&gpobj->v_start, "SCHIEBER1");
 	ov_string_setvalue(&gpobj->v_topologie, case_path);
-	OV_STRING recipe[1] = { "PE010" };
+	OV_STRING recipe[1] = { "WAGON1" };
 	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, 1, STRING);
 
 	//executing
@@ -71,13 +70,14 @@ TEST(dijkstra, dijkstra_default) {
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 
 	OV_UINT pathDirLen = 2;
-	OV_STRING pathDirValue[] = { "right", "right" };
+	OV_STRING pathDirValue[] = { "[142.000031, 0.000003, 0.000000]",
+			"[-0.578664, -141.421356, 0.000000]" };
 	TEST_ASSERT_EQUAL(gpobj->v_pathDir.veclen, pathDirLen);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(pathDirValue, gpobj->v_pathDir.value,
 		pathDirLen);
 
 	OV_UINT pathNodeLen = 2;
-	OV_STRING pathNodeValue[] = { "PE034", "PE005" };
+	OV_STRING pathNodeValue[] = { "SCHIEBER1_0", "SCHIEBER1_1" };
 	TEST_ASSERT_EQUAL(gpobj->v_pathNode.veclen, pathNodeLen);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(pathNodeValue, gpobj->v_pathNode.value,
 		pathNodeLen);
@@ -90,10 +90,10 @@ TEST(dijkstra, dijkstra_default) {
 }
 
 TEST(dijkstra, dijkstra_badstart) {
-	OV_STRING case_path = ovunity_getCasePath(Ov_StaticPtrCast(ovunity_main, gpinst),
-			"case_badstart");
-		ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
-			case_path);
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_badstart");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "schieber.json",
+		case_path);
 
 	ov_string_setvalue(&gpobj->v_start, "PE0033");
 	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
@@ -115,16 +115,21 @@ TEST(dijkstra, dijkstra_badtopo) {
 //test3 start==end
 TEST(dijkstra, dijkstra_start_same_end) {
 	/* env */
-	OV_STRING case_path = ovunity_getCasePath(Ov_StaticPtrCast(ovunity_main, gpinst),
-			"case_start_same_end");
-		ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
-			case_path);
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_start_same_end");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "schieber.json",
+		case_path);
 //	ov_logfile_info("test: start==end");
+	/* setting param */
+	ov_string_setvalue(&gpobj->v_start, "SCHIEBER1");
 	ov_string_setvalue(&gpobj->v_topologie, case_path);
-	OV_STRING recipe[1] = { "PE004" };
+	OV_STRING recipe[1] = { "SCHIEBER1" };
 	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, 1, STRING);
 
+	/* execute */
 	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+
+	/* testing */
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 	OV_UINT pathDirLen = 0;
 	TEST_ASSERT_EQUAL(gpobj->v_pathDir.veclen, pathDirLen);
@@ -136,41 +141,109 @@ TEST(dijkstra, dijkstra_start_same_end) {
 	TEST_ASSERT_EQUAL(gpobj->v_parameter.veclen, paramLen);
 }
 
-TEST(dijkstra, dijkstra_heat_turn) {
+TEST(dijkstra, dijkstra_heat) {
 	/* env */
-	OV_STRING case_path = ovunity_getCasePath(Ov_StaticPtrCast(ovunity_main, gpinst),
-			"case_heat_turn");
-		ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
-			case_path);
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_heat");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "3schichten.json",
+		case_path);
 
 	//test4
-	ov_logfile_info("test: heat & turn");
 	ov_string_setvalue(&gpobj->v_topologie, case_path);
-	OV_STRING recipe[3] = { "PE009 HEAT", "PE025 TURN", "PE033" };
-	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, 3, STRING);
+	OV_STRING recipe[2] = { "PE019&HEAT", "SCHIEBER2" };
+	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, 2, STRING);
 
 	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 
-	OV_UINT pathDirLen = 16;
-	OV_STRING pathDirValue[] = { "right", "right", "right", "right", "heat",
-			"left", "left", "left", "down", "right", "right", "right", "turn",
-			"right", "right", "right" };
+	OV_UINT pathDirLen = 10;
+	OV_STRING pathDirValue[] = { "[100.000000, 0.000000, 0.000000]",
+			"[0.000000, -400.000000, 0.000000]", "[100.000000, 0.000000, 0.000000]",
+			"[100.000000, 0.000000, 0.000000]", "[100.000000, 0.000000, 0.000000]",
+			"HEAT", "[100.000000, 0.000000, 0.000000]",
+			"[100.000000, 0.000000, 0.000000]", "[100.000000, 0.000000, 0.000000]",
+			"[0.000000, 400.000000, 0.000000]" };
 	TEST_ASSERT_EQUAL(gpobj->v_pathDir.veclen, pathDirLen);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(pathDirValue, gpobj->v_pathDir.value,
 		pathDirLen);
 
-	OV_UINT pathNodeLen = 16;
-	OV_STRING pathNodeValue[] = { "PE034", "PE005", "PE008", "PE009", "PE009",
-			"PE008", "PE005", "PE034", "PE034", "PE031", "PE030", "PE025", "PE025",
-			"PE028", "PE027", "PE033" };
+	OV_UINT pathNodeLen = 10;
+	OV_STRING pathNodeValue[] = { "PE004_0", "SCHIEBER1_0", "SCHIEBER1_1",
+			"PE013_0", "PE016_0", "PE019", "PE019_0", "PE021_0", "PE026_0",
+			"SCHIEBER2_1" };
 	TEST_ASSERT_EQUAL(gpobj->v_pathNode.veclen, pathNodeLen);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(pathNodeValue, gpobj->v_pathNode.value,
 		pathNodeLen);
 
-	OV_UINT paramLen = 16;
-	OV_STRING paramValue[] = { NULL, NULL, NULL, NULL, "150", NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, "180", NULL, NULL, NULL };
+	OV_UINT paramLen = 10;
+	OV_STRING paramValue[] = { NULL, NULL, NULL, NULL, NULL, "180", NULL, NULL,
+	NULL, NULL };
+
+	TEST_ASSERT_EQUAL(gpobj->v_parameter.veclen, paramLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(paramValue, gpobj->v_parameter.value,
+		paramLen);
+}
+
+TEST(dijkstra, dijkstra_heat_false) {
+	/* env */
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_heat");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "3schichten.json",
+		case_path);
+
+	//test4
+	ov_string_setvalue(&gpobj->v_topologie, case_path);
+	OV_STRING recipe[2] = { "PE021&HEAT", "SCHIEBER2" };
+	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, 2, STRING);
+
+	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+	TEST_ASSERT_EQUAL(gpobj->v_result, 4);
+
+	OV_UINT pathDirLen = 0;
+	TEST_ASSERT_EQUAL(gpobj->v_pathDir.veclen, pathDirLen);
+
+	OV_UINT pathNodeLen = 0;
+	TEST_ASSERT_EQUAL(gpobj->v_pathNode.veclen, pathNodeLen);
+
+	OV_UINT paramLen = 0;
+	TEST_ASSERT_EQUAL(gpobj->v_parameter.veclen, paramLen);
+}
+
+TEST(dijkstra, dijkstra_turn) {
+	/* env */
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_heat_turn");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "turn.json",
+		case_path);
+
+	//test4
+	ov_string_setvalue(&gpobj->v_start, "PE005");
+	ov_string_setvalue(&gpobj->v_topologie, case_path);
+	OV_UINT recipeLen = 1;
+	OV_STRING recipe[1] = { "PE027" };
+	Ov_SetDynamicVectorValue(&gpobj->v_recipe, recipe, recipeLen, STRING);
+
+	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
+
+	OV_UINT pathDirLen = 7;
+	OV_STRING pathDirValue[7] = { "[100.000000, 0.000000, 0.000000]",
+			"[100.000000, 0.000000, 0.000000]", "[0.000000, 0.000000, 88.000000]",
+			"[99.000000, -3.000000, 0.000000]", "[0.000000, 0.000000, -91.000000]",
+			"[-100.000000, 0.000000, 0.000000]", "[100.000000, 0.000000, 0.000000]" };
+	TEST_ASSERT_EQUAL(gpobj->v_pathDir.veclen, pathDirLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(pathDirValue, gpobj->v_pathDir.value,
+		pathDirLen);
+
+	OV_UINT pathNodeLen = 7;
+	OV_STRING pathNodeValue[7] = { "PE005_0", "PE008_0", "PE009_0", "PE009_3",
+			"PE025_4", "PE025_3", "PE028_0" };
+	TEST_ASSERT_EQUAL(gpobj->v_pathNode.veclen, pathNodeLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(pathNodeValue, gpobj->v_pathNode.value,
+		pathNodeLen);
+
+	OV_UINT paramLen = 7;
+	OV_STRING paramValue[7] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 	TEST_ASSERT_EQUAL(gpobj->v_parameter.veclen, paramLen);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(paramValue, gpobj->v_parameter.value,
 		paramLen);
@@ -178,10 +251,10 @@ TEST(dijkstra, dijkstra_heat_turn) {
 
 TEST(dijkstra, dijkstra_heat2_turn2) {
 	/* env */
-	OV_STRING case_path = ovunity_getCasePath(Ov_StaticPtrCast(ovunity_main, gpinst),
-			"case_heat2_turn2");
-		ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
-			case_path);
+	OV_STRING case_path = ovunity_getCasePath(
+		Ov_StaticPtrCast(ovunity_main, gpinst), "case_heat2_turn2");
+	ovunity_loadEnv(Ov_StaticPtrCast(ovunity_main, gpinst), "default.json",
+		case_path);
 	//test5
 	ov_logfile_info("test: (heat&heat) & (turn&turn)");
 	ov_string_setvalue(&gpobj->v_topologie, case_path);
@@ -214,11 +287,13 @@ TEST(dijkstra, dijkstra_heat2_turn2) {
 }
 
 TEST_GROUP_RUNNER(dijkstra) {
-//	RUN_TEST_CASE(dijkstra, dijkstra_default);
+	RUN_TEST_CASE(dijkstra, dijkstra_default);
 	RUN_TEST_CASE(dijkstra, dijkstra_badstart);
 	RUN_TEST_CASE(dijkstra, dijkstra_badtopo);
 	RUN_TEST_CASE(dijkstra, dijkstra_start_same_end);
-//	RUN_TEST_CASE(dijkstra, dijkstra_heat_turn);
+	RUN_TEST_CASE(dijkstra, dijkstra_heat);
+	RUN_TEST_CASE(dijkstra, dijkstra_heat_false);
+	RUN_TEST_CASE(dijkstra, dijkstra_turn);
 //	RUN_TEST_CASE(dijkstra, dijkstra_heat2_turn2);
 //  RUN_TEST_CASE(dijkstra, AnotherIgnoredTest);
 //  RUN_TEST_CASE(dijkstra, ThisFunctionHasNotBeenTested_NeedsToBeImplemented);
@@ -234,8 +309,8 @@ OV_DLLFNCEXPORT void gtpfTest_dijkstraTest_typemethod(
 	 *   local variables
 	 */
 
-	gpinst = Ov_StaticPtrCast(gtpfTest_dijkstraTest, pfb);
-	gpobj = &gpinst->p_obj;
+	gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
+	gpobj = &Ov_StaticPtrCast(gtpfTest_dijkstraTest, gpinst)->p_obj;
 	gpltc = pltc;
 
 	const char* argv[] = { "dijkstra", "-v" };

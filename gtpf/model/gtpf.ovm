@@ -5,6 +5,7 @@
 #include "TGraph.ovm"
 #include "CTree.ovm"
 #include "geometry2d.ovm"
+#include "ovdatastruct.ovm"
 
 LIBRARY gtpf
 	VERSION   = "V0.1 (DD-Mon-YYYY)";

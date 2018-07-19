@@ -117,7 +117,8 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 		for (OV_UINT j = 0; j < n; ++j) {
 			OV_INSTPTR_TGraph_Edge edge = TGraph_graph_areNodesLinked(V[i], V[j]);
 			if(edge) {
-				adj[i][j] = edge->v_Length;
+				OV_SINGLE tmp = TGraph_Edge_totalCost_get(edge);
+				adj[i][j] = TGraph_Edge_totalCost_get(edge);
 			} else
 				adj[i][j] = -1;
 		}
@@ -125,8 +126,9 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 
 	//begin
 	list_t* Unexplored = constructList(sizeof(OV_INT));
-
 	Unexplored->compare = &int_relation;
+	Unexplored->is_same = &is_same_int;
+
 	for (OV_UINT i = 0; i < n; ++i) {
 		OV_INT* tmp = ov_memstack_alloc(sizeof(OV_INT));
 		*tmp = i;

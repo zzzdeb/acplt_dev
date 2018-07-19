@@ -84,7 +84,7 @@ OV_DLLFNCEXPORT void TGraphTest_dijkstraTest_typemethod(
 			}
 				Catch(e)
 	{
-		ov_logfile_error("mega catch");
+		ov_logfile_error("dijkstraTest catch");
 	}
 	return;
 }

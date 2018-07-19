@@ -64,7 +64,7 @@ TEST(assozierer, assozierer_default) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assozierer/case_default/visualization");
+	gitter2png(gitter, "assoziererTest/case_default_vis");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
@@ -80,7 +80,7 @@ TEST(assozierer, assozierer_2neighbour) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assozierer/case_2neighbour_fix/visualization");
+	gitter2png(gitter, "assoziererTest/case_2neighbour_fix_vis");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
@@ -97,7 +97,7 @@ TEST(assozierer, assozierer_schieber) {
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(case_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assozierer/case_schieber/visualization");
+	gitter2png(gitter, "assoziererTest/case_schieber_vis");
 
 	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
 }
@@ -229,7 +229,7 @@ OV_TIME *pltc) {
 			}
 				Catch(e)
 	{
-		ov_logfile_error("mega catch");
+		ov_logfile_error("assoziererTest fail");
 	}
 	return;
 }
