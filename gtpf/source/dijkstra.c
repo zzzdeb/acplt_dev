@@ -135,6 +135,7 @@ OV_INSTPTR_TGraph_Node getSelfNode(OV_INSTPTR_wandelbareTopologie_Node proot) {
 
 OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 	OV_RESULT result = OV_ERR_OK;
+	ov_memstack_lock();
 // param check
 //	OV_INSTPTR_TGraph_graph pgraph = ov_path_getobjectpointer(pinst->v_topologie,
 //		2);
@@ -164,6 +165,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 // param check
 	if(!proot) {
 		ov_logfile_error("start object could not be found");
+		ov_memstack_unlock();
 		Throw(OV_ERR_BADPARAM);
 	}
 	node = getSelfNode(proot);
@@ -187,6 +189,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 		getNodeAction(pathStr, &pobj, &action, &param);
 		if(!pobj) {
 			ov_logfile_error("recipe[%d] could not be found", i);
+			ov_memstack_unlock();
 			return OV_ERR_BADPARAM;
 		}
 		ptarget = getSelfNode(pobj);
@@ -194,6 +197,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 		if(!path) {
 			ov_logfile_warning("no path between %s %s", psource->v_identifier,
 				ptarget->v_identifier);
+			ov_memstack_unlock();
 			return 0;
 		}
 		if(listLength(path)) {
@@ -227,6 +231,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 		}
 		psource = ptarget;
 	}
+	ov_memstack_unlock();
 	return 0;
 }
 
