@@ -248,7 +248,7 @@ OV_DLLFNCEXPORT Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 	w1Gitter->pWagon = w1;
 
 	//todo: zur zeit keine verwendung von einzel bilder
-	return w1Gitter;
+//	return w1Gitter;
 
 	int XRATE = 1;
 	int YRATE = 1;
