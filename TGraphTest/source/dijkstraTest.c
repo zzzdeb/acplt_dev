@@ -52,10 +52,15 @@ TEST( dijkstra, dijkstra_default) {
 	OV_STRING case_path = ovunity_getCasePath(gpinst,"case_default");
 	ovunity_loadEnv(gpinst, "default.json", case_path);
 //	gpinst
+	OV_STRING path = NULL;
+	ov_string_print(&path, "%s.%s", case_path, "Nodes/PE025_0", 2);
 	OV_INSTPTR_TGraph_Node source = (void*) ov_path_getobjectpointer(
-		"/TechUnits/TGraphTest.obj.Nodes/PE025_0", 2);
+		path, 2);
+	ov_string_print(&path, "%s.%s", case_path, "Nodes/PE021_0", 2);
 	OV_INSTPTR_TGraph_Node target = (void*) ov_path_getobjectpointer(
-		"/TechUnits/TGraphTest.obj.Nodes/PE021_0", 2);
+		path, 2);
+	ov_string_setvalue(&case_path, NULL);
+	ov_string_setvalue(&path, NULL);
 	dijkstra_get_path(source, target);
 }
 

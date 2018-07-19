@@ -70,6 +70,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtpfTest/ovunity/build/linux}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtpfTest/gtpf/build/linux}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gtpfTest/ovunity/build/nt}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.74887573" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

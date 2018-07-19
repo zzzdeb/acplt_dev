@@ -64,6 +64,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TGraphTest/geometry2d/build/linux}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TGraphTest/TGraph/build/linux}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TGraphTest/ovunity/build/nt}&quot;"/>
 								</option>
 								<option id="gnu.c.link.option.libs.1225018453" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="unity"/>

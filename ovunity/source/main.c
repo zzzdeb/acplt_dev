@@ -162,8 +162,8 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
  */
 OV_DLLFNCEXPORT OV_STRING ovunity_getCasePath(const OV_INSTPTR_ovunity_main pinst,
 		const OV_STRING case_name) {
-	OV_STRING path = ov_path_getcanonicalpath((void*) pinst, 2);
-	ov_string_print(&path, "%s/%s", path, case_name);
+	OV_STRING path = NULL;
+	ov_string_print(&path, "%s/%s", ov_path_getcanonicalpath((void*) pinst, 2), case_name);
 	return path;
 }
 
