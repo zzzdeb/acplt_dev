@@ -1,6 +1,7 @@
 #ifndef ressourcesMonitor_OVT_INCLUDED
 #define ressourcesMonitor_OVT_INCLUDED
 
+#include <dns_sd.h>
 /* 
 	Define your data types here. 
 */

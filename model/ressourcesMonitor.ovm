@@ -59,4 +59,20 @@ LIBRARY ressourcesMonitor
 		END_OPERATIONS;
 	END_CLASS;
 	
+	/**
+		A functionblock to register this OV instance with Avahi or Bonjour via libdns_sd for network discovery via mDNS.
+	*/
+	CLASS mDNSRegisterer : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			register : BOOL FLAGS="i" COMMENT="The server is only registered if True." INITIALVALUE=TRUE;
+			sdRef : C_TYPE <DNSServiceRef>;
+			isRegistered : BOOL FLAGS="o" COMMENT="True when the server has successfully been registered";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 END_LIBRARY;
