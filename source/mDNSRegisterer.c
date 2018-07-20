@@ -89,3 +89,23 @@ OV_DLLFNCEXPORT void ressourcesMonitor_mDNSRegisterer_typemethod(
     }
 }
 
+
+OV_DLLFNCEXPORT void ressourcesMonitor_mDNSRegisterer_shutdown(
+	OV_INSTPTR_ov_object 	pobj
+) {
+    /*
+    *   local variables
+    */
+    OV_INSTPTR_ressourcesMonitor_mDNSRegisterer pinst = Ov_StaticPtrCast(ressourcesMonitor_mDNSRegisterer, pobj);
+
+    if (pinst->v_isRegistered) {
+		DNSServiceRefDeallocate(pinst->v_sdRef);
+		pinst->v_isRegistered = FALSE;
+	}
+
+    /* set the object's state to "shut down" */
+    fb_functionblock_shutdown(pobj);
+
+    return;
+}
+
