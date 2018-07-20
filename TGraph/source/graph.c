@@ -54,7 +54,6 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 	OV_RESULT res = 0;
 	Position_p p1 = positionFromNode(n1);
 	Position_p p2 = positionFromNode(n2);
-	OV_SINGLE dist = pointDist(&p1->pos, &p2->pos);
 
 	OV_INSTPTR_TGraph_Edge edge = NULL;
 	OV_STRING name = NULL;
@@ -67,7 +66,6 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 	ov_string_setvalue(&name, NULL);
 	Ov_Link(TGraph_Start, n1, edge);
 	Ov_Link(TGraph_End, n2, edge);
-	edge->v_Length = dist;
 
 	//getting direction
 	Position_p diff = positionSubstract(p2, p1);

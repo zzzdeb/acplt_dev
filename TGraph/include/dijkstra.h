@@ -65,17 +65,17 @@ OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist) {
 //dijkstra
 list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 	/*param check*/
-	if(!n1 || !n2)
-		Throw(OV_ERR_BADPARAM);
+	if(!n1 || !n2) Throw(OV_ERR_BADPARAM);
 	/* if target == source */
-	if(n1==n2){
+	if(n1 == n2) {
 		return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
 	}
 
-	OV_STRING path = ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object,n1), 2);
+	OV_STRING path = ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, n1), 2);
 	OV_PATH resolved;
 	ov_path_resolve(&resolved, NULL, path, 2);
-	OV_INSTPTR_TGraph_graph Graph = Ov_StaticPtrCast(TGraph_graph, resolved.elements[resolved.size-3].pobj);
+	OV_INSTPTR_TGraph_graph Graph = Ov_StaticPtrCast(TGraph_graph,
+		resolved.elements[resolved.size - 3].pobj);
 
 	OV_INSTPTR_ov_domain Nodes = &(Graph->p_Nodes);
 	OV_INT source = -1;
@@ -111,14 +111,14 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 		dist[i] = -1;
 	}
 //	OV_INT adj[][] = allocate(n * n);
-	OV_INT** adj = ov_memstack_alloc(n * sizeof(OV_INT*));
+	OV_SINGLE** adj = ov_memstack_alloc(n * sizeof(OV_SINGLE*));
 	for (OV_UINT i = 0; i < n; ++i) {
-		adj[i] = ov_memstack_alloc(n * sizeof(OV_INT));
+		adj[i] = ov_memstack_alloc(n * sizeof(OV_SINGLE));
 		for (OV_UINT j = 0; j < n; ++j) {
 			OV_INSTPTR_TGraph_Edge edge = TGraph_graph_areNodesLinked(V[i], V[j]);
 			if(edge) {
-				OV_SINGLE tmp = TGraph_Edge_totalCost_get(edge);
-				adj[i][j] = TGraph_Edge_totalCost_get(edge);
+				OV_SINGLE* costs = TGraph_Edge_totalCost_get(edge, &tmp1);
+				adj[i][j] = costs[0] > costs[1] ? costs[0] : costs[1];
 			} else
 				adj[i][j] = -1;
 		}

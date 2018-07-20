@@ -9,8 +9,8 @@ lc = $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(s
 SERVERSTARTKEYS = -w fb -w ksbase -w gtpfTest
 #/Project config parameters that are accessed by Eclipse
 MAKMAKOPTIONS = 
-EXTRA_CC_FLAGS = 
-EXTRA_LIBS = 
+EXTRA_CC_FLAGS = -I../../../cexception/ -I../../../unity/ 
+EXTRA_LIBS = libcexception.dll libunity.dll
 LD_FLAGS = 
 COMPILER = GCC
 PREBUILD = ../prebuild.tcl
