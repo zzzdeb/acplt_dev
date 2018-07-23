@@ -57,7 +57,7 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 			htons(7509u),	/* port */ // FIXME: get actual server port
 			0,			/* txtLen */
 			NULL,		/* txtRecord */
-			NULL,		/* callBack */
+			NULL,		/* callBack */ // TODO: Use callback to get asynchronous errors
 			NULL		/* context */
 	);
 
@@ -80,7 +80,6 @@ OV_DLLFNCEXPORT void ressourcesMonitor_mDNSRegisterer_typemethod(
     */
     OV_INSTPTR_ressourcesMonitor_mDNSRegisterer pinst = Ov_StaticPtrCast(ressourcesMonitor_mDNSRegisterer, pfb);
 
-    // FIXME: Make v_isRegistered and v_pending thread safe?
     if (pinst->v_register && !pinst->v_isRegistered) {
     	registerWithBonjour(pinst);
     } else if (!pinst->v_register && pinst->v_isRegistered) {

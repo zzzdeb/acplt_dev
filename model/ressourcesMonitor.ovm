@@ -60,6 +60,25 @@ LIBRARY ressourcesMonitor
 	END_CLASS;
 	
 	/**
+		A functionblock to discover other OV Servers with OPC UA Server on the network, using the OPC UA Local Discovery
+		Server with Multicast Extenstions (UA LDS-ME) and register the local OPC UA Server for discovery.
+	*/
+	CLASS ovDiscoverer : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			discover : BOOL FLAGS="i" COMMENT="Only tries to discover other servers when set to True." INITIALVALUE=TRUE;
+			sdRef : C_TYPE <DNSServiceRef>;
+			isDiscovering : BOOL FLAGS="o" COMMENT="True as long as a valid DNSServiceBrowse operation is running.";
+			ovServers : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS name, DNS regtype, DNS domain, OV host, OV Port, OV servername";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			shutdown : C_FUNCTION <OV_FNC_SHUTDOWN>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
 		A functionblock to register this OV instance with Avahi or Bonjour via libdns_sd for network discovery via mDNS.
 	*/
 	CLASS mDNSRegisterer : CLASS fb/functionblock

@@ -1,9 +1,17 @@
 #ifndef ressourcesMonitor_OVT_INCLUDED
 #define ressourcesMonitor_OVT_INCLUDED
 
-#include <dns_sd.h>
 /* 
 	Define your data types here. 
 */
+#include <dns_sd.h>
+
+typedef struct {
+	OV_INSTPTR_ov_object	pinst;
+    DNSServiceRef			sdRef;
+	const char				*serviceName;
+    const char				*regtype;
+    const char				*domain;
+} resolveContext;
 
 #endif
