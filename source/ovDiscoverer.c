@@ -80,6 +80,8 @@ static void DNSServiceBrowseCallback(
 		// Create resolveContext to be passed to the response Callback
 		resolveContext *pContext = (resolveContext*) malloc(sizeof(resolveContext));
 		pContext->pinst = Ov_PtrUpCast(ov_object, pinst);
+		pContext->terminate = FALSE;
+		pContext->next = NULL;
 		// Prepend resloveContext to linked list to get sdRef's socket checked for updates
 		pContext->next = pinst->v_resolveContexts;
 		pinst->v_resolveContexts = pContext;
@@ -181,6 +183,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_typemethod(
 					if (select(sock + 1, &sockset, NULL, NULL, &tv) > 0 && FD_ISSET(sock, &sockset)) {
 						DNSServiceProcessResult(resContext->sdRef);
 					}
+	    			previous = resContext;
     			}
 
 				resContext = next;
