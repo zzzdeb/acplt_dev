@@ -6,12 +6,18 @@
 */
 #include <dns_sd.h>
 
-typedef struct {
+typedef struct resolveContext resolveContext;
+
+struct resolveContext {
 	OV_INSTPTR_ov_object	pinst;
     DNSServiceRef			sdRef;
 	const char				*serviceName;
     const char				*regtype;
     const char				*domain;
-} resolveContext;
+    OV_BOOL					terminate;
+    resolveContext			*next;
+};
+
+typedef resolveContext* pResolveContext;
 
 #endif

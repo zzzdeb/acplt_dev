@@ -28,6 +28,7 @@
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <fcntl.h>
+#include <arpa/inet.h>
 
 
 static void DNSServiceResolveCallback(
@@ -44,12 +45,12 @@ static void DNSServiceResolveCallback(
 {
 	resolveContext *pContext = (resolveContext*) context;
 
-	ov_logfile_info("New OV server discovered: %s.%s%s at %s:%hu", pContext->serviceName, pContext->regtype,
-			pContext->domain, hosttarget, port);
+	ov_logfile_info("New OV server discovered: %s at %s:%hu", fullname, hosttarget, ntohs(port));
+	// TODO lookup IP address (gethostbyname)
 	// TODO add server to list
 
-	DNSServiceRefDeallocate(pContext->sdRef);
-	free(pContext);
+	// Set terminate flag to let resolveContext be terminated by update loop
+	pContext->terminate = TRUE;
 }
 
 
@@ -69,24 +70,29 @@ static void DNSServiceBrowseCallback(
 	if (errorCode != kDNSServiceErr_NoError)
 		return;
 
+	OV_INSTPTR_ressourcesMonitor_ovDiscoverer pinst = (OV_INSTPTR_ressourcesMonitor_ovDiscoverer)context;
+
 	// Function is called due to a new server
 	if (flags & kDNSServiceFlagsAdd) {
+		// Create resolveContext to be passed to the response Callback
 		resolveContext *pContext = (resolveContext*) malloc(sizeof(resolveContext));
-		pContext->pinst = (OV_INSTPTR_ov_object)context;
+		pContext->pinst = Ov_PtrUpCast(ov_object, pinst);
 		pContext->serviceName = serviceName;
 		pContext->regtype = regtype;
 		pContext->domain = replyDomain;
+		// Prepend resloveContext to linked list to get sdRef's socket checked for updates
+		pContext->next = pinst->v_resolveContexts;
+		pinst->v_resolveContexts = pContext;
 
 		DNSServiceErrorType res = DNSServiceResolve(&pContext->sdRef, 0, interfaceIndex, serviceName, regtype,
 				replyDomain, &DNSServiceResolveCallback, pContext);
-		// FIXME: We need to call DNSServiceProcessResult in a non-blocking way for pContext->sdRef. This will be tricky.
 		if (res != kDNSServiceErr_NoError) {
 			ov_logfile_error("Could not resolve service %s.%s%s. DNSServiceResolve returned error code %hi",
 						serviceName, regtype, replyDomain, res);
 		}
 	}
 	// else
-		// TODO search current host list for serviceName\tregtype\tdomain and delete entry
+		// TODO search current host list for fullname\tinterfaceIndex and delete entry
 }
 
 
@@ -95,17 +101,6 @@ static OV_RESULT startBrowsingServers(OV_INSTPTR_ressourcesMonitor_ovDiscoverer 
 			pinst);
 	if (res == kDNSServiceErr_NoError) {
 		pinst->v_isDiscovering = TRUE;
-		// Make socket non-blocking
-		int sock = DNSServiceRefSockFD(pinst->v_sdRef);
-		int flags;
-#if defined(O_NONBLOCK)
-		if (-1 == (flags = fcntl(sock, F_GETFL, 0)))
-			flags = 0;
-		fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-#else
-		flags = 1;
-		ioctl(sock, FIOBIO, &flags);
-#endif
 		return OV_ERR_OK;
 	} else {
 		return OV_ERR_GENERIC;
@@ -138,6 +133,33 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_typemethod(
     		if (select(sock + 1, &sockset, NULL, NULL, &tv) > 0 && FD_ISSET(sock, &sockset)) {
     			DNSServiceProcessResult(pinst->v_sdRef);
     		}
+
+    		// Check sockets of DNSServiceResolve calls for update
+    		resolveContext *resContext = pinst->v_resolveContexts;
+    		resolveContext *previous = NULL;
+    		while (resContext) {
+    			resolveContext *next = resContext->next;
+    			// Deconstruct and delete the reslolveContext if it is set for termination (and close the gap in the linked list)
+    			if (resContext->terminate) {
+    				DNSServiceRefDeallocate(resContext->sdRef);
+    				free(resContext);
+    				if (previous)
+    					previous->next = next;
+					else
+						pinst->v_resolveContexts = next;
+
+    			// Else check it for updates
+    			} else {
+					sock = DNSServiceRefSockFD(resContext->sdRef);
+					FD_SET(sock, &sockset);
+					if (select(sock + 1, &sockset, NULL, NULL, &tv) > 0 && FD_ISSET(sock, &sockset)) {
+						DNSServiceProcessResult(resContext->sdRef);
+					}
+    			}
+
+				resContext = next;
+    		}
+
     	} else {
     		// Deallocate socket to mDNS daemon
 			DNSServiceRefDeallocate(pinst->v_sdRef);
@@ -158,6 +180,15 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_shutdown(
     if (pinst->v_isDiscovering) {
 		DNSServiceRefDeallocate(pinst->v_sdRef);
 		pinst->v_isDiscovering = FALSE;
+
+		resolveContext *resContext = pinst->v_resolveContexts;
+		while (resContext) {
+			resolveContext *next = resContext->next;
+			DNSServiceRefDeallocate(resContext->sdRef);
+			free(resContext);
+			resContext = next;
+		}
+		pinst->v_resolveContexts = NULL;
 	}
 
     /* set the object's state to "shut down" */

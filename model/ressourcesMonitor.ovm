@@ -67,9 +67,10 @@ LIBRARY ressourcesMonitor
 		IS_INSTANTIABLE;
 		VARIABLES
 			discover : BOOL FLAGS="i" COMMENT="Only tries to discover other servers when set to True." INITIALVALUE=TRUE;
-			sdRef : C_TYPE <DNSServiceRef>;
+			sdRef : C_TYPE <DNSServiceRef> COMMENT="mDNS deamon service reference for long running DNSServiceBrowse.";
+			resolveContexts : C_TYPE <pResolveContext> COMMENT="Linked list of custom context of DNSServiceResolve calls, used to check their sdRefs' sockets for updates.";
 			isDiscovering : BOOL FLAGS="o" COMMENT="True as long as a valid DNSServiceBrowse operation is running.";
-			ovServers : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS name, DNS regtype, DNS domain, OV host, OV Port, OV servername";
+			ovServers : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
 		END_VARIABLES;
 		
 		OPERATIONS
