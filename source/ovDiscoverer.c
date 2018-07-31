@@ -45,7 +45,8 @@ static void DNSServiceResolveCallback(
 {
 	resolveContext *pContext = (resolveContext*) context;
 
-	ov_logfile_info("New OV server discovered: %s at %s:%hu", fullname, hosttarget, ntohs(port));
+	ov_logfile_info("New OV server discovered: %s at %s:%hu (via Iface %lu)", fullname, hosttarget, ntohs(port),
+			interfaceIndex);
 	// TODO lookup IP address (gethostbyname)
 	// TODO add server to list
 
@@ -71,15 +72,14 @@ static void DNSServiceBrowseCallback(
 		return;
 
 	OV_INSTPTR_ressourcesMonitor_ovDiscoverer pinst = (OV_INSTPTR_ressourcesMonitor_ovDiscoverer)context;
+	char fullname[kDNSServiceMaxDomainName];
+	DNSServiceConstructFullName(fullname, serviceName, regtype, replyDomain);
 
 	// Function is called due to a new server
 	if (flags & kDNSServiceFlagsAdd) {
 		// Create resolveContext to be passed to the response Callback
 		resolveContext *pContext = (resolveContext*) malloc(sizeof(resolveContext));
 		pContext->pinst = Ov_PtrUpCast(ov_object, pinst);
-		pContext->serviceName = serviceName;
-		pContext->regtype = regtype;
-		pContext->domain = replyDomain;
 		// Prepend resloveContext to linked list to get sdRef's socket checked for updates
 		pContext->next = pinst->v_resolveContexts;
 		pinst->v_resolveContexts = pContext;
@@ -89,9 +89,10 @@ static void DNSServiceBrowseCallback(
 		if (res != kDNSServiceErr_NoError) {
 			ov_logfile_error("Could not resolve service %s. DNSServiceResolve returned error code %hi", fullname, res);
 		}
-	}
-	// else
+	} else {
+		ov_logfile_info("Lost connection to OV Server %s (via Iface %lu)", fullname, interfaceIndex);
 		// TODO search current host list for fullname\tinterfaceIndex and delete entry
+	}
 }
 
 
