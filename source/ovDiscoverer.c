@@ -30,6 +30,62 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 
+/**
+ * Add a discovered ov server to the vector of servers.
+ *
+ * This function extracts the OV servername from the given DNS fullname, looks up the IP of the discovered hostname,
+ * resizes the server list and adds the data in the correct format.
+ *
+ * @param list The string vector (server list) to add the entry to
+ * @param fullname The DNS fullname of the discovered server
+ * @param interfaceIndex The interfaceIndex (according to mDNS service)
+ * @param hostname The hostname where the OV server is located (as resolved via mDNS)
+ * @param port The port of the OV instance (in host byte order!)
+ */
+static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t interfaceIndex, const char *hostname,
+		uint16_t port) {
+	// TODO extract OV server name
+	// TODO lookup IP
+	// TODO convert IP to string
+
+	// Resize string vector and add entry as tab separated string: fullname, interfaceIndex, ip, port, servername
+	Ov_SetDynamicVectorLength(list, list->veclen+1, STRING);
+	ov_string_print(&list->value[list->veclen-1], "%s\t%u\t%s\t%hu\t%s", fullname, interfaceIndex, "TODO", port, "TODO");
+}
+
+/**
+ * Remove an OV server from the list of discovered servers.
+ *
+ * @param list The string vector (server list) to add the entry to
+ * @param fullname The DNS fullname of the discovered server (without trailing dot)
+ * @param interfaceIndex The interfaceIndex (according to mDNS service)
+ */
+static void removeServerFromList(OV_STRING_VEC *list, const char *fullname, uint32_t interfaceIndex) {
+	// Build search string
+	char searchVal[kDNSServiceMaxDomainName + 2 + 10];
+	int searchLen = snprintf(searchVal, kDNSServiceMaxDomainName + 2 + 10, "%s.\t%u\t", fullname, interfaceIndex);
+
+	// Swap all strings matching the given search string to the end of the string vector
+	unsigned int newIndex = 0, oldIndex = 0;
+	while(oldIndex < list->veclen) {
+		if (strncmp(list->value[oldIndex], searchVal, searchLen) != 0) {
+			// Entry should be kept. If neccessary, swap it to a new place
+			if (oldIndex != newIndex){
+				// Swap strings
+				OV_STRING tmp = list->value[oldIndex];
+				list->value[oldIndex] = list->value[newIndex];
+				list->value[newIndex] = tmp;
+			}
+			++newIndex;
+		}
+		++oldIndex;
+	}
+
+	// shorten list to length of new index. This will automatically free all deleted strings (which we swapped into
+	// the range behind newIndex)
+	Ov_SetDynamicVectorLength(list, newIndex, STRING);
+}
+
 
 static void DNSServiceResolveCallback(
 		DNSServiceRef                       sdRef,
@@ -45,10 +101,12 @@ static void DNSServiceResolveCallback(
 {
 	resolveContext *pContext = (resolveContext*) context;
 
-	ov_logfile_info("New OV server discovered: %s at %s:%hu (via Iface %lu)", fullname, hosttarget, ntohs(port),
+	ov_logfile_info("New OV server discovered: %s at %s:%hu (via Iface %u)", fullname, hosttarget, ntohs(port),
 			interfaceIndex);
-	// TODO lookup IP address (gethostbyname)
-	// TODO add server to list
+
+	// Add entry to list
+	addServerToList(&Ov_DynamicPtrCast(ressourcesMonitor_ovDiscoverer, pContext->pinst)->v_ovServers,
+			fullname, interfaceIndex, hosttarget, ntohs(port));
 
 	// Set terminate flag to let resolveContext be terminated by update loop
 	pContext->terminate = TRUE;
@@ -92,8 +150,8 @@ static void DNSServiceBrowseCallback(
 			ov_logfile_error("Could not resolve service %s. DNSServiceResolve returned error code %hi", fullname, res);
 		}
 	} else {
-		ov_logfile_info("Lost connection to OV Server %s (via Iface %lu)", fullname, interfaceIndex);
-		// TODO search current host list for fullname\tinterfaceIndex and delete entry
+		ov_logfile_info("Lost connection to OV Server %s (via Iface %u)", fullname, interfaceIndex);
+		removeServerFromList(&pinst->v_ovServers, fullname, interfaceIndex);
 	}
 }
 
