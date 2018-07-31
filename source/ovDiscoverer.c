@@ -87,8 +87,7 @@ static void DNSServiceBrowseCallback(
 		DNSServiceErrorType res = DNSServiceResolve(&pContext->sdRef, 0, interfaceIndex, serviceName, regtype,
 				replyDomain, &DNSServiceResolveCallback, pContext);
 		if (res != kDNSServiceErr_NoError) {
-			ov_logfile_error("Could not resolve service %s.%s%s. DNSServiceResolve returned error code %hi",
-						serviceName, regtype, replyDomain, res);
+			ov_logfile_error("Could not resolve service %s. DNSServiceResolve returned error code %hi", fullname, res);
 		}
 	}
 	// else
@@ -105,6 +104,32 @@ static OV_RESULT startBrowsingServers(OV_INSTPTR_ressourcesMonitor_ovDiscoverer 
 	} else {
 		return OV_ERR_GENERIC;
 	}
+}
+
+
+/**
+ * Uninlined code to stop the mDNS based browsing for OV servers.
+ *
+ * This function deallocates the sdRef used for DNSServiceBrowse and all open sdRefs used for DNSServiceBrowseCallback.
+ * It also clears the list of discovered servers.
+ *
+ * @param pinst The ovDiscoverer instance to clear its ressources
+ */
+static void stopBrowsingServers(OV_INSTPTR_ressourcesMonitor_ovDiscoverer pinst) {
+	// Deallocate socket to mDNS daemon
+	DNSServiceRefDeallocate(pinst->v_sdRef);
+	pinst->v_isDiscovering = FALSE;
+	// Deallocate sockets for DNSReslove calls
+	resolveContext* resContext = pinst->v_resolveContexts;
+	while (resContext) {
+		resolveContext* next = resContext->next;
+		DNSServiceRefDeallocate(resContext->sdRef);
+		free(resContext);
+		resContext = next;
+	}
+	pinst->v_resolveContexts = NULL;
+	// Delete discovered servers from list
+	Ov_SetDynamicVectorLength(&pinst->v_ovServers, 0, STRING);
 }
 
 
@@ -134,7 +159,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_typemethod(
     			DNSServiceProcessResult(pinst->v_sdRef);
     		}
 
-    		// Check sockets of DNSServiceResolve calls for update
+    		// Check sockets of DNSServiceResolve calls for new data from mDNS daemon or planned deletion
     		resolveContext *resContext = pinst->v_resolveContexts;
     		resolveContext *previous = NULL;
     		while (resContext) {
@@ -161,9 +186,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_typemethod(
     		}
 
     	} else {
-    		// Deallocate socket to mDNS daemon
-			DNSServiceRefDeallocate(pinst->v_sdRef);
-			pinst->v_isDiscovering = FALSE;
+			stopBrowsingServers(pinst);
     	}
     }
 }
@@ -177,19 +200,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_ovDiscoverer_shutdown(
     */
     OV_INSTPTR_ressourcesMonitor_ovDiscoverer pinst = Ov_StaticPtrCast(ressourcesMonitor_ovDiscoverer, pobj);
 
-    if (pinst->v_isDiscovering) {
-		DNSServiceRefDeallocate(pinst->v_sdRef);
-		pinst->v_isDiscovering = FALSE;
-
-		resolveContext *resContext = pinst->v_resolveContexts;
-		while (resContext) {
-			resolveContext *next = resContext->next;
-			DNSServiceRefDeallocate(resContext->sdRef);
-			free(resContext);
-			resContext = next;
-		}
-		pinst->v_resolveContexts = NULL;
-	}
+    stopBrowsingServers(pinst);
 
     /* set the object's state to "shut down" */
     fb_functionblock_shutdown(pobj);
