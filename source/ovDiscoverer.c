@@ -26,9 +26,12 @@
 
 #include <dns_sd.h>
 #include <sys/select.h>
-#include <sys/socket.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <ifaddrs.h>
 
 /**
  * Add a discovered ov server to the vector of servers.
@@ -44,19 +47,52 @@
  */
 static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t interfaceIndex, const char *hostname,
 		uint16_t port) {
-	// TODO extract OV server name
-	// TODO lookup IP
-	// TODO convert IP to string
+	// Search list for identical entry and skip in this case
+	char searchVal[kDNSServiceMaxDomainName + 2 + 10];
+	int searchLen = snprintf(searchVal, kDNSServiceMaxDomainName + 2 + 10, "%s\t%u\t", fullname, interfaceIndex);
+	for (size_t i = 0; i < list->veclen; ++i) {
+		if (strncmp(list->value[i], searchVal, searchLen) == 0) {
+			return;
+		}
+	}
+
+	// Extract OV server name from DNS fullname
+	char servername[OV_NAME_MAXLEN+1] = "";
+	char *delim = strstr(fullname, "\\.");
+	if (delim) {
+		strncpy(servername, fullname, delim-fullname);
+	}
+
+	// Lookup IP of OV server's host
+	// This requires _POSIX_C_SOURCE=200112L
+	// It also requires in most cases, that <hostname>.local hostnames can be resolved properly. This may require the
+	// system's DNS to be configured for resolution via mDNS.
+	struct addrinfo *addr;
+	char addr_str[INET6_ADDRSTRLEN] = "";
+	int res = getaddrinfo(hostname, NULL, NULL, &addr);
+	if (res == 0) {
+		// convert IP to string
+		res = getnameinfo(addr->ai_addr, sizeof(struct addrinfo), addr_str, INET6_ADDRSTRLEN, NULL,
+				0, NI_NUMERICHOST);
+		freeaddrinfo(addr);
+	} else {
+		ov_logfile_warning("Could not resolve IP address of OV server host %s: %s", hostname, gai_strerror(res));
+	}
 
 	// Resize string vector and add entry as tab separated string: fullname, interfaceIndex, ip, port, servername
 	Ov_SetDynamicVectorLength(list, list->veclen+1, STRING);
-	ov_string_print(&list->value[list->veclen-1], "%s\t%u\t%s\t%hu\t%s", fullname, interfaceIndex, "TODO", port, "TODO");
+	ov_string_print(&list->value[list->veclen-1], "%s\t%u\t%s\t%hu\t%s",
+			fullname,
+			interfaceIndex,
+			addr_str[0] ? addr_str : hostname,
+			port,
+			servername);
 }
 
 /**
  * Remove an OV server from the list of discovered servers.
  *
- * @param list The string vector (server list) to add the entry to
+ * @param list The string vector (server list) to remove the entry from
  * @param fullname The DNS fullname of the discovered server (without trailing dot)
  * @param interfaceIndex The interfaceIndex (according to mDNS service)
  */
