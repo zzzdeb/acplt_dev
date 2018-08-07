@@ -45,11 +45,26 @@ else
 GCC_BIN_PREFIX		= 
 endif
 
+ifdef OV_ARCH
+ifeq "$(OV_ARCH)" "x86"
+OV_ARCH_BITWIDTH_FLAG	= -m32
+else ifeq "$(OV_ARCH)" "x86_64"
+OV_ARCH_BITWIDTH_FLAG	= -m64
+else ifeq "$(OV_ARCH)" "arm"
+OV_ARCH_BITWIDTH_FLAG	=
+else
+$(error unknown arch: $(OV_ARCH); valid options are {x86, x86_64, arm})
+endif # ifeq OV_ARCH
+else
+OV_ARCH_BITWIDTH_FLAG	= -m64
+endif # ifdef OV_ARCH
+
+
 CC		?= $(GCC_BIN_PREFIX)gcc
 ifneq ($(TARGET), debug)
 	OPT = -O2 -fno-strict-aliasing
 endif
-CC_FLAGS	= -g -std=c99 -m64 -fPIC -Wall -Wno-attributes $(OPT) $(EXTRA_CC_FLAGS)
+CC_FLAGS	= -g -std=c99 $(OV_ARCH_BITWIDTH_FLAG) -fPIC -Wall -Wno-attributes $(OPT) $(EXTRA_CC_FLAGS)
 GCCVERSIONGTEQ4 := $(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 4)
 ifeq "$(GCCVERSIONGTEQ4)" "1"
     CC_FLAGS += -fvisibility=hidden
@@ -57,7 +72,7 @@ endif
 CC_DEFINES	= $(DEFINES)
 CC_INCLUDES	= $(INCLUDES) -I.
 COMPILE_C	= $(CC) $(CC_FLAGS) $(CC_DEFINES) $(CC_INCLUDES) -c
-LD		= $(CC) -shared -m64
+LD		= $(CC) -shared $(OV_ARCH_BITWIDTH_FLAG)
 AR			= $(GCC_BIN_PREFIX)ar
 RANLIB		= $(GCC_BIN_PREFIX)ranlib
 STRIP		= $(GCC_BIN_PREFIX)strip
