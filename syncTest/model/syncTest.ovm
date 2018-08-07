@@ -1,0 +1,38 @@
+#include "ov.ovm"
+#include "fb.ovm"
+#include "ovunity.ovm"
+#include "sync.ovm"
+
+LIBRARY syncTest
+	VERSION   = "V0.1 (02-Aug-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "PLT RWTH Aachen";
+	COMMENT   = "sync tester";
+	
+	/**
+		Documentation of sscSyncTest.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS sscSyncTest : CLASS ovunity/main
+		IS_INSTANTIABLE;
+		VARIABLES
+		END_VARIABLES;
+		PARTS
+			obj: CLASS sync/sscSync;
+		END_PARTS;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		Add associations and their documentation here.
+		Association syntax is:
+	*/
+	//ASSOCIATION assocName : ONE_TO_MANY
+	//	PARENT parentVarName : CLASS ov/object;
+	//	CHILD  childVarName : CLASS ov/object;
+	//END_ASSOCIATION;
+	
+END_LIBRARY;

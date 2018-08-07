@@ -1,0 +1,100 @@
+#include "ov.ovm"
+#include "fb.ovm"
+#include "ovhelper.ovm"
+#include "CTree.ovm"
+#include "fbcomlib.ovm"
+#include "ssc.ovm"
+
+LIBRARY sync
+	VERSION   = "V0.1 (DD-Mon-YYYY)";
+	AUTHOR    = "";
+	COPYRIGHT = "";
+	COMMENT   = "";
+	
+	
+	CLASS	dsync					:	CLASS	fb/functionblock
+		IS_INSTANTIABLE;
+		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
+		VARIABLES
+			/* Input *************************************************/
+			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
+			targetPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
+			
+			holdConnection	:	BOOL FLAGS="i"
+				COMMENT			=	"Tell client not to close the connection after each request"
+				INITIALVALUE	=	FALSE;
+			reset		:	BOOL	HAS_SET_ACCESSOR
+				FLAGS="i"
+				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				INITIALVALUE	= FALSE;
+			
+			status		:	INT FLAGS="o" 
+				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed;"
+				INITIALVALUE	=	0;
+				
+		END_VARIABLES;
+		PARTS
+			transport	:	CLASS CTree/Transport;
+			upload		:	CLASS CTree/Upload;
+		END_PARTS;
+		OPERATIONS
+			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
+			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
+			//submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
+			//getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
+			//prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
+			//genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
+			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	CLASS	sscSync					:	CLASS	fb/functionblock
+		IS_INSTANTIABLE;
+		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
+		VARIABLES
+			/* Input *************************************************/
+			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of root object." INITIALVALUE="";
+			path:	STRING FLAGS="i" COMMENT="variable path of root object." INITIALVALUE="";
+			
+			holdConnection	:	BOOL FLAGS="i"
+				COMMENT			=	"Tell client not to close the connection after each request"
+				INITIALVALUE	=	FALSE;
+		//	reset		:	BOOL	HAS_SET_ACCESSOR
+			//	FLAGS="i"
+				//COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
+				//INITIALVALUE	= FALSE;
+			
+			status		:	INT FLAGS="o" 
+				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed;"
+				INITIALVALUE	=	0;
+			result		:	INT FLAGS="o"
+				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
+				INITIALVALUE	=	0;	
+		END_VARIABLES;
+		PARTS
+			setVar: CLASS fbcomlib/setVar;
+		END_PARTS;
+		OPERATIONS
+			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			constructor			: C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	CLASS sscVar	: CLASS fbcomlib/pkgSetVariable
+		IS_INSTANTIABLE;
+		COMMENT = "Extention of fbcomlib/pkgSetVariable. Can show if value changed since last set";
+		VARIABLES
+			changed: BOOL FLAGS="o" COMMENT="indicates if value changed since last set" INITIALVALUE=TRUE;
+			port: ANY HAS_SET_ACCESSOR FLAGS="i" COMMENT="";
+		END_VARIABLES;
+		OPERATIONS
+			//typdemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	ASSOCIATION	sscSyncAssoc	: ONE_TO_MANY
+		PARENT syncParent	: CLASS sync/sscSync;
+		CHILD	syncChild		: CLASS ssc/SequentialStateChart;
+	END_ASSOCIATION;
+	
+END_LIBRARY;
