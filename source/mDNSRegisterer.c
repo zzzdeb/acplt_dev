@@ -23,6 +23,7 @@
 
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_vendortree.h"
 
 #define __USE_XOPEN_EXTENDED
 #include <dns_sd.h>
@@ -45,6 +46,12 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 	servicename[serverNameLen] = '.';
 	strncat(servicename + serverNameLen + 1, hostname, HOST_NAME_MAX);
 
+	// Get KS server port (guess 7509 if unspecified)
+	OV_INT port = ov_vendortree_getport();
+	if (port < 1) {
+		port = 7509;
+	}
+
 	// Register at Bonjour/Avahi
 	DNSServiceErrorType res = DNSServiceRegister(
 			&regObj->v_sdRef,
@@ -54,7 +61,7 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 			"_ov._tcp",	/* regtype */
 			NULL,		/* domain */
 			NULL,		/* host */
-			htons(7509u),	/* port */ // FIXME: get actual server port
+			htons((uint16_t)port),/* port */
 			0,			/* txtLen */
 			NULL,		/* txtRecord */
 			NULL,		/* callBack */ // TODO: Use callback to get asynchronous errors
