@@ -204,6 +204,7 @@ static OV_RESULT startBrowsingServers(OV_INSTPTR_ressourcesMonitor_ovDiscoverer 
 		pinst->v_isDiscovering = TRUE;
 		return OV_ERR_OK;
 	} else {
+		ov_logfile_error("Could not start network discovery: Errorcode %hi", res);
 		return OV_ERR_GENERIC;
 	}
 }
