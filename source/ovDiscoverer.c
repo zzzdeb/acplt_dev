@@ -164,7 +164,7 @@ static void DNSServiceBrowseCallback(
 	const char                          *replyDomain,
 	void                                *context)
 {
-	ov_logfile_debug("DNSServiceBrowseCallback has been called with error code %hi for service %s.%s%s", errorCode,
+	ov_logfile_debug("DNSServiceBrowseCallback has been called with error code %i for service %s.%s%s", errorCode,
 			serviceName, regtype, replyDomain);
 
 	if (errorCode != kDNSServiceErr_NoError)
@@ -188,7 +188,7 @@ static void DNSServiceBrowseCallback(
 		DNSServiceErrorType res = DNSServiceResolve(&pContext->sdRef, 0, interfaceIndex, serviceName, regtype,
 				replyDomain, &DNSServiceResolveCallback, pContext);
 		if (res != kDNSServiceErr_NoError) {
-			ov_logfile_error("Could not resolve service %s. DNSServiceResolve returned error code %hi", fullname, res);
+			ov_logfile_error("Could not resolve service %s. DNSServiceResolve returned error code %i", fullname, res);
 		}
 	} else {
 		ov_logfile_info("Lost connection to OV Server %s (via Iface %u)", fullname, interfaceIndex);
@@ -204,7 +204,7 @@ static OV_RESULT startBrowsingServers(OV_INSTPTR_ressourcesMonitor_ovDiscoverer 
 		pinst->v_isDiscovering = TRUE;
 		return OV_ERR_OK;
 	} else {
-		ov_logfile_error("Could not start network discovery: Errorcode %hi", res);
+		ov_logfile_error("Could not start network discovery: Errorcode %i", res);
 		return OV_ERR_GENERIC;
 	}
 }

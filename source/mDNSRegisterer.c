@@ -73,7 +73,7 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 	);
 
 	if (res != kDNSServiceErr_NoError) {
-		ov_logfile_error("Could not register OV server at Bonjour/Avahi: Errorcode %hi", res);
+		ov_logfile_error("Could not register OV server at Bonjour/Avahi: Errorcode %i", res);
 		return OV_ERR_GENERIC;
 	} else {
 		regObj->v_isRegistered = TRUE;
