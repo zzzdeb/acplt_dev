@@ -36,8 +36,6 @@
 #include <windows.h>
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
-#define INET_ADDRSTRLEN 16
-#define INET6_ADDRSTRLEN 46
 #endif
 
 

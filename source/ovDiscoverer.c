@@ -25,13 +25,17 @@
 #include "libov/ov_macros.h"
 
 #include <dns_sd.h>
-#include <sys/select.h>
-#include <fcntl.h>
+#if OV_SYSTEM_NT
+#include <windows.h>
+#include <ws2tcpip.h>
+#else
 #include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
-#include <ifaddrs.h>
+#include <sys/select.h>
+#endif
 
 /**
  * Add a discovered ov server to the vector of servers.
@@ -64,6 +68,7 @@ static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t 
 	}
 
 	// Lookup IP of OV server's host
+	// TODO replace by DNSServiceGetAddrInfo on Windows (with Bonjour)
 	// This requires _POSIX_C_SOURCE=200112L
 	// It also requires in most cases, that <hostname>.local hostnames can be resolved properly. This may require the
 	// system's DNS to be configured for resolution via mDNS.

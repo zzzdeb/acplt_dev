@@ -28,8 +28,12 @@
 #define __USE_XOPEN_EXTENDED
 #include <dns_sd.h>
 #include <unistd.h>
+#if OV_SYSTEM_NT
+#define HOST_NAME_MAX 255
+#else
 #include <limits.h>
 #include <arpa/inet.h>
+#endif
 
 
 static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer regObj) {

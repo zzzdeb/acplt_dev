@@ -11,7 +11,7 @@ SERVERSTARTKEYS = -w fb -w ksbase -w ressourcesMonitor
 MAKMAKOPTIONS = 
 EXTRA_CC_FLAGS = -DWINVER=0x0501 -DPLT_USE_WINSOCK2
 EXTRA_LIBS = 
-LD_FLAGS = -liphlpapi -lws2_32
+LD_FLAGS = -liphlpapi -lws2_32 -L../../lib -ldnssd
 COMPILER = GCC
 PREBUILD = ../prebuild.tcl
 POSTBUILD = ../postbuild.tcl
