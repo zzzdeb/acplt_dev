@@ -33,6 +33,7 @@ include ../generic.mk
 # ---------
 
 # Swithces for additional libraries needed for dynamic linkage in Linux
+ADD_LIBS_SWITCHES = ksapi$(_DLL) ksbase$(_DLL) fb$(_DLL)
 ADD_LIBS += $(foreach lib, $(EXTRA_LIBS),$(lib))
 
 #	Compiler
@@ -81,7 +82,7 @@ templates:
 	-@rm ../../source/sourcetemplates/*$(_C)
 	acplt_builder -l $(LIBRARY) $(MAKMAKOPTIONS)
 	sed -i -e 's///' $(MODEL_DIR)$(LIBRARY).ovm
-	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -f $(MODEL_DIR)$(LIBRARY).ovm -l $(LIBRARY)
+	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSAPI_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -f $(MODEL_DIR)$(LIBRARY).ovm -l $(LIBRARY)
 
 	-@echo  ==== New templates have been created! ====
 
@@ -103,11 +104,11 @@ endif
 #   -----
 $(LIBRARY).c $(LIBRARY).h: $(wildcard $(MODEL_DIR)$(LIBRARY).ov?) Makefile
 	sed -i -e 's///' $(MODEL_DIR)$(LIBRARY).ovm
-	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -I $(MODEL_DIR) -f $(MODEL_DIR)$(LIBRARY).ovm -l $(notdir $(basename $<))
+	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSAPI_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -I $(MODEL_DIR) -f $(MODEL_DIR)$(LIBRARY).ovm -l $(notdir $(basename $<))
 
 %.c %.h: %.ovm Makefile
 	sed -i -e 's///' $<
-	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -I $(MODEL_DIR) -f $< -l $(notdir $(basename $<))
+	$(OV_CODEGEN_EXE) -I $(BASE_MODEL_DIR) -I $(KSAPI_MODEL_DIR) -I $(KSBASE_MODEL_DIR) -I $(FB_MODEL_DIR) -I $(MODEL_DIR) -f $< -l $(notdir $(basename $<))
 
 
 %.o: %.c
@@ -119,6 +120,7 @@ $(USERLIB_LIB) : $(USERLIB_OBJ) $(ADD_LIBS)
 	$(RANLIB) $@
 
 $(USERLIB_DLL) : $(USERLIB_OBJ) $(ADD_LIBS)
+	cp $(USERLIB_DIR)/ksapi$(_DLL) ksapi$(_DLL)
 	cp $(SYSLIB_DIR)/ksbase$(_DLL) ksbase$(_DLL)
 	cp $(SYSLIB_DIR)/fb$(_DLL) fb$(_DLL)
 	$(LD) -o $@ $^ $(ADD_LIBS_SWITCHES) $(LD_FLAGS)

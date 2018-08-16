@@ -25,6 +25,8 @@ USER_DIR          = ../../../
 USERLIB_DIR       = $(ROOT_DIR)system/addonlibs/
 SYS_DIR           = $(BASE_DIR)system/sysdevbase/
 SYSLIB_DIR        = $(ROOT_DIR)system/syslibs/
+KSAPI_MODEL_DIR           = $(USER_DIR)ksapi/model/
+KSAPI_INCLUDE_DIR         = $(USER_DIR)ksapi/include/
 KSBASE_MODEL_DIR           = $(SYS_DIR)ksbase/model/
 KSBASE_INCLUDE_DIR         = $(SYS_DIR)ksbase/include/
 FB_MODEL_DIR           = $(SYS_DIR)fb/model/
@@ -40,17 +42,20 @@ FB_INCLUDE_DIR         = $(SYS_DIR)fb/include/
 
 ifeq ($(COMPILER), MSVC)
 INCLUDES  = /I$(BASE_INC_DIR) /I$(BASE_MODEL_DIR) \
+			/I$(KSAPI_MODEL_DIR) /I$(KSAPI_INCLUDE_DIR) \
 			/I$(KSBASE_MODEL_DIR) /I$(KSBASE_INCLUDE_DIR) \
 			/I$(FB_MODEL_DIR) /I$(FB_INCLUDE_DIR) \
 			/I$(MODEL_DIR) /I$(INCLUDE_DIR)
 else
 INCLUDES  = -I$(BASE_INC_DIR) -I$(BASE_MODEL_DIR)\
+			-I$(KSAPI_MODEL_DIR) -I$(KSAPI_INCLUDE_DIR) \
 			-I$(KSBASE_MODEL_DIR) -I$(KSBASE_INCLUDE_DIR) \
 			-I$(FB_MODEL_DIR) -I$(FB_INCLUDE_DIR) \
 			-I$(MODEL_DIR) -I$(INCLUDE_DIR)
 endif
 
 VPATH     = $(MODEL_DIR) $(SOURCE_DIR) $(INCLUDE_DIR) \
+			$(KSAPI_MODEL_DIR) $(KSAPI_INCLUDE_DIR) \
 			$(KSBASE_MODEL_DIR) $(KSBASE_INCLUDE_DIR) \
 			$(FB_MODEL_DIR) $(FB_INCLUDE_DIR) \
 			$(BASE_INC_DIR) $(BASE_MODEL_DIR)
@@ -76,6 +81,7 @@ USERLIB_OBJ = $(foreach source, $(USERLIB_SRC), $(basename $(notdir $(source)))$
 
 HEADERS = \
 	ov.h \
+	ksapi.h \
 	ksbase.h \
 	fb.h \
 	ressourcesMonitor.h 
@@ -93,6 +99,7 @@ endif
 
 SOURCES = \
 	ov.h \
+	ksapi.h \
 	ksbase.h \
 	fb.h \
 	$(USERLIB_SRC)

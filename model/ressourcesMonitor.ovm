@@ -1,5 +1,6 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "ksapi.ovm"
 
 LIBRARY ressourcesMonitor
 	VERSION   = "V0.1 (Jun-2018)";
@@ -78,6 +79,10 @@ LIBRARY ressourcesMonitor
 			nextQueryServer : UINT FLAGS="h" COMMENT="Internal index of the next server to query for networks";
 			querySent : BOOL FLAGS="h" COMMENT="Internal state: If true, we are currently in query loop and waiting for a response.";
 		END_VARIABLES;
+		
+		PARTS
+			apiGet	:	CLASS	ksapi/getVar;
+		END_PARTS;
 		
 		OPERATIONS
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
