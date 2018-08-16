@@ -25,6 +25,9 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_database.h"
 #include "libov/ov_path.h"
+#include "ksapi_commonFuncs.h"
+
+#include "ksapiHelper.h"
 
 #if OV_SYSTEM_NT
 #include <windows.h>
@@ -111,9 +114,10 @@ static OV_RESULT addNetworkIfBetter(networkList *list, OV_STRING networkId, OV_U
  * Send a getVar query to the next server in the internal list of servers.
  *
  * @param pinst The reachableNetMonitor instance to work upon
+ * @param pltc  Current time of execution
  * @return The result of the operation
  */
-static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMonitor pinst) {
+static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMonitor pinst, OV_TIME *pltc) {
 	// Reset apiGet object
 	ksapi_KSApiCommon_Reset_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), FALSE);
 	ksapi_KSApiCommon_Reset_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), TRUE);
@@ -130,7 +134,7 @@ static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMoni
 	ov_string_setvalue(&pinst->p_apiGet.v_serverName, server);
 	ov_string_setvalue(&pinst->p_apiGet.v_path, ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pinst), 2));
 	ov_string_append(&pinst->p_apiGet.v_path, ".networks");
-	//pinst->v_startts = *pltc; // TODO
+	pinst->v_queryTime = *pltc;
 	ksapi_KSApiCommon_Submit_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), FALSE);
 	ksapi_KSApiCommon_Submit_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), TRUE);
 
@@ -142,32 +146,86 @@ OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
-    /*    
-    *   local variables
-    */
     OV_INSTPTR_ressourcesMonitor_reachableNetMonitor pinst = Ov_StaticPtrCast(ressourcesMonitor_reachableNetMonitor, pfb);
 
-	// TODO if not querySent
-    	// TODO  if time since last update > ~ 30 sec)
-			// TODO add local networks to networkList
-			// TODO copy ov server list to internal variable
-			// TODO set active server index to 0
-    		// TODO sendQueryToServer(pinst);
-    		// TODO set querySent = TRUE
+    // Check if we are currently in a communication loop and waiting for a response
+    if (!pinst->v_querySent) {
+    	// If not, check if time has come to start the next communication loop
+    	OV_TIME start_time;
+    	ov_time_add(&start_time, &pinst->v_lastUpdate, &pinst->v_updateInterval);
+    	if (ov_time_compare(pltc, &start_time) == OV_TIMECMP_BEFORE)
+    		return;
 
-    // TODO if querySent
-		// TODO check if value was returned (or timeout?)
-			// TODO if value is okay
-				// TODO for each network in list
-				// TODO parse entry
-				// TODO use addNetworkIfBetter
-			// TODO set active server to next server
-			// TODO if active server >= server list size
-				// TODO generate output string list from internal linked list
-				// TODO clear linked list
-				// TODO update last update timestamp set querySent = FALSE
-			// TODO else
-				// TODO sendQueryToServer(pinst);
+    	// Okay, it's time to start a new update.
+		// Step 1: Add local networks to networkList
+    	for (OV_UINT i = 0; i < pinst->v_localNetworks.veclen; ++i) {
+    		addNetworkToList(&pinst->v_networksInt, pinst->v_localNetworks.value[i], 0, "", TRUE); // TODO: more intelligent routable flag
+    	}
+    	// Step 2: Make an internal copy of the list of known OV servers
+    	// TODO: Prevent modification with a set_accessor to avoid double copying?
+    	Ov_SetDynamicVectorValue(&pinst->v_ovServersInt, pinst->v_ovServers.value, pinst->v_ovServers.veclen, STRING);
 
-    return;
+    	// Step 3: Send query to first server
+		pinst->v_nextQueryServer = 0;
+		sendQueryToServer(pinst, pltc);
+		pinst->v_querySent = TRUE;
+
+
+    } else {
+        // If we are currently in a communication loop, check if ksapi call failed (due to internal error, external
+    	// error or timeout) or has finished successfully. If not, continue waiting
+    	if (pinst->p_apiGet.v_status != KSAPI_COMMON_REQUESTCOMPLETED
+    			&& !deltaClient_checkForKSApiError(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), &pinst->v_queryTime, pltc)) {
+    		return;
+    	}
+
+		// If the ksapi request has been completed successfully, process the result
+    	if (pinst->p_apiGet.v_status == KSAPI_COMMON_REQUESTCOMPLETED) {
+			// Check if variable Operation was successful
+			if (Ov_Fail(pinst->p_apiGet.v_varRes)) {
+				ov_logfile_warning("ksapi request failed with server-side error: %s",
+						ov_result_getresulttext(pinst->p_apiGet.v_varRes));
+			} else if (pinst->p_apiGet.v_varValue.value.vartype != OV_VT_STRING_VEC) {
+				ov_logfile_warning("ksapi request did not return a STRING_VEC: %s",
+						ov_result_getresulttext(pinst->p_apiGet.v_varRes));
+			} else {
+				// Parse the resulting string vector and add networks to our internal list if appropriate
+				OV_STRING_VEC *result = &pinst->p_apiGet.v_varValue.value.valueunion.val_string_vec;
+		    	for (OV_UINT i = 0; i < result->veclen; ++i) {
+		    		char network_name[1024];
+		    		unsigned int hops;
+		    		unsigned int routable;
+		    		sscanf(result->value[i], "%1024[^\t]\t%u\t%*[^\t]\t%u", network_name, &hops, &routable);
+
+		    		addNetworkIfBetter(&pinst->v_networksInt, network_name, hops+1, pinst->p_apiGet.v_serverHost, (OV_BOOL)routable);
+		    	}
+			}
+    	}
+
+		// Now, query the next server or finish the communication loop
+		pinst->v_nextQueryServer += 1;
+		if (pinst->v_nextQueryServer < pinst->v_ovServersInt.veclen) {
+			sendQueryToServer(pinst, pltc);
+		} else {
+			// Generate output string list from internal linked list
+			Ov_SetDynamicVectorLength(&pinst->v_networks, pinst->v_networksInt.num, STRING);
+			networkEntry *net = pinst->v_networksInt.first;
+			OV_UINT i = 0;
+			while (net) {
+				ov_string_print(&pinst->v_networks.value[i], "%s\t%u\t%s\t%i",
+						net->networkId, net->hops, net->nextHop, net->routable);
+
+				net = net->next;
+				++i;
+			}
+
+			// Clear linked list
+			clearNetworkList(&pinst->v_networksInt);
+
+			// Update flags
+			pinst->v_lastUpdate = *pltc;
+			pinst->v_querySent = FALSE;
+		}
+
+    }
 }

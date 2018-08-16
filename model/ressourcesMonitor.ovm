@@ -73,11 +73,16 @@ LIBRARY ressourcesMonitor
 		VARIABLES
 			localNetworks[] : STRING FLAGS="i" COMMENT="A list of local network identifiers, e.g. discovered by localNetMonitor.";
 			ovServers[] : STRING FLAGS="i" COMMENT="A list of known and reachable OV servers, e.g. discoverd by ovDiscoverer.";
+			updateInterval : TIME_SPAN FLAGS="i" COMMENT="The time interval between updates of the networks list (including requests to other OV servers)" INITIALVALUE=00:05:00;
+			
 			networks[] : STRING FLAGS="o" COMMENT="A list of all reachable networks and the number of hops to reach them. Each entry is tab-separated: networkId, hops, nextHop, routable";
+			lastUpdate : TIME FLAGS="o" COMMENT="Timestamp of the last update of the reachable network list.";
+			
 			networksInt : C_TYPE<networkList> FLAGS="h" COMMENT="Internal linked list of detected networks.";
-			ovServersInt[] : STRING FLAGS="i" COMMENT="A copy of ovServers to keep them static during the query loop.";
+			ovServersInt[] : STRING FLAGS="h" COMMENT="A copy of ovServers to keep them static during the query loop.";
 			nextQueryServer : UINT FLAGS="h" COMMENT="Internal index of the next server to query for networks";
 			querySent : BOOL FLAGS="h" COMMENT="Internal state: If true, we are currently in query loop and waiting for a response.";
+			queryTime : TIME FLAGS="o" COMMENT="Timestamp of the moment of sending the currently pending KS request. (Used to calculate timeout)";
 		END_VARIABLES;
 		
 		PARTS
