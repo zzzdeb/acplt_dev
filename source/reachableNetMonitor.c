@@ -141,8 +141,35 @@ static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMoni
 	return OV_ERR_OK;
 }
 
+/**
+ * Uninlined function to finish the network list update cycle. It should be called, after all known servers have been
+ * contacted and their connected networks have been added to the internal network list.
+ *
+ * This function will generate the output network list and clear the internal state.
+ *
+ * @param pinst The reachableNetMonitor instance to work upon
+ * @param pltc  The current execution timestamp
+ */
+static void finishCommunicationLoop(OV_INSTPTR_ressourcesMonitor_reachableNetMonitor pinst, OV_TIME* pltc) {
+	// Generate output string list from internal linked list
+	Ov_SetDynamicVectorLength(&pinst->v_networks, pinst->v_networksInt.num, STRING);
+	networkEntry* net = pinst->v_networksInt.first;
+	OV_UINT i = 0;
+	while (net) {
+		ov_string_print(&pinst->v_networks.value[i], "%s\t%u\t%s\t%i", net->networkId, net->hops, net->nextHop,
+				net->routable);
+		net = net->next;
+		++i;
+	}
+	// Clear linked list
+	clearNetworkList(&pinst->v_networksInt);
+	// Update flags
+	pinst->v_lastUpdate = *pltc;
+	pinst->v_querySent = FALSE;
+}
 
-OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
+
+void ressourcesMonitor_reachableNetMonitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
@@ -165,10 +192,14 @@ OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
     	// TODO: Prevent modification with a set_accessor to avoid double copying?
     	Ov_SetDynamicVectorValue(&pinst->v_ovServersInt, pinst->v_ovServers.value, pinst->v_ovServers.veclen, STRING);
 
-    	// Step 3: Send query to first server
+    	// Step 3: If there is any known ov Servers, send query to first server, else finish loop (after 0 iterations)
 		pinst->v_nextQueryServer = 0;
-		sendQueryToServer(pinst, pltc);
 		pinst->v_querySent = TRUE;
+		if (pinst->v_nextQueryServer < pinst->v_ovServersInt.veclen) {
+			sendQueryToServer(pinst, pltc);
+		} else {
+			finishCommunicationLoop(pinst, pltc);
+		}
 
 
     } else {
@@ -207,24 +238,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
 		if (pinst->v_nextQueryServer < pinst->v_ovServersInt.veclen) {
 			sendQueryToServer(pinst, pltc);
 		} else {
-			// Generate output string list from internal linked list
-			Ov_SetDynamicVectorLength(&pinst->v_networks, pinst->v_networksInt.num, STRING);
-			networkEntry *net = pinst->v_networksInt.first;
-			OV_UINT i = 0;
-			while (net) {
-				ov_string_print(&pinst->v_networks.value[i], "%s\t%u\t%s\t%i",
-						net->networkId, net->hops, net->nextHop, net->routable);
-
-				net = net->next;
-				++i;
-			}
-
-			// Clear linked list
-			clearNetworkList(&pinst->v_networksInt);
-
-			// Update flags
-			pinst->v_lastUpdate = *pltc;
-			pinst->v_querySent = FALSE;
+			finishCommunicationLoop(pinst, pltc);
 		}
 
     }
