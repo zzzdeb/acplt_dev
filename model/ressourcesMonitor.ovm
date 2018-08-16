@@ -60,6 +60,31 @@ LIBRARY ressourcesMonitor
 	END_CLASS;
 	
 	/**
+		A functionblock to generate a list of all reachable networks, including local networks and those, who can be
+		reached via other nodes.
+		
+		A reachableNetMonitor takes a list of local networks and tries to supplement it with routed networks, by
+		contacting all OV servers in a given list, searching for a reachableNetMonitor at the same path and adds
+		additional networks to the local list, if no shorter path is already known.
+	*/
+	CLASS reachableNetMonitor : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			localNetworks[] : STRING FLAGS="i" COMMENT="A list of local network identifiers, e.g. discovered by localNetMonitor.";
+			ovServers[] : STRING FLAGS="i" COMMENT="A list of known and reachable OV servers, e.g. discoverd by ovDiscoverer.";
+			networks[] : STRING FLAGS="o" COMMENT="A list of all reachable networks and the number of hops to reach them. Each entry is tab-separated: networkId, hops, nextHop, routable";
+			networksInt : C_TYPE<networkList> FLAGS="h" COMMENT="Internal linked list of detected networks.";
+			ovServersInt[] : STRING FLAGS="i" COMMENT="A copy of ovServers to keep them static during the query loop.";
+			nextQueryServer : UINT FLAGS="h" COMMENT="Internal index of the next server to query for networks";
+			querySent : BOOL FLAGS="h" COMMENT="Internal state: If true, we are currently in query loop and waiting for a response.";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
 		A functionblock to discover other OV Servers with OPC UA Server on the network, using the OPC UA Local Discovery
 		Server with Multicast Extenstions (UA LDS-ME) and register the local OPC UA Server for discovery.
 	*/
