@@ -24,6 +24,16 @@
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_database.h"
+#include "libov/ov_path.h"
+
+#if OV_SYSTEM_NT
+#include <windows.h>
+#else
+#include <arpa/inet.h>
+#endif
+
+#define STR_IMPL_(x) #x      //stringify argument
+#define STR(x) STR_IMPL_(x)  //indirection to expand argument macros
 
 /**
  * Allocate a new networkEntry and prepend it to the given networkList.
@@ -97,6 +107,37 @@ static OV_RESULT addNetworkIfBetter(networkList *list, OV_STRING networkId, OV_U
 }
 
 
+/**
+ * Send a getVar query to the next server in the internal list of servers.
+ *
+ * @param pinst The reachableNetMonitor instance to work upon
+ * @return The result of the operation
+ */
+static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMonitor pinst) {
+	// Reset apiGet object
+	ksapi_KSApiCommon_Reset_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), FALSE);
+	ksapi_KSApiCommon_Reset_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), TRUE);
+
+	// Parse active server from the list
+	char host[INET6_ADDRSTRLEN+1];
+	OV_UINT port;
+	char server[OV_NAME_MAXLEN+1];
+	sscanf(pinst->v_ovServersInt.value[pinst->v_nextQueryServer], "%*[^\t]\t%*[^\t]\t%" STR(INET6_ADDRSTRLEN) "[^\t]\t%u\t%" STR(OV_NAME_MAXLEN) "[^\t]",
+			host, &port, server);
+
+	// Gather data and send request
+	ov_string_setvalue(&pinst->p_apiGet.v_serverHost, host);
+	ov_string_setvalue(&pinst->p_apiGet.v_serverName, server);
+	ov_string_setvalue(&pinst->p_apiGet.v_path, ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pinst), 2));
+	ov_string_append(&pinst->p_apiGet.v_path, ".networks");
+	//pinst->v_startts = *pltc; // TODO
+	ksapi_KSApiCommon_Submit_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), FALSE);
+	ksapi_KSApiCommon_Submit_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), TRUE);
+
+	return OV_ERR_OK;
+}
+
+
 OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
@@ -111,7 +152,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
 			// TODO add local networks to networkList
 			// TODO copy ov server list to internal variable
 			// TODO set active server index to 0
-			// TODO send getValue request to active server
+    		// TODO sendQueryToServer(pinst);
     		// TODO set querySent = TRUE
 
     // TODO if querySent
@@ -126,7 +167,7 @@ OV_DLLFNCEXPORT void ressourcesMonitor_reachableNetMonitor_typemethod(
 				// TODO clear linked list
 				// TODO update last update timestamp set querySent = FALSE
 			// TODO else
-				// TODO send getValue request to active server
+				// TODO sendQueryToServer(pinst);
 
     return;
 }
