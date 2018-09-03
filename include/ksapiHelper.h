@@ -16,7 +16,7 @@ static const unsigned int TIMEOUT = 10;  // Timeout of ksapi actions in seconds
  * @param pltc	The current fb clock (to check for timeouts)
  * @return		TRUE if an error occured in the ksapi operation, FALSE otherwise (operation still ongoing or success)
  */
-static inline OV_BOOL deltaClient_checkForKSApiError(OV_INSTPTR_ksapi_KSApiCommon ksapi, OV_TIME *start, OV_TIME *pltc) {
+static inline OV_BOOL ksapiHelper_checkForKSApiError(OV_INSTPTR_ksapi_KSApiCommon ksapi, OV_TIME *start, OV_TIME *pltc) {
 	if(ksapi->v_status == KSAPI_COMMON_INTERNALERROR) {
 		ov_logfile_error("Internal error of ksapi: %s", ov_result_getresulttext(ksapi->v_result));
 		return TRUE;

@@ -79,6 +79,7 @@ static void clearNetworkList(networkList *list) {
 		ov_database_free(pEntry);
 		pEntry = next;
 	}
+	list->first = NULL;
 	list->num = 0;
 }
 
@@ -132,7 +133,9 @@ static OV_RESULT sendQueryToServer(OV_INSTPTR_ressourcesMonitor_reachableNetMoni
 	// Gather data and send request
 	ov_string_setvalue(&pinst->p_apiGet.v_serverHost, host);
 	ov_string_setvalue(&pinst->p_apiGet.v_serverName, server);
+	ov_memstack_lock();
 	ov_string_setvalue(&pinst->p_apiGet.v_path, ov_path_getcanonicalpath(Ov_PtrUpCast(ov_object, pinst), 2));
+	ov_memstack_unlock();
 	ov_string_append(&pinst->p_apiGet.v_path, ".networks");
 	pinst->v_queryTime = *pltc;
 	ksapi_KSApiCommon_Submit_set(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), FALSE);
@@ -156,8 +159,8 @@ static void finishCommunicationLoop(OV_INSTPTR_ressourcesMonitor_reachableNetMon
 	networkEntry* net = pinst->v_networksInt.first;
 	OV_UINT i = 0;
 	while (net) {
-		ov_string_print(&pinst->v_networks.value[i], "%s\t%u\t%s\t%i", net->networkId, net->hops, net->nextHop,
-				net->routable);
+		ov_string_print(&pinst->v_networks.value[i], "%s\t%u\t%s\t%i", net->networkId, net->hops,
+				net->nextHop ? net->nextHop : "", net->routable);
 		net = net->next;
 		++i;
 	}
@@ -206,7 +209,7 @@ void ressourcesMonitor_reachableNetMonitor_typemethod(
         // If we are currently in a communication loop, check if ksapi call failed (due to internal error, external
     	// error or timeout) or has finished successfully. If not, continue waiting
     	if (pinst->p_apiGet.v_status != KSAPI_COMMON_REQUESTCOMPLETED
-    			&& !deltaClient_checkForKSApiError(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), &pinst->v_queryTime, pltc)) {
+    			&& !ksapiHelper_checkForKSApiError(Ov_PtrUpCast(ksapi_KSApiCommon, &pinst->p_apiGet), &pinst->v_queryTime, pltc)) {
     		return;
     	}
 
@@ -225,10 +228,10 @@ void ressourcesMonitor_reachableNetMonitor_typemethod(
 		    	for (OV_UINT i = 0; i < result->veclen; ++i) {
 		    		char network_name[1024];
 		    		unsigned int hops;
-		    		unsigned int routable;
-		    		sscanf(result->value[i], "%1024[^\t]\t%u\t%*[^\t]\t%u", network_name, &hops, &routable);
-
-		    		addNetworkIfBetter(&pinst->v_networksInt, network_name, hops+1, pinst->p_apiGet.v_serverHost, (OV_BOOL)routable);
+		    		int routable;
+		    		sscanf(result->value[i], "%1024[^\t]\t%u\t%*[^\t]\t%i", network_name, &hops, &routable);
+		    		if (routable)
+		    			addNetworkIfBetter(&pinst->v_networksInt, network_name, hops+1, pinst->p_apiGet.v_serverHost, TRUE);
 		    	}
 			}
     	}
