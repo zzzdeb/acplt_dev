@@ -31,6 +31,7 @@
 
 #if OV_SYSTEM_NT
 #include <windows.h>
+#include <ws2tcpip.h>
 #else
 #include <arpa/inet.h>
 #endif
