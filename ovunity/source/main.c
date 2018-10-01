@@ -71,6 +71,12 @@ OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 	return buffer;
 }
 
+OV_DLLFNCEXPORT void ovunity_createCase(const OV_INSTPTR_ovunity_main pinst,
+		const OV_STRING casename) {
+	OV_INSTPTR_ov_domain pcase;
+	Ov_CreateObject(ov_domain, pcase, pinst, casename);
+}
+
 OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const OV_STRING what, const OV_STRING where){
 	/* getting libname and classname */
 	OV_INSTPTR_ov_domain pclass = Ov_GetParent(ov_instantiation, pinst);
@@ -84,7 +90,7 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 
 	OV_TICKET* pticket = NULL;
 
-	OV_UINT number_of_variables = 3;
+	OV_UINT number_of_variables = 4;
 //TODO: check json value
 
 	ov_memstack_lock();
@@ -96,25 +102,31 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 //process multiple variables at once
 	OV_STRING dataPath = NULL;
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname, classname, what);
+	ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname,
+		classname, what);
 
-	OV_SETVAR_ITEM items[3];
+	OV_SETVAR_ITEM items[4];
 	OV_STRING uploadPath = "/data/CTree/Download";
 
 	items[0].path_and_name = NULL;
 	ov_string_print(&items[0].path_and_name, "%s.%s", uploadPath, "json"); /*	see comment below	*/
 	items[0].var_current_props.value.vartype = KS_VT_STRING;
 	items[0].var_current_props.value.valueunion.val_string = ovunity_helper_data2str(dataPath);
-
+	
 	items[1].path_and_name = NULL;
 	ov_string_print(&items[1].path_and_name, "%s.%s", uploadPath, "path");
 	items[1].var_current_props.value.vartype = KS_VT_STRING;
 	items[1].var_current_props.value.valueunion.val_string = where;
 
 	items[2].path_and_name = NULL;
-	ov_string_print(&items[2].path_and_name, "%s.%s", uploadPath, "trigger");
-	items[2].var_current_props.value.vartype = KS_VT_INT;
-	items[2].var_current_props.value.valueunion.val_int = 1;
+	ov_string_print(&items[2].path_and_name, "%s.%s", uploadPath, "force"); /*	see comment below	*/
+	items[2].var_current_props.value.vartype = KS_VT_BOOL;
+	items[2].var_current_props.value.valueunion.val_bool = 1;
+
+	items[3].path_and_name = NULL;
+	ov_string_print(&items[3].path_and_name, "%s.%s", uploadPath, "trigger");
+	items[3].var_current_props.value.vartype = KS_VT_INT;
+	items[3].var_current_props.value.valueunion.val_int = 1;
 
 	params.items_val = items;
 	params.items_len = number_of_variables;

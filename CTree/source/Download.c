@@ -887,17 +887,26 @@ OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst) {
 	} else
 		proot = (OV_INSTPTR_ov_object) &pdb->root;
 
-	if(proot != NULL) {
-//		if (proot_class != Ov_GetParent(ov_instantiation, proot)) {
-//			Download_log(pinst, OV_MT_ERROR, "no object with path %s", root_path);
-//			return OV_ERR_ALREADYEXISTS;
-//		}
-	} else {
+	if(proot == NULL) {
+//		if(!pinst->v_force) {
 		Download_log(pinst, OV_MT_ERROR, res, "root doesnt exist %s", root_path);
 		*(tmp) = tmpchar;
 		ov_string_setvalue(&root_path, NULL);
 		return OV_ERR_GENERIC;
+//		} else {
+//			OV_PATH resolvedPath;
+//			ov_path_resolve(&resolvedPath, NULL, root_path, VERSION_FOR_CTREE);
+//			OV_UINT len = 0;
+//			OV_STRING_VEC identifiers = ov_string_split(root_path, "/", &len);
+//			if(resolvedPath) {
+//
+//			}
 	}
+//		if (proot_class != Ov_GetParent(ov_instantiation, proot)) {
+//			Download_log(pinst, OV_MT_ERROR, "no object with path %s", root_path);
+//			return OV_ERR_ALREADYEXISTS;
+//		}
+
 	*(tmp) = tmpchar;
 
 	if(tmpchar == '/')

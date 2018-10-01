@@ -54,52 +54,84 @@ TEST_TEAR_DOWN(assozierer) {
 }
 
 TEST(assozierer, assozierer_default) {
-	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_default");
-	ovunity_loadEnv(gpinst, "default.json", case_path);
-	ov_string_setvalue(&gpobj->v_Path, case_path);
-	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+
+	OV_INSTPTR_gtpf_assozierer pobj = NULL;
+	OV_STRING case_name = "case_default";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, case_name);
+	OV_STRING env_path = NULL;
+	ov_string_print(&env_path, "%s/%s", case_path, "env");
+
+	OV_INSTPTR_ov_domain pcase;
+	Ov_CreateObject(ov_domain, pcase, gpinst, case_name);
+
+	Ov_CreateObject(gtpf_assozierer, pobj, pcase, "obj");
+
+	ovunity_loadEnv(gpinst, "default.json", env_path);
+	ov_string_setvalue(&pobj->v_Path, env_path);
+	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
 
 	//image
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
-		ov_path_getobjectpointer(case_path, 2));
+		ov_path_getobjectpointer(env_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assoziererTest/case_default_vis");
+	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_default_vis");
 
-	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
+	TEST_ASSERT_EQUAL(pobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_2neighbour) {
-	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_2neighbour_fix");
-	ovunity_loadEnv(gpinst, "2Neighbour.json", case_path);
-	ov_string_setvalue(&gpobj->v_Path, case_path);
-	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+	OV_INSTPTR_gtpf_assozierer pobj = NULL;
+	OV_STRING case_name = "case_2neighbour_fix";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, case_name);
+	OV_STRING env_path = NULL;
+	ov_string_print(&env_path, "%s/%s", case_path, "env");
+
+	OV_INSTPTR_ov_domain pcase;
+	Ov_CreateObject(ov_domain, pcase, gpinst, case_name);
+
+	Ov_CreateObject(gtpf_assozierer, pobj, pcase, "obj");
+
+	ovunity_loadEnv(gpinst, "2Neighbour.json", env_path);
+	ov_string_setvalue(&pobj->v_Path, env_path);
+	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
 
 	//image
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
-		ov_path_getobjectpointer(case_path, 2));
+		ov_path_getobjectpointer(env_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assoziererTest/case_2neighbour_fix_vis");
+	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_2neighbour_fix_vis");
 
-	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
+	TEST_ASSERT_EQUAL(pobj->v_result, 0);
 }
 
 TEST(assozierer, assozierer_schieber) {
-	OV_STRING case_path = ovunity_getCasePath(gpinst, "case_schieber");
-	ovunity_loadEnv(gpinst, "schieber.json", case_path);
-	gpobj->v_MAXGAP = 20;
-	ov_string_setvalue(&gpobj->v_Path, case_path);
-	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, gpobj), gpltc);
+	OV_INSTPTR_gtpf_assozierer pobj = NULL;
+	OV_STRING case_name = "case_schieber";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, case_name);
+	OV_STRING env_path = NULL;
+	ov_string_print(&env_path, "%s/%s", case_path, "env");
+
+	OV_INSTPTR_ov_domain pcase;
+	Ov_CreateObject(ov_domain, pcase, gpinst, case_name);
+
+	Ov_CreateObject(gtpf_assozierer, pobj, pcase, "obj");
+
+	ovunity_loadEnv(gpinst, "schieber.json", env_path);
+
+	pobj->v_MAXGAP = 20;
+	ov_string_setvalue(&pobj->v_Path, env_path);
+	gtpf_assozierer_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
 
 	//image
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
-		ov_path_getobjectpointer(case_path, 2));
+		ov_path_getobjectpointer(env_path, 2));
 	draw_top(gitter, ptop);
-	gitter2png(gitter, "assoziererTest/case_schieber_vis");
+	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_schieber_vis");
 
-	TEST_ASSERT_EQUAL(gpobj->v_result, 0);
+	TEST_ASSERT_EQUAL(pobj->v_result, 0);
 }
 //
 //TEST(assozierer, assozierer_badstart){

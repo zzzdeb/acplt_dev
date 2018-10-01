@@ -298,6 +298,9 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
 			ov_string_print(&pathToGraph, "%s/%s", pinst->v_Path, "Graph");
 			ggraph = Ov_StaticPtrCast(TGraph_graph,
 				ov_path_getobjectpointer(pathToGraph, 2));
+			Ov_DeleteObject(ggraph);
+			result = Ov_CreateObject(TGraph_graph, ggraph, ptop, "Graph");
+			if(!result) Throw(result);
 		} else {
 			Throw(result);
 		}
@@ -344,6 +347,11 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
 		gitterDestruct(elem1->data);
 	}
 	destructList(picList);
+
+	//image
+	Gitter_t* gitter = gitterConstruct();
+	draw_top(gitter, ptop);
+	gitter2png(gitter, "gtpf/assozierer_viz");
 
 	ov_memstack_unlock();
 	return result;

@@ -48,6 +48,15 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 	return OV_ERR_OK;
 }
 
+OV_DLLFNCEXPORT OV_ACCESS TGraph_graph_getaccess(OV_INSTPTR_ov_object pobj,
+		const OV_ELEMENT *pelem, const OV_TICKET *pticket) {
+	/*
+	 *   local variables
+	 */
+	OV_INSTPTR_TGraph_graph pinst = Ov_StaticPtrCast(TGraph_graph, pobj);
+
+	return OV_AC_LINKABLE | OV_AC_READWRITE | OV_AC_DELETEABLE;
+}
 
 OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
@@ -69,7 +78,7 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 
 	//getting direction
 	Position_p diff = positionSubstract(p2, p1);
-	pointRotate(&diff->pos, p1->dir);
+	pointRotate(&diff->pos, -p1->dir);
 	edge->v_Direction.value[0] = diff->pos.x;
 	edge->v_Direction.value[1] = diff->pos.y;
 	edge->v_Direction.value[2] = radToDeg(diff->dir);

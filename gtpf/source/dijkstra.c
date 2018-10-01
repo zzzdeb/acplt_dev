@@ -23,6 +23,9 @@
 #include "CException.h"
 #include "TGraph.h"
 #include "dijkstra.h"
+#include "ovdatastruct.h"
+#include "../../geometry2d/include/geometry2d_.h"
+
 
 OV_DLLFNCEXPORT OV_RESULT gtpf_dijkstra_EN_set(OV_INSTPTR_gtpf_dijkstra pobj,
 		const OV_UINT value) {
@@ -44,6 +47,41 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_dijkstra_EN_set(OV_INSTPTR_gtpf_dijkstra pobj,
 	}
 	pobj->v_EN = 0;
 	return OV_ERR_OK;
+}
+
+# define M_PI		3.14159265358979323846	/* pi */
+# define M_PI_2		1.57079632679489661923	/* pi/2 */
+# define M_PI_4		0.78539816339744830962	/* pi/4 */
+
+OV_STRING pathDirToStr(OV_INSTPTR_TGraph_Edge pedge) {
+	if(!pedge) return NULL;
+	OV_INSTPTR_TGraph_Node source = Ov_GetParent(TGraph_Start, pedge);
+	if(!pedge->v_Direction.value[0] && !pedge->v_Direction.value[1])
+		if(!pedge->v_Direction.value[2]) {
+			return "STAY";
+		} else {
+			return "TURN";
+		}
+	Point_p edgePnt = pointConstruct();
+	edgePnt->x = pedge->v_Direction.value[0];
+	edgePnt->y = pedge->v_Direction.value[1];
+	Position_p sourcep = positionFromNode(source);
+	pointRotate(edgePnt, sourcep->dir);
+	Radian_t rad = pointGetDir(edgePnt);
+	Radian_t m_pi_34 = M_PI_2 + M_PI_4;
+	if(rad >= M_PI_4) {
+		if(rad < m_pi_34)
+			return "UP";
+		else
+			return "LEFT";
+	};
+	if(rad < -M_PI_4) {
+		if(rad < -m_pi_34)
+			return "LEFT";
+		else
+			return "DOWN";
+	};
+	return "RIGHT";
 }
 
 #define SEPERATOR "&"
@@ -84,6 +122,7 @@ OV_RESULT getNodeAction(OV_STRING path,
 	OV_UINT len = 0;
 	OV_STRING* splited = ov_string_split(path, SEPERATOR, &len);
 
+//	if(path[0] != SEPERATOR)
 	OV_INSTPTR_ov_object pobjtmp = ov_path_getobjectpointer(splited[0], 2);
 // param check
 	if(!pobjtmp) {
@@ -204,6 +243,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 			currentLen += listLength(path);
 			Ov_SetDynamicVectorLength(&pinst->v_pathNode, currentLen, STRING);
 			Ov_SetDynamicVectorLength(&pinst->v_pathDir, currentLen, STRING);
+			Ov_SetDynamicVectorLength(&pinst->v_pathDirStr, currentLen, STRING);
 			Ov_SetDynamicVectorLength(&pinst->v_parameter, currentLen, STRING);
 
 			OV_INT i = currentLen - 1;
@@ -216,6 +256,7 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 				ov_string_print(&pinst->v_pathDir.value[i], "[%f, %f, %f]",
 					edge->v_Direction.value[0], edge->v_Direction.value[1],
 					edge->v_Direction.value[2]);
+				ov_string_print(&pinst->v_pathDirStr.value[i], pathDirToStr(edge));
 				i--;
 			}
 		}
@@ -225,7 +266,9 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 			ov_string_setvalue(&pinst->v_pathNode.value[currentLen - 1],
 				pobj->v_identifier);
 			Ov_SetDynamicVectorLength(&pinst->v_pathDir, currentLen, STRING);
+			Ov_SetDynamicVectorLength(&pinst->v_pathDirStr, currentLen, STRING);
 			ov_string_setvalue(&pinst->v_pathDir.value[currentLen - 1], action);
+			ov_string_print(&pinst->v_pathDirStr.value[currentLen - 1], action);
 			Ov_SetDynamicVectorLength(&pinst->v_parameter, currentLen, STRING);
 			ov_string_setvalue(&pinst->v_parameter.value[currentLen - 1], param);
 		}

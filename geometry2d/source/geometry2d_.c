@@ -62,6 +62,14 @@ OV_DLLFNCEXPORT OV_SINGLE pointDist(const Point_t* p1, const Point_t* p2) {
 }
 
 OV_DLLFNCEXPORT Radian_t pointGetDir(const Point_t* p){
+	if(!p->x && !p->y) return 0;
+	if(!p->x) {
+		if(p->y > 0) {
+			return M_PI_2;
+		} else {
+			return -M_PI_2;
+		}
+	}
 	return atan2(p->y, p->x);
 }
 /*

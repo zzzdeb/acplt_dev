@@ -35,6 +35,7 @@ LIBRARY CTree
 		VARIABLES
 			json: STRING FLAGS="i" COMMENT="Tree to download as json format";
 			path: STRING FLAGS="i" COMMENT="where to download" INITIALVALUE="/TechUnits";
+			force: BOOL FLAGS="i" COMMENT="TODO: if to create tree, eventhough the root doesnt exist" INITIALVALUE=FALSE;
 			cache: C_TYPE <CTreeDownloadCache> COMMENT="Cache of Object";
 		END_VARIABLES;
 		OPERATIONS
@@ -190,7 +191,6 @@ LIBRARY CTree
 		END_OPERATIONS;
 	END_CLASS;
 	
-
 	CLASS dbinfoExt : CLASS ov/object
 		IS_INSTANTIABLE;
 		VARIABLES

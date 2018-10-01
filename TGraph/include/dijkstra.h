@@ -117,6 +117,7 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 		for (OV_UINT j = 0; j < n; ++j) {
 			OV_INSTPTR_TGraph_Edge edge = TGraph_graph_areNodesLinked(V[i], V[j]);
 			if(edge) {
+				OV_UINT tmp1;
 				OV_SINGLE* costs = TGraph_Edge_totalCost_get(edge, &tmp1);
 				adj[i][j] = costs[0] > costs[1] ? costs[0] : costs[1];
 			} else
