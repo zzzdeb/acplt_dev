@@ -21,6 +21,7 @@ LIBRARY TGraph
 		END_PARTS;
 		OPERATIONS
 			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
 			linkNodes  : C_FUNCTION <TGRAPH_FNC_LINKNODES>;
 			areNodesLinked  : C_FUNCTION <TGRAPH_FNC_ARENODESLINKED>;
 		END_OPERATIONS;

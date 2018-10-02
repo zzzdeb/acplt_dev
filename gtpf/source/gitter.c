@@ -28,7 +28,7 @@ OV_DLLFNCEXPORT int gitter2png(Gitter_t* gitter, OV_STRING name) {
 
 	OV_STRING path = NULL;
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&path, "%s/dev/gtpfTest/test/%s.png", ahome, name);
+	ov_string_print(&path, "%s/dev/gtpf/%s.png", ahome, name);
 
 	fp = fopen(path, "wb");
 	if(!fp) {
@@ -281,7 +281,7 @@ OV_DLLFNCEXPORT Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 		}
 	}
 
-	gitter2png(w1Gitter, w1->v_identifier);
+//	gitter2png(w1Gitter, w1->v_identifier);
 
 //		for (OV_UINT i = 0; i < numOfTops - 1; ++i) {
 //			for (OV_UINT j = i + 1; j < numOfTops; ++j) {

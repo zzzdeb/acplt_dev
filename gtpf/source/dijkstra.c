@@ -26,7 +26,6 @@
 #include "ovdatastruct.h"
 #include "../../geometry2d/include/geometry2d_.h"
 
-
 OV_DLLFNCEXPORT OV_RESULT gtpf_dijkstra_EN_set(OV_INSTPTR_gtpf_dijkstra pobj,
 		const OV_UINT value) {
 	pobj->v_EN = value;
@@ -110,52 +109,6 @@ OV_BOOL ov_vector_contains(const OV_POINTER pvalue1, const OV_POINTER pvalue2,
 	return 0;
 }
 
-OV_RESULT getNodeAction(OV_STRING path,
-		OV_INSTPTR_wandelbareTopologie_Node* pnode, OV_STRING* action,
-		OV_STRING* param) {
-	if(!path) return OV_ERR_BADPARAM;
-
-	/* init */
-	if(action) ov_string_setvalue(action, NULL);
-	if(param) ov_string_setvalue(param, NULL);
-
-	OV_UINT len = 0;
-	OV_STRING* splited = ov_string_split(path, SEPERATOR, &len);
-
-//	if(path[0] != SEPERATOR)
-	OV_INSTPTR_ov_object pobjtmp = ov_path_getobjectpointer(splited[0], 2);
-// param check
-	if(!pobjtmp) {
-		ov_string_freelist(splited);
-		return OV_ERR_BADPARAM;
-	}
-	if(!Ov_CanCastTo(wandelbareTopologie_Node, pobjtmp)) {
-		ov_string_freelist(splited);
-		return OV_ERR_BADPARAM;
-	}
-	*pnode = Ov_StaticPtrCast(wandelbareTopologie_Node, pobjtmp);
-	if(len == 1) {
-		ov_string_freelist(splited);
-		return 0;
-	}
-
-//ofen || drehtisch
-	if(ov_vector_contains((*pnode)->v_PSkills.value, &splited[1],
-		(*pnode)->v_PSkills.veclen, OV_VT_STRING)) {
-		ov_string_setvalue(action, splited[1]);
-		if(ov_string_compare(*action, "HEAT") == OV_STRCMP_EQUAL)
-			ov_string_setvalue(param, "180");
-	}
-	else {
-		ov_logfile_error("bad action %s on object %s", splited[1],
-			(*pnode)->v_identifier);
-		ov_string_freelist(splited);
-		Throw(OV_ERR_BADPARAM);
-	}
-	ov_string_freelist(splited);
-	return 0;
-}
-
 OV_INSTPTR_TGraph_Node getSelfNode(OV_INSTPTR_wandelbareTopologie_Node proot) {
 	/* param check */
 	if(!proot) Throw(OV_ERR_BADPARAM);
@@ -172,6 +125,82 @@ OV_INSTPTR_TGraph_Node getSelfNode(OV_INSTPTR_wandelbareTopologie_Node proot) {
 	return nodetmp;
 }
 
+void gtpf_getActionNodes(OV_INSTPTR_ov_domain env, OV_STRING action,
+		OV_INSTPTR_TGraph_Node** targetSet, OV_UINT* len) {
+	OV_INSTPTR_wandelbareTopologie_Node pnode = NULL;
+	*len = 0;
+	OV_UINT tmp = 0;
+	Ov_ForEachChildEx(ov_containment, env, pnode, wandelbareTopologie_Node)
+	{
+		tmp++;
+	}
+	*targetSet = ov_memstack_alloc(tmp * sizeof(OV_INSTPTR_TGraph_Node));
+	Ov_ForEachChildEx(ov_containment, env, pnode, wandelbareTopologie_Node)
+	{
+		if(ov_vector_contains(pnode->v_PSkills.value, &action,
+			pnode->v_PSkills.veclen, OV_VT_STRING)) {
+			(*targetSet)[*len] = getSelfNode(pnode);
+			(*len)++;
+		}
+	}
+}
+
+OV_RESULT getNodeAction(OV_STRING path,
+		OV_INSTPTR_wandelbareTopologie_Node* pnode, OV_STRING* action,
+		OV_STRING* param) {
+	if(!path) return OV_ERR_BADPARAM;
+
+	/* init */
+	if(action) ov_string_setvalue(action, NULL);
+	if(param) ov_string_setvalue(param, NULL);
+
+	OV_UINT len = 0;
+	OV_STRING* splited = ov_string_split(path, SEPERATOR, &len);
+
+	if(splited[0][ov_string_getlength(splited[0]) - 1] == '/') {
+		*pnode = NULL;
+		if(len > 1 && splited[1]) {
+			ov_string_setvalue(action, splited[1]);
+		}
+		if(ov_string_compare(*action, "HEAT") == OV_STRCMP_EQUAL)
+			ov_string_setvalue(param, "180");
+	} else {
+		OV_INSTPTR_ov_object pobjtmp = ov_path_getobjectpointer(splited[0], 2);
+// param check
+		if(!pobjtmp) {
+			ov_string_freelist(splited);
+			return OV_ERR_BADPARAM;
+		}
+		if(!Ov_CanCastTo(wandelbareTopologie_Node, pobjtmp)) {
+			ov_string_freelist(splited);
+			return OV_ERR_BADPARAM;
+		}
+		*pnode = Ov_StaticPtrCast(wandelbareTopologie_Node, pobjtmp);
+	}
+
+	if(len == 1) {
+		ov_string_freelist(splited);
+		return 0;
+	}
+
+//ofen || drehtisch
+	if(*pnode) {
+		if(ov_vector_contains((*pnode)->v_PSkills.value, &splited[1],
+			(*pnode)->v_PSkills.veclen, OV_VT_STRING)) {
+			ov_string_setvalue(action, splited[1]);
+			if(ov_string_compare(*action, "HEAT") == OV_STRCMP_EQUAL)
+				ov_string_setvalue(param, "180");
+		} else {
+			ov_logfile_error("bad action %s on object %s", splited[1],
+				(*pnode)->v_identifier);
+			ov_string_freelist(splited);
+			Throw(OV_ERR_BADPARAM);
+		}
+	}
+	ov_string_freelist(splited);
+	return 0;
+}
+
 OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 	OV_RESULT result = OV_ERR_OK;
 	ov_memstack_lock();
@@ -183,13 +212,15 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 //		return OV_ERR_BADPARAM;
 //	}
 // param check
-	if(!ov_path_getobjectpointer(pinst->v_topologie, 2)) {
+	OV_INSTPTR_ov_domain pdom = ov_path_getobjectpointer(pinst->v_topologie, 2);
+	if(!pdom) {
 		ov_logfile_error("topology could not be found");
 		Throw(OV_ERR_BADPARAM);
 	}
 	//cleaning
 	Ov_SetDynamicVectorLength(&pinst->v_pathNode, 0, STRING);
 	Ov_SetDynamicVectorLength(&pinst->v_pathDir, 0, STRING);
+	Ov_SetDynamicVectorLength(&pinst->v_pathDirStr, 0, STRING);
 	Ov_SetDynamicVectorLength(&pinst->v_parameter, 0, STRING);
 
 // get start
@@ -202,10 +233,10 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 	OV_INSTPTR_TGraph_Node node = NULL;
 	result = getNodeAction(pathStr, &proot, &action, &param);
 // param check
-	if(!proot) {
-		ov_logfile_error("start object could not be found");
+	if(result) {
+//		ov_logfile_error("start object could not be found");
 		ov_memstack_unlock();
-		Throw(OV_ERR_BADPARAM);
+		Throw(result);
 	}
 	node = getSelfNode(proot);
 
@@ -220,22 +251,32 @@ OV_RESULT gtpf_dijkstra_execute(OV_INSTPTR_gtpf_dijkstra pinst) {
 
 	//dijkstra
 	OV_INSTPTR_TGraph_Node psource = node;
+	list_p path;
 	for (OV_UINT i = 0; i < pinst->v_recipe.veclen; ++i) {
 		OV_INSTPTR_wandelbareTopologie_Node pobj = NULL;
 		OV_INSTPTR_TGraph_Node ptarget = NULL;
 		ov_string_print(&pathStr, "%s/%s", pinst->v_topologie,
 			pinst->v_recipe.value[i]);
-		getNodeAction(pathStr, &pobj, &action, &param);
+		result = getNodeAction(pathStr, &pobj, &action, &param);
 		if(!pobj) {
-			ov_logfile_error("recipe[%d] could not be found", i);
-			ov_memstack_unlock();
-			return OV_ERR_BADPARAM;
+			if(!action) {
+				ov_logfile_error("recipe[%d] cant", i);
+				ov_memstack_unlock();
+				return OV_ERR_BADPARAM;
+			} else {
+				OV_INSTPTR_TGraph_Node* targetSet = NULL;
+				OV_UINT len = 0;
+				gtpf_getActionNodes(pdom, action, &targetSet, &len);
+				path = dijkstra_get_path_toset(psource, targetSet, len, &ptarget);
+				if(ptarget) pobj = Ov_GetParent(wandelbareTopologie_POI, ptarget);
+			}
+		} else {
+			ptarget = getSelfNode(pobj);
+			path = dijkstra_get_path(psource, ptarget);
 		}
-		ptarget = getSelfNode(pobj);
-		list_p path = dijkstra_get_path(psource, ptarget);
 		if(!path) {
 			ov_logfile_warning("no path between %s %s", psource->v_identifier,
-				ptarget->v_identifier);
+				pathStr);
 			ov_memstack_unlock();
 			return 0;
 		}

@@ -372,6 +372,63 @@ TEST(dijkstra, dijkstra_heat2_turn2) {
 		paramLen);
 }
 
+TEST(dijkstra, dijkstra_action) {
+	//loading env
+	OV_STRING case_name = "case_action";
+	OV_STRING case_path = ovunity_getCasePath(gpinst, case_name);
+	OV_STRING env_path = NULL;
+	ov_string_print(&env_path, "%s/%s", case_path, "env");
+
+	OV_INSTPTR_ov_domain pcase;
+	Ov_CreateObject(ov_domain, pcase, gpinst, case_name);
+
+	OV_INSTPTR_gtpf_dijkstra pobj = NULL;
+	Ov_CreateObject(gtpf_dijkstra, pobj, pcase, "obj");
+
+	ovunity_loadEnv(gpinst, "3schichten.json", env_path);
+
+	//setting param
+	ov_string_setvalue(&pobj->v_start, "PE013");
+	ov_string_setvalue(&pobj->v_topologie, env_path);
+	OV_STRING recipe[2] = { "&HEAT", "PE013" };
+	Ov_SetDynamicVectorValue(&pobj->v_recipe, recipe, 2, STRING);
+
+	//executing
+	gtpf_dijkstra_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+
+	//checking
+	TEST_ASSERT_EQUAL(pobj->v_result, 0);
+
+	const OV_UINT pathDirLen = 5;
+
+	OV_STRING pathDirValue[] = { "[100.000000, 0.000000, 0.000000]",
+		"[100.000000, 0.000000, 0.000000]","HEAT","[-100.000000, 0.000000, 0.000000]","[-100.000000, 0.000000, 0.000000]"
+	};
+	TEST_ASSERT_EQUAL(pobj->v_pathDir.veclen, pathDirLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(pathDirValue, pobj->v_pathDir.value,
+		pathDirLen);
+
+	OV_STRING pathDirStrValue[5] = { "RIGHT", "RIGHT", "HEAT", "LEFT",
+			"LEFT" };
+	TEST_ASSERT_EQUAL(pobj->v_pathDirStr.veclen, pathDirLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(pathDirStrValue, pobj->v_pathDirStr.value,
+		pathDirLen);
+
+	OV_UINT pathNodeLen = 5;
+	OV_STRING pathNodeValue[] =
+			{ "PE013_0", "PE016_0", "PE019", "PE019_0",
+			"PE016_0" };
+	TEST_ASSERT_EQUAL(pobj->v_pathNode.veclen, pathNodeLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(pathNodeValue, pobj->v_pathNode.value,
+		pathNodeLen);
+
+	OV_UINT paramLen = 5;
+	OV_STRING paramValue[] = { NULL, NULL, "180", NULL, NULL };
+	TEST_ASSERT_EQUAL(pobj->v_parameter.veclen, paramLen);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(paramValue, pobj->v_parameter.value, paramLen);
+}
+
+
 TEST_GROUP_RUNNER(dijkstra) {
 	RUN_TEST_CASE(dijkstra, dijkstra_default);
 	RUN_TEST_CASE(dijkstra, dijkstra_badstart);
@@ -380,6 +437,7 @@ TEST_GROUP_RUNNER(dijkstra) {
 	RUN_TEST_CASE(dijkstra, dijkstra_heat);
 	RUN_TEST_CASE(dijkstra, dijkstra_heat_false);
 	RUN_TEST_CASE(dijkstra, dijkstra_turn);
+	RUN_TEST_CASE(dijkstra, dijkstra_action);
 //	RUN_TEST_CASE(dijkstra, dijkstra_heat2_turn2);
 //  RUN_TEST_CASE(dijkstra, AnotherIgnoredTest);
 //  RUN_TEST_CASE(dijkstra, ThisFunctionHasNotBeenTested_NeedsToBeImplemented);

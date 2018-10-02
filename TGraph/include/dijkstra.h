@@ -62,13 +62,17 @@ OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist) {
 	return minChild;
 }
 
-//dijkstra
-list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+list_p dijkstra_get_path_toset(OV_INSTPTR_TGraph_Node n1,
+		OV_INSTPTR_TGraph_Node* targetSet, OV_UINT len,
+		OV_INSTPTR_TGraph_Node* target) {
 	/*param check*/
-	if(!n1 || !n2) Throw(OV_ERR_BADPARAM);
+	if(!n1 || !targetSet) Throw(OV_ERR_BADPARAM);
 	/* if target == source */
-	if(n1 == n2) {
-		return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+	for (OV_UINT i = 0; i < len; i++) {
+		if(n1 == targetSet[i]) {
+			*target = targetSet[i];
+			return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+		}
 	}
 
 	OV_STRING path = ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, n1), 2);
@@ -79,38 +83,36 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 
 	OV_INSTPTR_ov_domain Nodes = &(Graph->p_Nodes);
 	OV_INT source = -1;
-	OV_INT target = -1;
 	OV_INSTPTR_TGraph_Node node = NULL;
-//n = getKnonenZahl;
+	//n = getKnonenZahl;
 	OV_UINT n = 0;
 	Ov_ForEachChildEx(ov_containment, Nodes, node, TGraph_Node)
 	{
 		n++;
 	}
 
-//OV_Node vert[] = allocate(n*p);
+	//OV_Node vert[] = allocate(n*p);
 	OV_INSTPTR_TGraph_Node* V = ov_memstack_alloc(
 		n * sizeof(OV_INSTPTR_TGraph_Node));
 	OV_INT i = 0;
 	Ov_ForEachChildEx(ov_containment, Nodes, node, TGraph_Node)
 	{
 		if(node == n1) source = i;
-		if(node == n2) target = i;
 		V[i++] = node;
 	}
 
-//OV_INT prev[] = allocate(n);
+	//OV_INT prev[] = allocate(n);
 	OV_INT* prev = ov_memstack_alloc(n * sizeof(OV_INT));
 	for (OV_UINT i = 0; i < n; ++i) {
 		prev[i] = -1;
 	}
 
-//	OV_SINGLE dist[] = allocate(n);
+	//	OV_SINGLE dist[] = allocate(n);
 	OV_SINGLE* dist = ov_memstack_alloc(n * sizeof(OV_SINGLE));
 	for (OV_UINT i = 0; i < n; ++i) {
 		dist[i] = -1;
 	}
-//	OV_INT adj[][] = allocate(n * n);
+	//	OV_INT adj[][] = allocate(n * n);
 	OV_SINGLE** adj = ov_memstack_alloc(n * sizeof(OV_SINGLE*));
 	for (OV_UINT i = 0; i < n; ++i) {
 		adj[i] = ov_memstack_alloc(n * sizeof(OV_SINGLE));
@@ -141,23 +143,28 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 		OV_INT current = getMinChild(Unexplored, dist);
 		if(current == -1) break;
 
-		if(current == target) {
-			list_t* pathList = constructList(sizeof(OV_INSTPTR_TGraph_Edge));
-			pathList->printNode = &printEdge;
-			do {
-				insertFirst(pathList,
-					TGraph_graph_areNodesLinked(V[prev[current]], V[current]));
-				current = prev[current];
-			} while (current != source);
-			listPrint(pathList);
-			return pathList;
+		for (OV_UINT i = 0; i < len; i++) {
+			if(V[current] == targetSet[i]) {
+				if(target) {
+					*target = targetSet[i];
+				}
+				list_t* pathList = constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+				pathList->printNode = &printEdge;
+				do {
+					insertFirst(pathList,
+						TGraph_graph_areNodesLinked(V[prev[current]], V[current]));
+					current = prev[current];
+				} while (current != source);
+				listPrint(pathList);
+				return pathList;
+			}
 		}
 		// Node with the least distance
 		// will be selected first
-//		remove u from Q
+		//		remove u from Q
 		listRemove(Unexplored, &current);
 
-//		for v in adj[u]:
+		//		for v in adj[u]:
 		for (OV_UINT v = 0; v < n; ++v) {
 			if(adj[current][v] < 0) continue;
 
@@ -170,6 +177,18 @@ list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 	}
 	return NULL;
 }
+
+//dijkstra
+list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+	/*param check*/
+	if(!n1 || !n2) Throw(OV_ERR_BADPARAM);
+	/* if target == source */
+	if(n1 == n2) {
+		return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+	}
+	return dijkstra_get_path_toset(n1, &n2, 1, NULL);
+}
+
 
 /* execute dijksta */
 //OV_RESULT dijkstra(list_t* graph, list_t *path, Data_t *proot, Data_t *ptarget) {
