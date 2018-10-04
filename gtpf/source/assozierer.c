@@ -300,7 +300,7 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
 				ov_path_getobjectpointer(pathToGraph, 2));
 			Ov_DeleteObject(ggraph);
 			result = Ov_CreateObject(TGraph_graph, ggraph, ptop, "Graph");
-			if(!result) Throw(result);
+			if(result) Throw(result);
 		} else {
 			Throw(result);
 		}

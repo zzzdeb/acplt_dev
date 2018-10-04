@@ -28,7 +28,7 @@ OV_DLLFNCEXPORT int gitter2png(Gitter_t* gitter, OV_STRING name) {
 
 	OV_STRING path = NULL;
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&path, "%s/dev/gtpf/%s.png", ahome, name);
+	ov_string_print(&path, "%s/dev/%s.png", ahome, name);
 
 	fp = fopen(path, "wb");
 	if(!fp) {
