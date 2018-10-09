@@ -29,6 +29,11 @@ typedef struct Gitter {
 	Cell_t* A;
 	OV_INSTPTR_wandelbareTopologie_Node pWagon;
 } Gitter_t;
+
+enum DRAWINGFORMAT {
+	DRAWDEFAULT = 0, DRAWNODES = 1, DRAWREACHABLE = 2, DRAWASSOC = 4, DRAWPOI = 8
+};
+
 /*
  * Gitter Functions
  */
@@ -50,7 +55,8 @@ void canTakeRect(Gitter_t* gitter, Rectangular_t* rect);
 
 int gitter2png(Gitter_t* gitter, OV_STRING name);
 
-void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop);
+void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop,
+		enum DRAWINGFORMAT format);
 
 Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1);
 

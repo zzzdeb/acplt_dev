@@ -350,7 +350,7 @@ OV_DLLFNCEXPORT OV_RESULT gtpf_assozierer_execute(
 
 	//image
 	Gitter_t* gitter = gitterConstruct();
-	draw_top(gitter, ptop);
+	draw_top(gitter, ptop, pinst->v_drawingFormat);
 	gitter2png(gitter, "gtpf/assozierer_viz");
 
 	ov_memstack_unlock();

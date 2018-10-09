@@ -25,6 +25,7 @@ LIBRARY gtpf
 			MAXGAP : SINGLE 	HAS_SET_ACCESSOR	FLAGS="i" 	COMMENT = "Gap zwischen Wagens" INITIALVALUE=10.0;
 			ResultAsJson: STRING FLAGS="i"	COMMENT = "result as json";
 			result		:		INT				FLAGS="o"		COMMENT="0: succes, 1: error, 4: badparam";
+			drawingFormat	:	INT		FLAGS="i"		COMMENT="0: draw all, 1: draw nodes, 2: draw reach, 4: draw assoc, 8: draw_poi; ADD to draw multiple" INITIALVALUE=0;
 			// Add variables here. The syntax is:
 			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
 			// Example:

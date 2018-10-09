@@ -131,7 +131,8 @@ OV_DLLFNCEXPORT Cell_t* cell_at(Gitter_t* gitter, OV_INT x, OV_INT y) {
 	return gitter->A + y * (gitter->width) + x;
 }
 
-OV_DLLFNCEXPORT void reachable(Gitter_t* gitter, Point_t* pos, int dir, OV_SINGLE range) {
+OV_DLLFNCEXPORT void reachable(Gitter_t* gitter, Point_t* pos, int dir,
+		OV_SINGLE range) {
 	Cell_t* cell = cell_at_rel2global(gitter, pos->x, pos->y);
 	cell->abgebbar = 1;
 }
@@ -141,7 +142,8 @@ OV_DLLFNCEXPORT void canTakeAtPoint(Gitter_t* gitter, OV_SINGLE x, OV_SINGLE y) 
 	cell->abnehmbar = 1;
 }
 
-OV_DLLFNCEXPORT void canTakeBetweenPoints(Gitter_t* gitter, Point_t* pnt1, Point_t* pnt2) {
+OV_DLLFNCEXPORT void canTakeBetweenPoints(Gitter_t* gitter, Point_t* pnt1,
+		Point_t* pnt2) {
 	OV_SINGLE dist = sqrt(
 		pow((pnt2->x - pnt1->x), 2) + pow((pnt2->y - pnt1->y), 2));
 	OV_INT numOfSteps = dist / gitter->step + 1;
@@ -178,48 +180,17 @@ OV_DLLFNCEXPORT void drawRect(Gitter_t* gitter, const Rectangular_t* rect) {
 	canTakeBetweenPoints(gitter, c4, c1);
 }
 
-OV_DLLFNCEXPORT void drawAssoc(Gitter_t* gitter, const OV_INSTPTR_TGraph_Node wagon1,
-		const OV_INSTPTR_TGraph_Node wagon2) {
+OV_DLLFNCEXPORT void drawAssoc(Gitter_t* gitter,
+		const OV_INSTPTR_TGraph_Node wagon1, const OV_INSTPTR_TGraph_Node wagon2) {
 	Position_t* pos1 = positionFromNode(wagon1);
 	Position_t* pos2 = positionFromNode(wagon2);
 	canTakeBetweenPoints(gitter, &pos1->pos, &pos2->pos);
 }
 
-OV_DLLFNCEXPORT void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop) {
+
+OV_DLLFNCEXPORT void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop,
+		enum DRAWINGFORMAT format) {
 	OV_INSTPTR_wandelbareTopologie_Node pchild = NULL;
-	Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
-	{
-		Rectangular_t* rect = rectConstruct();
-		rect->b = pchild->v_Xlength;
-		rect->h = pchild->v_Ylength;
-
-		rect->pos.pos.x = pchild->v_x;
-		rect->pos.pos.y = pchild->v_y;
-		rect->pos.dir = degToRad(pchild->v_ThetaZ);
-		drawRect(gitter, rect);
-
-		for (OV_INT x = pchild->v_TTPSVM.value[0]; x <= pchild->v_TTPSVP.value[0];
-				x += 1) {
-			for (OV_INT y = pchild->v_TTPSVM.value[1]; y <= pchild->v_TTPSVP.value[1];
-					y += 1) {
-				for (OV_INT v = pchild->v_TCSVM.value[2]; v <= pchild->v_TCSVP.value[2];
-						v += 1) {
-					//todo: type conversion correction
-					rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
-
-					Point_t* schiebe = pointConstruct();
-					schiebe->x = x;
-					schiebe->y = y;
-					pointRotate(schiebe, rect->pos.dir);
-					rect->pos.pos.x = pchild->v_x + schiebe->x;
-					rect->pos.pos.y = pchild->v_y + schiebe->y;
-
-					drawRect(gitter, rect);
-				}
-			}
-		}
-	}
-	pchild = NULL;
 	OV_INSTPTR_TGraph_graph pgraph = NULL;
 	Ov_ForEachChildEx(ov_containment, ptop, pgraph, TGraph_graph)
 	{
@@ -227,18 +198,70 @@ OV_DLLFNCEXPORT void draw_top(Gitter_t* gitter, OV_INSTPTR_ov_domain ptop) {
 		OV_INSTPTR_TGraph_Node poi = NULL;
 		Ov_ForEachChildEx(ov_containment, Nodes, poi, TGraph_Node)
 		{
-			OV_INSTPTR_TGraph_Edge poiEdgeOut = NULL;
-			Ov_ForEachChildEx(TGraph_Start, poi, poiEdgeOut, TGraph_Edge)
-			{
-				OV_INSTPTR_TGraph_Node poiChild = Ov_StaticPtrCast(TGraph_Node, Ov_GetParent(TGraph_End, poiEdgeOut));
-				drawAssoc(gitter, poi, poiChild);
+			if(format & DRAWPOI) {
+				pchild = Ov_GetParent(wandelbareTopologie_POI, poi);
+				Rectangular_t* rect = rectConstruct();
+				rect->b = pchild->v_Xlength;
+				rect->h = pchild->v_Ylength;
+
+				rect->pos.pos.x = poi->v_Position.value[0];
+				rect->pos.pos.y = poi->v_Position.value[1];
+				rect->pos.dir = degToRad(poi->v_Position.value[2]);
+				drawRect(gitter, rect);
+			}
+			//drawing assoc
+			if(!format || format & DRAWASSOC) {
+				OV_INSTPTR_TGraph_Edge poiEdgeOut = NULL;
+				Ov_ForEachChildEx(TGraph_Start, poi, poiEdgeOut, TGraph_Edge)
+				{
+					OV_INSTPTR_TGraph_Node poiChild = Ov_StaticPtrCast(TGraph_Node,
+						Ov_GetParent(TGraph_End, poiEdgeOut));
+					drawAssoc(gitter, poi, poiChild);
+				}
+			}
+		}
+	}
+	pchild = NULL;
+	if(!format || format & (DRAWNODES | DRAWREACHABLE)) {
+		Ov_ForEachChildEx(ov_containment, ptop, pchild, wandelbareTopologie_Node)
+		{
+			Rectangular_t* rect = rectConstruct();
+			rect->b = pchild->v_Xlength;
+			rect->h = pchild->v_Ylength;
+
+			rect->pos.pos.x = pchild->v_x;
+			rect->pos.pos.y = pchild->v_y;
+			rect->pos.dir = degToRad(pchild->v_ThetaZ);
+			/* draw nodes */
+			if(!format || format & DRAWNODES) drawRect(gitter, rect);
+			/* draw reach */
+			if(!format || format & DRAWREACHABLE) {
+				for (OV_INT x = pchild->v_TTPSVM.value[0];
+						x <= pchild->v_TTPSVP.value[0]; x += 1) {
+					for (OV_INT y = pchild->v_TTPSVM.value[1];
+							y <= pchild->v_TTPSVP.value[1]; y += 1) {
+						for (OV_INT v = pchild->v_TCSVM.value[2];
+								v <= pchild->v_TCSVP.value[2]; v += 1) {
+							//todo: type conversion correction
+							rect->pos.dir = degToRad(pchild->v_ThetaZ + v);
+
+							Point_t* schiebe = pointConstruct();
+							schiebe->x = x;
+							schiebe->y = y;
+							pointRotate(schiebe, rect->pos.dir);
+							rect->pos.pos.x = pchild->v_x + schiebe->x;
+							rect->pos.pos.y = pchild->v_y + schiebe->y;
+
+							drawRect(gitter, rect);
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
 OV_DLLFNCEXPORT Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
-
 
 //		Gitter_t _
 //		int Factory[i][y][x] = alloc(size(uint16) * x * y)
@@ -293,5 +316,4 @@ OV_DLLFNCEXPORT Gitter_t* createPics(OV_INSTPTR_wandelbareTopologie_Node w1) {
 //		}
 	return w1Gitter;
 }
-
 

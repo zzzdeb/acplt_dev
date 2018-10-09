@@ -74,7 +74,7 @@ TEST(assozierer, assozierer_default) {
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(env_path, 2));
-	draw_top(gitter, ptop);
+	draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
 	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_default_vis");
 
 	TEST_ASSERT_EQUAL(pobj->v_result, 0);
@@ -100,7 +100,7 @@ TEST(assozierer, assozierer_2neighbour) {
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(env_path, 2));
-	draw_top(gitter, ptop);
+	draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
 	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_2neighbour_fix_vis");
 
 	TEST_ASSERT_EQUAL(pobj->v_result, 0);
@@ -128,7 +128,7 @@ TEST(assozierer, assozierer_schieber) {
 	Gitter_t* gitter = gitterConstruct();
 	OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(ov_domain,
 		ov_path_getobjectpointer(env_path, 2));
-	draw_top(gitter, ptop);
+	draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
 	gitter2png(gitter, "gtpfTest/test/assoziererTest/case_schieber_vis");
 
 	TEST_ASSERT_EQUAL(pobj->v_result, 0);
