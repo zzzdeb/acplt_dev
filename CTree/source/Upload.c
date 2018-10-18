@@ -169,7 +169,7 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 
 	switch (vartype) {
 		case OV_VT_VOID:
-			result = OV_ERR_BADTYPE;
+			jsvalue = cJSON_CreateNull();
 			break;
 		case OV_VT_BYTE:
 			jsvalue = cJSON_CreateNumber(*((OV_UINT*) var));
@@ -198,7 +198,7 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 			jsvalue = cJSON_CreateString(*((OV_STRING*) var));
 			break;
 		case OV_VT_TIME:
-			jsvalue = cJSON_CreateString(ov_time_timetoascii(var));
+			jsvalue = cJSON_CreateString(ov_time_timetoascii((OV_TIME*) var));
 			break;
 		case OV_VT_TIME_SPAN:
 			/*jsvalue = cJSON_CreateString(
@@ -387,14 +387,15 @@ OV_RESULT getVars(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,
 		 *	begin
 		 */
 		if(Ov_Fail(
-			ov_element_getnextpart(&path.elements[path.size - 1], &child, mask))) {
+			ov_element_getnextpart(pparent, &child, mask))) {
 			Ov_Warning("internal error");
 			return OV_ERR_GENERIC;
 		}
 		/*
 		 *	test if we are finished, 	ignoring first 5 var */
-		if(child.elemtype
-				& ~0x3F|| child.elemtype == OV_ET_NONE || ov_string_compare(child.elemunion.pvar->v_identifier, "identifier")==OV_STRCMP_EQUAL) {
+		if((child.elemtype & ~0x3F)
+				|| child.elemtype
+						== OV_ET_NONE|| ov_string_compare(child.elemunion.pvar->v_identifier, "identifier")==OV_STRCMP_EQUAL) {
 			break;
 		}
 
@@ -408,6 +409,7 @@ OV_RESULT getVars(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,
 		cJSON_DeleteItemFromObject(jsobj, VARIABLESNAME);
 	ov_string_setvalue(&typestr, NULL);
 	ov_string_setvalue(&var_path, NULL);
+	return OV_ERR_OK;
 }
 
 OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,

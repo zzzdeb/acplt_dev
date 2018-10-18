@@ -34,6 +34,8 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	pinst->v_varByte.value.valueunion.val_byte = 1;
 	/* do what */
 	OV_UINT size = 0;
+	pinst->v_varStruct.integ = 10;
+	pinst->v_varStruct.sin = 10;
 	/*
 	 * boolvec
 	 */
@@ -130,14 +132,14 @@ OV_DLLFNCEXPORT void CTree_test_shutdown(OV_INSTPTR_ov_object pobj) {
 	return;
 }
 
-OV_DLLFNCEXPORT OV_ACCESS CTree_test_getaccess(OV_INSTPTR_ov_object pobj,
-		const OV_ELEMENT *pelem, const OV_TICKET *pticket) {
-	/*
+OV_DLLFNCEXPORT void CTree_test_typemethod(OV_INSTPTR_fb_functionblock pfb,
+		OV_TIME *pltc) {
+	/*    
 	 *   local variables
 	 */
-//	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pobj);
+	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pfb);
 
-	return OV_AC_READWRITE | OV_AC_DELETEABLE | OV_AC_RENAMEABLE;
-	return (OV_ACCESS) 0;
+	return;
 }
+
 

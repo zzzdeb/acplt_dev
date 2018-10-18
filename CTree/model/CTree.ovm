@@ -224,32 +224,32 @@ LIBRARY CTree
 	END_CLASS;
 	
 	
-	CLASS test : CLASS fb/object
+	CLASS test : CLASS fb/functionblock
 	IS_INSTANTIABLE;
 	VARIABLES
 		//varVoid: C_TYPE<OV_VOID>;
-		varByte: ANY;
-		varBool: BOOL;
-		varInt: INT INITIALVALUE=-1;
-		varUint: UINT INITIALVALUE=1;
-		varSingle: SINGLE INITIALVALUE=1.1;
-		varDouble: DOUBLE INITIALVALUE=-1.1;
-		varString: STRING INITIALVALUE="string test";
-		varTime:	TIME;
-		varTimeSpan:	TIME_SPAN;
-		varState:	C_TYPE<OV_STATE>;
-		varStruct:	C_TYPE<TestStruct>;
+		varByte: ANY FLAGS="i";
+		varBool: BOOL FLAGS="o" COMMENT= "a ";
+		varInt: INT  FLAGS="o" INITIALVALUE=-1;
+		varUint: UINT  FLAGS="o" INITIALVALUE=1;
+		varSingle: SINGLE FLAGS="i" INITIALVALUE=1.1;
+		varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
+		varString: STRING FLAGS="i" INITIALVALUE="string test";
+		varTime:	TIME FLAGS="i";
+		varTimeSpan:	TIME_SPAN FLAGS="o";
+		varState:	C_TYPE<OV_STATE> FLAGS="i";
+		varStruct:	C_TYPE<TestStruct> FLAGS="i";
 		
 		
-		varByteVec:	ANY;
-		varBoolVec[]: BOOL;
-		varIntVec[]:	INT;
-		varUintVec[]:	UINT;
-		varSingleVec[]:	SINGLE;
-		varDoubleVec[]:	DOUBLE;
-		varStringVec[]:	STRING;
-		varTimeVec[]:	TIME;
-		varTimeSpanVec[]:	TIME_SPAN;
+		varByteVec:	ANY FLAGS="o";
+		varBoolVec[]: BOOL FLAGS="i";
+		varIntVec[]:	INT FLAGS="i";
+		varUintVec[]:	UINT FLAGS="o";
+		varSingleVec[]:	SINGLE FLAGS="i";
+		varDoubleVec[]:	DOUBLE FLAGS="o";
+		varStringVec[]:	STRING FLAGS="i";
+		varTimeVec[]:	TIME FLAGS="o";
+		varTimeSpanVec[]:	TIME_SPAN FLAGS="i";
 		//varStructVec:	C_TYPE<TestStruct>;
 		
 	END_VARIABLES;
@@ -258,9 +258,9 @@ LIBRARY CTree
 		testpart2:	CLASS ksxdr/xdrClient;
 	END_PARTS;
 	OPERATIONS
+		typemethod		: C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		startup				:	C_FUNCTION <OV_FNC_STARTUP>;
 		shutdown				:	C_FUNCTION <OV_FNC_SHUTDOWN>;
-		getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
 	END_OPERATIONS;
 	END_CLASS;
 
