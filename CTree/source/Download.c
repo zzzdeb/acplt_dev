@@ -127,7 +127,7 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 		case OV_VT_VOID:
 			break;
 		case OV_VT_BYTE:
-			return OV_ERR_NOTIMPLEMENTED;
+			*((OV_BYTE*) value) = jstrueval->valueint;
 			break;
 		case OV_VT_BOOL:
 			*((OV_BOOL*) value) = jstrueval->valueint;
@@ -280,7 +280,7 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 			((OV_ANY*) value)->state = cJSON_GetArrayItem(jstrueval, 1)->valueint;
 			ov_time_asciitotime(&((OV_ANY*) value)->time,
 				cJSON_GetArrayItem(jstrueval, 2)->valuestring);
-			jsonToVarvalue(&((OV_ANY*) value)->value,
+			result = jsonToVarvalue(&((OV_ANY*) value)->value,
 				cJSON_GetArrayItem(jstrueval, 0));
 			break;
 		case OV_VT_POINTER:
@@ -328,6 +328,9 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
 	jstrueval = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
 	/* writing value */
 	result = jsonToValue(pelement->pvalue, type, jstrueval);
+	if(result)
+		ov_logfile_error("%s.%s: %s", pelement->pobj->v_identifier,
+			pelement->elemunion.pvar->v_identifier, ov_result_getresulttext(result));
 	return result;
 }
 
