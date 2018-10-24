@@ -722,7 +722,7 @@ OV_RESULT crawl_tree(OV_INSTPTR_CTree_Upload pinst,
 	return res;
 }
 
-OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
+OV_DLLFNCEXPORT OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
 	OV_RESULT res = OV_ERR_OK;
 	/*
 	 * Initial

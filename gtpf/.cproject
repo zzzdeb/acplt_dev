@@ -74,6 +74,7 @@
 								<option id="gnu.both.asm.option.include.paths.1491329579" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TGraph}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ovdatastruct}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.26172924" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -115,6 +116,7 @@
 								<option id="gnu.both.asm.option.include.paths.488870846" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TGraph}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ovdatastruct}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1182217891" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

@@ -7,7 +7,10 @@
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="gtpfTest"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="gtpfTest/build/linux"/>
+						<entry flags="RESOLVED" kind="includePath" name="/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/gtpfTest/../ovunity/include/"/>
+						<entry flags="RESOLVED" kind="includePath" name="/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/gtpfTest/../ovunity/"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/cexception"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/unity"/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>

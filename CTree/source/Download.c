@@ -324,6 +324,16 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
 	if(result) return result;
 	if(type != pelement->elemunion.pvar->v_vartype) return OV_ERR_BADPARAM;
 
+//	OV_ANY val = { 0 };
+//	if(pelement->elemunion.pvar->v_vartype == OV_ANY) {
+//		jsonToValue(&val, OV_ANY, jstrueval);
+//		Ov_SetAnyValue(pelement->pvalue, &val);
+//	} else {
+//		Ov_SetAnyValueByPointer(pelement->pvalue, pelement->elemunion.pvar->v_vartype,
+//);
+//	}
+
+
 	/* getting jsvalue */
 	jstrueval = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
 	/* writing value */
@@ -443,8 +453,10 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
 			"%i Libraries couldnt loaded: %s", cJSON_GetArraySize(jslibs_cpy),
 			tmpStr);
 		free(tmpStr);
+		cJSON_Delete(jslibs_cpy);
 		return OV_ERR_GENERIC;
 	}
+	cJSON_Delete(jslibs_cpy);
 	ov_string_setvalue(&libname, NULL);
 	return 0;
 }

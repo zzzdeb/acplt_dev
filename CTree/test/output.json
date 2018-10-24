@@ -1,18 +1,1203 @@
 {
-    "Tree":{
-        "A":{
-            "factory":"/acplt/CTree/Upload",
-            "variables":{},
-            "children":{
-                "AA":{
-                    "factory":"/acplt/CTree/Upload",
-                    "variables":{},
-                    "children":{}
+    "Tree": {
+        "A": {
+            "factory": "/acplt/CTree/Upload",
+            "variables": {},
+            "children": {
+                "AA": {
+                    "factory": "/acplt/CTree/Upload",
+                    "variables": {},
+                    "children": {}
                 }
             }
         }
     },
-    "Links":{},
-    "Path":"/TechUnits",
-    "Libraries":["CTree","ksapi"]
+    "Links": {},
+    "Path": "/TechUnits",
+    "Libraries": ["CTree", "ksapi"]
+}
+
+{
+    "Libraries": ["ov"],
+    "Tree": {
+        "TechUnits": {
+            "variables": {
+                "identifier": ["STRING", "TechUnits"],
+                "idH": ["UINT", 0],
+                "idL": ["UINT", 578],
+                "creationtime": ["TIME", "2018/10/18 10:45:32.044146"],
+                "pouterobject": [],
+                "objectstate": ["INT", 3],
+                "linktable": []
+            },
+            "class": "ov/domain"
+        }
+    },
+    "Path": "/TechUnits"
+} {
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": [],
+                "varStruct": [],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]],
+                "identifier": ["STRING", "test"],
+                "idH": ["UINT", 0],
+                "idL": ["UINT", 846],
+                "creationtime": ["TIME", "2018/10/18 10:58:31.246111"],
+                "pouterobject": [],
+                "objectstate": ["INT", 3],
+                "linktable": []
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": [],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": [],
+                        "dataReceived": [],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": [],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 10:58:31.256281"],
+                        "identifier": ["STRING", "testpart1"],
+                        "idH": ["UINT", 0],
+                        "idL": ["UINT", 847],
+                        "creationtime": ["TIME", "2018/10/18 10:58:31.246111"],
+                        "pouterobject": [],
+                        "objectstate": ["INT", 3],
+                        "linktable": []
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": [],
+                "varStruct": [],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": [],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": [],
+                        "dataReceived": [],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": [],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 11:09:50.747188"]
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["OV_CTYPE"],
+                "varStruct": ["OV_CTYPE"],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["OV_CTYPE"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["OV_CTYPE"],
+                        "dataReceived": ["OV_CTYPE"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["OV_CTYPE"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 11:15:58.536981"]
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", [0, 0, 0, 0]],
+                "varStruct": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0]],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "dataReceived": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 11:30:03.950554"]
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", [0, 0, 0, 0]],
+                "varStruct": ["CTYPE", [10, 0, 0, 0, 0, 0, 32, 65]],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "dataReceived": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 11:33:53.467570"]
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {},
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {},
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {},
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {},
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {},
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY:BYTE", 1],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY:BYTE_VEC", [97, 1, 1, 1, 1]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 16:46:37.491344"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 16:46:37.491347"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY", "BYTE"],
+                "varBool": ["BOOL"],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY", "BYTE_VEC", [97, 1, 1, 1, 1],
+                    [0, "1970/01/01 00:00:00.000000"]
+                ],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL"],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 18:54:55.377586"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL"],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 18:54:55.377588"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY", 1],
+                "varBool": ["BOOL"],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY", ["BYTE_VEC", [97, 1, 1, 1, 1], 0, "1970/01/01 00:00:00.000000"]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL"],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 18:56:45.389077"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL"],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 18:56:45.389078"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY", ["BYTE", 1, 0, "1970/01/01 00:00:00.000000"]],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY", ["BYTE_VEC", [97, 1, 1, 1, 1], 0, "1970/01/01 00:00:00.000000"]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 19:01:43.799387"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 19:01:43.799390"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY", [
+                    ["INT", 3], 1, "1970/01/01 00:00:00.000000"
+                ]],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY", [
+                    ["BYTE_VEC", [97, 1, 1, 1, 1]], 0, "1970/01/01 00:00:00.000000"
+                ]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 19:05:01.001970"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/18 19:05:01.001970"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
+}
+
+
+{
+    "Libraries": ["CTree", "ksxdr"],
+    "Tree": {
+        "test": {
+            "variables": {
+                "varByte": ["ANY", [
+                    ["BYTE", 3], 1, "1970/01/01 00:00:00.000000"
+                ]],
+                "varBool": ["BOOL", false],
+                "varInt": ["INT", -1],
+                "varUint": ["UINT", 1],
+                "varSingle": ["SINGLE", 1.1000000238418579],
+                "varDouble": ["DOUBLE", -1.1],
+                "varString": ["STRING", "string test"],
+                "varTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                "varTimeSpan": ["TIME_SPAN", [0, 0]],
+                "varState": ["CTYPE", "not supported"],
+                "varStruct": ["CTYPE", "not supported"],
+                "varByteVec": ["ANY", [
+                    ["BYTE_VEC", [97, 1, 1, 1, 1]], 0, "1970/01/01 00:00:00.000000"
+                ]],
+                "varBoolVec": ["BOOL_VEC", [false, true, true, true, false]],
+                "varIntVec": ["INT_VEC", [0, 1, -1, 2147483647, 1]],
+                "varUintVec": ["UINT_VEC", [0, 1, 4294967295, 4294967295, 1]],
+                "varSingleVec": ["SINGLE_VEC", [0, -1, -1.1000000238418579, 10, 1]],
+                "varDoubleVec": ["DOUBLE_VEC", [0, -1, -1.1, 10, 1]],
+                "varStringVec": ["STRING_VEC", [null, null, null, null, null]],
+                "varTimeVec": ["TIME_VEC", ["1970/01/01 00:00:01.000001", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000", "1970/01/01 00:00:00.000000"]],
+                "varTimeSpanVec": ["TIME_SPAN_VEC", [
+                    [1, 1],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0],
+                    [0, 0]
+                ]],
+                "iexreq": ["BOOL", false],
+                "eexreq": ["BOOL", true],
+                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                "methcount": ["UINT", 0],
+                "actimode": ["INT", 1],
+                "proctime": ["TIME", "2018/10/19 05:48:36.525179"],
+                "cyctime": ["TIME_SPAN", [0, 0]],
+                "ErrState": ["INT", 0],
+                "calctime": ["TIME_SPAN", [0, 0]],
+                "Xpos": ["INT", 0],
+                "Ypos": ["INT", 0]
+            },
+            "class": "CTree/test",
+            "parts": {
+                "testpart1": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/19 05:48:36.518763"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                },
+                "testpart2": {
+                    "variables": {
+                        "ManagerPort": ["STRING", "7509"],
+                        "msgAccepted": ["INT", 0],
+                        "msgStatus": ["INT", 0],
+                        "rpcErrCode": ["INT", 0],
+                        "sentProcID": ["UINT", 0],
+                        "sentXID": ["UINT", 0],
+                        "timeLastEvent": ["TIME", "1970/01/01 00:00:00.000000"],
+                        "timeout": ["UINT", 30],
+                        "dataToSend": ["CTYPE", "not supported"],
+                        "tempXID": ["UINT", 0],
+                        "tempCallback": ["CTYPE", "not supported"],
+                        "dataReceived": ["CTYPE", "not supported"],
+                        "serverHost": ["STRING", null],
+                        "serverName": ["STRING", null],
+                        "serverPort": ["STRING", null],
+                        "state": ["UINT", 0],
+                        "runningKSservice": ["UINT", 0],
+                        "callback": ["CTYPE", "not supported"],
+                        "holdConnection": ["BOOL", false],
+                        "actimode": ["INT", 0],
+                        "cycInterval": ["INT", 5],
+                        "NextExecTime": ["TIME", "2018/10/19 05:48:36.518766"]
+                    },
+                    "links": {
+                        "RootComTask": {
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": ["/communication/RootComTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "ksxdr/xdrClient"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/test"
 }
