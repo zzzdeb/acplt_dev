@@ -32,6 +32,56 @@
 #include "unity_fixture_internals.h"
 #include "ovunity_helper.h"
 
+#define DATAOBJPRE "/data/obj_"
+#define DATAENVPRE "/data/env_"
+
+OV_DLLFNCEXPORT OV_RESULT ovunity_main_constructor(OV_INSTPTR_ov_object pobj) {
+	/*
+	 *   local variables
+	 */
+	OV_INSTPTR_ovunity_main pinst = Ov_StaticPtrCast(ovunity_main, pobj);
+	OV_RESULT result;
+
+	/* do what the base class does first */
+	result = fb_functionblock_constructor(pobj);
+	if(Ov_Fail(result)) return result;
+
+	/* do what */
+
+	return OV_ERR_OK;
+}
+
+
+OV_DLLFNCEXPORT OV_RESULT ovunity_main_getObjFilePath(
+		OV_INSTPTR_ovunity_main pinst, OV_STRING* path,
+		const OV_STRING name) {
+	return ov_string_print(path, "%s%s%s.json", pinst->v_sysPath, DATAOBJPRE,
+		name);
+}
+
+OV_DLLFNCEXPORT OV_RESULT ovunity_main_getEnvFilePath(
+		OV_INSTPTR_ovunity_main pinst, OV_STRING* path,
+		const OV_STRING name) {
+	return ov_string_print(path, "%s%s%s.json", pinst->v_sysPath, DATAENVPRE,
+		name);
+}
+
+OV_DLLFNCEXPORT OV_RESULT ovunity_helper_str2data(const OV_STRING text,
+		const OV_STRING filename) {
+	if(!text || !filename) {
+		Throw(OV_ERR_BADPARAM);
+	}
+	FILE *handler = fopen(filename, "wb");
+
+	if(handler) {
+		fprintf(handler, "%s", text);
+		// Always remember to close the file.
+		fclose(handler);
+		return 0;
+	}
+	return -1;
+}
+
 OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 	OV_STRING buffer = NULL;
 	long int string_size, read_size;
@@ -46,8 +96,7 @@ OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 		rewind(handler);
 
 		// Allocate a string that can hold it all
-		buffer = (OV_STRING) ov_database_malloc(sizeof(char) * (string_size + 1));
-
+		buffer = (OV_STRING) Ov_HeapMalloc(sizeof(char) * (string_size + 1));
 
 		// Read it all in one operation
 		read_size = fread(buffer, sizeof(char), string_size, handler);
@@ -71,12 +120,6 @@ OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 	return buffer;
 }
 
-OV_DLLFNCEXPORT void ovunity_createCase(const OV_INSTPTR_ovunity_main pinst,
-		const OV_STRING casename) {
-	OV_INSTPTR_ov_domain pcase;
-	Ov_CreateObject(ov_domain, pcase, pinst, casename);
-}
-
 OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const OV_STRING what, const OV_STRING where){
 	/* getting libname and classname */
 	OV_INSTPTR_ov_domain pclass = Ov_GetParent(ov_instantiation, pinst);
@@ -84,6 +127,18 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 	OV_INSTPTR_ov_object plib = Ov_GetParent(ov_containment, pclass);
 	OV_STRING projname = ov_strdup(plib->v_identifier);
 
+	OV_STRING dataPath = NULL;
+	char* ahome = getenv("ACPLT_HOME");
+	ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname,
+		classname, what);
+	ovunity_loadJsonAsTree(dataPath, where);
+
+	ov_free(classname);
+	ov_free(projname);
+	return;
+}
+
+OV_DLLFNCEXPORT void ovunity_loadJsonAsTree(const OV_STRING what, const OV_STRING where) {
 //	OV_RESULT res = 0;
 	OV_SETVAR_PAR params = { 0 };
 	OV_SETVAR_RES result = { 0 };
@@ -100,10 +155,6 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 
 //#####################################################################
 //process multiple variables at once
-	OV_STRING dataPath = NULL;
-	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname,
-		classname, what);
 
 	OV_SETVAR_ITEM items[4];
 	OV_STRING uploadPath = "/data/CTree/Download";
@@ -111,8 +162,10 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 	items[0].path_and_name = NULL;
 	ov_string_print(&items[0].path_and_name, "%s.%s", uploadPath, "json"); /*	see comment below	*/
 	items[0].var_current_props.value.vartype = KS_VT_STRING;
-	items[0].var_current_props.value.valueunion.val_string = ovunity_helper_data2str(dataPath);
-	
+	//todo data2str gives heaped
+	items[0].var_current_props.value.valueunion.val_string =
+			ovunity_helper_data2str(what);
+
 	items[1].path_and_name = NULL;
 	ov_string_print(&items[1].path_and_name, "%s.%s", uploadPath, "path");
 	items[1].var_current_props.value.vartype = KS_VT_STRING;
@@ -135,6 +188,7 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 		ov_string_setvalue(&params.items_val[i].path_and_name, NULL);
 	}
 	//TODO: free params.items_val[i].valuestr
+	Ov_HeapFree(items[0].var_current_props.value.valueunion.val_string);
 
 	/*	delete Ticket	*/
 	pticket->vtbl->deleteticket(pticket);
@@ -163,8 +217,6 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 //		fr = kshttp_print_result_array(&response->contentString, request.response_format, result.results_val, result.results_len, "");
 
 	ov_memstack_unlock();
-	ov_free(classname);
-	ov_free(projname);
 	return;
 }
 
@@ -172,11 +224,29 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst, const 
 /*
  * gives path under the object to simulate environment
  */
+
+/* creates case with case_name under pinst and links */
+OV_DLLFNCEXPORT OV_INSTPTR_ovunity_ovCase ovunity_createCase(
+		OV_INSTPTR_ovunity_main pinst,
+		const OV_STRING case_name) {
+	OV_RESULT result = OV_ERR_OK;
+	OV_INSTPTR_ovunity_ovCase pcase = NULL;
+	result = Ov_CreateObject(ovunity_ovCase, pcase, pinst, case_name);
+	if(result) Throw(result);
+	pcase->v_sysPath = NULL;
+	ov_string_print(&pcase->v_sysPath, "%s/%s", pinst->v_sysPath, case_name);
+	result = Ov_Link(ovunity_case, pinst, pcase);
+	if(result) Throw(result);
+	return pcase;
+}
+
 OV_DLLFNCEXPORT OV_STRING ovunity_getCasePath(const OV_INSTPTR_ovunity_main pinst,
 		const OV_STRING case_name) {
 	OV_STRING path = NULL;
-	OV_STRING tmp = ov_path_getcanonicalpath((void*) pinst, 2);
-	ov_string_print(&path, "%s/%s", tmp, case_name);
+	OV_INSTPTR_ovunity_ovCase pcase = NULL;
+	pcase = Ov_SearchChildEx(ovunity_case, pinst, case_name, ovunity_ovCase);
+	if(pcase)
+		ov_string_setvalue(&path, ov_path_getcanonicalpath((void*) pcase, 2));
 	return path;
 }
 
