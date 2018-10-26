@@ -167,7 +167,7 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 //		result = OV_ERR_OK; // TODO erase it;
 //	}
 
-	switch (vartype) {
+	switch (vartype & OV_VT_KSMASK) {
 		case OV_VT_VOID:
 			jsvalue = cJSON_CreateNull();
 			break;

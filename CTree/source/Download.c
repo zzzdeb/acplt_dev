@@ -123,7 +123,7 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 	OV_INT i = 0;
 	OV_UINT vecLen = 0;
 	if(type & OV_VT_ISVECTOR) vecLen = cJSON_GetArraySize(jstrueval);
-	switch (type) {
+	switch (type & OV_VT_KSMASK) {
 		case OV_VT_VOID:
 			break;
 		case OV_VT_BYTE:
