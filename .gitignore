@@ -18,6 +18,7 @@
 !/TGraphTest
 !/sync
 !/syncTest
+!/PostSys
 /*/source/sourcetemplates
 /*/build
 !/*/build/*/Makefile
