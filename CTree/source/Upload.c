@@ -198,7 +198,12 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 			jsvalue = cJSON_CreateString(*((OV_STRING*) var));
 			break;
 		case OV_VT_TIME:
-			jsvalue = cJSON_CreateString(ov_time_timetoascii((OV_TIME*) var));
+//			jsvalue = cJSON_CreateString(ov_time_timetoascii_utc((OV_TIME*) var));
+			jsvalue = cJSON_CreateArray();
+			cJSON_AddItemToArray(jsvalue,
+				cJSON_CreateNumber(((OV_TIME*) var)->secs));
+			cJSON_AddItemToArray(jsvalue,
+				cJSON_CreateNumber(((OV_TIME*) var)->usecs));
 			break;
 		case OV_VT_TIME_SPAN:
 			/*jsvalue = cJSON_CreateString(
@@ -287,15 +292,23 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 			break;
 		case OV_VT_TIME_VEC:
 			jsvalue = cJSON_CreateArray();
+//			for (OV_UINT i = 0; i < ((OV_TIME_VEC*) var)->veclen; i++) {
+//				cJSON_AddItemToArray(jsvalue,
+//					cJSON_CreateString(
+//						ov_time_timetoascii_utc(&((OV_TIME_VEC*) var)->value[i])));
+//			}
 			for (OV_UINT i = 0; i < ((OV_TIME_VEC*) var)->veclen; i++) {
-				cJSON_AddItemToArray(jsvalue,
-					cJSON_CreateString(
-						ov_time_timetoascii(&((OV_TIME_VEC*) var)->value[i])));
+				jstmp = cJSON_CreateArray();
+				cJSON_AddItemToArray(jstmp,
+					cJSON_CreateNumber(((OV_TIME_VEC*) var)->value[i].secs));
+				cJSON_AddItemToArray(jstmp,
+					cJSON_CreateNumber(((OV_TIME_VEC*) var)->value[i].usecs));
+				cJSON_AddItemToArray(jsvalue, jstmp);
 			}
 			break;
 		case OV_VT_TIME_SPAN_VEC:
 			jsvalue = cJSON_CreateArray();
-			for (OV_UINT i = 0; i < ((OV_BYTE_VEC*) var)->veclen; i++) {
+			for (OV_UINT i = 0; i < ((OV_TIME_SPAN_VEC*) var)->veclen; i++) {
 				/*
 				 cJSON_AddItemToArray(jsvalue,
 				 cJSON_CreateString(
@@ -345,8 +358,12 @@ OV_RESULT valueToJSON(cJSON **pjsvalue, const OV_VAR_TYPE vartype,
 			cJSON_AddItemToArray(jsvalue,
 				cJSON_CreateNumber(((OV_ANY*) var)->state));
 			/* time */
-			cJSON_AddItemToArray(jsvalue,
-				cJSON_CreateString(ov_time_timetoascii(&((OV_ANY*) var)->time)));
+			jstmp = cJSON_CreateArray();
+			cJSON_AddItemToArray(jstmp,
+				cJSON_CreateNumber(((OV_TIME*) var)->secs));
+			cJSON_AddItemToArray(jstmp,
+				cJSON_CreateNumber(((OV_TIME*) var)->usecs));
+			cJSON_AddItemToArray(jsvalue, jstmp);
 			break;
 		default:
 			return OV_ERR_BADPARAM;

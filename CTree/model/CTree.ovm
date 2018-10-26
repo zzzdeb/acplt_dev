@@ -236,6 +236,7 @@ LIBRARY CTree
 		varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
 		varString: STRING FLAGS="i" INITIALVALUE="string test";
 		varTime:	TIME FLAGS="i";
+		varFunctionedTimefromVarTime:	TIME FLAGS="i";
 		varTimeSpan:	TIME_SPAN FLAGS="o";
 		varState:	C_TYPE<OV_STATE> FLAGS="i";
 		varStruct:	C_TYPE<TestStruct> FLAGS="i";

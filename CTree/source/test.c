@@ -100,6 +100,9 @@ OV_DLLFNCEXPORT void CTree_test_startup(OV_INSTPTR_ov_object pobj) {
 	Ov_SetDynamicVectorLength(&pinst->v_varTimeVec, size, TIME);
 	pinst->v_varTimeVec.value[0].secs = 1;
 	pinst->v_varTimeVec.value[0].usecs= 1;
+	OV_STRING asciitime = ov_time_timetoascii_utc(&pinst->v_varTimeVec.value[0]);
+	ov_time_asciitotime_utc(&pinst->v_varTimeVec.value[1],
+		asciitime);
 //	pinst->v_varTimeVec.value[1] = {1,1};
 //	pinst->v_varTimeVec.value[2] = {1,1};
 //	pinst->v_varTimeVec.value[3] = {1,1};

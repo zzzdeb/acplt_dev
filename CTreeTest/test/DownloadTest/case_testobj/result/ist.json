@@ -1,2 +1,16 @@
 {
+	"Tree":	{
+		"case_testobj":	{
+			"variables":	{
+				"proctime":	[[1540574701, 938976]]
+			},
+			"children":	{
+				"env":	{
+					"variables":	{
+						"varUintVec":	[[2147483647, 2147483647]]
+					}
+				}
+			}
+		}
+	}
 }

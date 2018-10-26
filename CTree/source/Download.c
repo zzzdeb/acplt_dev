@@ -153,12 +153,11 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 			result = ov_string_setvalue(((OV_STRING*) value), jstrueval->valuestring);
 			break;
 		case OV_VT_TIME:
-			ov_time_asciitotime(((OV_TIME*) value), jstrueval->valuestring);
-			/*jstmp = jstrueval;
-			 value->valueunion.val_time.secs =
-			 cJSON_GetArrayItem(jsvalue, 0)->valueint;
-			 value->valueunion.val_time.usecs =
-			 cJSON_GetArrayItem(jsvalue, 1)->valueint;*/
+//			ov_time_asciitotime_utc(((OV_TIME*) value), jstrueval->valuestring);
+			((OV_TIME*) value)->secs =
+					cJSON_GetArrayItem(jstrueval, 0)->valueint;
+			((OV_TIME*) value)->usecs =
+					cJSON_GetArrayItem(jstrueval, 1)->valueint;
 			break;
 		case OV_VT_TIME_SPAN:
 			//		ov_time_asciitotimespan(&value->valueunion.val_time, jstrueval->valuestring);
@@ -236,8 +235,12 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 			Ov_SetDynamicVectorLength(((OV_TIME_VEC* ) value), vecLen, TIME);
 			cJSON_ArrayForEach(jselem, jstrueval)
 			{
-				ov_time_asciitotime(&((OV_TIME_VEC*) value)->value[i],
-					jselem->valuestring);
+				((OV_TIME_VEC*) value)->value[i].secs =
+						cJSON_GetArrayItem(jselem,
+					0)->valueint;
+				((OV_TIME_VEC*) value)->value[i].usecs =
+						cJSON_GetArrayItem(jselem,
+					1)->valueint;
 				i++;
 			}
 			break;
@@ -278,7 +281,7 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
 
 		case OV_VT_ANY:
 			((OV_ANY*) value)->state = cJSON_GetArrayItem(jstrueval, 1)->valueint;
-			ov_time_asciitotime(&((OV_ANY*) value)->time,
+			ov_time_asciitotime_utc(&((OV_ANY*) value)->time,
 				cJSON_GetArrayItem(jstrueval, 2)->valuestring);
 			result = jsonToVarvalue(&((OV_ANY*) value)->value,
 				cJSON_GetArrayItem(jstrueval, 0));
