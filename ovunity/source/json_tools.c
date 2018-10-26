@@ -31,7 +31,7 @@ OV_DLLFNCEXPORT int cJSON_isSame(cJSON* file1, cJSON* file2) {
 			child2 = cJSON_GetObjectItem(file2, child1->string);
 		else
 			child2 = cJSON_GetArrayItem(file2, i);
-		if(!child2) {
+		if(!child2 || child2->type != child1->type) {
 			//todo: error
 			child1 = child1->next;
 			continue;
