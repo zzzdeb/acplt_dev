@@ -1,5 +1,5 @@
-#ifndef MessageSys_OVT_INCLUDED
-#define MessageSys_OVT_INCLUDED
+#ifndef PostSys_OVT_INCLUDED
+#define PostSys_OVT_INCLUDED
 
 /* 
 	Define your data types here. 

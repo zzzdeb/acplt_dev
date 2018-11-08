@@ -1,0 +1,27 @@
+#include "ov.ovm"
+#include "fb.ovm"
+#include "PostSys.ovm"
+#include "ovunity.ovm"
+
+LIBRARY PostSysTest
+	VERSION   = "V0.1 (DD-Mon-YYYY)";
+	AUTHOR    = "";
+	COPYRIGHT = "";
+	COMMENT   = "";
+	
+	/**
+		Documentation of test.
+		@note Javadoc syntax is allowed here.
+		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+	*/
+	CLASS msgCreatorTest : CLASS ovunity/main
+		IS_INSTANTIABLE;
+		VARIABLES
+			
+		END_VARIABLES;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+END_LIBRARY;

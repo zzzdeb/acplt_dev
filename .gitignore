@@ -19,6 +19,7 @@
 !/sync
 !/syncTest
 !/PostSys
+!/PostSysTest
 /*/source/sourcetemplates
 /*/build
 !/*/build/*/Makefile
