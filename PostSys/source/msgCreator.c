@@ -64,11 +64,11 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 
 	//todo check lenght r same, and check if it is greater than 2
 	pathLen = pobj->v_receiverHost.veclen;
-	OV_STRING_VEC a[3] = { &pobj->v_receiverHost, &pobj->v_receiverHost,
+	OV_STRING_VEC* a[3] = { &pobj->v_receiverHost, &pobj->v_receiverName,
 			&pobj->v_receiverInstance };
 	for (OV_INT i = 0; i < 3; i++) {
 		for (OV_INT j = 0; j < pathLen; j++) {
-			if(!a[i].value[j]) return OV_ERR_BADVALUE;
+			if(!a[i]->value[j]) return OV_ERR_BADVALUE;
 		}
 	}
 
@@ -94,44 +94,71 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 		return result;
 	}
 
-	result = PostSys_Message_senderAddress_set(pMsg, "none");
+	OV_STRING_VEC tmpStrVec = { 0 };
+	Ov_SetDynamicVectorLength(&tmpStrVec, pathLen + 1, STRING);
+
+	/*setting Host path */
+	result = ov_string_setvalue(&tmpStrVec.value[0], "none");
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();
 		return result;
 	}
-	ov_vendortree_getservername(&tempAny, NULL);
-	result = PostSys_Message_senderName_set(pMsg,
-		tempAny.value.valueunion.val_string);
+	result = ov_string_setvecvalue(tmpStrVec.value + 1,
+		pobj->v_receiverHost.value,
+		pathLen);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();
 		return result;
 	}
-	result = PostSys_Message_senderComponent_set(pMsg,
-		ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
+	result = PostSys_Message_pathAddress_set(pMsg, tmpStrVec.value,
+			pathLen + 1);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();
 		return result;
 	}
 
-	result = PostSys_Message_receiverName_set(pMsg,
-		pobj->v_receiverName.value[0]);
+	/* setting Servername path */
+	ov_vendortree_getservername(&tempAny, NULL);
+	result = ov_string_setvalue(&tmpStrVec.value[0],
+		tempAny.value.valueunion.val_string);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();
 		return result;
 	}
-	result = PostSys_Message_receiverAddress_set(pMsg,
-		pobj->v_receiverHost.value[0]);
+	result = ov_string_setvecvalue(tmpStrVec.value + 1,
+		pobj->v_receiverName.value,
+		pathLen);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();
 		return result;
 	}
-	result = PostSys_Message_receiverComponent_set(pMsg,
-		pobj->v_receiverInstance.value[0]);
+	result = PostSys_Message_pathName_set(pMsg, tmpStrVec.value, pathLen + 1);
+	if(Ov_Fail(result)) {
+		Ov_DeleteObject(pMsg);
+		ov_memstack_unlock();
+		return result;
+	}
+	/*setting Inst path */
+	result = ov_string_setvalue(&tmpStrVec.value[0],
+		ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
+	if(Ov_Fail(result)) {
+		Ov_DeleteObject(pMsg);
+		ov_memstack_unlock();
+		return result;
+	}
+	result = ov_string_setvecvalue(tmpStrVec.value + 1,
+		pobj->v_receiverInstance.value, pathLen);
+	if(Ov_Fail(result)) {
+		Ov_DeleteObject(pMsg);
+		ov_memstack_unlock();
+		return result;
+	}
+	result = PostSys_Message_pathName_set(pMsg, tmpStrVec.value, pathLen + 1);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();

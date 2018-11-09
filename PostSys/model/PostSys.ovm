@@ -59,30 +59,15 @@ END_CLASS;
 CLASS Message : CLASS ov/object
 	IS_INSTANTIABLE;
 	VARIABLES
-		senderAddress : STRING 
+		pathAddress[] : STRING 
 			HAS_ACCESSORS
-			COMMENT	=	"Address of sender machine" 
-			INITIALVALUE	=	"127.0.0.1";
-		receiverAddress : STRING 
+			COMMENT	=	"Address of receiver machine";
+		pathName[] : STRING 
 			HAS_ACCESSORS
-			COMMENT	=	"Address of receiver machine"
-			INITIALVALUE	=	"127.0.0.1";
-		senderName : STRING
+			COMMENT	=	"Servername of receiver";
+		pathComponent[] : STRING
 			HAS_ACCESSORS
-			COMMENT	=	"Servername of sender"
-			INITIALVALUE	=	"";
-		receiverName : STRING 
-			HAS_ACCESSORS
-			COMMENT	=	"Servername of receiver"
-			INITIALVALUE	=	"";
-		senderComponent : STRING
-			HAS_ACCESSORS
-			COMMENT	=	"Name of sender-component"
-			INITIALVALUE	=	"";
-		receiverComponent : STRING
-			HAS_ACCESSORS
-			COMMENT	=	"Name of receiver-component"
-			INITIALVALUE	=	"";
+			COMMENT	=	"Name of receiver-component";
 		msgStatus : INT
 			HAS_ACCESSORS
 			COMMENT	=	"0=NEW, 1=READYFORSENDING, 2=WAITING, 3=DONE, 4=RECEIVERERROR, 5=FATALERROR, 10=NEWARRIVED, 11=DONERECEIVE"
@@ -188,13 +173,13 @@ END_CLASS;
 				INITIALVALUE	=	0;
 			receiverInstance[]	:	STRING
 				FLAGS	=	"i"
-				COMMENT	=	"Instance which will receive the Message";
+				COMMENT	=	"Instance which will receive the Message ink. path. Last one is destination";
 			receiverName[]	:	STRING
 				FLAGS	=	"i"
-				COMMENT	=	"Name of receiving server";
+				COMMENT	=	"Name of receiving server ink. path. Last one is destination";
 			receiverHost[]	:	STRING
 				FLAGS	=	"i"
-				COMMENT	=	"Hostname of receiving machine";
+				COMMENT	=	"Hostname of receiving machine ink. path. Last one is destination";
 			tries	:	UINT
 				FLAGS	=	"h"
 				COMMENT	=	"Nummer of times a message was sheduled for sending"

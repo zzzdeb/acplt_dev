@@ -12,14 +12,16 @@
 
 
 typedef struct {
-	OV_STRING rcvSysAdr;
-	OV_STRING rcvLocAdr;
+	OV_STRING_VEC sysAdrPath;
+	OV_STRING_VEC locAdrPath;
 	OV_STRING msgId;
 	OV_STRING refMsgId;
-	OV_STRING sndSysAdr;
-	OV_STRING sndLocAdr;
 	OV_STRING auth;
 }	ACPLT_MSGHEADER;
+
+OV_BOOL ov_strvector_containsnull(const OV_STRING_VEC* vec) {
+	return 0;
+}
 
 OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_findElementBegin(char const* xml, const OV_STRING elemName, OV_STRING* pStart);
 OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getElementData(char const* xml, const OV_STRING elemName, OV_STRING* pData);
