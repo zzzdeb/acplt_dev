@@ -1,119 +1,93 @@
-
 #include "libov/ov_memstack.h"
 #include "libov/ov_ov.h"
+#include "libov/ov_macros.h"
 #include "acplt_simpleMsgHandling.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-
-
-
-
-static char c_DATA_start [] = "![CDATA[";
-static char c_DATA_end [] = "]]>";
+static char c_DATA_start[] = "![CDATA[";
+static char c_DATA_end[] = "]]>";
 
 /*	If no element is found pStart is NULL, return value is OV_ERR_OK	*/
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_findElementBegin(char const* xml, const OV_STRING elemName, OV_STRING* pStart)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_findElementBegin(char const* xml,
+		const OV_STRING elemName, OV_STRING* pStart) {
 	OV_UINT nameLength = 0;
 	OV_UINT cDataCount = 0;
 
-	if(!xml || !elemName || !pStart)
-		return OV_ERR_BADPARAM;
+	if(!xml || !elemName || !pStart) return OV_ERR_BADPARAM;
 
 	nameLength = strlen(elemName);
 
 	*pStart = strchr(xml, '<');
-	if(!(*pStart))
-		return OV_ERR_OK;
+	if(!(*pStart)) return OV_ERR_OK;
 
-	while(*pStart)
-	{
+	while (*pStart) {
 		/*	next char	*/
 		(*pStart)++;
 		/*	check for !CDATA and if found jump over it; care for nested CDATA-elements	*/
-		if(!strncmp(*pStart, c_DATA_start, sizeof(c_DATA_start)-1))
-		{
-			cDataCount=1;
-			(*pStart) += sizeof(c_DATA_start) + 1-1;
-			while(cDataCount >= 1)
-			{
-				if(!(**pStart))
-					return OV_ERR_BADVALUE;
-				if(!strncmp(*pStart, c_DATA_end, sizeof(c_DATA_end)-1))
-				{
+		if(!strncmp(*pStart, c_DATA_start, sizeof(c_DATA_start) - 1)) {
+			cDataCount = 1;
+			(*pStart) += sizeof(c_DATA_start) + 1 - 1;
+			while (cDataCount >= 1) {
+				if(!(**pStart)) return OV_ERR_BADVALUE;
+				if(!strncmp(*pStart, c_DATA_end, sizeof(c_DATA_end) - 1)) {
 					cDataCount--;
-					(*pStart) += sizeof(c_DATA_end)-1;
+					(*pStart) += sizeof(c_DATA_end) - 1;
 					continue;
-				}
-				else if(**pStart == '<')
-				{
+				} else if(**pStart == '<') {
 					(*pStart)++;
-					if(!strncmp(*pStart, c_DATA_start, sizeof(c_DATA_start)-1))
-					{
+					if(!strncmp(*pStart, c_DATA_start, sizeof(c_DATA_start) - 1)) {
 						cDataCount++;
-						(*pStart) += sizeof(c_DATA_start)-1;
+						(*pStart) += sizeof(c_DATA_start) - 1;
 						continue;
 					}
 				}
 				(*pStart)++;
 			}
-		}
-		else
-		{/*	compare tag name	*/
-			if(!strncmp(*pStart, elemName, nameLength))
-			{	/*	found name but it may only be part of the element name in the xml stream	*/
-				if((*pStart)[nameLength] == '>' || (*pStart)[nameLength] == ' ' || (*pStart)[nameLength] == '\t'
-						|| (*pStart)[nameLength] == '\r' || (*pStart)[nameLength] == '\n')	/*	element Name complete	*/
-					break;
+		} else {/*	compare tag name	*/
+			if(!strncmp(*pStart, elemName, nameLength)) { /*	found name but it may only be part of the element name in the xml stream	*/
+				if((*pStart)[nameLength] == '>' || (*pStart)[nameLength] == ' '
+						|| (*pStart)[nameLength] == '\t' || (*pStart)[nameLength] == '\r'
+						|| (*pStart)[nameLength] == '\n') /*	element Name complete	*/
+				break;
 			}
 			*pStart = strchr(*pStart, '<');
-			if(!(*pStart))
-				return OV_ERR_OK;
+			if(!(*pStart)) return OV_ERR_OK;
 		}
 	}
 
-	if(!(*pStart))
-		return OV_ERR_OK;
+	if(!(*pStart)) return OV_ERR_OK;
 
 	(*pStart)--;
 	return OV_ERR_OK;
 }
 
+static char esc_qout[] = "quot;"; /*	"	*/
+static char esc_apos[] = "apos;"; /*	'	*/
+static char esc_lt[] = "lt;"; /*	<	*/
+static char esc_gt[] = "gt;"; /*	>	*/
+static char esc_amp[] = "amp;"; /*	&	*/
 
-static char esc_qout [] = "quot;";	/*	"	*/
-static char esc_apos [] = "apos;";	/*	'	*/
-static char esc_lt [] = "lt;";		/*	<	*/
-static char esc_gt [] = "gt;";		/*	>	*/
-static char esc_amp [] = "amp;";	/*	&	*/
-
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_extractString(char const* xmlString, OV_UINT strLength, OV_STRING* targetString)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_extractString(
+		char const* xmlString, OV_UINT strLength, OV_STRING* targetString) {
 	unsigned long i;
 	unsigned long cDataCount = 0;
 
-	if(!xmlString || !(*xmlString))
-		return OV_ERR_BADPARAM;
-	if(!strLength)
-	{	/*	no length given	*/
+	if(!xmlString || !(*xmlString)) return OV_ERR_BADPARAM;
+	if(!strLength) { /*	no length given	*/
 		/*	check delimiter	*/
-		if(*xmlString == '\'')
-		{ /*	single quote delimiter	*/
-			xmlString++;	/*	move behind first delimiter	*/
-			for(i=0; xmlString[i] && xmlString[i] != '\''; i++)
+		if(*xmlString == '\'') { /*	single quote delimiter	*/
+			xmlString++; /*	move behind first delimiter	*/
+			for (i = 0; xmlString[i] && xmlString[i] != '\''; i++)
 				;
 			strLength = i;
-		}
-		else if(*xmlString == '\"')
-		{/*	double quote delimiter	*/
-			xmlString++;	/*	move behind first delimiter	*/
-			for(i=0; xmlString[i] && xmlString[i] != '\"'; i++)
+		} else if(*xmlString == '\"') {/*	double quote delimiter	*/
+			xmlString++; /*	move behind first delimiter	*/
+			for (i = 0; xmlString[i] && xmlString[i] != '\"'; i++)
 				;
 			strLength = i;
-		}
-		else
-		{
+		} else {
 			return OV_ERR_BADVALUE;
 		}
 	}
@@ -121,86 +95,73 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_extractString(char const* xmlStrin
 	/*	length known (now), we are inside the delimiters	*/
 
 	*targetString = ov_memstack_alloc(strLength + 1);
-	if(!(*targetString))
-		return OV_ERR_HEAPOUTOFMEMORY;
+	if(!(*targetString)) return OV_ERR_HEAPOUTOFMEMORY;
 
-	for(i=0; i < strLength; i++)
-	{
-		switch(xmlString[i])
-		{
-		case '&':
-			/*	unescape String	*/
-			/*	"	*/
-			if(!strncmp(&(xmlString[i+1]), esc_qout, sizeof(esc_qout)-1))
-			{
-				(*targetString)[i] = '"';
-				xmlString += sizeof(esc_qout)-1;
-				strLength -= sizeof(esc_qout)-1;
-			}
-			/*	'	*/
-			else if(!strncmp(&(xmlString[i+1]), esc_apos, sizeof(esc_apos)-1))
-			{
-				(*targetString)[i] = '\'';
-				xmlString += sizeof(esc_apos)-1;
-				strLength -= sizeof(esc_apos)-1;
-			}
-			/*	<	*/
-			else if(!strncmp(&(xmlString[i+1]), esc_lt, sizeof(esc_lt)-1))
-			{
-				(*targetString)[i] = '<';
-				xmlString += sizeof(esc_lt)-1;
-				strLength -= sizeof(esc_lt)-1;
-			}
-			/*	>	*/
-			else if(!strncmp(&(xmlString[i+1]), esc_gt, sizeof(esc_gt)-1))
-			{
-				(*targetString)[i] = '>';
-				xmlString += sizeof(esc_gt)-1;
-				strLength -= sizeof(esc_gt)-1;
-			}
-			/*	&	*/
-			else if(!strncmp(&(xmlString[i+1]), esc_amp, sizeof(esc_amp)-1))
-			{
-				(*targetString)[i] = '&';
-				xmlString += sizeof(esc_amp)-1;
-				strLength -= sizeof(esc_amp)-1;
-			}
-			else
-			{
-				return OV_ERR_BADVALUE;
-			}
-			break;
-
-		case '<':
-			if(!strncmp(&(xmlString[i+1]), c_DATA_start, sizeof(c_DATA_start)-1))
-			{	/*	CDATA element found; copy content only but care for nested CDATA elements	*/
-				cDataCount = 1;
-				strLength -= sizeof(c_DATA_start)-1;
-				for(xmlString += sizeof(c_DATA_start); *xmlString && (cDataCount >= 1); i++)
-				{
-					(*targetString)[i] = xmlString[i];
-					if(xmlString[i] == '<')
-					{
-						if(!strncmp(&(xmlString[i+1]), c_DATA_start, sizeof(c_DATA_start)-1))
-							cDataCount++;
-					}
-					else if(!strncmp(&(xmlString[i]), c_DATA_end, sizeof(c_DATA_end)-1))
-						cDataCount--;
+	for (i = 0; i < strLength; i++) {
+		switch (xmlString[i]) {
+			case '&':
+				/*	unescape String	*/
+				/*	"	*/
+				if(!strncmp(&(xmlString[i + 1]), esc_qout, sizeof(esc_qout) - 1)) {
+					(*targetString)[i] = '"';
+					xmlString += sizeof(esc_qout) - 1;
+					strLength -= sizeof(esc_qout) - 1;
 				}
+				/*	'	*/
+				else if(!strncmp(&(xmlString[i + 1]), esc_apos, sizeof(esc_apos) - 1)) {
+					(*targetString)[i] = '\'';
+					xmlString += sizeof(esc_apos) - 1;
+					strLength -= sizeof(esc_apos) - 1;
+				}
+				/*	<	*/
+				else if(!strncmp(&(xmlString[i + 1]), esc_lt, sizeof(esc_lt) - 1)) {
+					(*targetString)[i] = '<';
+					xmlString += sizeof(esc_lt) - 1;
+					strLength -= sizeof(esc_lt) - 1;
+				}
+				/*	>	*/
+				else if(!strncmp(&(xmlString[i + 1]), esc_gt, sizeof(esc_gt) - 1)) {
+					(*targetString)[i] = '>';
+					xmlString += sizeof(esc_gt) - 1;
+					strLength -= sizeof(esc_gt) - 1;
+				}
+				/*	&	*/
+				else if(!strncmp(&(xmlString[i + 1]), esc_amp, sizeof(esc_amp) - 1)) {
+					(*targetString)[i] = '&';
+					xmlString += sizeof(esc_amp) - 1;
+					strLength -= sizeof(esc_amp) - 1;
+				} else {
+					return OV_ERR_BADVALUE;
+				}
+				break;
 
-				xmlString += sizeof(c_DATA_end)-2;//one more from above
-				strLength -= sizeof(c_DATA_end)-1;
-			}
-			else
+			case '<':
+				if(!strncmp(&(xmlString[i + 1]), c_DATA_start,
+					sizeof(c_DATA_start) - 1)) { /*	CDATA element found; copy content only but care for nested CDATA elements	*/
+					cDataCount = 1;
+					strLength -= sizeof(c_DATA_start) - 1;
+					for (xmlString += sizeof(c_DATA_start);
+							*xmlString && (cDataCount >= 1); i++) {
+						(*targetString)[i] = xmlString[i];
+						if(xmlString[i] == '<') {
+							if(!strncmp(&(xmlString[i + 1]), c_DATA_start,
+								sizeof(c_DATA_start) - 1)) cDataCount++;
+						} else if(!strncmp(&(xmlString[i]), c_DATA_end,
+							sizeof(c_DATA_end) - 1)) cDataCount--;
+					}
+
+					xmlString += sizeof(c_DATA_end) - 2; //one more from above
+					strLength -= sizeof(c_DATA_end) - 1;
+				} else
+					return OV_ERR_BADVALUE;
+				break;
+
+			case '>':
 				return OV_ERR_BADVALUE;
-			break;
 
-		case '>':
-			return OV_ERR_BADVALUE;
-
-		default:
-			(*targetString)[i] = xmlString[i];
-			break;
+			default:
+				(*targetString)[i] = xmlString[i];
+				break;
 		}
 	}
 
@@ -214,70 +175,58 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_extractString(char const* xmlStrin
  * returns OV_ERR_BADVALUE if element is not valid
  */
 
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getElementData(char const* xml, const OV_STRING elemName, OV_STRING* pData)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getElementData(char const* xml,
+		const OV_STRING elemName, OV_STRING* pData) {
 	OV_UINT dataLength;
 	OV_RESULT result;
 	OV_STRING beginElement = NULL;
-	char const* tempPtr =  NULL;
+	char const* tempPtr = NULL;
 	OV_UINT cDataCount = 0;
 
 	/*	find the begin of the element of concern; this function will also catch NULL-pointers for us	*/
 	result = acplt_simpleMsg_xml_findElementBegin(xml, elemName, &beginElement);
-	if(Ov_Fail(result))
-		return result;
+	if(Ov_Fail(result)) return result;
 
-	if(!beginElement)
-		return OV_ERR_BADNAME;
+	if(!beginElement) return OV_ERR_BADNAME;
 
 	/*	jump to end of tag	*/
 	tempPtr = strchr(beginElement, '>');
-	if(!tempPtr)
-		return OV_ERR_BADVALUE;
+	if(!tempPtr) return OV_ERR_BADVALUE;
 
-	if(*(tempPtr-1) == '/')
-	{	/*	no Data	*/
+	if(*(tempPtr - 1) == '/') { /*	no Data	*/
 		*pData = NULL;
 		return OV_ERR_OK;
 	}
 
 	tempPtr++;
 	/*	now it points to the begin of the data	*/
-	for(dataLength = 0; TRUE; dataLength++)
-	{
-		if(!tempPtr[dataLength])
-			return OV_ERR_BADVALUE;	/*	file ends before end of element --> invalid	*/
+	for (dataLength = 0; TRUE; dataLength++) {
+		if(!tempPtr[dataLength]) return OV_ERR_BADVALUE; /*	file ends before end of element --> invalid	*/
 
-		if(tempPtr[dataLength] == '<')
-		{	/*	jump over CDATA	*/
-			if(!strncmp(&(tempPtr[dataLength+1]), c_DATA_start, sizeof(c_DATA_start)-1))
-			{	/*	CDATA element found; count content but care for nested CDATA-elements	*/
+		if(tempPtr[dataLength] == '<') { /*	jump over CDATA	*/
+			if(!strncmp(&(tempPtr[dataLength + 1]), c_DATA_start,
+				sizeof(c_DATA_start) - 1)) { /*	CDATA element found; count content but care for nested CDATA-elements	*/
 				cDataCount++;
-				dataLength += sizeof(c_DATA_start) + 1-1;
-				while(cDataCount >= 1)
-				{
-					if(!tempPtr[dataLength])
-						return OV_ERR_BADVALUE;
+				dataLength += sizeof(c_DATA_start) + 1 - 1;
+				while (cDataCount >= 1) {
+					if(!tempPtr[dataLength]) return OV_ERR_BADVALUE;
 
-					if(!strncmp(&(tempPtr[dataLength]), c_DATA_end, sizeof(c_DATA_end)-1))
-					{
+					if(!strncmp(&(tempPtr[dataLength]), c_DATA_end,
+						sizeof(c_DATA_end) - 1)) {
 						cDataCount--;
-						dataLength += sizeof(c_DATA_end)-1;
+						dataLength += sizeof(c_DATA_end) - 1;
 						continue;
-					}
-					else if(tempPtr[dataLength] == '<')
-					{
-						if(!strncmp(&(tempPtr[dataLength+1]), c_DATA_start, sizeof(c_DATA_start)-1))
-						{
+					} else if(tempPtr[dataLength] == '<') {
+						if(!strncmp(&(tempPtr[dataLength + 1]), c_DATA_start,
+							sizeof(c_DATA_start) - 1)) {
 							cDataCount++;
-							dataLength += sizeof(c_DATA_start) + 1-1;
+							dataLength += sizeof(c_DATA_start) + 1 - 1;
 							continue;
 						}
 					}
 					dataLength++;
 				}
-			}
-			else
+			} else
 				break;
 		}
 
@@ -291,163 +240,140 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getElementData(char const* xml, co
  * returns OV_ERR_BADVALUE if element is not valid
  * returns OV_ERR_OK if attribute is not found, pData is NULL then
  */
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getAttributeData(char const* xml, const OV_STRING elemName, const OV_STRING attributeName, OV_STRING* pData)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getAttributeData(char const* xml,
+		const OV_STRING elemName, const OV_STRING attributeName, OV_STRING* pData) {
 	OV_UINT dataLength;
 	char const* beginElement = NULL;
-	char const* endPtr =  NULL;
+	char const* endPtr = NULL;
 	char const* tempptr = NULL;
 	OV_UINT i;
 	OV_BOOL found = FALSE;
 	char const* valueEnd = NULL;
 	OV_RESULT result;
 
-	if(!attributeName)
-		return OV_ERR_BADPARAM;
+	if(!attributeName) return OV_ERR_BADPARAM;
 	/*	find the begin of the element of concern; this function will also catch NULL-pointers for us	*/
-	result = acplt_simpleMsg_xml_findElementBegin(xml, elemName, (OV_STRING*) &beginElement);
-	if(Ov_Fail(result))
-		return result;
-	if(!beginElement)
-		return OV_ERR_BADNAME;
+	result = acplt_simpleMsg_xml_findElementBegin(xml, elemName,
+		(OV_STRING*) &beginElement);
+	if(Ov_Fail(result)) return result;
+	if(!beginElement) return OV_ERR_BADNAME;
 
 	/*	find end of tag	*/
 	endPtr = strchr(beginElement, '>');
-	if(!endPtr)
-		return OV_ERR_BADVALUE;
+	if(!endPtr) return OV_ERR_BADVALUE;
 
 	/*	find attribute name	*/
 	tempptr = beginElement;
-	for(; tempptr < endPtr; tempptr++)
-	{
-		if(*tempptr == *attributeName)
-		{
-			for(i=0; (&(tempptr[i]) < endPtr) && (attributeName[i]); i++)
-			{
+	for (; tempptr < endPtr; tempptr++) {
+		if(*tempptr == *attributeName) {
+			for (i = 0; (&(tempptr[i]) < endPtr) && (attributeName[i]); i++) {
 				if(tempptr[i] == attributeName[i])
 					found = TRUE;
-				else
-				{
+				else {
 					found = FALSE;
 					break;
 				}
 			}
-			if(found)
-				break;
+			if(found) break;
 		}
 	}
 
-	if(!found)
-	{
+	if(!found) {
 		pData = NULL;
 		return OV_ERR_OK;
-	}
-	else
-	{
-		if(tempptr[i] == '=')
-		{
+	} else {
+		if(tempptr[i] == '=') {
 			/*	set to begin of attribute data	*/
-			beginElement = &(tempptr[i+1]);
-			if(*beginElement == '"' || *beginElement == '\'')
-			{
+			beginElement = &(tempptr[i + 1]);
+			if(*beginElement == '"' || *beginElement == '\'') {
 				return acplt_simpleMsg_xml_extractString(beginElement, 0, pData);
-			}
-			else
-			{
+			} else {
 				valueEnd = strchr(beginElement, ' ');
 				if(valueEnd)
 					dataLength = valueEnd - beginElement;
 				else
 					dataLength = endPtr - beginElement;
-				return acplt_simpleMsg_xml_extractString(beginElement, dataLength, pData);
+				return acplt_simpleMsg_xml_extractString(beginElement, dataLength,
+					pData);
 			}
-		}
-		else
-		{
+		} else {
 			pData = NULL;
 			return OV_ERR_OK;
 		}
 	}
 }
 
-
 /*
  * fills header structure with values
  * returns OV_ERR_BADNAME if required elements are not found
  *
  */
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml, ACPLT_MSGHEADER* header)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml,
+		ACPLT_MSGHEADER* header) {
 	OV_STRING tempMsgText = NULL;
 	OV_INT HeaderLength;
 	OV_STRING tempPtr = NULL;
 	OV_STRING endTemp = NULL;
 	OV_RESULT result;
 
-	if(!xml || !(*xml))
-		return OV_ERR_BADPARAM;
+	if(!xml || !(*xml)) return OV_ERR_BADPARAM;
 
-
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, "hdr", &tempPtr)) || !tempPtr)
-	{
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, "hdr", &tempPtr))
+			|| !tempPtr) {
 		return OV_ERR_BADVALUE;
 	}
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "/hdr", &endTemp)) || !endTemp)
-	{
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "/hdr", &endTemp))
+			|| !endTemp) {
 		return OV_ERR_BADVALUE;
 	}
 
 	HeaderLength = (endTemp - tempPtr);
-	if(HeaderLength <= 0)
-		return OV_ERR_BADVALUE;
+	if(HeaderLength <= 0) return OV_ERR_BADVALUE;
 
-	tempMsgText = ov_memstack_alloc(HeaderLength+1);
-	if(!tempMsgText)
-		return OV_ERR_HEAPOUTOFMEMORY;
+	tempMsgText = ov_memstack_alloc(HeaderLength + 1);
+	if(!tempMsgText) return OV_ERR_HEAPOUTOFMEMORY;
 	memcpy(tempMsgText, tempPtr, HeaderLength);
 	tempMsgText[HeaderLength] = '\0';
 
-
-	result = acplt_simpleMsg_xml_getElementData(tempMsgText, "rcvSysAdr", &(header->rcvSysAdr));
+	result = acplt_simpleMsg_xml_getElementData(tempMsgText, "rcvSysAdr",
+		&(header->rcvSysAdr));
 	if(Ov_Fail(result))
 		return result;
-	else if(!header->rcvSysAdr)
-		return OV_ERR_BADVALUE;
+	else if(!header->rcvSysAdr) return OV_ERR_BADVALUE;
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "rcvLocAdr", &(header->rcvLocAdr));
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, "rcvLocAdr",
+		&(header->rcvLocAdr));
 	if(Ov_Fail(result))
 		return result;
-	else if(!header->rcvLocAdr)
-		return OV_ERR_BADVALUE;
+	else if(!header->rcvLocAdr) return OV_ERR_BADVALUE;
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "msgId", &(header->msgId));
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, "msgId",
+		&(header->msgId));
 	if(Ov_Fail(result))
 		return result;
-	else if(!header->msgId)
-		return OV_ERR_BADVALUE;
+	else if(!header->msgId) return OV_ERR_BADVALUE;
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "refMsgId", &(header->refMsgId));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME)
-	{
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, "refMsgId",
+		&(header->refMsgId));
+	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndSysAdr", &(header->sndSysAdr));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME)
-	{
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndSysAdr",
+		&(header->sndSysAdr));
+	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndLocAdr", &(header->sndLocAdr));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME)
-	{
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndLocAdr",
+		&(header->sndLocAdr));
+	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
 
 	result = acplt_simpleMsg_xml_getElementData(tempPtr, "auth", &(header->auth));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME)
-	{
+	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
 
@@ -462,10 +388,10 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml, AC
  * return OV_ERR_BADVALUE if no <bdy> or </bdy> tag is found
  * or if an expected sd-element is not found or an unexpected sd-element is found
  */
-OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml, OV_STRING* svc, OV_STRING* op,
-		OV_BOOL expectContainingObject, OV_STRING* containerName,
-		OV_STRING_VEC* ids, OV_STRING_VEC* values, OV_STRING_VEC* units, OV_STRING_VEC* types)
-{
+OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml,
+		OV_STRING* svc, OV_STRING* op, OV_BOOL expectContainingObject,
+		OV_STRING* containerName, OV_STRING_VEC* ids, OV_STRING_VEC* values,
+		OV_STRING_VEC* units, OV_STRING_VEC* types) {
 	OV_STRING tempPtr = NULL;
 	OV_STRING endPtr = NULL;
 	OV_STRING tempSd = NULL;
@@ -476,54 +402,43 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml, OV_STRI
 	OV_STRING* tempTypes = NULL;
 	OV_UINT i;
 
-	if(!xml || !(*xml))
-		return OV_ERR_BADPARAM;
+	if(!xml || !(*xml)) return OV_ERR_BADPARAM;
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, "bdy", &tempPtr)) || !tempPtr)
-	{
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, "bdy", &tempPtr))
+			|| !tempPtr) {
 		return OV_ERR_BADVALUE;
 	}
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "/bdy", &endPtr)) || !endPtr)
-	{
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "/bdy", &endPtr))
+			|| !endPtr) {
 		return OV_ERR_BADVALUE;
 	}
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "sd", &tempSd)) || !tempSd)
-	{
-		if(expectContainingObject)
-			return OV_ERR_BADVALUE;
-	}
-	else
-	{
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempPtr, "sd", &tempSd))
+			|| !tempSd) {
+		if(expectContainingObject) return OV_ERR_BADVALUE;
+	} else {
 		if(!expectContainingObject)
 			return OV_ERR_BADVALUE;
-		else
-		{
-			result = acplt_simpleMsg_xml_getAttributeData(tempSd, "sd", "id", containerName);
-			if(Ov_Fail(result))
-				return result;
+		else {
+			result = acplt_simpleMsg_xml_getAttributeData(tempSd, "sd", "id",
+				containerName);
+			if(Ov_Fail(result)) return result;
 		}
 	}
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempSd, "/sd", &tempSd)) || !tempSd)
-	{
-		if(expectContainingObject)
-			return OV_ERR_BADVALUE;
-	}
-	else
-	{
-		if(!expectContainingObject)
-			return OV_ERR_BADVALUE;
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(tempSd, "/sd", &tempSd))
+			|| !tempSd) {
+		if(expectContainingObject) return OV_ERR_BADVALUE;
+	} else {
+		if(!expectContainingObject) return OV_ERR_BADVALUE;
 	}
 
 	result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "bdy", "Svc", svc);
-	if(Ov_Fail(result))
-		return result;
+	if(Ov_Fail(result)) return result;
 
 	result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "bdy", "Op", op);
-	if(Ov_Fail(result))
-		return result;
+	if(Ov_Fail(result)) return result;
 
 	ids->veclen = 0;
 	ids->value = NULL;
@@ -534,51 +449,41 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml, OV_STRI
 	types->veclen = 0;
 	types->value = NULL;
 
-	while(tempPtr < endPtr)
-	{
+	while (tempPtr < endPtr) {
 		result = acplt_simpleMsg_xml_findElementBegin(tempPtr, "val", &tempPtr);
-		if(Ov_Fail(result))
-			return result;
-		if(!tempPtr)
-		{	/*	no more val-elements	*/
+		if(Ov_Fail(result)) return result;
+		if(!tempPtr) { /*	no more val-elements	*/
 			return OV_ERR_OK;
-		}
-		else
-		{	/*	new val-Element found; extract data	*/
+		} else { /*	new val-Element found; extract data	*/
 			/*	reserve new memory	*/
 			tempIds = ov_memstack_alloc((ids->veclen + 1) * sizeof(OV_STRING));
-			if(!tempIds)
-				return OV_ERR_HEAPOUTOFMEMORY;
+			if(!tempIds) return OV_ERR_HEAPOUTOFMEMORY;
 			tempValues = ov_memstack_alloc((values->veclen + 1) * sizeof(OV_STRING));
-			if(!tempValues)
-				return OV_ERR_HEAPOUTOFMEMORY;
+			if(!tempValues) return OV_ERR_HEAPOUTOFMEMORY;
 			tempUnits = ov_memstack_alloc((units->veclen + 1) * sizeof(OV_STRING));
-			if(!tempUnits)
-				return OV_ERR_HEAPOUTOFMEMORY;
+			if(!tempUnits) return OV_ERR_HEAPOUTOFMEMORY;
 			tempTypes = ov_memstack_alloc((types->veclen + 1) * sizeof(OV_STRING));
-			if(!tempTypes)
-				return OV_ERR_HEAPOUTOFMEMORY;
+			if(!tempTypes) return OV_ERR_HEAPOUTOFMEMORY;
 			/*	copy old values to temp vectors	*/
-			for(i=0; i < ids->veclen; i++)
-			{
+			for (i = 0; i < ids->veclen; i++) {
 				tempIds[i] = ids->value[i];
 				tempValues[i] = values->value[i];
 				tempUnits[i] = units->value[i];
 				tempTypes[i] = types->value[i];
 			}
 			/*	add new elements data	*/
-			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "id", &(tempIds[ids->veclen]));
-			if(Ov_Fail(result))
-				return result;
-			result = acplt_simpleMsg_xml_getElementData(tempPtr, "val", &(tempValues[values->veclen]));
-			if(Ov_Fail(result))
-				return result;
-			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "unit", &(tempUnits[units->veclen]));
-			if(Ov_Fail(result))
-				return result;
-			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "type", &(tempTypes[types->veclen]));
-			if(Ov_Fail(result))
-				return result;
+			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "id",
+				&(tempIds[ids->veclen]));
+			if(Ov_Fail(result)) return result;
+			result = acplt_simpleMsg_xml_getElementData(tempPtr, "val",
+				&(tempValues[values->veclen]));
+			if(Ov_Fail(result)) return result;
+			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "unit",
+				&(tempUnits[units->veclen]));
+			if(Ov_Fail(result)) return result;
+			result = acplt_simpleMsg_xml_getAttributeData(tempPtr, "val", "type",
+				&(tempTypes[types->veclen]));
+			if(Ov_Fail(result)) return result;
 			/*	update output	*/
 			ids->veclen++;
 			values->veclen++;
@@ -595,15 +500,12 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml, OV_STRI
 	return OV_ERR_OK;
 }
 
-OV_DLLFNCEXPORT void acplt_simpleMsg_initHeader(ACPLT_MSGHEADER* header)
-{
-	if(header){
-		header->rcvSysAdr = NULL;
-		header->rcvLocAdr = NULL;
+OV_DLLFNCEXPORT void acplt_simpleMsg_initHeader(ACPLT_MSGHEADER* header) {
+	if(header) {
+		Ov_SetDynamicVectorLength(&header->sysAdrPath, 0, STRING);
+		Ov_SetDynamicVectorLength(&header->locAdrPath, 0, STRING);
 		header->msgId = NULL;
 		header->refMsgId = NULL;
-		header->sndSysAdr = NULL;
-		header->sndLocAdr = NULL;
 		header->auth = NULL;
 	}
 	return;

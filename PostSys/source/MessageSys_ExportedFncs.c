@@ -18,32 +18,32 @@
  * starting with 0. Works just like Ov_CreateObject, except for it needs an OV_RESULT as an additional parameter.
  */
 
-OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousObject(OV_INSTPTR_ov_class pClass, OV_INSTPTR_ov_domain pParent, OV_STRING identifier, OV_INSTPTR_ov_object* pObj)
-{
+OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousObject(
+		OV_INSTPTR_ov_class pClass, OV_INSTPTR_ov_domain pParent,
+		OV_STRING identifier, OV_INSTPTR_ov_object* pObj) {
 	OV_UINT i = 0;
 	OV_STRING tmpName = NULL;
 	OV_UINT nameLength;
 	OV_RESULT result;
 
-	nameLength= strlen(identifier);
+	nameLength = strlen(identifier);
 	ov_memstack_lock();
-	tmpName = ov_memstack_alloc(nameLength+12); /*	nameLength plus max langth of uint plus '_' and '\0'	*/
-	if(!tmpName)
-	{
+	tmpName = ov_memstack_alloc(nameLength + 12); /*	nameLength plus max langth of uint plus '_' and '\0'	*/
+	if(!tmpName) {
 		ov_memstack_unlock();
 		return OV_ERR_HEAPOUTOFMEMORY;
 	}
 
-	do{
-		sprintf(tmpName, "%s_%" OV_PRINT_UINT,identifier,i);
-		result = ov_class_createobject(pClass, pParent, tmpName, OV_PMH_DEFAULT, NULL, NULL, NULL, pObj);
+	do {
+		sprintf(tmpName, "%s_%" OV_PRINT_UINT, identifier, i);
+		result = ov_class_createobject(pClass, pParent, tmpName, OV_PMH_DEFAULT,
+		NULL, NULL, NULL, pObj);
 		if(Ov_OK(result))
-			break;	/*	finished, leave the loop	*/
-		else if(result == OV_ERR_ALREADYEXISTS)
-		{	/*	ALREADYEXISTS is ok so increment i and continue. Otherwise there is an error and we leave the loop (while(0) will end)	*/
+			break; /*	finished, leave the loop	*/
+		else if(result == OV_ERR_ALREADYEXISTS) { /*	ALREADYEXISTS is ok so increment i and continue. Otherwise there is an error and we leave the loop (while(0) will end)	*/
 			i++;
 		}
-	}while(result == OV_ERR_ALREADYEXISTS);
+	} while (result == OV_ERR_ALREADYEXISTS);
 
 	ov_memstack_unlock();
 	return result;
@@ -52,10 +52,9 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousObject(OV_INSTPTR_ov_class pCla
 /**
  * This is a function to create an anonymous message.
  */
-OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousMessage(OV_INSTPTR_ov_domain pParent, OV_STRING identifier, OV_INSTPTR_PostSys_Message* pObj)
-{
+OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousMessage(
+		OV_INSTPTR_ov_domain pParent, OV_STRING identifier,
+		OV_INSTPTR_PostSys_Message* pObj) {
 	return Ov_CreateIDedObject(PostSys_Message, *pObj, pParent, identifier);
 }
-
-
 
