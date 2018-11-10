@@ -12,24 +12,6 @@
 
 static OV_INT msgID = 0x48ad3548;
 
-/*	statics for Message Generation	*/
-
-static const char msgHdr[] = "hdr";
-static const char msgSysAdrPath[] = "sysAdrPath";
-static const char msgLocAdrPath[] = "locAdrPath";
-static const char msgPathVal[] = "val";
-static const char msgId[] = "msgId";
-static const char msgRefId[] = "refMsgId";
-static const char msgAuth[] = "auth";
-
-static const char msgBdy[] = "bdy";
-static const char msgSvc[] = "Svc=\"";
-static const char msgOp[] = "Op=\"";
-static const char msgVal[] = "val";
-static const char msgValId[] = "id=\"";
-static const char msgValType[] = "type=\"";
-static const char msgValUnit[] = "unit=\"";
-static const char msgSd[] = "sd";
 
 #define GEN_ADD_TAG(tagname)	*tempinside = '<';	\
 		tempinside++;	\
@@ -73,6 +55,7 @@ OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_generateMsgHeader(
 	OV_UINT sysAdrPathLength = 0;
 	OV_UINT locAdrPathLength = 0;
 	OV_UINT pathValueLen = 0;
+	OV_STRING curIndStr = NULL;
 	OV_UINT msgIdLength = 0;
 	OV_UINT refMsgIdLength = 0;
 	OV_UINT authLength = 0;
@@ -99,6 +82,12 @@ OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_generateMsgHeader(
 		locAdrPathLength += 2 + 3 + 2 * (sizeof(msgPathVal) - 1) + pathValueLen; /*	no terminating \0	*/
 	}
 	length += locAdrPathLength;
+
+	/* curInd */
+	ov_string_print(&curIndStr, "%u", header->currentInd);
+	length += 2 + 3 + 2 * strlen(msgCurInd)
+			+ ov_string_getlength(curIndStr);
+	
 
 	/*	message ID	*/
 	if(header->msgId) { /*	<> + </> + 	2*$msgId + $msgIdLength	*/
@@ -136,14 +125,12 @@ OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_generateMsgHeader(
 	GEN_ADD_TAG(msgSysAdrPath);
 	for (OV_UINT i = 0; i < pathLen; i++) {
 		GEN_ADD_TAG(msgPathVal);
-		tempinside += strlen(msgPathVal);
 
 		pathValueLen = strlen(header->sysAdrPath.value[i]);
 		memcpy(tempinside, header->sysAdrPath.value[i], pathValueLen);
 		tempinside += pathValueLen;
 
 		GEN_ADD_CLOSETAG(msgPathVal);
-		tempinside += strlen(msgPathVal);
 	}
 	GEN_ADD_CLOSETAG(msgSysAdrPath);
 
@@ -151,16 +138,20 @@ OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_generateMsgHeader(
 	GEN_ADD_TAG(msgLocAdrPath);
 	for (OV_UINT i = 0; i < pathLen; i++) {
 		GEN_ADD_TAG(msgPathVal);
-		tempinside += strlen(msgPathVal);
 
 		pathValueLen = strlen(header->locAdrPath.value[i]);
 		memcpy(tempinside, header->locAdrPath.value[i], pathValueLen);
 		tempinside += pathValueLen;
 
 		GEN_ADD_CLOSETAG(msgPathVal);
-		tempinside += strlen(msgPathVal);
 	}
 	GEN_ADD_CLOSETAG(msgLocAdrPath);
+
+	/* currentInd */
+	GEN_ADD_TAG(msgCurInd);
+	memcpy(tempinside, curIndStr, strlen(curIndStr));
+	tempinside += strlen(curIndStr);
+	GEN_ADD_CLOSETAG(msgCurInd);
 
 	/*	message ID	*/
 	GEN_ADD_TAG(msgId);

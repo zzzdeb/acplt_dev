@@ -310,6 +310,7 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_xml_getAttributeData(char const* xml,
  */
 OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml,
 		ACPLT_MSGHEADER* header) {
+
 	OV_STRING tempMsgText = NULL;
 	OV_INT HeaderLength;
 	OV_STRING tempPtr = NULL;
@@ -318,7 +319,7 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml,
 
 	if(!xml || !(*xml)) return OV_ERR_BADPARAM;
 
-	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, "hdr", &tempPtr))
+	if(Ov_Fail(acplt_simpleMsg_xml_findElementBegin(xml, msgHdr, &tempPtr))
 			|| !tempPtr) {
 		return OV_ERR_BADVALUE;
 	}
@@ -336,43 +337,108 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml,
 	memcpy(tempMsgText, tempPtr, HeaderLength);
 	tempMsgText[HeaderLength] = '\0';
 
-	result = acplt_simpleMsg_xml_getElementData(tempMsgText, "rcvSysAdr",
-		&(header->rcvSysAdr));
+//	todo tmp comment
+	OV_STRING tmpStrBeg = NULL;
+	OV_STRING tmpStrBeg1 = NULL;
+	OV_STRING tmpStrEnd = NULL;
+	OV_STRING tmpStrTag = NULL;
+	OV_STRING_VEC tmpStrVec = { 0 };
+	result = acplt_simpleMsg_xml_findElementBegin(tempPtr, msgSysAdrPath,
+		&tmpStrBeg);
 	if(Ov_Fail(result))
 		return result;
-	else if(!header->rcvSysAdr) return OV_ERR_BADVALUE;
-
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "rcvLocAdr",
-		&(header->rcvLocAdr));
+	else if(!tmpStrBeg) return OV_ERR_BADVALUE;
+	ov_string_print(&tmpStrTag, "/%s", msgSysAdrPath);
+	result = acplt_simpleMsg_xml_findElementBegin(tempPtr, tmpStrTag,
+		&tmpStrEnd);
+	ov_string_setvalue(&tmpStrTag, NULL);
 	if(Ov_Fail(result))
 		return result;
-	else if(!header->rcvLocAdr) return OV_ERR_BADVALUE;
+	else if(!tmpStrEnd) return OV_ERR_BADVALUE;
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "msgId",
-		&(header->msgId));
+	OV_UINT pathLen = 0;
+	OV_UINT currentLen = 5;
+	Ov_SetDynamicVectorLength(&tmpStrVec, currentLen, STRING);
+	acplt_simpleMsg_xml_findElementBegin(tmpStrBeg, msgPathVal,
+		&tmpStrVec.value[0]);
+	if(tmpStrVec.value[pathLen] && tmpStrVec.value[pathLen] < tmpStrEnd) {
+		while (1) {
+			acplt_simpleMsg_xml_findElementBegin(
+				tmpStrVec.value[pathLen] + 1,
+				msgPathVal, &tmpStrVec.value[pathLen + 1]);
+			pathLen++;
+			if(!tmpStrVec.value[pathLen] || tmpStrVec.value[pathLen] > tmpStrEnd)
+				break;
+			if(pathLen == currentLen - 1) {
+				currentLen *= 2;
+				Ov_SetDynamicVectorLength(&tmpStrVec, currentLen, STRING);
+			}
+		}
+	}
+	Ov_SetDynamicVectorLength(&header->sysAdrPath, pathLen, STRING);
+	for (OV_UINT i = 0; i < pathLen; i++) {
+		acplt_simpleMsg_xml_getElementData(tmpStrVec.value[i], msgPathVal,
+			&header->sysAdrPath.value[i]);
+	}
+
+	/* loc vals */
+	result = acplt_simpleMsg_xml_findElementBegin(tempMsgText, msgLocAdrPath,
+		&tmpStrBeg);
+	if(Ov_Fail(result))
+		return result;
+	else if(!tmpStrBeg) return OV_ERR_BADVALUE;
+	ov_string_print(&tmpStrTag, "/%s", msgLocAdrPath);
+	result = acplt_simpleMsg_xml_findElementBegin(tempMsgText, tmpStrTag,
+		&tmpStrEnd);
+	ov_string_setvalue(&tmpStrTag, NULL);
+	if(Ov_Fail(result))
+		return result;
+	else if(!tmpStrEnd) return OV_ERR_BADVALUE;
+
+	pathLen = 0;
+	acplt_simpleMsg_xml_findElementBegin(tmpStrBeg, msgPathVal,
+		&tmpStrVec.value[0]);
+	if(tmpStrVec.value[pathLen] && tmpStrVec.value[pathLen] < tmpStrEnd) {
+		while (1) {
+			acplt_simpleMsg_xml_findElementBegin(
+				tmpStrVec.value[pathLen] + 1,
+				msgPathVal, &tmpStrVec.value[pathLen + 1]);
+			pathLen++;
+			if(!tmpStrVec.value[pathLen] || tmpStrVec.value[pathLen] > tmpStrEnd)
+				break;
+			if(pathLen == currentLen - 1) {
+				currentLen *= 2;
+				Ov_SetDynamicVectorLength(&tmpStrVec, currentLen, STRING);
+			}
+		}
+	}
+	Ov_SetDynamicVectorLength(&header->locAdrPath, pathLen, STRING);
+	for (OV_UINT i = 0; i < pathLen; i++) {
+		acplt_simpleMsg_xml_getElementData(tmpStrVec.value[i], msgPathVal,
+			&header->locAdrPath.value[i]);
+	}
+	Ov_SetDynamicVectorLength(&tmpStrVec, 0,
+		STRING);
+
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, msgCurInd,
+		&(tmpStrBeg));
+	if(Ov_Fail(result))
+		return result;
+	header->currentInd = atoi(tmpStrBeg);
+
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, msgId, &(header->msgId));
 	if(Ov_Fail(result))
 		return result;
 	else if(!header->msgId) return OV_ERR_BADVALUE;
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "refMsgId",
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, msgRefId,
 		&(header->refMsgId));
 	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
 
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndSysAdr",
-		&(header->sndSysAdr));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
-		return result;
-	}
-
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "sndLocAdr",
-		&(header->sndLocAdr));
-	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
-		return result;
-	}
-
-	result = acplt_simpleMsg_xml_getElementData(tempPtr, "auth", &(header->auth));
+	result = acplt_simpleMsg_xml_getElementData(tempPtr, msgAuth,
+		&(header->auth));
 	if(Ov_Fail(result) && result != OV_ERR_BADNAME) {
 		return result;
 	}
@@ -502,8 +568,11 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml,
 
 OV_DLLFNCEXPORT void acplt_simpleMsg_initHeader(ACPLT_MSGHEADER* header) {
 	if(header) {
+		header->sysAdrPath.veclen = 0;
+		header->locAdrPath.veclen = 0;
 		Ov_SetDynamicVectorLength(&header->sysAdrPath, 0, STRING);
 		Ov_SetDynamicVectorLength(&header->locAdrPath, 0, STRING);
+		header->currentInd = 0;
 		header->msgId = NULL;
 		header->refMsgId = NULL;
 		header->auth = NULL;

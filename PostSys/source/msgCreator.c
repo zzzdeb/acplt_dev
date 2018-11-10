@@ -158,7 +158,8 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 		ov_memstack_unlock();
 		return result;
 	}
-	result = PostSys_Message_pathName_set(pMsg, tmpStrVec.value, pathLen + 1);
+	result = PostSys_Message_pathComponent_set(pMsg, tmpStrVec.value,
+		pathLen + 1);
 	if(Ov_Fail(result)) {
 		Ov_DeleteObject(pMsg);
 		ov_memstack_unlock();

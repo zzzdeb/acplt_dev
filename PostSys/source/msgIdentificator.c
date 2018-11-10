@@ -91,6 +91,7 @@ OV_DLLFNCEXPORT OV_BOOL PostSys_msgIdentificator_identify(
 			ov_memstack_unlock();
 			return FALSE;
 		}
+		ov_memstack_lock();
 		return TRUE;
 	} else
 		return FALSE;

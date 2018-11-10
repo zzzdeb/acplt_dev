@@ -93,6 +93,7 @@ static OV_RESULT PostSys_createChannel(OV_INSTPTR_PostSys_MsgDelivery pDelivery,
 			if(Ov_Fail(result)) {
 				KS_logfile_error(
 					("%s createChannel: could not create channel. reason: %s", pDelivery->v_identifier, ov_result_getresulttext( result)));
+				ov_memstack_unlock();
 				return result;
 			} else {
 				(*ppChannel)->v_ClientHandlerAssociated = KSBASE_CH_NOTNEEDED;
@@ -137,9 +138,9 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_MsgDelivery_constructor(
 	return OV_ERR_OK;
 }
 
-OV_BOOL ov_strvector_containsnull(const OV_STRING_VEC* vec) {
-	return 0;
-}
+//OV_BOOL ov_strvector_containsnull(const OV_STRING_VEC* vec) {
+//	return 0;
+//}
 OV_BOOL PostSys_isValidMsg(const OV_INSTPTR_PostSys_Message msg) {
 	OV_UINT pathLen = msg->v_pathAddress.veclen;
 	if(pathLen < 2) {
@@ -147,18 +148,15 @@ OV_BOOL PostSys_isValidMsg(const OV_INSTPTR_PostSys_Message msg) {
 		return 0;
 	}
 
-	if(!ov_strvector_containsnull(&msg->v_pathAddress)
-			|| !ov_strvector_containsnull(&msg->v_pathAddress)) {
+	if(ov_strvector_containsnull(&msg->v_pathAddress)
+			|| ov_strvector_containsnull(&msg->v_pathAddress)) {
 		ov_logfile_error(
 			"MessageDelivery/typeMethod: receiverAddress or ReceiverName of message %s not set",
 			msg->v_identifier);
 		msg->v_msgStatus = MSGFATALERROR;
-		ov_memstack_unlock();
 		return 0;
 	}
-
 	return 1;
-
 }
 
 OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
@@ -180,7 +178,7 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 	OV_STRING headerString = NULL;
 	OV_UINT hdrLength = 0;
 	OV_UINT bdyLength = 0;
-	ACPLT_MSGHEADER msgHeader;
+	ACPLT_MSGHEADER msgHeader = { 0 };
 	OV_TIME tTemp = { 0, 0 };
 	OV_RESULT result;
 
@@ -188,6 +186,7 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 	if(msg) { //Currently we are processing a message, lets see how far we are...
 		if((msg->v_msgStatus != MSGDONE) && (msg->v_msgStatus != MSGRECEIVERERROR)
 				&& (msg->v_msgStatus != MSGFATALERROR)) {
+			ov_memstack_lock();
 			/*	still sending / waiting for answer of ks-system	*/
 			switch (msg->v_sendBy) {
 				case MSG_SEND_DIRECTLY: /*	send directly	*/
@@ -255,6 +254,7 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 					Ov_DeleteObject(msg);
 					break;
 			}
+			ov_memstack_unlock();
 		} else { /*	message is sent or an error occurred -> delete message	*/
 			Ov_DeleteObject(msg);
 		}
@@ -307,6 +307,7 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 			msgHeader.msgId = msg->v_msgID;
 			msgHeader.refMsgId = msg->v_refMsgID;
 			msgHeader.auth = msg->v_auth;
+			msgHeader.currentInd = msg->v_currentInd;
 			headerString = acplt_simpleMsg_generateMsgHeader(&msgHeader);
 			Ov_SetDynamicVectorLength(&(msgHeader.sysAdrPath), 0, STRING);
 			Ov_SetDynamicVectorLength(&(msgHeader.locAdrPath), 0, STRING);
@@ -420,8 +421,9 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 					KS_logfile_debug(
 						("msgDelivery: pChannel->v_ConnectionState is: %u", pChannel->v_ConnectionState))
 					;
-					result = PostSys_initiateConnection(pChannel, msg->v_receiverAddress,
-						msg->v_receiverName);
+					result = PostSys_initiateConnection(pChannel,
+						msg->v_pathAddress.value[msg->v_currentInd + 1],
+						msg->v_pathName.value[msg->v_currentInd + 1]);
 					if(Ov_Fail(result)) {
 						ov_memstack_lock();
 						ov_logfile_error(
@@ -464,10 +466,11 @@ OV_DLLFNCEXPORT void PostSys_MsgDelivery_typemethod(
 					value.value.valueunion.val_string = msgString;
 					sendingInstance = (OV_INSTPTR_ksapi_setVar) ov_path_getobjectpointer(
 					SENDINGINSTANCE, 2);
+					OV_UINT tmp;
 					if(sendingInstance) {
 						ksapi_setVar_setandsubmit(sendingInstance,
-							PostSys_Message_receiverAddress_get(msg),
-							PostSys_Message_receiverName_get(msg),
+							PostSys_Message_pathAddress_get(msg, &tmp)[msg->v_currentInd + 1],
+							PostSys_Message_pathName_get(msg, &tmp)[msg->v_currentInd + 1],
 							"/communication/PostSys.retrieveMessage", value);
 						ov_time_gettime(&(this->v_sendTime));
 					} else {
@@ -568,7 +571,12 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(const OV_STRING value,
 		return OV_ERR_OK;
 	}
 
-	service = msgHeader.rcvLocAdr;
+	//todo check msg format
+	msgHeader.currentInd++;
+	const OV_UINT pathLen = msgHeader.locAdrPath.veclen;
+
+	/* we are at destination */
+	service = msgHeader.locAdrPath.value[msgHeader.currentInd];
 
 	//New findService called here
 	result = PostSys_MsgDelivery_findService(&sobj, service);
@@ -640,42 +648,54 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(const OV_STRING value,
 
 	result = OV_ERR_OK; /*	clear result. use binary or for errors in setting values to get a collective good/bad in the end	*/
 	/*	find servername (representation for a port, so ':' is used as delimiter) and split field	*/
-	tempSrvName = strchr(msgHeader.rcvSysAdr, ':');
-	if(!tempSrvName) {
-		if(msgHeader.rcvSysAdr[0] == '/' && msgHeader.rcvSysAdr[1] == '/') {
-			for (iterator = 2;
-					msgHeader.rcvSysAdr[iterator] != '\0'
-							&& msgHeader.rcvSysAdr[iterator] != '/'; iterator++)
-				;
-			if(msgHeader.rcvSysAdr[iterator] == '/') {
-				tempSrvName = &(msgHeader.rcvSysAdr[iterator]);
-			}
-		} else {
-			Ov_DeleteObject((OV_INSTPTR_ov_object ) message);
-			ov_logfile_info(
-				"MessageDelivery/retrieveMessage: servername not encoded in rcvSysAdr");
-			ov_memstack_unlock();
-			return OV_ERR_OK;
-		}
-	}
-	*tempSrvName = '\0';
-	tempSrvName++;
-	result |= PostSys_Message_receiverName_set(message, tempSrvName);
-	result |= PostSys_Message_receiverAddress_set(message, msgHeader.rcvSysAdr);
-	result |= PostSys_Message_receiverComponent_set(message, msgHeader.rcvLocAdr);
 
-	if(msgHeader.sndSysAdr) {
-		/*	find servername (representation for a port, so ':' is used as delimiter) and split field	*/
-		tempSrvName = strchr(msgHeader.sndSysAdr, ':');
-		if(tempSrvName) {
-			*tempSrvName = '\0';
-			tempSrvName++;
-			result |= PostSys_Message_senderName_set(message, tempSrvName);
-		} else
-			result |= PostSys_Message_senderName_set(message, "");
+	OV_STRING_VEC tmpNamePath = { 0 };
+	OV_STRING_VEC tmpAdrPath = { 0 };
+	Ov_SetDynamicVectorLength(&tmpAdrPath, pathLen, STRING);
+	Ov_SetDynamicVectorLength(&tmpNamePath, pathLen, STRING);
+	for (OV_UINT i = 0; i < pathLen; i++) {
+//		if(msgHeader.sysAdrPath.value[0]) {
+//			/*	find servername (representation for a port, so ':' is used as delimiter) and split field	*/
+//			tempSrvName = strchr(msgHeader.sysAdrPath.value[0], ':');
+//			if(tempSrvName) {
+//				*tempSrvName = '\0';
+//				tempSrvName++;
+//				result |= PostSys_Message_pathName_set(message, tempSrvName);
+//			} else
+//				result |= PostSys_Message_pathName_set(message, "");
+//		}
+//		if(i) {
+		tempSrvName = strchr(msgHeader.sysAdrPath.value[i], ':');
+		if(!tempSrvName) {
+			if(msgHeader.sysAdrPath.value[i][0] == '/'
+					&& msgHeader.sysAdrPath.value[i][1] == '/') {
+				for (iterator = 2;
+						msgHeader.sysAdrPath.value[i][iterator] != '\0'
+								&& msgHeader.sysAdrPath.value[1][iterator] != '/'; iterator++)
+					;
+				if(msgHeader.sysAdrPath.value[i][iterator] == '/') {
+					tempSrvName = &(msgHeader.sysAdrPath.value[i][iterator]);
+				}
+			} else {
+				Ov_DeleteObject((OV_INSTPTR_ov_object ) message);
+				ov_logfile_info(
+					"MessageDelivery/retrieveMessage: servername not encoded in sysAdrPath[%d]",
+					i);
+				ov_memstack_unlock();
+				return OV_ERR_OK;
+			}
+		}
+		*tempSrvName = '\0';
+		tempSrvName++;
+		ov_string_setvalue(&tmpAdrPath.value[i], msgHeader.sysAdrPath.value[i]);
+		ov_string_setvalue(&tmpNamePath.value[i], tempSrvName);
+//	}
 	}
-	result |= PostSys_Message_senderAddress_set(message, msgHeader.sndSysAdr);
-	result |= PostSys_Message_senderComponent_set(message, msgHeader.sndLocAdr);
+	result |= PostSys_Message_pathAddress_set(message, tmpAdrPath.value, pathLen);
+	result |= PostSys_Message_pathName_set(message, tmpNamePath.value, pathLen);
+	result |= PostSys_Message_pathComponent_set(message,
+		msgHeader.locAdrPath.value, pathLen);
+	message->v_currentInd = msgHeader.currentInd;
 
 	result |= PostSys_Message_msgID_set(message, msgHeader.msgId);
 	result |= ov_string_setvalue(&message->v_auth, msgHeader.auth);
@@ -718,6 +738,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(const OV_STRING value,
 		ov_memstack_unlock();
 		return OV_ERR_OK;
 	}
+
 	if(!msgEnd) {
 		Ov_DeleteObject((OV_INSTPTR_ov_object ) message);
 		ov_logfile_info(
@@ -738,7 +759,10 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(const OV_STRING value,
 		return OV_ERR_OK;
 	}
 
-	message->v_msgStatus = MSGDONE;
+	/* sending further if we are in the middle */
+	if(msgHeader.currentInd == pathLen - 1) {
+		message->v_msgStatus = MSGDONE;
+	}
 
 	/*	fill in return information	*/
 	if(createdMsg) *createdMsg = message;
@@ -755,6 +779,9 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_MsgDelivery_retrieveMessage_set(
 	PostSys_parseAndDeliverMsg(value, &pMsg, NULL);
 	if(pMsg) {
 		pMsg->v_sendBy = MSG_SEND_KSSETVAR;
+		if(pMsg->v_currentInd < pMsg->v_pathAddress.veclen - 1) {
+		Ov_Link(PostSys_MsgDelivery2CurrentMessage, pobj, pMsg);
+		}
 	}
 	return OV_ERR_OK;
 }

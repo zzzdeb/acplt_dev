@@ -68,6 +68,9 @@ CLASS Message : CLASS ov/object
 		pathComponent[] : STRING
 			HAS_ACCESSORS
 			COMMENT	=	"Name of receiver-component";
+		currentInd : UINT
+			COMMENT = "current Pos of Msg in Path"
+			INITIALVALUE = 0;
 		msgStatus : INT
 			HAS_ACCESSORS
 			COMMENT	=	"0=NEW, 1=READYFORSENDING, 2=WAITING, 3=DONE, 4=RECEIVERERROR, 5=FATALERROR, 10=NEWARRIVED, 11=DONERECEIVE"
@@ -112,6 +115,17 @@ CLASS	inbox	:	CLASS ov/domain
 			COMMENT	=	"TRUE: tells the message sys to keep the connections for incoming messages open to send answers back"
 			INITIALVALUE	=	FALSE;
 	END_VARIABLES;
+END_CLASS;
+
+CLASS node : CLASS ksbase/ComTask
+	IS_INSTANTIABLE;
+	COMMENT = "node class for Msgs through this Server.";
+	VARIABLES
+		
+	END_VARIABLES;
+	OPERATIONS
+					typemethod  : C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;     //gets called by roottask and should be 
+	END_OPERATIONS;
 END_CLASS;
 
 

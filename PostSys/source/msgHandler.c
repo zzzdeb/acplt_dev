@@ -26,6 +26,12 @@
 #include <stdlib.h>
 #include <strings.h>
 
+//todo move from here
+OV_BOOL ov_strvector_containsnull(const OV_STRING_VEC* vec)
+{
+	return 0;
+}
+
 OV_DLLFNCEXPORT void PostSys_msgHandler_startup(OV_INSTPTR_ov_object pobj) {
 	/*
 	 *   local variables
