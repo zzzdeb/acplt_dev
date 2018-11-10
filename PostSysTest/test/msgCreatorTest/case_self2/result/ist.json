@@ -1,0 +1,49 @@
+{
+	"Tree":	{
+		"case_self2":	{
+			"variables":	{
+				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/env_2emptyInbox.json"],
+				"proctime":	["TIME", [1541871234, 108000]]
+			},
+			"children":	{
+				"obj":	{
+					"variables":	{
+						"proctime":	["TIME", [1541871234, 108741]]
+					},
+					"children":	{
+						"Message0":	{
+							"variables":	{
+								"currentInd":	["UINT", 0],
+								"msgID":	["186551929"]
+							}
+						}
+					}
+				},
+				"env":	{
+					"class":	"ov/domain",
+					"children":	{
+						"node1":	{
+							"children":	{
+								"inbox":	{
+									"variables":	{
+										"actimode":	["INT", 1],
+										"cycInterval":	["INT", 5],
+										"NextExecTime":	["TIME", [1541871234, 114737]]
+									},
+									"links":	{
+										"RootComTask":	{
+											"of_association":	"ksbase/AssocComTaskList",
+											"parents":	["/communication/RootComTask"],
+											"children":	["this"]
+										}
+									},
+									"class":	"PostSys/node"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

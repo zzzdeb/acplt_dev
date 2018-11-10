@@ -1,0 +1,17 @@
+{
+    "Libraries": ["ov", "PostSys"],
+    "Tree": {
+        "env": {
+            "class": "ov/domain",
+            "children": {
+                "inbox": {
+                    "variables": {
+                        "holdConnection": ["BOOL", false]
+                    },
+                    "class": "PostSys/inbox"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/msgCreatorTest/case_self2/env"
+}

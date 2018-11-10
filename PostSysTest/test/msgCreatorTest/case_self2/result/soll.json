@@ -1,0 +1,36 @@
+{
+	"Tree":	{
+		"case_self2":	{
+			"variables":	{
+				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/env_emptyInbox.json"]
+			},
+			"children":	{
+				"obj":	{
+					"variables":	{
+					},
+					"children":	{
+						"Message0":	{
+							"variables":	{
+								"msgID":	["121316977"]
+							}
+						}
+					}
+				},
+				"env":	{
+					"children":	{
+						"node1":	{
+							"children":	{
+								"inbox":	{
+									"variables":	{
+										"holdConnection":	["BOOL", false]
+									},
+									"class":	"PostSys/inbox"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

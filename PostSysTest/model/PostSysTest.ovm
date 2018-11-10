@@ -8,7 +8,7 @@ LIBRARY PostSysTest
 	AUTHOR    = "";
 	COPYRIGHT = "";
 	COMMENT   = "";
-	
+
 	/**
 		Documentation of test.
 		@note Javadoc syntax is allowed here.

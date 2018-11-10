@@ -59,9 +59,7 @@ TEST( msgCreator, msgCreator_default) {
 	ovunity_ovCase_build1(pcase);
 	pobj = ovunity_ovCase_getObjPath(pcase);
 
-	ov_string_setvalue(&pobj->v_path, pcase->v_envPath);
-	PostSys_msgCreator_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj),
-		gpltc);
+	PostSys_msgCreator_order_set(pobj, "a;b;c");
 
 	result = ovunity_compareIstSoll(pcase);
 
