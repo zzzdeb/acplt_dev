@@ -227,7 +227,7 @@
                             },
                             "variables": {
                                 "EN": ["UINT", 0],
-                                "initStepName": ["STRING", "INIT"],
+                                "initStepName": ["STRING", "END"],
                                 "endStepName": ["STRING", "END"],
                                 "woStPhase": ["UINT", 1],
                                 "woStQualifier": ["UINT", 1],
