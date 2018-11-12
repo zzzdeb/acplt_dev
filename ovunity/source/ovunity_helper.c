@@ -14,6 +14,7 @@
 /* build ovCase from init.json file */
 OV_DLLFNCEXPORT void ovunity_ovCase_build1(OV_INSTPTR_ovunity_ovCase pcase) {
 	OV_RESULT result = OV_ERR_OK;
+	OV_INSTPTR_ov_domain penv = NULL;
 	OV_STRING buildJsonPath = NULL;
 	ov_string_print(&buildJsonPath, "%s%s", pcase->v_sysPath, buildFilePath);
 	ov_memstack_lock();
@@ -43,17 +44,18 @@ OV_DLLFNCEXPORT void ovunity_ovCase_build1(OV_INSTPTR_ovunity_ovCase pcase) {
 	if(jsenv) {
 		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_envFilePath,
 			jsenv->valuestring);
+		ov_string_print(&pcase->v_envPath, "%s%s", pcase->v_path, envPath);
+		//load env
+		ovunity_loadJsonAsTree(pcase->v_envFilePath, pcase->v_envPath);
+		//todo check
 	} else {
 		ov_logfile_warning("no env found in build.json. getting default");
 		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_envFilePath,
 			"default");
+		Ov_CreateObject(ov_domain, penv, pcase, "env");
 	}
 	//todo result check
 
-	ov_string_print(&pcase->v_envPath, "%s%s", pcase->v_path, envPath);
-	//load env
-	ovunity_loadJsonAsTree(pcase->v_envFilePath, pcase->v_envPath);
-	//todo check
 
 	cJSON_Delete(jsbuild);
 	ov_memstack_unlock();

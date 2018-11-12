@@ -34,6 +34,7 @@
 OV_DLLFNCEXPORT OV_RESULT ovunity_compareIstSoll(
 		const OV_INSTPTR_ovunity_ovCase pinst) {
 	OV_RESULT result = OV_ERR_OK;
+	CEXCEPTION_T e;
 	OV_STRING sollPath = NULL;
 	OV_STRING sollJson = NULL;
 	OV_STRING sollIst = NULL;
@@ -42,26 +43,56 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_compareIstSoll(
 	ov_string_print(&sollPath, "%s%s", pinst->v_sysPath, pathToSoll);
 	ov_string_print(&istResultpath, "%s%s", pinst->v_sysPath, pathToResultIst);
 	ov_string_print(&sollResultpath, "%s%s", pinst->v_sysPath, pathToResultSoll);
-	sollJson = ovunity_helper_data2str(sollPath);
-	cJSON* soll = cJSON_Parse(sollJson);
+
+	cJSON* soll = NULL;
+	Try
+			{
+				sollJson = ovunity_helper_data2str(sollPath);
+				soll = cJSON_Parse(sollJson);
+			}
+				Catch(e)
+	{
+		return e;
+	}
 
 	//getting ist stand as json
 	OV_INSTPTR_CTree_Upload pobj = NULL;
 	result = Ov_CreateObject(CTree_Upload, pobj, pinst, "asdbjaioeasd");
-	if(result) Throw(result); //todo info
+	if(result) {
+		ov_logfile_error("Error at attempt to create Upload");
+		return result;
+	}
 	ov_string_setvalue(&pobj->v_path, pinst->v_path);
-	CTree_Upload_execute(pobj);
+	result = CTree_Upload_execute(pobj);
+	if(Ov_Fail(result)) {
+		ov_logfile_error("Error at running Upload");
+		return result;
+	}
 	cJSON* ist = ((CTreeUploadCache) pobj->v_cache).jsbase;
 	// (CTreeUploadCache) pobj->v_cache;
-	result = !cJSON_isSame(soll, ist);
+	if(cJSON_isSame(soll, ist)) {
+		result = 0;
+	} else {
+		cJSON_IsRaw(soll);
+	}
 	Ov_DeleteObject(pobj);
 
 	OV_STRING tmp = cJSON_Print(soll);
-	ovunity_helper_str2data(tmp, sollResultpath);
-	free(tmp);
-	tmp = cJSON_Print(ist);
-	ovunity_helper_str2data(tmp, istResultpath);
-	free(tmp);
+	if(tmp) {
+		result |= ovunity_helper_str2data(tmp, sollResultpath);
+		free(tmp);
+	} else {
+		ov_logfile_error("soll file printed null");
+		result |= OV_ERR_GENERIC;
+	}
+	tmp = cJSON_Print(soll);
+	if(tmp) {
+		result |= ovunity_helper_str2data(tmp, istResultpath);
+		free(tmp);
+	} else {
+		ov_logfile_error("ist file printed null");
+		result |= OV_ERR_GENERIC;
+	}
 	//freeing
 	Ov_HeapFree(sollJson);
 	cJSON_Delete(ist);

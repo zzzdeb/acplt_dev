@@ -66,10 +66,11 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_main_getEnvFilePath(
 		name);
 }
 
+/* writes string to file, if file doesnt exist returns 1 */
 OV_DLLFNCEXPORT OV_RESULT ovunity_helper_str2data(const OV_STRING text,
 		const OV_STRING filename) {
 	if(!text || !filename) {
-		Throw(OV_ERR_BADPARAM);
+		return OV_ERR_BADPARAM;
 	}
 	FILE *handler = fopen(filename, "wb");
 
@@ -78,8 +79,10 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_helper_str2data(const OV_STRING text,
 		// Always remember to close the file.
 		fclose(handler);
 		return 0;
+	} else {
+		ov_logfile_error("couldnt open file: %s", filename);
 	}
-	return -1;
+	return 1;
 }
 
 OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
@@ -115,6 +118,8 @@ OV_DLLFNCEXPORT OV_STRING ovunity_helper_data2str(OV_STRING filename) {
 
 		// Always remember to close the file.
 		fclose(handler);
+	} else {
+		Throw(OV_ERR_BADPATH);
 	}
 
 	return buffer;
@@ -220,26 +225,36 @@ OV_DLLFNCEXPORT void ovunity_loadJsonAsTree(const OV_STRING what, const OV_STRIN
 	return;
 }
 
-/* getting case path */
-/*
- * gives path under the object to simulate environment
- */
 
-/* creates case with case_name under pinst and links */
+/* creates case with case_name under pinst and links, returns NULL in case of failure */
 OV_DLLFNCEXPORT OV_INSTPTR_ovunity_ovCase ovunity_createCase(
 		OV_INSTPTR_ovunity_main pinst,
 		const OV_STRING case_name) {
 	OV_RESULT result = OV_ERR_OK;
 	OV_INSTPTR_ovunity_ovCase pcase = NULL;
 	result = Ov_CreateObject(ovunity_ovCase, pcase, pinst, case_name);
-	if(result) Throw(result);
+	if(result) {
+		ov_logfile_error("couldt create case: %u : %s", result,
+			ov_result_getresulttext(result));
+		return NULL;
+	}
 	pcase->v_sysPath = NULL;
 	ov_string_print(&pcase->v_sysPath, "%s/%s", pinst->v_sysPath, case_name);
 	result = Ov_Link(ovunity_case, pinst, pcase);
-	if(result) Throw(result);
+	if(result) {
+		ov_logfile_error("couldt link case with tester: %u : %s", result,
+			ov_result_getresulttext(result));
+		Ov_DeleteObject(pcase);
+		return NULL;
+	}
 	return pcase;
 }
 
+/* getting case path */
+/*
+ * gives path under the object to simulate environment
+ */
+/* if case with name case_name doesnt exist returns NULL */
 OV_DLLFNCEXPORT OV_STRING ovunity_getCasePath(const OV_INSTPTR_ovunity_main pinst,
 		const OV_STRING case_name) {
 	OV_STRING path = NULL;
