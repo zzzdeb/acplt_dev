@@ -1,5 +1,6 @@
 /*
 !/.gitignore
+
 !/ovdatastruct
 !/unity
 !/ovunity
@@ -20,6 +21,7 @@
 !/syncTest
 !/PostSys
 !/PostSysTest
+
 /*/source/sourcetemplates
 /*/build
 !/*/build/*/Makefile
