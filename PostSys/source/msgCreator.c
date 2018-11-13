@@ -14,8 +14,9 @@
  *
  ******************************************************************************/
 
-#ifndef OV_COMPILE_LIBRARY_PCMsgCreator
-#define OV_COMPILE_LIBRARY_PCMsgCreator
+
+#ifndef OV_COMPILE_LIBRARY_PostSys
+#define OV_COMPILE_LIBRARY_PostSys
 #endif
 
 #include "PostSys.h"
