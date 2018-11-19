@@ -778,10 +778,10 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_MsgDelivery_retrieveMessage_set(
 	OV_INSTPTR_PostSys_Message pMsg = NULL;
 	PostSys_parseAndDeliverMsg(value, &pMsg, NULL);
 	if(pMsg) {
-		pMsg->v_sendBy = MSG_SEND_KSSETVAR;
-		if(pMsg->v_currentInd < pMsg->v_pathAddress.veclen - 1) {
-		Ov_Link(PostSys_MsgDelivery2CurrentMessage, pobj, pMsg);
-		}
+//		pMsg->v_sendBy = MSG_SEND_KSSETVAR;
+//		if(pMsg->v_currentInd < pMsg->v_pathAddress.veclen - 1) {
+//		Ov_Link(PostSys_MsgDelivery2CurrentMessage, pobj, pMsg);
+//		}
 	}
 	return OV_ERR_OK;
 }

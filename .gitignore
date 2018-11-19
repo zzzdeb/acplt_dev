@@ -24,9 +24,10 @@
 
 /*/source/sourcetemplates
 /*/build
-!/*/build/*/Makefile
+!/*/build/**/Makefile
 /*/draft
 /*/.svn
 /*/Debug (Windows)
 /*/Debug
 /*/Release
+/*/.vscode

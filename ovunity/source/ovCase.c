@@ -49,6 +49,8 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_compareIstSoll(
 			{
 				sollJson = ovunity_helper_data2str(sollPath);
 				soll = cJSON_Parse(sollJson);
+			if(!soll)
+				return OV_ERR_BADVALUE;
 			}
 				Catch(e)
 	{
@@ -57,7 +59,7 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_compareIstSoll(
 
 	//getting ist stand as json
 	OV_INSTPTR_CTree_Upload pobj = NULL;
-	result = Ov_CreateObject(CTree_Upload, pobj, pinst, "asdbjaioeasd");
+	result = Ov_CreateIDedObject(CTree_Upload, pobj, pinst, "Upload");
 	if(result) {
 		ov_logfile_error("Error at attempt to create Upload");
 		return result;
@@ -80,19 +82,19 @@ OV_DLLFNCEXPORT OV_RESULT ovunity_compareIstSoll(
 	OV_STRING tmp = cJSON_Print(soll);
 	if(tmp) {
 		result |= ovunity_helper_str2data(tmp, sollResultpath);
-		free(tmp);
 	} else {
 		ov_logfile_error("soll file printed null");
 		result |= OV_ERR_GENERIC;
 	}
-	tmp = cJSON_Print(soll);
+	free(tmp);
+	tmp = cJSON_Print(ist);
 	if(tmp) {
 		result |= ovunity_helper_str2data(tmp, istResultpath);
-		free(tmp);
 	} else {
 		ov_logfile_error("ist file printed null");
 		result |= OV_ERR_GENERIC;
 	}
+	free(tmp);
 	//freeing
 	Ov_HeapFree(sollJson);
 	cJSON_Delete(ist);

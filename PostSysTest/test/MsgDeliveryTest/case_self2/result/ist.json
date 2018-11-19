@@ -1,0 +1,104 @@
+{
+	"Tree":	{
+		"case_self2":	{
+			"variables":	{
+				"sysPath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/PostSysTest/test/MsgDeliveryTest/case_self2"],
+				"path":	["/TechUnits/MsgDeliveryTest/case_self2"],
+				"objPath":	["/TechUnits/MsgDeliveryTest/case_self2/obj"],
+				"envPath":	["/TechUnits/MsgDeliveryTest/case_self2/env"],
+				"objFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/PostSysTest/test/MsgDeliveryTest/data/obj_self2.json"],
+				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/PostSysTest/test/MsgDeliveryTest/data/env_2emptyInbox.json"],
+				"proctime":	["TIME", [1542624156, 912020]],
+				"calctime":	["TIME_SPAN", [0, 0]]
+			},
+			"links":	{
+				"main":	{
+					"parents":	["/TechUnits/MsgDeliveryTest"]
+				}
+			},
+			"children":	{
+				"obj":	{
+					"variables":	{
+						"queueLength":	[3],
+						"msgsInQueue":	[3],
+						"receiverInstance":	[["/TechUnits/MsgDeliveryTest/case_self2/env/node1", "/TechUnits/MsgDeliveryTest/case_self2/env/node2"]],
+						"eexreq":	[true],
+						"methcount":	[0],
+						"proctime":	["TIME", [1542493182, 505074]],
+						"calctime":	["TIME_SPAN", [0, 0]]
+					},
+					"children":	{
+						"00000000000004E1_Message":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "localhost"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "MANAGER"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/a/case_self2/obj", "/TechUnits/MsgDeliveryTest/case_self2/env/node1", "/TechUnits/MsgDeliveryTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "2609775433"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test1\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						},
+						"00000000000004E2_Message":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "localhost"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "MANAGER"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/a/case_self2/obj", "/TechUnits/MsgDeliveryTest/case_self2/env/node1", "/TechUnits/MsgDeliveryTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "2609775434"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test1\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						},
+						"00000000000004E3_Message":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "localhost"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "MANAGER"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/a/case_self2/obj", "/TechUnits/MsgDeliveryTest/case_self2/env/node1", "/TechUnits/MsgDeliveryTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "2609775435"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test1\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						}
+					}
+				},
+				"env":	{
+					"children":	{
+						"node1":	{
+							"children":	{
+								"inbox":	{
+									"variables":	{
+										"NextExecTime":	["TIME", [1542624156, 937496]]
+									}
+								}
+							}
+						},
+						"node2":	{
+							"children":	{
+								"inbox":	{
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"Path":	"/TechUnits/MsgDeliveryTest/case_self2"
+}

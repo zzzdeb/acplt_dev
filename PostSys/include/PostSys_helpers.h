@@ -1,8 +1,9 @@
 
-#ifndef OV_COMPILE_LIBRARY_PostSys
-#define OV_COMPILE_LIBRARY_PostSys
-#endif
+#ifndef OV_COMPILE_LIBRARY_PostSys_helper
+#define OV_COMPILE_LIBRARY_PostSys_helper
 
+#include "libov/ov_ov.h"
+#include "libov/ov_macros.h"
 
 //POSTSYS: sending states of messages
 #define MSGNEW 0
@@ -28,3 +29,5 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousMessage(OV_INSTPTR_ov_domain pP
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(const OV_STRING	value, OV_INSTPTR_PostSys_Message* createdMsg, OV_INSTPTR_ov_domain* msgCreatedIn);
 
+
+#endif

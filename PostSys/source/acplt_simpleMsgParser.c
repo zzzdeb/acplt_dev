@@ -339,7 +339,7 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseMessageHeader(char const* xml,
 
 //	todo tmp comment
 	OV_STRING tmpStrBeg = NULL;
-	OV_STRING tmpStrBeg1 = NULL;
+	// OV_STRING tmpStrBeg1 = NULL;
 	OV_STRING tmpStrEnd = NULL;
 	OV_STRING tmpStrTag = NULL;
 	OV_STRING_VEC tmpStrVec = { 0 };

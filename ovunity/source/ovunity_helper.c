@@ -30,8 +30,10 @@ OV_DLLFNCEXPORT void ovunity_ovCase_build1(OV_INSTPTR_ovunity_ovCase pcase) {
 			jsobj->valuestring);
 	} else {
 		ov_logfile_warning("no obj found in build.json. getting default");
-		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_objFilePath,
-			"default");
+		return;
+//		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_objFilePath,
+//			"default");
+//		ov_string_setvalue(&pcase->v_envFilePath, NULL);
 	}
 	//todo result check
 
@@ -50,9 +52,10 @@ OV_DLLFNCEXPORT void ovunity_ovCase_build1(OV_INSTPTR_ovunity_ovCase pcase) {
 		//todo check
 	} else {
 		ov_logfile_warning("no env found in build.json. getting default");
-		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_envFilePath,
-			"default");
+//		result = ovunity_main_getEnvFilePath(pmain, &pcase->v_envFilePath,
+//			"default");
 		Ov_CreateObject(ov_domain, penv, pcase, "env");
+		ov_string_print(&pcase->v_envPath, "%s%s", pcase->v_path, envPath);
 	}
 	//todo result check
 

@@ -395,6 +395,9 @@ OV_RESULT getVars(OV_INSTPTR_CTree_Upload pinst, cJSON *jsobj,
 
 	/* getting object */
 	result = ov_path_resolve(&path, NULL, object_path, 2);
+	if(result){
+		return result;
+	}
 	pparent = &path.elements[path.size - 1];
 
 	mask |= OV_ET_VARIABLE;

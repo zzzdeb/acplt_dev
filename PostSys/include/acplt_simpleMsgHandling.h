@@ -5,8 +5,10 @@
  *      Author: lars
  */
 
-#ifndef _OV_COMPILE_LIBRARY_PostSys_
-#define _OV_COMPILE_LIBRARY_PostSys_
+#ifndef _acplt_simplMsgHandling_
+#define _acplt_simplMsgHandling_
+
+#include "libov/ov_ov.h"
 
 /*	statics for Message Generation	*/
 
@@ -52,8 +54,5 @@ OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_generateMsgHeader(ACPLT_MSGHEADER cons
 OV_DLLFNCEXPORT OV_STRING acplt_simpleMsg_GenerateFlatBody(const OV_STRING service, const OV_STRING operation,
 		OV_BOOL createContainingObject, const OV_STRING containerName,
 		OV_STRING_VEC* ids, OV_STRING_VEC* values, OV_STRING_VEC* units, OV_STRING_VEC* types);
-
-
-
 
 #endif

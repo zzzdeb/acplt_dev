@@ -38,7 +38,7 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
   OV_INSTPTR_CTree_WriteFiles pwritefiles = NULL;
   OV_INSTPTR_ov_domain pCTree = NULL;
   OV_INSTPTR_ov_domain pData = NULL;
-  OV_INSTPTR_fb_task pUrTask = NULL;
+  // OV_INSTPTR_fb_task pUrTask = NULL;
   /*
    *    set the global variables of the original version
    *    and if successful, load other libraries
@@ -83,9 +83,9 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
       ov_logfile_error("Error: %s: couldnt create upload;",
                        ov_result_getresulttext(result));
     }
-    OV_INSTPTR_ov_object ptmp =
-        ov_path_getobjectpointer("/Tasks/UrTask", VERSION_FOR_CTREE);
-    pUrTask = Ov_StaticPtrCast(fb_task, ptmp);
+    // OV_INSTPTR_ov_object ptmp =
+    //     ov_path_getobjectpointer("/Tasks/UrTask", VERSION_FOR_CTREE);
+    // pUrTask = Ov_StaticPtrCast(fb_task, ptmp);
     //		if(pUrTask)
     //			Ov_Link(fb_tasklist, pUrTask, pupload);
   }

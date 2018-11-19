@@ -1,8 +1,23 @@
 #!/bin/bash
 
-cp ../../cexception/Debug/libcexception.so ../../$1/build/linux/
-cp ../../unity/Debug/libunity.so ../../$1/build/linux/
+BUILD_DIR=""
+EXT=""
 
-cd ../../$1/build/linux
+if [ "$2" == "linux" ]
+then
+BUILD_DIR="linux/"
+EXT=".so"
+elif [ "$2" == "nt" ]
+then
+BUILD_DIR="nt/"
+EXT=".dll"
+else
+exit -1
+fi
+
+cp ../../cexception/Debug/libcexception$EXT ../../$1/build/$BUILD_DIR
+cp ../../unity/Debug/libunity$EXT ../../$1/build/$BUILD_DIR
+
+cd ../../$1/build/$BUILD_DIR
 sed -i "s&^EXTRA_CC_FLAGS = .*&EXTRA_CC_FLAGS = -I../../../cexception/ -I../../../unity/&g" Makefile
-sed -i "s/^EXTRA_LIBS = .*/EXTRA_LIBS = libcexception.so libunity.so/g" Makefile
+sed -i "s/^EXTRA_LIBS = .*/EXTRA_LIBS = libcexception$EXT libunity$EXT/g" Makefile

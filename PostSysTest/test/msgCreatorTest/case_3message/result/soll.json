@@ -1,0 +1,115 @@
+{
+	"Tree":	{
+		"case_self2":	{
+			"variables":	{
+				"sysPath":	["STRING", "/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/case_self2"],
+				"path":	["STRING", "/TechUnits/msgCreatorTest/case_self2"],
+				"objPath":	["STRING", "/TechUnits/msgCreatorTest/case_self2/obj"],
+				"envPath":	["STRING", "/TechUnits/msgCreatorTest/case_self2/env"],
+				"objFilePath":	["STRING", "/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/obj_3message.json"],
+				"envFilePath":	["STRING", null],
+				"iexreq":	["BOOL", false],
+				"eexreq":	["BOOL", false],
+				"maxcalctime":	["TIME_SPAN", [0, 0]],
+				"methcount":	["UINT", 0],
+				"actimode":	["INT", 0],
+				"cyctime":	["TIME_SPAN", [0, 0]],
+				"ErrState":	["INT", 0],
+				"Xpos":	["INT", 0],
+				"Ypos":	["INT", 0]
+			},
+			"links":	{
+				"main":	{
+					"of_association":	"ovunity/case",
+					"parents":	["/TechUnits/msgCreatorTest"],
+					"children":	["this"]
+				}
+			},
+			"class":	"ovunity/ovCase",
+			"children":	{
+				"obj":	{
+					"variables":	{
+						"order":	["STRING", null],
+						"queueLength":	["UINT", 3],
+						"msgsInQueue":	["UINT", 3],
+						"receiverInstance":	["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+						"receiverName":	["STRING_VEC", ["MANAGER", "TEST"]],
+						"receiverHost":	["STRING_VEC", ["localhost", "124.124.52.12"]],
+						"tries":	["UINT", 0],
+						"iexreq":	["BOOL", false],
+						"eexreq":	["BOOL", true],
+						"maxcalctime":	["TIME_SPAN", [0, 0]],
+						"methcount":	["UINT", 0],
+						"actimode":	["INT", 0],
+						"cyctime":	["TIME_SPAN", [0, 0]],
+						"ErrState":	["INT", 0],
+						"Xpos":	["INT", 0],
+						"Ypos":	["INT", 0]
+					},
+					"links":	{
+						"taskparent":	{
+							"of_association":	"fb/tasklist",
+							"parents":	["/Tasks/UrTask"],
+							"children":	["this"]
+						}
+					},
+					"class":	"PostSys/msgCreator",
+					"children":	{
+						"Message0":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "124.124.52.12"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "TEST"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/obj", "/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "20553457"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test1\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						},
+						"Message1":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "124.124.52.12"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "TEST"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/obj", "/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "158752626"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test2\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						},
+						"Message2":	{
+							"variables":	{
+								"pathAddress":	["STRING_VEC", ["none", "localhost", "124.124.52.12"]],
+								"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "TEST"]],
+								"pathComponent":	["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/obj", "/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+								"currentInd":	["UINT", 0],
+								"msgStatus":	["INT", 0],
+								"msgID":	["STRING", "35727699"],
+								"refMsgID":	["STRING", null],
+								"auth":	["STRING", null],
+								"msgBody":	["STRING", "<bdy Svc=\"ProcessControl\" Op=\"test3\"><val id=\"cmdr\">a</val><val id=\"Value\">c</val></bdy>"],
+								"sendBy":	["CTYPE", "not supported"],
+								"expectAnswer":	["BOOL", false]
+							},
+							"class":	"PostSys/Message"
+						}
+					}
+				},
+				"env":	{
+					"class":	"ov/domain"
+				}
+			}
+		}
+	},
+	"Path":	"/TechUnits/msgCreatorTest/case_self2"
+}

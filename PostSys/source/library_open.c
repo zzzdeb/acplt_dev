@@ -41,14 +41,14 @@ OV_RESULT ov_library_setglobalvars_PostSys_new(void) {
 	OV_RESULT result;
 	OV_INSTPTR_ov_domain domain = NULL;
 	OV_INSTPTR_PostSys_MsgDelivery PostSysDelivery = NULL;
-	OV_INSTPTR_ov_library pLibKsapi = NULL;
+	// OV_INSTPTR_ov_library pLibKsapi = NULL;
 	OV_INSTPTR_PostSys_msgIdentificator pIdentificator = NULL;
 	/*
 	 *    set the global variables of the original version
 	 *    and if successful, load other libraries
 	 *    and create some objects
 	 */
-
+	
 	result = ov_library_setglobalvars_PostSys();
 
 	ov_memstack_lock();

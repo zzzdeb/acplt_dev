@@ -14,15 +14,17 @@
  *
  ******************************************************************************/
 
-#ifndef OV_COMPILE_LIBRARY_PCMsgCreator
-#define OV_COMPILE_LIBRARY_PCMsgCreator
+#ifndef OV_COMPILE_LIBRARY_PostSys
+#define OV_COMPILE_LIBRARY_PostSys
 #endif
 
 #include "PostSys.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_vendortree.h"
+#include "libov/ov_result.h"
 #include "libov/ov_path.h"
 #include "acplt_simpleMsgHandling.h"
+#include "PostSys_helpers.h"
 
 OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,
 		OV_STRING* Host, OV_STRING* Name, OV_STRING* Inst) {
@@ -66,8 +68,8 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 	pathLen = pobj->v_receiverHost.veclen;
 	OV_STRING_VEC* a[3] = { &pobj->v_receiverHost, &pobj->v_receiverName,
 			&pobj->v_receiverInstance };
-	for (OV_INT i = 0; i < 3; i++) {
-		for (OV_INT j = 0; j < pathLen; j++) {
+	for (OV_UINT i = 0; i < 3; i++) {
+		for (OV_UINT j = 0; j < pathLen; j++) {
 			if(!a[i]->value[j]) return OV_ERR_BADVALUE;
 		}
 	}
@@ -86,13 +88,22 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 		return OV_ERR_HEAPOUTOFMEMORY;
 	}
 
-	snprintf(msgIdentifier, sizeof(msgPrefix) + 11, "%s%u", msgPrefix,
-		pobj->v_msgsInQueue);
-	result = Ov_CreateObject(PostSys_Message, pMsg, pobj, msgIdentifier);
+	// snprintf(msgIdentifier, sizeof(msgPrefix) + 11, "%s%u", msgPrefix,
+	// 	pobj->v_msgsInQueue);
+	result = PostSys_createAnonymousMessage(pobj, "Message",
+		(OV_INSTPTR_ov_object*) (&pMsg));
 	if(Ov_Fail(result)) {
+		ov_logfile_error(
+			"Couldn't create Object 'Message' Reason: %s",
+			ov_result_getresulttext(result));
 		ov_memstack_unlock();
-		return result;
+		return OV_ERR_OK;
 	}
+	// result = Ov_CreateObject(PostSys_Message, pMsg, pobj, msgIdentifier);
+	// if(Ov_Fail(result)) {
+	// 	ov_memstack_unlock();
+	// 	return result;
+	// }
 
 	OV_STRING_VEC tmpStrVec = { 0 };
 	Ov_SetDynamicVectorLength(&tmpStrVec, pathLen + 1, STRING);
@@ -195,7 +206,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 		ov_memstack_unlock();
 		return result;
 	}
-
+	pobj->v_msgsInQueue++;
 	ov_memstack_unlock();
 
 	return OV_ERR_OK;
@@ -243,4 +254,3 @@ OV_DLLFNCEXPORT void PostSys_msgCreator_typemethod(
 
 	return;
 }
-

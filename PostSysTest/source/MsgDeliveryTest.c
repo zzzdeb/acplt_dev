@@ -3,11 +3,11 @@
 *
 *   FILE
 *   ----
-*   msgCreatorTest.c
+*   MsgDeliveryTest.c
 *
 *   History
 *   -------
-*   2018-11-08   File created
+*   2018-11-17   File created
 *
 *******************************************************************************
 *
@@ -37,20 +37,20 @@ OV_INSTPTR_ovunity_main gpinst;
 
 OV_TIME *gpltc;
 
-TEST_GROUP( msgCreator);
+TEST_GROUP( MsgDelivery);
 
-TEST_SETUP( msgCreator) {
+TEST_SETUP( MsgDelivery) {
 	ov_memstack_lock();
 }
 
-TEST_TEAR_DOWN( msgCreator) {
+TEST_TEAR_DOWN( MsgDelivery) {
 	ov_memstack_unlock();
 }
 
-TEST( msgCreator, msgCreator_default) {
+TEST( MsgDelivery, MsgDelivery_default) {
 	OV_RESULT result = OV_ERR_OK;
-	OV_INSTPTR_PostSys_msgCreator pobj = NULL;
-	OV_STRING case_name = "case_3message";
+	OV_INSTPTR_PostSys_MsgDelivery pobj = NULL;
+	OV_STRING case_name = "case_self2";
 	OV_STRING case_path = ovunity_getCasePath(gpinst, case_name);
 
 	/* create case */
@@ -58,46 +58,40 @@ TEST( msgCreator, msgCreator_default) {
 	if(!pcase) Throw(OV_ERR_GENERIC);
 
 	ovunity_ovCase_build1(pcase);
-	pobj = Ov_StaticPtrCast(PostSys_msgCreator, ovunity_ovCase_getObjPath(pcase));
-
-	PostSys_msgCreator_order_set(pobj, "a;test1;c");
-	PostSys_msgCreator_order_set(pobj, "a;test2;c");
-	PostSys_msgCreator_order_set(pobj, "a;test3;c");
-	TEST_ASSERT_EQUAL(PostSys_msgCreator_order_set(pobj, "a;test3;c"),
-		OV_ERR_NOACCESS);
+	pobj = Ov_StaticPtrCast(PostSys_MsgDelivery, ovunity_ovCase_getObjPath(pcase));
 
 	result = ovunity_compareIstSoll(pcase);
 
 	TEST_ASSERT_EQUAL(result, 0);
 }
 
-TEST_GROUP_RUNNER( msgCreator) {
-	RUN_TEST_CASE(msgCreator, msgCreator_default);
+TEST_GROUP_RUNNER( MsgDelivery) {
+	RUN_TEST_CASE(MsgDelivery, MsgDelivery_default);
 }
 
 static void RunAllTests(void) {
-	RUN_TEST_GROUP(msgCreator);
+	RUN_TEST_GROUP(MsgDelivery);
 }
 
-OV_DLLFNCEXPORT void PostSysTest_msgCreatorTest_typemethod(
+OV_DLLFNCEXPORT void PostSysTest_MsgDeliveryTest_typemethod(
 	OV_INSTPTR_fb_functionblock	pfb,
 	OV_TIME						*pltc
 ) {
     /*    
     *   local variables
     */
-	OV_INSTPTR_PostSysTest_msgCreatorTest pinst = Ov_StaticPtrCast(
-		PostSysTest_msgCreatorTest, pfb);
+	OV_INSTPTR_PostSysTest_MsgDeliveryTest pinst = Ov_StaticPtrCast(
+		PostSysTest_MsgDeliveryTest, pfb);
 	gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
-	//	gpobj = &Ov_StaticPtrCast(PostSysTest_msgCreatorTest,gpinst)->p_obj;
+	//	gpobj = &Ov_StaticPtrCast(PostSysTest_MsgDeliveryTest,gpinst)->p_obj;
 	gpltc = pltc;
 
 	//todo
 	char* ahome = getenv("ACPLT_HOME");
-	ov_string_print(&pinst->v_sysPath, "%s/dev/PostSysTest/test/msgCreatorTest",
+	ov_string_print(&pinst->v_sysPath, "%s/dev/PostSysTest/test/MsgDeliveryTest",
 		ahome);
 
-	const char* argv[] = { "msgCreator", "-v" };
+	const char* argv[] = { "MsgDelivery", "-v" };
 	CEXCEPTION_T e;
 	Try
 	{
@@ -105,7 +99,7 @@ OV_DLLFNCEXPORT void PostSysTest_msgCreatorTest_typemethod(
 	}
 	Catch(e)
 	{
-		ov_logfile_error("msgCreatorTest fail");
+		ov_logfile_error("MsgDeliveryTest fail");
 	}
     return;
 }

@@ -46,6 +46,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ksbase/model/&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/unity}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ovunity}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.24628395" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="OV_SYSTEM_LINUX=1"/>
@@ -66,6 +67,27 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="cdt.managedbuild.config.gnu.so.debug.24628395.1425530497" name="msgCreatorTest.c" rcbsApplicability="disable" resourcePath="source/msgCreatorTest.c" toolsToInvoke="cdt.managedbuild.tool.gnu.c.compiler.so.debug.83306040.730981663">
+						<tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.83306040.730981663" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug.83306040">
+							<option id="gnu.c.compiler.option.include.paths.602329724" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/build/linux/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/model/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ov/include/libov/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ov/model/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ov/include/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/fb/include/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/fb/model/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ksbase/include/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../system/sysdevbase/ksbase/model/&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cexception}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/unity}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ovunity}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../ovunity/include/&quot;"/>
+							</option>
+							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1914605778" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="source"/>
 					</sourceEntries>
@@ -159,7 +181,14 @@
 		</storageModule>
 		<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug (Linux)">
+			<resource resourceType="PROJECT" workspacePath="/PostSysTest"/>
+		</configuration>
+		<configuration configurationName="Debug (Windows)">
+			<resource resourceType="PROJECT" workspacePath="/PostSysTest"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="PostSysTest.null.1205046490" name="PostSysTest"/>
@@ -177,4 +206,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

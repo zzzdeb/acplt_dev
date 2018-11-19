@@ -5,6 +5,7 @@
 #include "fbcomlib.ovm"
 #include "ssc.ovm"
 #include "ksapi.ovm"
+#include "PostSys.ovm"
 
 LIBRARY sync
 	VERSION   = "V0.1 (DD-Mon-YYYY)";
@@ -18,8 +19,8 @@ LIBRARY sync
 		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
 		VARIABLES
 			/* Input *************************************************/
-			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
-			targetPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
+			destKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
+			srcPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
 			
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"
@@ -28,19 +29,20 @@ LIBRARY sync
 				FLAGS="i"
 				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
 				INITIALVALUE	= FALSE;
-			
 			status		:	INT FLAGS="o" 
 				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed;"
 				INITIALVALUE	=	0;
-				
+			result 		: INT FLAGS="o"
+				COMMENT		=	"result"
+				INITIALVALUE	=	0;
 		END_VARIABLES;
 		PARTS
 			transport	:	CLASS CTree/Transport;
 			upload		:	CLASS CTree/Upload;
 		END_PARTS;
 		OPERATIONS
-			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
-			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
+			//startup				:	C_FUNCTION <OV_FNC_STARTUP>;
+			//shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
 			//submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
 			//getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
 			//prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
@@ -113,7 +115,43 @@ LIBRARY sync
 			//constructor			: C_FUNCTION <OV_FNC_CONSTRUCTOR>;
 		END_OPERATIONS;
 	END_CLASS;
+
+	CLASS	Buffer					:	CLASS	ov/domain
+		IS_INSTANTIABLE;
+		COMMENT	=	"sync ssc-s in path with targetKS copies";
+		VARIABLES
+			/* Input *************************************************/
+		END_VARIABLES;
+		OPERATIONS
+			
+		END_OPERATIONS;
+	END_CLASS;
 	
+	// CLASS	Buffer					:	CLASS	ov/domain
+	// 	IS_INSTANTIABLE;
+	// 	COMMENT	=	"sync ssc-s in path with targetKS copies";
+	// 	VARIABLES
+	// 		/* Input *************************************************/
+	// 	END_VARIABLES;
+	// 	OPERATIONS
+			
+	// 	END_OPERATIONS;
+	// END_CLASS;
+
+	CLASS	sscBuffer					:	CLASS	PostSys/node
+		IS_INSTANTIABLE;
+		COMMENT	=	"buffers messages send through this node";
+		VARIABLES
+			/* Input *************************************************/
+			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
+			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+
 	CLASS dummy	: CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		COMMENT = "Extention of fbcomlib/pkgSetVariable. Can show if value changed since last set";

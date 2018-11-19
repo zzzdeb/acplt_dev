@@ -140,7 +140,7 @@ OV_DLLFNCEXPORT void CTree_test_typemethod(OV_INSTPTR_fb_functionblock pfb,
 	/*    
 	 *   local variables
 	 */
-	OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pfb);
+	// OV_INSTPTR_CTree_test pinst = Ov_StaticPtrCast(CTree_test, pfb);
 
 	return;
 }
