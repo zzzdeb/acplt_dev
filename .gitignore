@@ -24,10 +24,16 @@
 
 /*/source/sourcetemplates
 /*/build
-!/*/build/**/Makefile
+!/**/Makefile
 /*/draft
 /*/.svn
 /*/Debug (Windows)
 /*/Debug
 /*/Release
 /*/.vscode
+
+/*/test/*/*/result/ist.json
+/*/test/*/*/result/soll.json
+
+/**/.*.swp
+/**/.*.un~
