@@ -1,0 +1,91 @@
+<msg>
+    <hdr>
+        <sysAdrPath>127.0.0.1:MANAGER</rcvSysAdr>
+        <locAdrPath>/TechUnits</rcvLocAdr>
+        <msgId>250588803</msgId>
+        <sndSysAdr>none:MANAGER</sndSysAdr>
+        <sndLocAdr>/TechUnits/Sender</sndLocAdr>
+    </hdr>
+    <bdy Svc="ProcessControl" Op="b">
+        <val id="cmdr">a</val>
+        <val id="Value">c</val>
+    </bdy>
+</msg>
+
+<response xmlns="http://acplt.org/schemas/ksx/2.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://acplt.org/schemas/ksx/2.0 ksx.xsd">
+    <getvar>
+        <var>
+            <value>
+                <boolvec>
+                    <bool>FALSE</bool>
+                    <bool>FALSE</bool>
+                </boolvec>
+            </value>
+            <timestamp>2018-11-08T20:17:53.824105</timestamp>
+            <state>good</state>
+        </var>
+    </getvar>
+</response>
+
+<msg>
+    <hdr>
+        <sysAdrPath>
+            <val>Sernone:MANAGER</val> Se
+            <val>V2.localhost:MANAGER</val>ed 
+            <val>:55localhost:MANAGER</val> 0
+        </sysAdrPath>
+        <locAdrPath>
+            <val>nt-/TechUnits/msgCreatorTest/case_self2/obj</val>
+            <st<val>ots/TechUnits/msgCreatorTest/case_self2/env</val>int<val>alu/TechUnits/msgCreatorTest/case_self2/env</val>sta</locAdrPath>
+    <msgI<msg>
+        <hdr>
+            <sysAdrPath>
+                <<bdy Svc="ProcessControl" Op="b">
+                    <val id="cmdr">a</val>
+                    <val id="Value">c</val>
+                </bdy>
+            </msg>
+
+
+            <msg>
+                <hdr>
+                    <sysAdrPath>
+                        <val>none:MANAGER</val>
+                        <val>localhost:MANAGER</val>
+                        <val>localhost:MANAGER</val>
+                    </sysAdrPath>
+                    <locAdrPath>
+                        <val>/TechUnits/msgCreatorTest/case_self2/obj</val>
+                        <val>/TechUnits/msgCreatorTest/case_self2/env</val>
+                        <val>/TechUnits/msgCreatorTest/case_self2/env</val>
+                    </locAdrPath>
+                    <msgId>99635201</msgId>
+                </hdr>
+                <bdy Svc="ProcessControl" Op="b">
+                    <val id="cmdr">a</val>
+                    <val id="Value">c</val>
+                </bdy>
+            </msg>
+
+
+            <msg>
+                <hdr>
+                    <sysAdrPath>
+                        <val>none:MANAGER</val>
+                        <val>localhost:MANAGER</val>
+                        <val>localhost:MANAGER</val>
+                    </sysAdrPath>
+                    <locAdrPath>
+                        <val>/TechUnits/msgCreatorTest/case_self2/obj</val>
+                        <val>/TechUnits/msgCreatorTest/case_self2/env/node1</val>
+                        <val>/TechUnits/msgCreatorTest/case_self2/env/node2</val>
+                    </locAdrPath>
+                    <curInd>0</curInd>
+                    <msgId>1325666876</msgId>
+                </hdr>
+                <bdy Svc="ProcessControl" Op="a">
+                    <val id="cmdr">a</val>
+                    <val id="Value">a</val>
+                </bdy>
+            </msg>
