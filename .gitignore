@@ -31,6 +31,7 @@
 /*/Debug
 /*/Release
 /*/.vscode
+/*/.settings/language.settings.xml
 
 /*/test/*/*/result/ist.json
 /*/test/*/*/result/soll.json
