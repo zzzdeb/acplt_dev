@@ -22,13 +22,13 @@
 						"PSkills": ["STRING_VEC", []],
 						"iexreq": ["BOOL", false],
 						"eexreq": ["BOOL", true],
-						"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 						"methcount": ["UINT", 0],
 						"actimode": ["INT", 0],
-						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
-						"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 						"ErrState": ["INT", 0],
-						"calctime": ["TIME_SPAN", [0, 0]],
+
 						"Xpos": ["INT", 0],
 						"Ypos": ["INT", 0]
 					},
@@ -64,13 +64,13 @@
 						"PSkills": ["STRING_VEC", []],
 						"iexreq": ["BOOL", false],
 						"eexreq": ["BOOL", true],
-						"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 						"methcount": ["UINT", 0],
 						"actimode": ["INT", 0],
-						"proctime": ["TIME", "2018/06/13 08:30:47.960223"],
-						"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 						"ErrState": ["INT", 0],
-						"calctime": ["TIME_SPAN", [0, 0]],
+
 						"Xpos": ["INT", 0],
 						"Ypos": ["INT", 0]
 					},
@@ -100,13 +100,13 @@
 										"POI": ["BOOL", false],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.312180"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -135,13 +135,13 @@
 										"POI": ["BOOL", false],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317484"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -170,13 +170,13 @@
 										"POI": ["BOOL", false],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317613"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -214,13 +214,13 @@
 										"totalCost": ["SINGLE_VEC", [28.400005340576172, 0]],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317628"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -248,13 +248,13 @@
 										"totalCost": ["SINGLE_VEC", [28.400005340576172, 0]],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317643"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -282,13 +282,13 @@
 										"totalCost": ["SINGLE_VEC", [28.168537139892578, 0]],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317657"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},
@@ -316,13 +316,13 @@
 										"totalCost": ["SINGLE_VEC", [28.168537139892578, 0]],
 										"iexreq": ["BOOL", false],
 										"eexreq": ["BOOL", false],
-										"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 										"methcount": ["UINT", 0],
 										"actimode": ["INT", 0],
-										"proctime": ["TIME", "2018/10/01 16:20:36.317796"],
-										"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 										"ErrState": ["INT", 0],
-										"calctime": ["TIME_SPAN", [0, 0]],
+
 										"Xpos": ["INT", 0],
 										"Ypos": ["INT", 0]
 									},

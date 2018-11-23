@@ -1,0 +1,26 @@
+{
+    "Libraries": ["gtpf"],
+    "Tree": {
+        "dijstra": {
+            "variables": {
+                "start": ["STRING", "PE004"],
+                "topologie": ["STRING", "/TechUnits/Topology"],
+                "recipe": ["STRING_VEC", []],
+                "EN": ["UINT", 0],
+                "pathNode": ["STRING_VEC", []],
+                "pathDir": ["STRING_VEC", []],
+                "parameter": ["STRING_VEC", []],
+                "pathDirStr": ["STRING_VEC", []]
+            },
+            "links": {
+                "taskparent": {
+                    "of_association": "fb/tasklist",
+                    "parents": ["/Tasks/UrTask"],
+                    "children": ["this"]
+                }
+            },
+            "class": "gtpf/dijkstra"
+        }
+    },
+    "Path": "/TechUnits/dijstra"
+}

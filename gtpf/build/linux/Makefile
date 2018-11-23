@@ -10,7 +10,7 @@ SERVERSTARTKEYS = -w fb -w ksbase -w gtpf
 #/Project config parameters that are accessed by Eclipse
 MAKMAKOPTIONS = 
 EXTRA_CC_FLAGS = -I../../../cexception/ -I../../../unity/
-EXTRA_LIBS = libcexception.so libunity.so
+EXTRA_LIBS = libcexception.so libunity.so libpng12.so.0
 LD_FLAGS = 
 COMPILER = GCC
 PREBUILD = ../prebuild.tcl

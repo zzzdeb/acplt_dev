@@ -22,13 +22,13 @@
 						"PSkills": ["STRING_VEC", []],
 						"iexreq": ["BOOL", false],
 						"eexreq": ["BOOL", true],
-						"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 						"methcount": ["UINT", 0],
 						"actimode": ["INT", 0],
-						"proctime": ["TIME", "2018/06/13 10:30:47.960223"],
-						"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 						"ErrState": ["INT", 0],
-						"calctime": ["TIME_SPAN", [0, 0]],
+
 						"Xpos": ["INT", 0],
 						"Ypos": ["INT", 0]
 					},
@@ -59,13 +59,13 @@
 						"PSkills": ["STRING_VEC", []],
 						"iexreq": ["BOOL", false],
 						"eexreq": ["BOOL", true],
-						"maxcalctime": ["TIME_SPAN", [0, 0]],
+
 						"methcount": ["UINT", 0],
 						"actimode": ["INT", 0],
-						"proctime": ["TIME", "2018/06/13 10:30:47.960223"],
-						"cyctime": ["TIME_SPAN", [0, 0]],
+
+
 						"ErrState": ["INT", 0],
-						"calctime": ["TIME_SPAN", [0, 0]],
+
 						"Xpos": ["INT", 0],
 						"Ypos": ["INT", 0]
 					},
