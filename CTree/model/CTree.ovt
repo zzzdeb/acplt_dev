@@ -73,7 +73,7 @@ enum JSON_FORMAT { VARTYPE_POS = 0, VARVAL_POS = 1, VARIABLE_FORMAT_SIZE = 2 };
 
 #define FACTORYNAME "class"
 #define PATHNAME "Path"
-
+#define LIBRARIESNAME "Libraries"
 /*
  * Namedef
  */
