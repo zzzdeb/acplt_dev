@@ -1,0 +1,102 @@
+{
+    "Libraries": ["ov", "PCMsgParser", "MessageSys", "PCMsgCreator"],
+    "Tree": {
+        "TechUnits": {
+            "class": "ov/domain",
+            "children": {
+                "inbox": {
+                    "variables": {
+                        "queueLength": ["UINT", 1],
+                        "fiFoQueue": ["BOOL", false],
+                        "iexreq": ["BOOL", false],
+                        "eexreq": ["BOOL", false],
+                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                        "methcount": ["UINT", 0],
+                        "actimode": ["INT", 0],
+                        "cyctime": ["TIME_SPAN", [0, 0]],
+                        "ErrState": ["INT", 0],
+                        "calctime": ["TIME_SPAN", [0, 0]],
+                        "Xpos": ["INT", 0],
+                        "Ypos": ["INT", 0]
+                    },
+                    "links": {
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": ["/Tasks/UrTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "PCMsgParser/PCInbox",
+                    "children": {
+                        "00000000000003BC_Message": {
+                            "variables": {
+                                "senderAddress": ["STRING", "none"],
+                                "receiverAddress": ["STRING", "127.0.0.1"],
+                                "senderName": ["STRING", "MANAGER"],
+                                "receiverName": ["STRING", "MANAGER"],
+                                "senderComponent": ["STRING", "/TechUnits/Sender"],
+                                "receiverComponent": ["STRING", "/TechUnits"],
+                                "msgStatus": ["INT", 3],
+                                "msgID": ["STRING", "62011951"],
+                                "refMsgID": ["STRING", null],
+                                "auth": ["STRING", null],
+                                "msgBody": ["STRING", "abc2"],
+                                "sendBy": ["CTYPE", "not supported"],
+                                "expectAnswer": ["BOOL", false]
+                            },
+                            "class": "MessageSys/Message"
+                        },
+                        "00000000000003C0_Message": {
+                            "variables": {
+                                "senderAddress": ["STRING", "none"],
+                                "receiverAddress": ["STRING", "127.0.0.1"],
+                                "senderName": ["STRING", "MANAGER"],
+                                "receiverName": ["STRING", "MANAGER"],
+                                "senderComponent": ["STRING", "/TechUnits/Sender"],
+                                "receiverComponent": ["STRING", "/TechUnits"],
+                                "msgStatus": ["INT", 3],
+                                "msgID": ["STRING", "575660374"],
+                                "refMsgID": ["STRING", null],
+                                "auth": ["STRING", null],
+                                "msgBody": ["STRING", "absd2"],
+                                "sendBy": ["CTYPE", "not supported"],
+                                "expectAnswer": ["BOOL", false]
+                            },
+                            "class": "MessageSys/Message"
+                        }
+                    }
+                },
+                "Sender": {
+                    "variables": {
+                        "order": ["STRING", null],
+                        "queueLength": ["UINT", 1],
+                        "msgsInQueue": ["UINT", 0],
+                        "receiverInstance": ["STRING", "/TechUnits"],
+                        "receiverName": ["STRING", "MANAGER"],
+                        "receiverHost": ["STRING", "127.0.0.1"],
+                        "tries": ["UINT", 0],
+                        "iexreq": ["BOOL", false],
+                        "eexreq": ["BOOL", false],
+                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                        "methcount": ["UINT", 2],
+                        "actimode": ["INT", 1],
+                        "cyctime": ["TIME_SPAN", [0, 0]],
+                        "ErrState": ["INT", 0],
+                        "calctime": ["TIME_SPAN", [0, 2]],
+                        "Xpos": ["INT", 0],
+                        "Ypos": ["INT", 0]
+                    },
+                    "links": {
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": ["/Tasks/UrTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "PCMsgCreator/msgCreator"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits"
+}

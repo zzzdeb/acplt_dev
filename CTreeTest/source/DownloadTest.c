@@ -46,17 +46,17 @@ TEST_SETUP(Download) {
 TEST_TEAR_DOWN(Download) { ov_memstack_unlock(); }
 
 TEST(Download, Download_default) {
-  OV_RESULT                 result    = OV_ERR_OK;
-  OV_INSTPTR_CTree_Download pobj      = NULL;
+  OV_RESULT                 result = OV_ERR_OK;
+  OV_INSTPTR_CTree_Download pobj = NULL;
   OV_STRING                 case_name = "case_testobj";
-  OV_STRING                 case_path = ovunity_getCasePath(gpinst, case_name);
+  ovunity_getCasePath(gpinst, case_name);
 
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
   if(!pcase) Throw(OV_ERR_GENERIC);
 
   ovunity_ovCase_build1(pcase);
-  pobj = ovunity_ovCase_getObjPath(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
 
   //	OV_STRING dataPath = NULL;
   //	char* ahome = getenv("ACPLT_HOME");
@@ -67,7 +67,7 @@ TEST(Download, Download_default) {
 
   //	ovunity_compareIstSoll();
 
-  ov_string_setvalue(&pobj->v_path, pcase->v_envPath);
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
   CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
 
   result = ovunity_compareIstSoll(pcase);
@@ -76,25 +76,147 @@ TEST(Download, Download_default) {
 }
 
 TEST(Download, Download_badtime) {
-  OV_RESULT                 result    = OV_ERR_OK;
-  OV_INSTPTR_CTree_Download pobj      = NULL;
+  OV_INSTPTR_CTree_Download pobj = NULL;
   OV_STRING                 case_name = "case_badtime";
-  OV_STRING                 case_path = ovunity_getCasePath(gpinst, case_name);
+  ovunity_getCasePath(gpinst, case_name);
 
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
   if(!pcase) Throw(OV_ERR_GENERIC);
 
   ovunity_ovCase_build1(pcase);
-  pobj = ovunity_ovCase_getObjPath(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
 
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
   CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
-
   TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
 }
+
+TEST(Download, Download_path_not_str) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_path_not_str";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  /* ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath); */
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+TEST(Download, Download_bad_lib_type) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_bad_lib_type";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+TEST(Download, Download_bad_lib_elem_type) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_bad_lib_elem_type";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+TEST(Download, Download_bad_child_type) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_bad_child_type";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+TEST(Download, Download_bad_child_class_type) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_bad_child_class_type";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+
+TEST(Download, Download_bad_child_parts_type) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_bad_child_parts_type";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+
+TEST(Download, Download_child_without_class) {
+  OV_INSTPTR_CTree_Download pobj = NULL;
+  OV_STRING                 case_name = "case_child_without_class";
+  ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast(CTree_Download, ovunity_ovCase_getObjPath(pcase));
+
+  ov_string_print(&pobj->v_path, "%s/tree", pcase->v_envPath);
+  CTree_Download_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+  TEST_ASSERT_EQUAL(pobj->v_result, OV_ERR_BADPARAM);
+}
+
 TEST_GROUP_RUNNER(Download) {
   RUN_TEST_CASE(Download, Download_default);
   RUN_TEST_CASE(Download, Download_badtime);
+  RUN_TEST_CASE(Download, Download_path_not_str);
+  RUN_TEST_CASE(Download, Download_bad_lib_type);
+  RUN_TEST_CASE(Download, Download_bad_lib_elem_type);
+  RUN_TEST_CASE(Download, Download_bad_child_type);
+  RUN_TEST_CASE(Download, Download_bad_child_class_type);
+  RUN_TEST_CASE(Download, Download_bad_child_parts_type);
+  RUN_TEST_CASE(Download, Download_child_without_class);
 }
 
 static void RunAllTests(void) { RUN_TEST_GROUP(Download); }
