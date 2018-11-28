@@ -1,5 +1,6 @@
 #ifndef CTree_OVT_INCLUDED
 #define CTree_OVT_INCLUDED
+#endif
 
 #include "CTree.h"
 #include "cJSON.h"
@@ -19,39 +20,38 @@ typedef struct {
 
 typedef struct {
   OV_INSTPTR_ov_domain proot;
-  cJSON *tree;
-  cJSON *jsbase;
-  cJSON *jstree;
-  cJSON *jslibs;
-  char msg[1024];
+  cJSON*               tree;
+  cJSON*               jsbase;
+  cJSON*               jstree;
+  cJSON*               jslibs;
+  char                 msg[1024];
 } CTreeUploadCache;
 
 typedef struct {
   OV_INSTPTR_ov_object proot;
-  OV_STRING root_path;
-  OV_STRING current_path;
-  cJSON *jsbase;
-  cJSON *jslibs;
+  OV_STRING            root_path;
+  OV_STRING            current_path;
+  cJSON*               jsbase;
+  cJSON*               jslibs;
   // cJSON * jslinks;
-  cJSON *jstree;
-  cJSON *jspath;
-  char msg[1024];
+  cJSON* jstree;
+  cJSON* jspath;
+  char   msg[1024];
 } CTreeDownloadCache;
 
 typedef struct {
   OV_INSTPTR_ov_object proot;
-  OV_STRING root_path;
-  OV_STRING current_path;
-  cJSON *jsbase;
-  cJSON *jslibs;
+  OV_STRING            root_path;
+  OV_STRING            current_path;
+  cJSON*               jsbase;
+  cJSON*               jslibs;
   // cJSON * jslinks;
-  cJSON *jstree;
-  cJSON *jspath;
-  char msg[1024];
+  cJSON* jstree;
+  cJSON* jspath;
+  char   msg[1024];
 } CTreeTransportCache;
 
-typedef KSBASE_CALLBACKSTRUCT CTREE_KSBASE_CALLBACKSTRUCT;	  
- 
+typedef KSBASE_CALLBACKSTRUCT CTREE_KSBASE_CALLBACKSTRUCT;
 
 #define TREENAME "Tree"
 #define LINKSNAME "links"
@@ -121,8 +121,7 @@ enum JSON_FORMAT { VARTYPE_POS = 0, VARVAL_POS = 1, VARIABLE_FORMAT_SIZE = 2 };
 /************/
 // test struct
 typedef struct {
-  OV_UINT integ;
+  OV_UINT   integ;
   OV_SINGLE sin;
 } TestStruct;
 
-#endif

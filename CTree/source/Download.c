@@ -441,10 +441,11 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
   jstrueval = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
   /* writing value */
   result = jsonToValue(pelement->pvalue, type, jstrueval);
-  if(result)
+  if(result) {
     ov_logfile_error("%s.%s: %s", pelement->pobj->v_identifier,
                      pelement->elemunion.pvar->v_identifier,
                      ov_result_getresulttext(result));
+  }
   return result;
 }
 
@@ -483,10 +484,15 @@ OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
     }
     result = jsonToVarelement(&child, jsvariable);
     if(Ov_Fail(result)) {
-      ov_logfile_error("%s.%s : %s", pobj->v_identifier, jsvariable->string,
-                       ov_result_getresulttext(result));
-      ov_memstack_unlock();
-      return result;
+      if(result != OV_ERR_NOTIMPLEMENTED) {
+        ov_logfile_error("%s.%s : %s", pobj->v_identifier, jsvariable->string,
+                         ov_result_getresulttext(result));
+        ov_memstack_unlock();
+        return result;
+      } else {
+        ov_logfile_warning("%s.%s : %s", pobj->v_identifier, jsvariable->string,
+                           ov_result_getresulttext(result));
+      }
     }
   }
 
@@ -875,11 +881,12 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
     }
     if(Ov_Fail(res)) {
       // TODO: give more info
+      res = Download_log(pinst, OV_MT_ERROR, res,
+                         "Could not load tree. error at %s", parentpath);
       ov_string_setvalue(&identifier, NULL);
       ov_string_setvalue(&parentpath, NULL);
       ov_string_setvalue(&elementpath, NULL);
-      return Download_log(pinst, OV_MT_ERROR, res,
-                          "Could not load tree. error at %s", parentpath);
+      return res;
     }
   }
   ov_string_setvalue(&identifier, NULL);

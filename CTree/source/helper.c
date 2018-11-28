@@ -354,6 +354,8 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE *vartype,
 	}
 	if(ov_string_compare(typestr, "VOID") == OV_STRCMP_EQUAL)
 		*vartype = OV_VT_VOID;
+	else if(ov_string_compare(typestr, "CTYPE") == OV_STRCMP_EQUAL)
+		*vartype = OV_VT_CTYPE;
 	else if(ov_string_compare(typestr, "BYTE") == OV_STRCMP_EQUAL)
 		*vartype = OV_VT_BYTE;
 	else if(ov_string_compare(typestr, "BOOL") == OV_STRCMP_EQUAL)
@@ -376,7 +378,6 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE *vartype,
 		*vartype = OV_VT_STATE;
 	else if(ov_string_compare(typestr, "OV_STRUCT") == OV_STRCMP_EQUAL)
 		*vartype = OV_VT_STRUCT;
-
 	else if(ov_string_compare(typestr, "BYTE_VEC") == OV_STRCMP_EQUAL)
 		*vartype = OV_VT_BYTE_VEC;
 	else if(ov_string_compare(typestr, "BOOL_VEC") == OV_STRCMP_EQUAL)
