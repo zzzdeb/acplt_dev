@@ -20,6 +20,7 @@
 
 #include "CTree.h"
 #include "ksbase.h"
+#include "ksbase_helper.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include <stdio.h>
@@ -142,8 +143,9 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
   OV_STRING serverPort = NULL;
   OV_STRING serverName = NULL;
   OV_STRING serverPath = NULL;
-  result =
-      parse_kspath(param, &serverHost, &serverPort, &serverName, &serverPath);
+  OV_STRING serverNamePort = NULL;
+  ks_splitOneStringPath(param, &serverHost, &serverPort, &serverName,
+                        &serverNamePort, &serverPath);
 
   if(!serverHost) {
     return OV_ERR_BADPARAM;

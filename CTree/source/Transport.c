@@ -151,61 +151,55 @@ CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
 }
 
 OV_DLLFNCEXPORT OV_RESULT CTree_Transport_prepareSubmit(
-    OV_INSTPTR_CTree_Transport pobj, OV_INSTPTR_ksbase_ClientBase* pClient,
+    OV_INSTPTR_CTree_Transport pinst, OV_INSTPTR_ksbase_ClientBase* pClient,
     OV_VTBLPTR_ksbase_ClientBase* pVtblClient) {
   OV_RESULT result;
-  OV_STRING serverHost = NULL;
-  OV_STRING serverName = NULL;
-  OV_STRING path = NULL;
-  if(!pobj->v_targetKS) {
-    ov_logfile_error("%s: no serverHost set. aborting", pobj->v_identifier);
-    pobj->v_status = CTREE_COMMON_INTERNALERROR;
-    pobj->v_result = OV_ERR_BADPARAM;
-    return OV_ERR_BADPARAM;
-  }
-  result =
-      parse_kspath(pobj->v_targetKS, &serverHost, NULL, &serverName, &path);
-
-  if(!serverHost) {
-    ov_logfile_error("%s: no serverHost set. aborting", pobj->v_identifier);
-    pobj->v_status = CTREE_COMMON_INTERNALERROR;
-    pobj->v_result = OV_ERR_BADPARAM;
+  /* OV_STRING path = NULL; */
+  if(!pinst->v_targetKS) {
+    ov_logfile_error("%s: no serverHost set. aborting", pinst->v_identifier);
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = OV_ERR_BADPARAM;
     return OV_ERR_BADPARAM;
   }
 
-  result = CTree_helper_getClientPointers(pobj, pClient, pVtblClient);
+  if(!pinst->v_targetHost) {
+    ov_logfile_error("%s: no pinst->v_targetHost set. aborting",
+                     pinst->v_identifier);
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = OV_ERR_BADPARAM;
+    return OV_ERR_BADPARAM;
+  }
+
+  result = CTree_helper_getClientPointers(pinst, pClient, pVtblClient);
   if(Ov_Fail(result)) {
     ov_logfile_error("%s: submit: no Client found. Cannot submit",
-                     pobj->v_identifier);
-    pobj->v_status = CTREE_COMMON_INTERNALERROR;
-    pobj->v_result = result;
+                     pinst->v_identifier);
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = result;
     return result;
   }
 
-  result = ksbase_ClientBase_serverHost_set(*pClient, serverHost);
+  result = ksbase_ClientBase_serverHost_set(*pClient, pinst->v_targetHost);
   if(Ov_Fail(result)) {
     ov_logfile_error("%s: submit: could not set serverHost at Client",
-                     pobj->v_identifier);
-    pobj->v_status = CTREE_COMMON_INTERNALERROR;
-    pobj->v_result = result;
+                     pinst->v_identifier);
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = result;
     return result;
   }
 
-  if(serverName) {
-    result = ksbase_ClientBase_serverName_set(*pClient, serverName);
+  if(pinst->v_targetServer) {
+    result = ksbase_ClientBase_serverName_set(*pClient, pinst->v_targetServer);
     if(Ov_Fail(result)) {
       ov_logfile_error("%s: submit: could not set serverName at Client",
-                       pobj->v_identifier);
-      pobj->v_status = CTREE_COMMON_INTERNALERROR;
-      pobj->v_result = result;
+                       pinst->v_identifier);
+      pinst->v_status = CTREE_COMMON_INTERNALERROR;
+      pinst->v_result = result;
       return result;
     }
   }
-  ov_string_setvalue(&serverHost, NULL);
-  ov_string_setvalue(&serverName, NULL);
-  ov_string_setvalue(&path, NULL);
 
-  (*pClient)->v_holdConnection = pobj->v_holdConnection;
+  (*pClient)->v_holdConnection = pinst->v_holdConnection;
   return OV_ERR_OK;
 }
 
@@ -214,7 +208,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
     OV_STRING serverName, OV_STRING path) {
   OV_RESULT result = OV_ERR_OK;
 
-  result = ov_string_print(&pinst->v_targetKS, "%s/%s/%s", serverHost,
+  result = ov_string_print(&pinst->v_targetKS, "//%s/%s/%s", serverHost,
                            serverName, path);
   if(Ov_Fail(result)) {
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
@@ -296,6 +290,7 @@ void CTree_Transport_treeupload_callback(const OV_INSTPTR_ov_domain this,
 
   //	thisSV->v_varRes = itemsResults[0];
   thisSV->v_status = DONE;
+  ov_logfile_info("Transport done.");
 
   ov_memstack_unlock();
   return;
@@ -333,16 +328,19 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
     return;
   }
 
-  parse_kspath(pinst->v_targetKS, NULL, NULL, NULL, &path);
+	ov_string_setvalue(&path, pinst->v_targetDownloadPath);
+
   if(!path) ov_string_setvalue(&path, DOWNLOAD_PATH);
 
-  if(pinst->v_tree) {
+	ov_logfile_info("%s: path Transport", path);
+  if(pinst->p_upload.v_tree) {
     items[0].path_and_name = NULL;
     ov_string_print(&items[0].path_and_name, "%s.%s", path,
                     "json"); /*	see comment below	*/
     items[0].var_current_props.value.vartype = KS_VT_STRING;
     //		items[0].var_current_props.value.valueunion.val_string = "test";
-    items[0].var_current_props.value.valueunion.val_string = pinst->v_tree;
+    items[0].var_current_props.value.valueunion.val_string =
+        pinst->p_upload.v_tree;
     items[1].path_and_name = NULL;
     ov_string_print(&items[1].path_and_name, "%s.%s", path, "path");
     items[1].var_current_props.value.vartype = KS_VT_STRING;
@@ -383,30 +381,57 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
 OV_DLLFNCEXPORT OV_RESULT
                 CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
   OV_RESULT result = OV_ERR_OK;
-  CTree_Upload_execute(Ov_StaticPtrCast(CTree_Upload, pinst));
-  if(Ov_Fail(pinst->v_result)) {
+
+  ov_string_setvalue(&pinst->p_upload.v_path, pinst->v_path);
+  CTree_Upload_typemethod(&pinst->p_upload, NULL);
+  if(Ov_Fail(pinst->p_upload.v_result)) {
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     ov_logfile_error("Transport failed.");
     return OV_ERR_GENERIC;
   }
 
-  if(ov_string_compare(pinst->v_targetKS, "~") == OV_STRCMP_EQUAL) {
+  ov_memstack_lock();
+  OV_STRING targetHost = NULL;
+  OV_STRING targetServer = NULL;
+  OV_STRING targetPath = NULL;
+  OV_STRING targetHostPort = NULL;
+  OV_STRING targetServerPort = NULL;
+  ks_splitOneStringPath(pinst->v_targetKS, &targetHost, &targetHostPort,
+                        &targetServer, &targetServerPort, &targetPath);
+  if(!targetPath) {
+    ov_logfile_error("No path is given in targetKS");
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    ov_memstack_unlock();
+    return OV_ERR_BADPARAM;
+  }
+
+  if(!targetHost) {
+    ov_logfile_info("targetKS: running local");
     OV_INSTPTR_CTree_Download pdownload = Ov_StaticPtrCast(
         CTree_Download, ov_path_getobjectpointer("/data/CTree/Download", 2));
-    ov_string_setvalue(&pdownload->v_json, pinst->v_tree);
-    ov_string_setvalue(&pdownload->v_path, pinst->v_targetPath);
+    ov_string_setvalue(&pdownload->v_json, pinst->p_upload.v_tree);
+    ov_string_setvalue(&pdownload->v_path, targetPath);
     pinst->v_status = DONE;
+    ov_memstack_unlock();
     return CTree_Download_execute(pdownload);
   }
+  ov_string_setvalue(&pinst->v_targetHost, targetHost);
+  ov_string_setvalue(&pinst->v_targetHostPort, targetHostPort);
+  ov_string_setvalue(&pinst->v_targetServer, targetServer);
+  //  ov_string_setvalue(&pinst->v_targetServerPort, targetServerPort);
+  ov_string_setvalue(&pinst->v_targetPath, targetPath);
+
   result = ov_string_setvalue(&pinst->p_loadlibs.v_targetKS, pinst->v_targetKS);
-  Ov_SetDynamicVectorValue(&pinst->p_loadlibs.v_libsToSend, pinst->v_libs.value,
-                           pinst->v_libs.veclen, STRING);
+  Ov_SetDynamicVectorValue(&pinst->p_loadlibs.v_libsToSend,
+                           pinst->p_upload.v_libs.value,
+                           pinst->p_upload.v_libs.veclen, STRING);
   result = CTree_LoadLibs_execute_withCallback(
       &pinst->p_loadlibs, Ov_StaticPtrCast(ov_domain, pinst),
       CTree_Transport_loadlibs_callback);
   if(Ov_OK(result)) {
     pinst->v_status = LIBSSENT_WAITING;
   }
+  ov_memstack_unlock();
   return result;
 }
 

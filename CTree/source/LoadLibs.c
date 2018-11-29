@@ -349,10 +349,12 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
        */
       /* preparing client */
       OV_STRING serverHost = NULL;
-      OV_STRING serverName = NULL;
       OV_STRING serverPort = NULL;
-      parse_kspath(pinst->v_targetKS, &serverHost, &serverPort, &serverName,
-                   NULL);
+      OV_STRING serverName = NULL;
+      OV_STRING serverNamePort = NULL;
+      OV_STRING targetPath = NULL;
+      ks_splitOneStringPath(pinst->v_targetKS, &serverHost, &serverPort,
+                            &serverName, &serverNamePort, &targetPath);
       if(!serverHost) {
         ov_logfile_error("%s: no serverHost set. aborting",
                          pinst->p_ks.v_identifier);

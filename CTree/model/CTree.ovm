@@ -113,7 +113,7 @@ LIBRARY CTree
 	CLASS LoadLibs : CLASS CTree/Common
 		IS_INSTANTIABLE;
 		VARIABLES
-			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="localhost/MANAGER";
+			targetKS:	STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
 			status : UINT FLAGS="o"	COMMENT="State of object; 0: Initial; 1: Info requested; 2: Info received; 3: Data sent; 4: Done" INITIALVALUE=0;
 			targetOS: STRING FLAGS="ho" COMMENT="OS of target server";
 			targetArch: UINT FLAGS="ho" COMMENT="Architecture of target server";
@@ -149,14 +149,15 @@ LIBRARY CTree
 		END_OPERATIONS;
 	END_CLASS;
 	
-	CLASS	Transport					:	CLASS	CTree/Upload
+	CLASS	Transport					:	CLASS	CTree/Common
 		IS_INSTANTIABLE;
 		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
 		VARIABLES
 			/* Input *************************************************/
-			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
-			targetPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
+			targetKS:	STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
+			targetDownloadPath:	STRING FLAGS="i" COMMENT="path of download object." INITIALVALUE="";
 			
+			path: STRING FLAGS="i" COMMENT="path of object to transport as json" INITIALVALUE="/TechUnits";
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"
 				INITIALVALUE	=	FALSE;
@@ -167,14 +168,24 @@ LIBRARY CTree
 			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
 			
 			status		:	INT FLAGS="o" 
-				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed;"
+				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: upload request sent; 3: completed;"
 				INITIALVALUE	=	0;
-				
-			//serverName	:	STRING;
-			//serverHost	:	STRING;
-			//Submit		:	BOOL	HAS_SET_ACCESSOR
-			//	COMMENT	=	"Rising edge triggers submit function"
-			//	INITIALVALUE	= FALSE;
+
+		  targetHost	:	STRING FLAGS="h"
+		  				COMMENT			=	"targetHost"
+		  				INITIALVALUE	=	"";
+		  targetHostPort	:	STRING FLAGS="h"
+		  				COMMENT			=	"targetHostPort"
+		  				INITIALVALUE	=	"";
+		  targetServer	:	STRING FLAGS="h"
+		  				COMMENT			=	"targetServer"
+		  				INITIALVALUE	=	"";
+		  targetServerPort	:	STRING FLAGS="h"
+		  				COMMENT			=	"targetServerPort"
+		  				INITIALVALUE	=	"";
+		  targetPath	:	STRING FLAGS="h"
+		  				COMMENT			=	"targetPath"
+		  				INITIALVALUE	=	"";
 		END_VARIABLES;
 		PARTS
 			loadlibs	:	CLASS CTree/LoadLibs;
