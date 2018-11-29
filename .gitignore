@@ -36,5 +36,7 @@
 /*/test/*/*/result/ist.json
 /*/test/*/*/result/soll.json
 
+/gtpfTest/test/assoziererTest/*.png
+
 /**/.*.swp
 /**/.*.un~

@@ -49,7 +49,7 @@ TEST_SETUP(assozierer) {
 TEST_TEAR_DOWN(assozierer) { ov_memstack_unlock(); }
 
 TEST(assozierer, assozierer_default) {
-  OV_INSTPTR_gtpf_assozierer pobj      = NULL;
+  OV_INSTPTR_gtpf_assozierer pobj = NULL;
   OV_STRING                  case_name = "case_default";
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
@@ -63,7 +63,7 @@ TEST(assozierer, assozierer_default) {
 
   // image
   Gitter_t*            gitter = gitterConstruct();
-  OV_INSTPTR_ov_domain ptop   = Ov_StaticPtrCast(
+  OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(
       ov_domain, ov_path_getobjectpointer(pcase->v_envPath, 2));
   draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
   gitter2png(gitter, "gtpfTest/test/assoziererTest/case_default_vis");
@@ -72,7 +72,7 @@ TEST(assozierer, assozierer_default) {
 }
 
 TEST(assozierer, assozierer_2neighbour) {
-  OV_INSTPTR_gtpf_assozierer pobj      = NULL;
+  OV_INSTPTR_gtpf_assozierer pobj = NULL;
   OV_STRING                  case_name = "case_2neighbour";
 
   /* create case */
@@ -87,7 +87,7 @@ TEST(assozierer, assozierer_2neighbour) {
 
   // image
   Gitter_t*            gitter = gitterConstruct();
-  OV_INSTPTR_ov_domain ptop   = Ov_StaticPtrCast(
+  OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(
       ov_domain, ov_path_getobjectpointer(pcase->v_envPath, 2));
   draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
   gitter2png(gitter, "gtpfTest/test/assoziererTest/case_2neighbour_fix_vis");
@@ -96,7 +96,7 @@ TEST(assozierer, assozierer_2neighbour) {
 }
 
 TEST(assozierer, assozierer_schieber) {
-  OV_INSTPTR_gtpf_assozierer pobj      = NULL;
+  OV_INSTPTR_gtpf_assozierer pobj = NULL;
   OV_STRING                  case_name = "case_schieber";
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
@@ -111,7 +111,7 @@ TEST(assozierer, assozierer_schieber) {
 
   // image
   Gitter_t*            gitter = gitterConstruct();
-  OV_INSTPTR_ov_domain ptop   = Ov_StaticPtrCast(
+  OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(
       ov_domain, ov_path_getobjectpointer(pcase->v_envPath, 2));
   draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
   gitter2png(gitter, "gtpfTest/test/assoziererTest/case_schieber_vis");
@@ -120,7 +120,7 @@ TEST(assozierer, assozierer_schieber) {
 }
 
 TEST(assozierer, assozierer_drehTeller0180) {
-  OV_INSTPTR_gtpf_assozierer pobj      = NULL;
+  OV_INSTPTR_gtpf_assozierer pobj = NULL;
   OV_STRING                  case_name = "case_drehTeller0180";
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
@@ -134,7 +134,7 @@ TEST(assozierer, assozierer_drehTeller0180) {
 
   // image
   Gitter_t*            gitter = gitterConstruct();
-  OV_INSTPTR_ov_domain ptop   = Ov_StaticPtrCast(
+  OV_INSTPTR_ov_domain ptop = Ov_StaticPtrCast(
       ov_domain, ov_path_getobjectpointer(pcase->v_envPath, 2));
   draw_top(gitter, ptop, DRAWASSOC | DRAWPOI);
   gitter2png(gitter, "gtpfTest/test/assoziererTest/case_drehTeller0180_vis");
@@ -258,7 +258,7 @@ gtpfTest_assoziererTest_typemethod(OV_INSTPTR_fb_functionblock pfb,
    *   local variables
    */
   gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
-  gpltc  = pltc;
+  gpltc = pltc;
 
   char* ahome = getenv("ACPLT_HOME");
   ov_string_print(&gpinst->v_sysPath, "%s/dev/gtpfTest/test/assoziererTest",
