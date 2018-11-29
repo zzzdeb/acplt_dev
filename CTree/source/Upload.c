@@ -733,7 +733,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
   if(pinst->v_cache.proot == NULL) {
     Upload_log(pinst, OV_MT_ERROR, OV_ERR_BADPARAM, "%s could not be found",
                pinst->v_path);
-    return res;
+    return OV_ERR_BADPARAM;
   }
 
   /*
@@ -801,18 +801,11 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
 
   OV_RESULT res = CTree_Upload_execute(pinst);
+  pinst->v_result = res;
   switch(res) {
-    case OV_ERR_OK:
-      pinst->v_result = res;
-      ov_logfile_info("Upload done.");
-      break;
-    case OV_ERR_BADPARAM:
-      pinst->v_result = res;
-      ov_logfile_error("Upload failed.");
-      break;
-    default:
-      pinst->v_result = OV_ERR_GENERIC;
-      ov_logfile_error("Upload failed.");
+    case OV_ERR_OK: ov_logfile_info("Upload done."); break;
+    case OV_ERR_BADPARAM: ov_logfile_error("Upload failed BadParam."); break;
+    default: ov_logfile_error("Upload failed.");
   }
   cJSON_Delete(pinst->v_cache.jsbase);
   return;

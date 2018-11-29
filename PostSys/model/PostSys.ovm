@@ -68,6 +68,9 @@ CLASS Message : CLASS ov/object
 		pathComponent[] : STRING
 			HAS_ACCESSORS
 			COMMENT	=	"Name of receiver-component";
+		pathLen : UINT
+			HAS_SET_ACCESSOR
+			COMMENT = "Path len to travel";
 		currentInd : UINT
 			COMMENT = "current Pos of Msg in Path"
 			INITIALVALUE = 0;
@@ -194,6 +197,10 @@ END_CLASS;
 			receiverHost[]	:	STRING
 				FLAGS	=	"i"
 				COMMENT	=	"Hostname of receiving machine ink. path. Last one is destination";
+			pathLen	: UINT
+				HAS_SET_ACCESSOR
+				FLAGS = "i"
+				COMMENT = "Pathlen to travel";
 			tries	:	UINT
 				FLAGS	=	"h"
 				COMMENT	=	"Nummer of times a message was sheduled for sending"
