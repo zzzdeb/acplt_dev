@@ -1,0 +1,8 @@
+#ifndef ovhelper_OVT_INCLUDED
+#define ovhelper_OVT_INCLUDED
+
+/* 
+	Define your data types here. 
+*/
+
+#endif
