@@ -22,6 +22,7 @@
 #include "libov/ov_logfile.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
+#include "libov/ov_result.h"
 
 #include "ks_logfile.h"
 #include "ksbase.h"
@@ -246,8 +247,10 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
  }
  */
 
-void CTree_Transport_treeupload_callback(const OV_INSTPTR_ov_domain this,
-                                         const OV_INSTPTR_ov_domain that) {
+#define DOWNLOADTRIGGERPOS 2
+
+void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
+                                           const OV_INSTPTR_ov_domain that) {
   OV_INSTPTR_CTree_Transport   thisSV = Ov_StaticPtrCast(CTree_Transport, this);
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, that);
@@ -287,6 +290,20 @@ void CTree_Transport_treeupload_callback(const OV_INSTPTR_ov_domain this,
     ov_memstack_unlock();
     return;
   }
+	for (OV_UINT i = 0; i < itemsLength; ++i) {
+    if(Ov_Fail(itemsResults[i])) {
+      ov_logfile_error("%u: %s: DownloadCallback[%d]", itemsResults[i],
+                       ov_result_getresulttext(itemsResults[i]), i);
+      if(i == DOWNLOADTRIGGERPOS) {
+        ov_logfile_error("Download Trigger showed error. Could mean, either "
+                         "set didnt work or Download had error");
+      }
+      ov_logfile_info("Transport failed.");
+      thisSV->v_status = CTREE_COMMON_EXTERNALERROR;
+      ov_memstack_unlock();
+      return;
+    }
+  }
 
   //	thisSV->v_varRes = itemsResults[0];
   thisSV->v_status = DONE;
@@ -311,7 +328,7 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
 
   OV_RESULT       result;
   OV_SETVAR_ITEM* items = NULL;
-  OV_UINT         numberOfItems = 2;
+  OV_UINT         numberOfItems = 3;
   OV_STRING       path = NULL;
 
   result = CTree_Transport_prepareSubmit(pinst, &pClient, &pVtblClient);
@@ -328,11 +345,11 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
     return;
   }
 
-	ov_string_setvalue(&path, pinst->v_targetDownloadPath);
+  ov_string_setvalue(&path, pinst->v_targetDownloadPath);
 
   if(!path) ov_string_setvalue(&path, DOWNLOAD_PATH);
 
-	ov_logfile_info("%s: path Transport", path);
+  ov_logfile_info("%s: path Transport", path);
   if(pinst->p_upload.v_tree) {
     items[0].path_and_name = NULL;
     ov_string_print(&items[0].path_and_name, "%s.%s", path,
@@ -346,6 +363,11 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
     items[1].var_current_props.value.vartype = KS_VT_STRING;
     items[1].var_current_props.value.valueunion.val_string =
         pinst->v_targetPath;
+    items[DOWNLOADTRIGGERPOS].path_and_name = NULL;
+    ov_string_print(&items[DOWNLOADTRIGGERPOS].path_and_name, "%s.%s", path,
+                    "trigger");
+    items[DOWNLOADTRIGGERPOS].var_current_props.value.vartype = KS_VT_INT;
+    items[DOWNLOADTRIGGERPOS].var_current_props.value.valueunion.val_int = 1;
   } else {
     ov_logfile_warning("%s: v_tree is empty", pinst->v_identifier);
     pinst->v_status = DONE;
@@ -359,7 +381,7 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
   /*	do the actual submit	*/
   pVtblClient->m_requestSetVar(pClient, NULL, numberOfItems, items,
                                (OV_INSTPTR_ov_domain)pinst,
-                               &CTree_Transport_treeupload_callback);
+                               &CTree_Transport_treedownload_callback);
 
   if(!(pClient->v_state & KSBASE_CLST_ERROR))
     pinst->v_status = TREESENT_WAITING;

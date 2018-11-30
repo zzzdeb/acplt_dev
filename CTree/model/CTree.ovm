@@ -26,7 +26,7 @@ LIBRARY CTree
 				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
 				INITIALVALUE	=	0;
 			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
-			trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do"  INITIALVALUE=0;
+			trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do. !!!Error Result means either set didnt work or Object returns Error"  INITIALVALUE=0;
 		END_VARIABLES;
 	END_CLASS;
 	

@@ -234,7 +234,7 @@ OV_DLLFNCEXPORT void dataSend_callback(const OV_INSTPTR_ov_domain this,
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, that);
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
-  OV_UINT                      itemsLength;
+  OV_UINT                      itemsLength = 0;
   OV_RESULT*                   itemsResults = NULL;
   OV_RESULT                    result;
 
