@@ -21,7 +21,11 @@ LIBRARY sync
 			/* Input *************************************************/
 			destKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
 			srcPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
-			
+			shutdown	:	BOOL 
+							HAS_SET_ACCESSOR
+							FLAGS="i"
+							COMMENT			=	"shuts down the tree and deletes"
+							INITIALVALUE	=	FALSE;
 			holdConnection	:	BOOL FLAGS="i"
 				COMMENT			=	"Tell client not to close the connection after each request"
 				INITIALVALUE	=	FALSE;
@@ -39,6 +43,7 @@ LIBRARY sync
 		PARTS
 			transport	:	CLASS CTree/Transport;
 			upload		:	CLASS CTree/Upload;
+			ksCrtObj		:	CLASS ksapi/createObject;
 		END_PARTS;
 		OPERATIONS
 			//startup				:	C_FUNCTION <OV_FNC_STARTUP>;
@@ -50,69 +55,16 @@ LIBRARY sync
 			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
-	
-	CLASS syncVar	: CLASS fbcomlib/pkgSetVariable
+
+	CLASS getSetAdapt	: CLASS PostSys/msgCreator
 		IS_INSTANTIABLE;
 		COMMENT = "Extention of fbcomlib/pkgSetVariable. Can show if value changed since last set";
 		VARIABLES
-			sourcePath : STRING FLAGS="i" COMMENT="path from obj";
-			lastSentValue :	ANY FLAGS="o"	COMMENT="last sent value";
-			diffBases	:	BOOL FLAGS="i"	COMMENT="if to send, only on changes" INITIALVALUE=TRUE;
-		END_VARIABLES;
-		//PARTS
-		//	var	:	CLASS	ksapi/Variable;
-		//END_PARTS;
-		OPERATIONS
-		END_OPERATIONS;
-	END_CLASS;
-	
-	
-	CLASS syncVars				: CLASS fbcomlib/setVar
-		IS_INSTANTIABLE;
-		COMMENT = "variable syncer from path";
-		VARIABLES
-			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of root object." INITIALVALUE="";	 
-			status		:	INT FLAGS="o"
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: done;" 
-				INITIALVALUE	=	0;
-			round			: INT FLAGS="o"
-				COMMENT = "current round"
-				INITIALVALUE = 0;
-			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
-				INITIALVALUE	=	0;
-			diffBased :	BOOL FLAGS="i" INITIALVALUE=FALSE;
+			value : ANY HAS_ACCESSORS FLAGS="i" COMMENT="value to get or set";
+			instancePath : STRING FLAGS="i" COMMENT="value path";
+			type	: UINT COMMENT="0: set, 1: get" INITIALVALUE=0;
 		END_VARIABLES;
 		OPERATIONS
-			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	CLASS	sscSync					:	CLASS	fb/functionblock
-		IS_INSTANTIABLE;
-		COMMENT	=	"sync ssc-s in path with targetKS copies";
-		VARIABLES
-			/* Input *************************************************/
-			targetKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of root object." INITIALVALUE="";
-			path:	STRING FLAGS="i" COMMENT="variable path of root object." INITIALVALUE="";
-			tryTimes	: INT FLAGS="i" COMMENT="how many times should try till edit proctime" INITIALVALUE=10;
-			
-			status		:	INT FLAGS="o" 
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: done;" 
-				INITIALVALUE	=	0;
-			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
-				INITIALVALUE	=	0;
-		END_VARIABLES;
-		PARTS
-			//send	:	CLASS sync/sscSend;
-			//xdrClient: CLASS ksxdr/xdrClient;
-			//ks	:	CLASS	ksapi/setVar;
-			syncVars	:	CLASS	sync/syncVars;
-		END_PARTS;
-		OPERATIONS
-			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-			//constructor			: C_FUNCTION <OV_FNC_CONSTRUCTOR>;
 		END_OPERATIONS;
 	END_CLASS;
 
@@ -138,6 +90,20 @@ LIBRARY sync
 	// 	END_OPERATIONS;
 	// END_CLASS;
 
+  CLASS	dstNode					:	CLASS	PostSys/node
+		IS_INSTANTIABLE;
+		COMMENT	=	"nodeInbox to interact with Tree during playing";
+		VARIABLES
+			/* Input *************************************************/
+			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
+			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+
+
 	CLASS	sscBuffer					:	CLASS	PostSys/node
 		IS_INSTANTIABLE;
 		COMMENT	=	"buffers messages send through this node";
@@ -150,7 +116,32 @@ LIBRARY sync
 			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
+
+	CLASS	player					:	CLASS	fb/functionblock
+		IS_INSTANTIABLE;
+		COMMENT	=	"";
+		VARIABLES
+		END_VARIABLES;
+		OPERATIONS
+			constructor			:	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
 	
+	CLASS	dsyncDst					:	CLASS	fb/functionblock
+			IS_INSTANTIABLE;
+			COMMENT	=	"dsync on dest site to regulate";
+			VARIABLES
+				
+			END_VARIABLES;
+			PARTS
+				player	:	CLASS	sync/player;
+			END_PARTS;
+			OPERATIONS
+					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			END_OPERATIONS;
+	END_CLASS;
+
 
 	CLASS dummy	: CLASS fb/functionblock
 		IS_INSTANTIABLE;

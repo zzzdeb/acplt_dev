@@ -3,13 +3,13 @@
 	"Tree":	{
 		"case_self2":	{
 			"variables":	{
-				"sysPath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/syncTest/test/sscBufferTest/case_self2"],
+				"sysPath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/syncTest/test/sscBufferTest/case_self2"],
 				"path":	["/TechUnits/sscBufferTest/case_self2"],
 				"objPath":	["/TechUnits/sscBufferTest/case_self2/obj"],
 				"envPath":	["/TechUnits/sscBufferTest/case_self2/env"],
-				"objFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/syncTest/test/sscBufferTest/data/obj_self2.json"],
-				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/../dev/syncTest/test/sscBufferTest/data/env_2emptyInbox.json"],
-				"proctime":	["TIME", [1542624214, 404683]],
+				"objFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/syncTest/test/sscBufferTest/data/obj_self2.json"],
+				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/syncTest/test/sscBufferTest/data/env_2emptyInbox.json"],
+				"proctime":	["TIME", [1543501459, 464826]],
 				"calctime":	["TIME_SPAN", [0, 0]]
 			},
 			"links":	{
@@ -21,9 +21,10 @@
 				"obj":	{
 					"variables":	{
 						"receiverInstance":	[["/TechUnits/sscBufferTest/case_self2/env/node1", "/TechUnits/sscBufferTest/case_self2/env/node2"]],
+						"pathLen":	["UINT", 0],
 						"eexreq":	[true],
 						"methcount":	[0],
-						"proctime":	["TIME", [1542624214, 412784]],
+						"proctime":	["TIME", [1543501459, 465341]],
 						"calctime":	["TIME_SPAN", [0, 0]]
 					}
 				},
@@ -35,7 +36,7 @@
 									"variables":	{
 										"SourcePref":	["STRING", null],
 										"DestPref":	["STRING", null],
-										"NextExecTime":	["TIME", [1542624214, 419623]]
+										"NextExecTime":	["TIME", [1543501459, 470762]]
 									},
 									"class":	"sync/sscBuffer"
 								}

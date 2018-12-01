@@ -9,23 +9,6 @@ LIBRARY syncTest
 	COPYRIGHT = "PLT RWTH Aachen";
 	COMMENT   = "sync tester";
 	
-	/**
-		Documentation of sscSyncTest.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-	*/
-	CLASS sscSyncTest : CLASS ovunity/main
-		IS_INSTANTIABLE;
-		VARIABLES
-		END_VARIABLES;
-		PARTS
-			obj: CLASS sync/sscSync;
-		END_PARTS;
-		OPERATIONS
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-
 	CLASS sscBufferTest : CLASS ovunity/main
 		IS_INSTANTIABLE;
 		VARIABLES
@@ -36,6 +19,18 @@ LIBRARY syncTest
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
+
+	CLASS dsyncTest : CLASS ovunity/main
+		IS_INSTANTIABLE;
+		VARIABLES
+		END_VARIABLES;
+		PARTS
+		END_PARTS;
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
 	
 	/**
 		Add associations and their documentation here.
