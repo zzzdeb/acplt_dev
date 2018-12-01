@@ -1,4 +1,3 @@
-
 /******************************************************************************
 *
 *   FILE
@@ -7,7 +6,7 @@
 *
 *   History
 *   -------
-*   2018-10-11   File created
+*   2018-11-14   File created
 *
 *******************************************************************************
 *
@@ -23,238 +22,6 @@
 
 #include "sync.h"
 #include "libov/ov_macros.h"
-#include "libov/ov_ov.h"
-#include "libov/ov_database.h"
-
-#include "ml_malloc.h"
-
-#include <sys/mman.h>
-#include <sys/file.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-/*
- *	Macro: pointer to memory pool info structure
- */
-#define pmpinfo ((ml_info OV_MEMSPEC *)(pdb+1))
-
-/*
- *	Helper macros for moving the database to a new base address
- */
-#define Ov_Adjust(type, ptr) 											\
-	ptr = (type)(((ptr)?(((OV_BYTE*)(ptr))+distance):(NULL)))
-
-/*	----------------------------------------------------------------------	*/
-
-/*
- *	Move the database to a new base address (subroutine)
- *
- *	When using linktables, you can't access the links without adjusting the linktablepointer before.
- *	Also the association offsets in this linktable may have been changed (in comparison to the standard
- *	offsets you get by using 'ov_association_getparentoffset' and 'ov_association_getchildoffset')
- *	in a mapped database. So at least we need the knowledge about the associations 'containment' and
- *	'instantiation' which are stored in the database info object . We will search the 'ov' domain
- *	for a contained object 'association' and will then look for it's instances, hence the other ov-associations.
- *	After this we can use the standard ov_object_move, which uses the knowledge about the associations in the ov-model.
- *
- */
-OV_RESULT ov_database_move(const OV_PTRDIFF distance) {
-	/*
-	 *	local variables
-	 */
-	OV_DATABASE_INFO *pdbcopy;
-	int i;
-	struct __ml_list *phead;
-	OV_RESULT result;
-	OV_INSTPTR_ov_object pobj;
-	OV_INST_ov_association assoc_inheritance;
-	OV_INST_ov_association assoc_childrelationship;
-	OV_INST_ov_association assoc_parentrelationship;
-	OV_IDLIST_NODE *pCurrNode = NULL;
-	OV_UINT iterator;
-	/*
-	 *	search inheritance, childrelationship, parentrelationship association
-	 */
-	passoc_ov_containment = &pdb->containment;
-	passoc_ov_instantiation = &pdb->instantiation;
-
-	assoc_inheritance.v_assoctype = OV_ASSOCIATION_DEF_ov_inheritance.assoctype;
-	assoc_inheritance.v_assocprops = OV_ASSOCIATION_DEF_ov_inheritance.assocprops;
-	assoc_childrelationship.v_assoctype =
-			OV_ASSOCIATION_DEF_ov_childrelationship.assoctype;
-	assoc_childrelationship.v_assocprops =
-			OV_ASSOCIATION_DEF_ov_childrelationship.assocprops;
-	assoc_parentrelationship.v_assoctype =
-			OV_ASSOCIATION_DEF_ov_parentrelationship.assoctype;
-	assoc_parentrelationship.v_assocprops =
-			OV_ASSOCIATION_DEF_ov_parentrelationship.assocprops;
-
-	pobj = (OV_INSTPTR_ov_object) (((OV_HEAD*) (pdb->ov.v_linktable + distance
-			+ passoc_ov_containment->v_parentoffset))->pfirst);
-	while (pobj) {
-		pobj = (OV_INSTPTR_ov_object) ((char*) pobj + distance);
-		if(!strcmp(pobj->v_identifier + distance, "inheritance")) {
-			assoc_inheritance.v_parentoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_parentoffset;
-			assoc_inheritance.v_childoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_childoffset;
-		}
-		if(!strcmp(pobj->v_identifier + distance, "childrelationship")) {
-			assoc_childrelationship.v_parentoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_parentoffset;
-			assoc_childrelationship.v_childoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_childoffset;
-		}
-		if(!strcmp(pobj->v_identifier + distance, "parentrelationship")) {
-			assoc_parentrelationship.v_parentoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_parentoffset;
-			assoc_parentrelationship.v_childoffset =
-					((OV_INSTPTR_ov_association) pobj)->v_childoffset;
-		}
-		pobj = (OV_INSTPTR_ov_object) (((OV_ANCHOR*) (pobj->v_linktable + distance
-				+ passoc_ov_containment->v_childoffset))->pnext);
-	}
-
-	passoc_ov_inheritance = &assoc_inheritance;
-	passoc_ov_childrelationship = &assoc_childrelationship;
-	passoc_ov_parentrelationship = &assoc_parentrelationship;
-	/*
-	 *	make a copy of the original database
-	 */
-	pdbcopy = (OV_DATABASE_INFO*) Ov_HeapMalloc(pdb->size);
-	if(!pdbcopy) {
-		return OV_ERR_HEAPOUTOFMEMORY;
-	}
-	memcpy(pdbcopy, pdb, pdb->size);
-	/*
-	 *	adjust database info pointers
-	 */
-	Ov_Adjust(OV_POINTER, pdb->baseaddr);
-	Ov_Adjust(OV_BYTE*, pdb->pstart);
-	Ov_Adjust(OV_BYTE*, pdb->pend);
-	Ov_Adjust(OV_BYTE*, pdb->pcurr);
-	Ov_Adjust(OV_STRING, pdb->serverpassword);
-	Ov_Adjust(OV_IDLIST_HEADNODE*, pdb->idList);
-	if(pdb->idList->pFirst) {
-		Ov_Adjust(OV_IDLIST_NODE*, pdb->idList->pFirst);
-	}
-	if(pdb->idList->pLast) {
-		Ov_Adjust(OV_IDLIST_NODE*, pdb->idList->pLast);
-	}
-	if(pdb->idList->pNodes) {
-		Ov_Adjust(OV_IDLIST_NODE**, pdb->idList->pNodes);
-	}
-	pCurrNode = pdb->idList->pFirst;
-	while (pCurrNode) {
-		if(pCurrNode->pNext) {
-			Ov_Adjust(OV_IDLIST_NODE*, pCurrNode->pNext);
-		}
-		if(pCurrNode->pPrevious) {
-			Ov_Adjust(OV_IDLIST_NODE*, pCurrNode->pPrevious);
-		}
-		if(pdb->idList->pNodes[pCurrNode->nodeNumber - 1]) {
-			Ov_Adjust(OV_IDLIST_NODE*,
-				pdb->idList->pNodes[pCurrNode->nodeNumber - 1]);
-		}
-		for (iterator = 0; iterator < pCurrNode->relationCount; iterator++) {
-			Ov_Adjust(OV_INSTPTR_ov_object, pCurrNode->relations[iterator].pobj);
-			if((((OV_POINTER) pCurrNode->relations[iterator].pobj) < pdb->baseaddr)
-					|| (((OV_BYTE*) pCurrNode->relations[iterator].pobj) > pdb->pend)) {
-				pCurrNode->relations[iterator].pobj = NULL;
-				if(pCurrNode->relations[iterator].idLow != 1
-						|| pCurrNode->relations[iterator].idHigh != 0) { /*	exception for vendortree	*/
-					ov_logfile_warning(
-						"Pointer in id --> pointer relation points outside database. id: %#X%08X",
-						pCurrNode->relations[iterator].idHigh,
-						pCurrNode->relations[iterator].idLow);
-				}
-			}
-		}
-		pCurrNode = pCurrNode->pNext;
-	}
-
-	/*
-	 *	adjust pointers of the memory pool
-	 */
-	__ml_byte_t;
-	Ov_Adjust(__ml_byte_t *, pmpinfo->heapbase);
-	Ov_Adjust(__ml_byte_t *, pmpinfo->heapend);
-	for (i = 0; i < BLOCKLOG; i++) {
-		for (phead = &pmpinfo->fraghead[i]; phead; phead = phead->next) {
-			Ov_Adjust(struct __ml_list*, phead->next);
-			Ov_Adjust(struct __ml_list*, phead->prev);
-		}
-	}
-	for (phead = &pmpinfo->free_blocks; phead; phead = phead->next) {
-		Ov_Adjust(struct __ml_list*, phead->next);
-		Ov_Adjust(struct __ml_list*, phead->prev);
-	}
-	/*
-	 *	adjust pointers of the ACPLT/OV objects
-	 */
-	result = ov_object_move(Ov_PtrUpCast(ov_object, &pdb->root),
-		Ov_PtrUpCast(ov_object, &pdbcopy->root), distance);
-	if(Ov_Fail(result)) {
-		/*
-		 *	copy back old database contents
-		 */
-		memcpy(pdb, pdbcopy, pdb->size);
-	}
-	/*
-	 *	free the database copy memory
-	 */
-	Ov_HeapFree(pdbcopy);
-	/*
-	 *	we are through
-	 */
-	return result;
-}
-
-/*	----------------------------------------------------------------------	*/
-
-
-OV_RESULT test() {
-	OV_RESULT result = OV_ERR_OK;
-
-	ov_database_flush();
-
-	OV_DATABASE_INFO* tmppdb = pdb;
-	OV_DATABASE_INFO* pdbcopy = (OV_DATABASE_INFO*) Ov_HeapMalloc(pdb->size);
-	if(!pdbcopy) {
-		return OV_ERR_HEAPOUTOFMEMORY;
-	}
-	memcpy(pdbcopy, pdb, pdb->size);
-	pdb = pdbcopy;
-
-	if((OV_POINTER) pdb != pdb->baseaddr) {
-		result = ov_database_move((OV_BYTE*) pdb - (OV_BYTE*) (pdb->baseaddr));
-		if(Ov_Fail(result)) {
-			ov_database_unload();
-			return result;
-		}
-	}
-	ov_database_shutdown();
-	ov_memstack_lock()
-
-//	ov_database_write("/home/zzz/test/test.ovd");
-//	FILE* fp = fopen("/home/zzz/test/test.ovd", "r+");
-
-//	ov_logfile_info("Shutting down database...");
-//	fseek(fp, 0, SEEK_SET);
-//
-//	fread(pdb, )
-//	ov_database_unmap();
-	//	/*
-	//	 *	delete the server object
-	//	 */
-	//
-	//	if(exit_status == EXIT_SUCCESS) {
-	//		ov_ksserver_stripped_delete();
-	//	}
-	pdb = tmppdb;
-	Ov_HeapFree(pdbcopy);
-//	fclose(fp);
-}
 
 
 OV_DLLFNCEXPORT void sync_dummy_typemethod(
@@ -264,11 +31,8 @@ OV_DLLFNCEXPORT void sync_dummy_typemethod(
     /*    
     *   local variables
     */
-	OV_INSTPTR_sync_dummy pinst = Ov_StaticPtrCast(sync_dummy, pfb);
+    OV_INSTPTR_sync_dummy pinst = Ov_StaticPtrCast(sync_dummy, pfb);
 
-
-	test();
-
-	return;
+    return;
 }
 

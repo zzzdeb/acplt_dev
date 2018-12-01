@@ -34,6 +34,26 @@ OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,
   return 0;
 }
 
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
+    OV_INSTPTR_PostSys_msgCreator pobj, const OV_UINT value) {
+  pobj->v_pathLen = value;
+  OV_STRING_VEC* tmp[] = {&pobj->v_receiverHost, &pobj->v_receiverName,
+                          &pobj->v_receiverInstance};
+  OV_UINT        len = tmp[1]->veclen;
+  for(OV_UINT i = 0; i < 3; i++) {
+    if(len != value) {
+      Ov_SetDynamicVectorLength(tmp[i], value, STRING);
+      if(len < value) {
+        for(OV_UINT j = len; j < value; j++) {
+          tmp[i]->value[j] = NULL;
+        }
+      }
+    }
+  }
+
+  return OV_ERR_OK;
+}
+
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
     OV_INSTPTR_PostSys_msgCreator pobj, const OV_STRING value) {
   OV_RESULT                  result;
