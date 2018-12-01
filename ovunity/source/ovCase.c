@@ -18,13 +18,14 @@
 #define OV_COMPILE_LIBRARY_ovunity
 #endif
 
+#include "libov/ov_macros.h"
+
 #include "CTree.h"
-#include "CTree.ovt"
 #include "cJSON.h"
 #include "json_tools.h"
-#include "libov/ov_macros.h"
 #include "ovunity.h"
 #include "ovunity_helper.h"
+//#include "CTree.ovt"
 
 #define pathToSoll "/soll.json"
 #define pathToResultIst "/result/ist.json"
@@ -116,7 +117,6 @@ OV_DLLFNCEXPORT void ovunity_ovCase_typemethod(OV_INSTPTR_fb_functionblock pfb,
    *   local variables
    */
   OV_INSTPTR_ovunity_ovCase pinst = Ov_StaticPtrCast(ovunity_ovCase, pfb);
-
   return;
 }
 

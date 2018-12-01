@@ -19,12 +19,15 @@
 #define OV_COMPILE_LIBRARY_ovunity
 #endif
 
-#include "libov/ov_class.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_ov.h"
+
+#include "libov/ov_class.h"
 #include "libov/ov_path.h"
+
 #include "ovunity.h"
 #include "ovunity_helper.h"
+
 #include "unity.h"
 #include "unity_fixture.h"
 #include "unity_fixture_internals.h"
@@ -134,7 +137,6 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst,
   ov_string_print(&dataPath, "%s/dev/%s/test/%s/%s", ahome, projname, classname,
                   what);
   ovunity_loadJsonAsTree(dataPath, where);
-
   ov_free(classname);
   ov_free(projname);
   return;
@@ -142,89 +144,31 @@ OV_DLLFNCEXPORT void ovunity_loadEnv(const OV_INSTPTR_ovunity_main pinst,
 
 OV_DLLFNCEXPORT void ovunity_loadJsonAsTree(const OV_STRING what,
                                             const OV_STRING where) {
-  //	OV_RESULT res = 0;
-  OV_SETVAR_PAR params = {0};
-  OV_SETVAR_RES result = {0};
-
-  OV_TICKET* pticket = NULL;
-
-  OV_UINT number_of_variables = 4;
+  OV_RESULT result = OV_ERR_OK;
   // TODO: check json value
+  OV_INSTPTR_CTree_Download pdownload = NULL;
+
+  result =
+      Ov_CreateIDedObject(CTree_Download, pdownload, &pdb->root, "Download");
+  if(Ov_Fail(result)) {
+    ov_logfile_error("%u: %s:", result, ov_result_getresulttext(result));
+    Throw(result);
+    return;
+  }
 
   ov_memstack_lock();
-
-  // create NONE-ticket
-  pticket = ksbase_NoneAuth->v_ticket.vtbl->createticket(NULL, OV_TT_NONE);
-
-  //#####################################################################
-  // process multiple variables at once
-
-  OV_SETVAR_ITEM items[4];
-  OV_STRING      uploadPath = "/data/CTree/Download";
-
-  items[0].path_and_name = NULL;
-  ov_string_print(&items[0].path_and_name, "%s.%s", uploadPath,
-                  "json"); /*	see comment below	*/
-  items[0].var_current_props.value.vartype = KS_VT_STRING;
-  // todo data2str gives heaped
-  items[0].var_current_props.value.valueunion.val_string =
-      ovunity_helper_data2str(what);
-
-  items[1].path_and_name = NULL;
-  ov_string_print(&items[1].path_and_name, "%s.%s", uploadPath, "path");
-  items[1].var_current_props.value.vartype = KS_VT_STRING;
-  items[1].var_current_props.value.valueunion.val_string = where;
-
-  items[2].path_and_name = NULL;
-  ov_string_print(&items[2].path_and_name, "%s.%s", uploadPath,
-                  "force"); /*	see comment below	*/
-  items[2].var_current_props.value.vartype = KS_VT_BOOL;
-  items[2].var_current_props.value.valueunion.val_bool = 1;
-
-  items[3].path_and_name = NULL;
-  ov_string_print(&items[3].path_and_name, "%s.%s", uploadPath, "trigger");
-  items[3].var_current_props.value.vartype = KS_VT_INT;
-  items[3].var_current_props.value.valueunion.val_int = 1;
-
-  params.items_val = items;
-  params.items_len = number_of_variables;
-  ov_ksserver_setvar(2, pticket, &params, &result);
-  for(OV_UINT i = 0; i < number_of_variables; i++) {
-    ov_string_setvalue(&params.items_val[i].path_and_name, NULL);
-  }
-  // TODO: free params.items_val[i].valuestr
-  Ov_HeapFree(items[0].var_current_props.value.valueunion.val_string);
-
-  /*	delete Ticket	*/
-  pticket->vtbl->deleteticket(pticket);
-
-  /**
-   * Parse result from KS function
-   */
-
-  if(Ov_Fail(result.result)) {
-    // memory problem or NOACCESS
-    ov_logfile_error("%s : NOACCESS or memory problem",
-                     ov_result_getresulttext(result.result));
+  ov_string_print(&pdownload->v_json, ovunity_helper_data2str(what));
+  ov_string_print(&pdownload->v_path, where);
+  pdownload->v_force = 1;
+  result = CTree_Download_execute(pdownload);
+  Ov_DeleteObject(pdownload);
+  if(Ov_Fail(result)) {
+    ov_logfile_error("%u: %s: ovunity_loadJsonAsTree: CTree failed", result,
+                     ov_result_getresulttext(result));
     ov_memstack_unlock();
+    Throw(result);
     return;
-    //		return result.result;
   }
-  for(int i = 0; i < result.results_len; i++) {
-    //		OV_STRING resstring = NULL;
-    //		ov_string_setvalue(&resstring,
-    //ov_result_getresulttext(result.results_val[i]));
-    if((result.results_val[i] != OV_ERR_OK) &&
-       (result.results_val[i] != OV_ERR_NOACCESS))
-      return;
-    //			Download_log(pinst, OV_MT_WARNING,
-    //result.results_val[i],
-    //				"%s returns OV_RESULT: %i",
-    //params.items_val[i].path_and_name, 				result.results_val[i]);
-  }
-  //		fr = kshttp_print_result_array(&response->contentString,
-  //request.response_format, result.results_val, result.results_len, "");
-
   ov_memstack_unlock();
   return;
 }
