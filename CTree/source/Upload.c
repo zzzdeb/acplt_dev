@@ -33,6 +33,7 @@
 #include "NoneTicketAuthenticator.h"
 #include "ksbase.h"
 
+#include "CTree_helper.h"
 #include "cJSON.h"
 
 #include "libov/ov_debug.h"
@@ -137,8 +138,9 @@ OV_RESULT is_standard_variable(OV_STRING identifier) {
          !ov_string_compare(identifier, "linktable");
 }
 
-OV_RESULT valueToJSON(cJSON** pjsvalue, const OV_VAR_TYPE vartype,
-                      const OV_BYTE* var, const OV_UINT size) {
+OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
+                                      const OV_VAR_TYPE vartype,
+                                      const OV_BYTE* var, const OV_UINT size) {
   OV_RESULT result = OV_ERR_OK;
   cJSON*    jstmp = NULL;
 
@@ -638,9 +640,14 @@ OV_RESULT crawl_tree(OV_INSTPTR_CTree_Upload    pinst,
   OV_UINT    len = 0;
   OV_STRING* seperated = ov_string_split(factory, "/", &len);
   ov_string_setvalue(&factory, NULL);
-  if(seperated == NULL) return OV_ERR_BADVALUE;
-
-  if(len < 2) return OV_ERR_BADVALUE;
+  if(seperated == NULL) {
+    ov_string_freelist(seperated);
+    return OV_ERR_BADVALUE;
+  }
+  if(len < 2) {
+    ov_string_freelist(seperated);
+    return OV_ERR_BADVALUE;
+  }
 
   //	checks if the library already found.
   current = cJSON_GetObjectItem(jslibs, seperated[len - 2]);

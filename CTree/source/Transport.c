@@ -290,7 +290,7 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
     ov_memstack_unlock();
     return;
   }
-	for (OV_UINT i = 0; i < itemsLength; ++i) {
+  for(OV_UINT i = 0; i < itemsLength; ++i) {
     if(Ov_Fail(itemsResults[i])) {
       ov_logfile_error("%u: %s: DownloadCallback[%d]", itemsResults[i],
                        ov_result_getresulttext(itemsResults[i]), i);
@@ -437,8 +437,10 @@ OV_DLLFNCEXPORT OV_RESULT
     ov_memstack_unlock();
     return CTree_Download_execute(pdownload);
   }
+  // TODO: zzz: ks_splitOneString problem at Port when it must be NULL Di 04 Dez
+  // 2018 01:17:57 CET
   ov_string_setvalue(&pinst->v_targetHost, targetHost);
-  ov_string_setvalue(&pinst->v_targetHostPort, targetHostPort);
+  //  ov_string_setvalue(&pinst->v_targetHostPort, targetHostPort);
   ov_string_setvalue(&pinst->v_targetServer, targetServer);
   //  ov_string_setvalue(&pinst->v_targetServerPort, targetServerPort);
   ov_string_setvalue(&pinst->v_targetPath, targetPath);
