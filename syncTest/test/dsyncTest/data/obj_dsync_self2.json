@@ -5,6 +5,8 @@
             "variables": {
                 "destKS": ["STRING", "//127.0.0.1:7509/MANAGER/TechUnits/dsyncTest/case_self2dsync/env/dst/image"],
                 "srcPath": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/src"],
+								"selfHost": ["STRING", "127.0.0.1"],
+								"selfServer": ["STRING", "MANAGER"],
                 "holdConnection": ["BOOL", false],
                 "reset": ["BOOL", false],
                 "status": ["INT", 0],
