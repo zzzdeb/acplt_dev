@@ -20,16 +20,46 @@
 #endif
 
 #include "libov/ov_macros.h"
+#include "libov/ov_ov.h"
 #include "sync.h"
 
-OV_DLLFNCEXPORT OV_ANY *
-sync_getSetAdapt_value_get(OV_INSTPTR_sync_getSetAdapt pobj) {
+#include "PostSys.h"
+
+#include "CTree_helper.h"
+#include "cJSON.h"
+
+OV_DLLFNCEXPORT OV_ANY*
+                sync_getSetAdapt_value_get(OV_INSTPTR_sync_getSetAdapt pobj) {
   ov_logfile_info("get value called on %s", pobj->v_identifier);
   return &pobj->v_value;
 }
 
 OV_DLLFNCEXPORT OV_RESULT sync_getSetAdapt_value_set(
-    OV_INSTPTR_sync_getSetAdapt pobj, const OV_ANY *value) {
-  ov_logfile_info("set value called on %s", pobj->v_identifier);
+    OV_INSTPTR_sync_getSetAdapt pobj, const OV_ANY* value) {
+  OV_RESULT result = OV_ERR_OK;
+  cJSON*    jsval = cJSON_CreateArray();
+  OV_STRING valstr = NULL;
+  OV_STRING order = NULL;
+
+  result = valueToJSON(&jsval, OV_VT_ANY, value, 0);
+  valstr = cJSON_Print(jsval);
+
+  if(!valstr) {
+    ov_logfile_error("%s couldnt create valstr", pobj->v_identifier);
+    return OV_ERR_GENERIC;
+  }
+  /* if(!order) { */
+  /*   ov_logfile_error("no order"); */
+  /*   return OV_ERR_BADPARAM; */
+  /* } */
+  OV_STRING command[] = {"SET", "GET"};
+  ov_string_print(&order, "%s;%s;%s", command[pobj->v_type],
+                  pobj->v_instancePath, valstr);
+
+  PostSys_msgCreator_order_set(pobj, order);
+
+  ov_logfile_info("set value called on %s with value %s", pobj->v_identifier,
+                  valstr);
+  free(valstr);
   return ov_variable_setanyvalue(&pobj->v_value, value);
 }

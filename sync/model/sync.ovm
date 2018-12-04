@@ -14,6 +14,69 @@ LIBRARY sync
 	COMMENT   = "";
 	
 	
+  CLASS	dstNode					:	CLASS	PostSys/node
+		IS_INSTANTIABLE;
+		COMMENT	=	"nodeInbox to interact with Tree during playing";
+		VARIABLES
+			/* Input *************************************************/
+			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
+			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+
+
+	CLASS	sscBuffer					:	CLASS	PostSys/node
+		IS_INSTANTIABLE;
+		COMMENT	=	"buffers messages send through this node";
+		VARIABLES
+			/* Input *************************************************/
+			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
+			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+		END_VARIABLES;
+		OPERATIONS
+			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+
+	CLASS	player					:	CLASS	fb/functionblock
+		IS_INSTANTIABLE;
+		COMMENT	=	"";
+		VARIABLES
+		END_VARIABLES;
+		OPERATIONS
+			constructor			:	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+
+	CLASS	dsyncDst					:	CLASS	fb/functionblock
+			IS_INSTANTIABLE;
+			COMMENT	=	"dsync on dest site to regulate";
+			VARIABLES
+			srcKS	:	STRING
+							FLAGS="i"
+							COMMENT			=	"srcKS"
+							INITIALVALUE	=	"";
+			switch	:	BOOL 
+							HAS_SET_ACCESSOR
+						  FLAGS="i"
+							COMMENT			=	"shuts the src down & configures dst"
+							INITIALVALUE	=	FALSE;
+			END_VARIABLES;
+			PARTS
+		    kssetter	:	CLASS	ksapi/setVar;
+				player	:	CLASS	sync/player;
+			END_PARTS;
+			OPERATIONS
+					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			END_OPERATIONS;
+	END_CLASS;
+
+
 	CLASS	dsync					:	CLASS	fb/functionblock
 		IS_INSTANTIABLE;
 		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
@@ -21,6 +84,14 @@ LIBRARY sync
 			/* Input *************************************************/
 			destKS:	STRING FLAGS="i" COMMENT="IP:PORT/serverName/path of target object." INITIALVALUE="";
 			srcPath:	STRING FLAGS="i" COMMENT="variable path of download object." INITIALVALUE="";
+			selfHost	:	STRING 
+							FLAGS="i"
+							COMMENT			=	"Hostname to be found in network"
+							INITIALVALUE	=	"";
+		  selfServer:	STRING 
+		  				FLAGS="i"
+		  				COMMENT			=	"server name"
+		  				INITIALVALUE	=	"";
 			shutdown	:	BOOL 
 							HAS_SET_ACCESSOR
 							FLAGS="i"
@@ -43,7 +114,9 @@ LIBRARY sync
 		PARTS
 			transport	:	CLASS CTree/Transport;
 			upload		:	CLASS CTree/Upload;
+			dsyncDstTemp	:	CLASS	sync/dsyncDst;
 			ksCrtObj		:	CLASS ksapi/createObject;
+			kssetter		:	CLASS ksapi/setVar;
 		END_PARTS;
 		OPERATIONS
 			//startup				:	C_FUNCTION <OV_FNC_STARTUP>;
@@ -89,64 +162,12 @@ LIBRARY sync
 			
 	// 	END_OPERATIONS;
 	// END_CLASS;
-
-  CLASS	dstNode					:	CLASS	PostSys/node
-		IS_INSTANTIABLE;
-		COMMENT	=	"nodeInbox to interact with Tree during playing";
-		VARIABLES
-			/* Input *************************************************/
-			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
-			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
-		END_VARIABLES;
-		OPERATIONS
-			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-
-
-	CLASS	sscBuffer					:	CLASS	PostSys/node
-		IS_INSTANTIABLE;
-		COMMENT	=	"buffers messages send through this node";
-		VARIABLES
-			/* Input *************************************************/
-			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
-			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
-		END_VARIABLES;
-		OPERATIONS
-			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-
-	CLASS	player					:	CLASS	fb/functionblock
-		IS_INSTANTIABLE;
-		COMMENT	=	"";
-		VARIABLES
-		END_VARIABLES;
-		OPERATIONS
-			constructor			:	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	CLASS	dsyncDst					:	CLASS	fb/functionblock
-			IS_INSTANTIABLE;
-			COMMENT	=	"dsync on dest site to regulate";
-			VARIABLES
-				
-			END_VARIABLES;
-			PARTS
-				player	:	CLASS	sync/player;
-			END_PARTS;
-			OPERATIONS
-					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-			END_OPERATIONS;
-	END_CLASS;
-
-
 	CLASS dummy	: CLASS fb/functionblock
 		IS_INSTANTIABLE;
 		COMMENT = "Extention of fbcomlib/pkgSetVariable. Can show if value changed since last set";
 		VARIABLES
+		  IN1	:	ANY
+						HAS_ACCESSORS FLAGS="i";
 			output	: STRING FLAGS= "o";
 			input	:	STRING FLAGS="i";
 			divider : INT FLAGS="i" INITIALVALUE=0; 
