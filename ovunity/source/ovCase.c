@@ -49,6 +49,8 @@ OV_DLLFNCEXPORT OV_RESULT
   Try {
     sollJson = ovunity_helper_data2str(sollPath);
     soll = cJSON_Parse(sollJson);
+    Ov_HeapFree(sollJson);
+
     if(!soll) return OV_ERR_BADVALUE;
   }
   Catch(e) { return e; }
@@ -92,7 +94,6 @@ OV_DLLFNCEXPORT OV_RESULT
   }
   free(tmp);
   // freeing
-  Ov_HeapFree(sollJson);
   cJSON_Delete(ist);
   cJSON_Delete(soll);
   return result;

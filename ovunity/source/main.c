@@ -157,11 +157,13 @@ OV_DLLFNCEXPORT void ovunity_loadJsonAsTree(const OV_STRING what,
   }
 
   ov_memstack_lock();
-  ov_string_print(&pdownload->v_json, ovunity_helper_data2str(what));
+  OV_STRING tmpStr = ovunity_helper_data2str(what);
+  ov_string_print(&pdownload->v_json, tmpStr);
   ov_string_print(&pdownload->v_path, where);
   pdownload->v_force = 1;
   result = CTree_Download_execute(pdownload);
   Ov_DeleteObject(pdownload);
+  Ov_HeapFree(tmpStr);
   if(Ov_Fail(result)) {
     ov_logfile_error("%u: %s: ovunity_loadJsonAsTree: CTree failed", result,
                      ov_result_getresulttext(result));
