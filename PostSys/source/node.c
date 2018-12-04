@@ -26,35 +26,36 @@ OV_DLLFNCEXPORT void PostSys_node_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   /*
    *   local variables
    */
-  OV_INSTPTR_PostSys_node pinst = Ov_StaticPtrCast(PostSys_node, this);
-  OV_INSTPTR_PostSys_Message pMsg = NULL;
+  OV_INSTPTR_PostSys_node        pinst = Ov_StaticPtrCast(PostSys_node, this);
+  OV_INSTPTR_PostSys_Message     pMsg = NULL;
   OV_INSTPTR_PostSys_MsgDelivery pMsgDelivery = NULL;
 
   Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) { break; }
 
-  if (pMsg) {
+  if(pMsg) {
     pMsgDelivery = Ov_GetParent(PostSys_MsgDelivery2Message, pMsg);
-    if (pMsgDelivery) { /*	this message was already tried to be send
-                         */
-                        // todo num of tries
+    if(pMsgDelivery) { /*	this message was already tried to be send
+                        */
+      // TODO: zzz: num of tries: Sa 01 Dez 2018 18:34:50 CET
       //			pinst->v_tries++;
       //			if(pinst->v_tries > 3) {
       //				Ov_DeleteObject(pMsg);
       //				Ov_ForEachChildEx(ov_containment, pinst,
-      //pMsg, PostSys_Message)
+      // pMsg, PostSys_Message)
       //				{
       //					break;
       //				}
       //				if(pMsg) {
       //					Ov_Link(PostSys_MsgDelivery2Message,
-      //pMsgDelivery, pMsg); 					pinst->v_tries = 0;
+      // pMsgDelivery, pMsg); 					pinst->v_tries
+      // = 0;
       //				}
       //			}
     } else {
       pMsgDelivery = Ov_StaticPtrCast(
           PostSys_MsgDelivery,
           Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
-      if (pMsgDelivery) {
+      if(pMsgDelivery) {
         Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsg);
         //				pinst->v_tries = 0;
       }
