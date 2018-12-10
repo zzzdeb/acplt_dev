@@ -360,6 +360,8 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
          !cJSON_IsArray(cJSON_GetArrayItem(jstrueval, 0)) ||
          !cJSON_IsNumber(cJSON_GetArrayItem(jstrueval, 1)) ||
          !cJSON_IsArray(cJSON_GetArrayItem(jstrueval, 2))) {
+        /* if val not in any format */
+
         return OV_ERR_BADPARAM;
       }
       jselem = cJSON_GetArrayItem(jstrueval, 2);
@@ -425,8 +427,23 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
   result = CTree_helper_strToOVType(
       &type, cJSON_GetArrayItem(jsvalue, VARTYPE_POS)->valuestring);
   if(result) return result;
-  if(type != pelement->elemunion.pvar->v_vartype) return OV_ERR_BADPARAM;
+  if(type != pelement->elemunion.pvar->v_vartype) {
+    if(pelement->elemunion.pvar->v_vartype == OV_VT_ANY) {
+      ov_logfile_info("checkng if anyvar is in normal format");
+      if(cJSON_IsArray(jsvalue) && cJSON_GetArraySize(jsvalue) == 2 &&
+         cJSON_IsString(cJSON_GetArrayItem(jsvalue, VARTYPE_POS))) {
+        /* OV_VAR_TYPE type = 0; */
+        /* result = CTree_helper_strToOVType( */
+        /*     &type, cJSON_GetArrayItem(jstrueval,
+         * VARTYPE_POS)->valuestring); */
 
+        result = jsonToVarvalue(&((OV_ANY*)pelement->pvalue)->value, jsvalue);
+        return result;
+      }
+    } else {
+      return OV_ERR_BADPARAM;
+    }
+  }
   //	OV_ANY val = { 0 };
   //	if(pelement->elemunion.pvar->v_vartype == OV_ANY) {
   //		jsonToValue(&val, OV_ANY, jstrueval);
@@ -440,7 +457,8 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
   /* getting jsvalue */
   jstrueval = cJSON_GetArrayItem(jsvalue, VARVAL_POS);
   /* writing value */
-  result = jsonToValue(pelement->pvalue, type, jstrueval);
+  result = jsonToValue(pelement->pvalue, pelement->elemunion.pvar->v_vartype,
+                       jstrueval);
   if(result) {
     ov_logfile_warning("%s.%s: %s", pelement->pobj->v_identifier,
                        pelement->elemunion.pvar->v_identifier,
@@ -868,6 +886,9 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
         return res;
       }
     }
+    for(int asdf = 0; asdf < asdf; ++asdf) {
+    }
+
     //			Download_log_exit(pinst, OV_MT_INFO, res,
     //"variables set.");
     ov_logfile_info("%s: variables set.", pobj->v_identifier);
