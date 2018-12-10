@@ -31,11 +31,18 @@
 
 #include "ksapi_commonFuncs.h"
 
+#include "sync.ovt"
+
 #define SYNC_SRC_INIT 0
 #define SYNC_SRC_SYNCCREATEREQUESTED 1
 #define SYNC_SRC_TRANSPORTREQUESTED 2
 #define SYNC_SRC_DONE 4
 #define SYNC_SRC_ERROR 64
+
+const OV_STRING classesToConfiugure[] = {[FBCOMLIBSET] = "fbcomlib/setVar",
+                                         [FBCOMLIBGET] = "fbcomlib/getVar",
+                                         [KSAPIGET] = "ksapi/getVar",
+                                         [KSAPISET] = "ksapi/setVar"};
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
@@ -54,11 +61,34 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       pobj->v_result = OV_ERR_GENERIC;
       return 0;
     }
-    result = Ov_DeleteObject(proot);
-    if(Ov_Fail(result)) {
-      ov_logfile_error("%u: %s: could not delete proot", result,
-                       ov_result_getresulttext(result));
-      pobj->v_result = result;
+    // shutting down
+    for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
+      if(i == FBCOMLIBGET || i == KSAPIGET) continue;
+      OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
+      if(pssc) {
+        OV_INSTPTR_ov_object pobj = NULL;
+        Ov_ForEachChild(ov_instantiation, pssc, pobj) {
+          /* checking if right one */
+          if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
+            /* if(i == FBCOMLIBSET) */
+            /*   Ov_StaticPtrCast(fbcomlib_setVar, pobj)->v_actimode = 0; */
+            /* else if(i == KSAPISET) { */
+            OV_INSTPTR_sync_getSetAdapt pMsgCrtr = NULL;
+            Ov_ForEachChildEx(ov_containment, Ov_StaticPtrCast(ov_domain, pobj),
+                              pMsgCrtr, sync_getSetAdapt) {
+              break;
+            };
+
+            if(!pMsgCrtr) {
+              ov_logfile_warning("%s has no msgCreatorchild",
+                                 pobj->v_identifier);
+              continue;
+            }
+            pMsgCrtr->v_actimode = 0;
+            ov_logfile_info("%s.actimode = 0", pMsgCrtr->v_identifier);
+          }
+        }
+      }
     }
   }
   pobj->v_status = SYNC_SRC_DONE;
@@ -76,7 +106,8 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
   OV_STRING                   dstHostPort = NULL;
   OV_STRING                   dstServerPort = NULL;
 
-  OV_INSTPTR_fb_task pUrtask = ov_path_getobjectpointer("/Tasks/UrTask", 2);
+  OV_INSTPTR_fb_task pUrtask =
+      Ov_StaticPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
   if(!pUrtask) {
     ov_logfile_error("urtask couldnt found");
     return NULL;
@@ -99,16 +130,17 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
       return NULL;
     }
 
-    result = Ov_Link(fb_tasklist, pUrtask, pMsgCrtr);
+    result = Ov_Link(fb_tasklist, pobjCasted, pMsgCrtr);
     if(Ov_Fail(result)) {
-      ov_logfile_error("%u: %s: couldnt link fbsetvar_alt to urtask", result,
+      ov_logfile_error("%u: %s: couldnt link fbsetvar_alt to fbsetvar", result,
                        ov_result_getresulttext(result));
       return NULL;
     }
     pMsgCrtr->v_actimode = 1;
     pMsgCrtr->v_iexreq = 1;
 
-    PostSys_msgCreator_pathLen_set(pMsgCrtr, 2);
+    PostSys_msgCreator_pathLen_set(
+        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
     pMsgCrtr->v_type = 0;
 
     ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
@@ -122,15 +154,19 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
     ov_string_setvalue(&pMsgCrtr->v_instancePath, pobjCasted->v_path);
     ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[1],
                        DEFAULT_POSTSYS_EXECUTER);
+    pobjCasted->v_doSend = 0;
+    pobjCasted->v_doCyclic = 0;
 
-    ov_string_setvalue(&pobjCasted->v_host, "localhost");
-    // TODO: 'echo $USER:' change MANAGER to current Server Name '!v
-    // strftime("%c")
-    ov_string_setvalue(&pobjCasted->v_server, "MANAGER");
-    ov_string_setvalue(
-        &pobjCasted->v_path,
-        ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
-    ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER);
+    /* ov_string_setvalue(&pobjCasted->v_host, "localhost"); */
+    /* // TODO: 'echo $USER:' change MANAGER to current Server Name '!v */
+    /* // strftime("%c") */
+    /* ov_string_setvalue(&pobjCasted->v_server, "MANAGER"); */
+    /* ov_string_setvalue( */
+    /*     &pobjCasted->v_path, */
+    /*     ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
+     */
+
+    /* ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER); */
 
   } else if(Ov_CanCastTo(fbcomlib_getVar, pobj)) {
     OV_INSTPTR_fbcomlib_getVar pobjCasted =
@@ -143,7 +179,8 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
       return NULL;
     }
 
-    PostSys_msgCreator_pathLen_set(pMsgCrtr, 2);
+    PostSys_msgCreator_pathLen_set(
+        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
     pMsgCrtr->v_type = 1;
     ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
     ov_string_setvalue(&pMsgCrtr->v_receiverName.value[0], dstServer);
@@ -178,7 +215,8 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
       ov_logfile_info("%s", ov_result_getresulttext(result));
       return NULL;
     }
-    PostSys_msgCreator_pathLen_set(pMsgCrtr, 2);
+    PostSys_msgCreator_pathLen_set(
+        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
 
     pMsgCrtr->v_type = 0;
     ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
@@ -211,7 +249,8 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
       ov_logfile_info("%s", ov_result_getresulttext(result));
       return NULL;
     }
-    PostSys_msgCreator_pathLen_set(pMsgCrtr, 2);
+    PostSys_msgCreator_pathLen_set(
+        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
 
     pMsgCrtr->v_type = 1;
     ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
@@ -279,11 +318,18 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
                       dsyncDstPath);
       ov_memstack_unlock();
 
-      ov_string_print(&pdsyncDst->v_srcKS, "//%s/%s%s", pinst->v_selfHost,
-                      pinst->v_selfServer, ov_path_getcanonicalpath(pinst, 2));
-      ov_string_setvalue(&ptrans->v_path,
-                         ov_path_getcanonicalpath(pdsyncDst, 2));
-      CTree_Transport_typemethod(ptrans, NULL);
+      ov_string_print(
+          &pdsyncDst->v_srcKS, "//%s/%s%s", pinst->v_selfHost,
+          pinst->v_selfServer,
+          ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pinst), 2));
+
+      ov_string_setvalue(&pdsyncDst->p_syncDownload.v_srcPath,
+                         pinst->v_srcPath);
+      ov_string_setvalue(
+          &ptrans->v_path,
+          ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pdsyncDst), 2));
+      CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
+                                 NULL);
       pinst->v_status = SYNC_SRC_SYNCCREATEREQUESTED;
       ov_logfile_info("sync on destination requested");
       return;
@@ -314,11 +360,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_info("dsyncDst created successfully. Transporting...");
       /* } */
       // setvar
-      OV_STRING setGetClasses[] = {"fbcomlib/setVar", "fbcomlib/getVar",
-                                   "ksapi/getVar", "ksapi/setVar"};
-
-      for(OV_UINT i = 0; i < 4; ++i) {
-        OV_INSTPTR_ov_class pssc = ov_class_search(setGetClasses[i]);
+      for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
+        OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
         if(pssc) {
           OV_INSTPTR_ov_object pobj = NULL;
           Ov_ForEachChild(ov_instantiation, pssc, pobj) {
@@ -351,7 +394,10 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
           Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
       ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
       ov_string_setvalue(&ptrans->v_targetKS, pinst->v_destKS);
-      CTree_Transport_typemethod(ptrans, NULL);
+      ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
+                      DSYNC_DOWNLOAD_PATH_DEST_EXT);
+      CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
+                                 NULL);
       pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
       ov_logfile_info("transport requested");
       return;
