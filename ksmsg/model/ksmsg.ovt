@@ -1,0 +1,12 @@
+#ifndef ksmsg_OVT_INCLUDED
+#define ksmsg_OVT_INCLUDED
+
+#include "libov/ov_ov.h"
+
+/* 
+	Define your data types here. 
+*/
+
+typedef OV_GETVAR_ITEM* OV_GETVAR_ITEMS_PTR;
+
+#endif

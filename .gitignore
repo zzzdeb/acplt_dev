@@ -21,6 +21,7 @@
 !/syncTest
 !/PostSys
 !/PostSysTest
+!/ksmsg
 
 !/ovhelper
 /*/source/sourcetemplates
