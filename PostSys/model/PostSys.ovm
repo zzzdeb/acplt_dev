@@ -131,18 +131,6 @@ CLASS node : CLASS ksbase/ComTask
 	END_OPERATIONS;
 END_CLASS;
 
-CLASS	executer					:	CLASS	ksbase/ComTask
-		IS_INSTANTIABLE;
-		COMMENT	=	"executes get&set";
-		VARIABLES
-
-		END_VARIABLES;
-		OPERATIONS
-				constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-				typemethod	:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-END_CLASS;
-
 
 	/**
 	 *	Checks whether received data is a message

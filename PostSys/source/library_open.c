@@ -84,30 +84,6 @@ OV_RESULT ov_library_setglobalvars_PostSys_new(void) {
     ov_memstack_unlock();
     return result;
   }
-  /* create command executer */
-  OV_INSTPTR_PostSys_executer pexec = NULL;
-  result = Ov_CreateObject(PostSys_executer, pexec, PostSysDelivery, "exec");
-  if(Ov_Fail(result)) {
-    if(result == OV_ERR_ALREADYEXISTS) {
-    } else {
-      ov_logfile_error("%u: %s: PostSys: creation of executer failed", result,
-                       ov_result_getresulttext(result));
-      ov_memstack_unlock();
-      return result;
-    }
-  } else {
-    OV_INSTPTR_ksbase_RootComTask prootcomtask =
-        ov_path_getobjectpointer("/communication/RootComTask", 2);
-
-    result = Ov_Link(ksbase_AssocComTaskList, prootcomtask, pexec);
-    if(Ov_Fail(result)) {
-      ov_logfile_error(
-          "%u: %s: postsys/exec couldnt get linked with rootcomtask", result,
-          ov_result_getresulttext(result));
-      return result;
-    }
-  }
-  pexec->v_actimode = 1;
 
   ov_memstack_unlock();
   return OV_ERR_OK;
