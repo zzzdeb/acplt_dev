@@ -114,7 +114,8 @@ OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
 
 OV_RESULT jsonToVarelement(OV_ELEMENT* value, const cJSON* jsvalue);
 
-OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue, const cJSON* jsvalue);
+OV_DLLFNCEXPORT OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue,
+                                         const cJSON*  jsvalue);
 
 OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
                       const cJSON* jstrueval) {
@@ -825,6 +826,7 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
             pobj = pelobj.pobj;
             Download_log(pinst, OV_MT_WARNING, res, "%s already exists",
                          identifier);
+            res = OV_ERR_OK;
           } else {
             res = Download_log(pinst, res, OV_MT_ERROR,
                                "Could not create %s in %s", identifier,
@@ -885,8 +887,6 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
         ov_string_setvalue(&elementpath, NULL);
         return res;
       }
-    }
-    for(int asdf = 0; asdf < asdf; ++asdf) {
     }
 
     //			Download_log_exit(pinst, OV_MT_INFO, res,
