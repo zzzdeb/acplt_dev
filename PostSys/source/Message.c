@@ -114,8 +114,18 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_Message_msgBody_set(
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_Message_pathLen_set(
     OV_INSTPTR_PostSys_Message pobj, const OV_UINT value) {
+  OV_RESULT  result = OV_ERR_OK;
+  OV_STRING* tmp = Ov_HeapMalloc(value * sizeof(OV_STRING));
+  for(OV_UINT i = 0; i < value; ++i) {
+    tmp[i] = NULL;
+  }
+
+  result |= PostSys_Message_pathName_set(pobj, tmp, value);
+  result |= PostSys_Message_pathAddress_set(pobj, tmp, value);
+  result |= PostSys_Message_pathComponent_set(pobj, tmp, value);
   pobj->v_pathLen = value;
-  return OV_ERR_OK;
+  Ov_HeapFree(tmp);
+  return result;
 }
 
 OV_DLLFNCEXPORT OV_RESULT

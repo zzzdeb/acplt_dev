@@ -720,6 +720,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(
     ov_string_setvalue(&tmpNamePath.value[i], tempSrvName);
     //	}
   }
+  result |= PostSys_Message_pathLen_set(message, pathLen);
   result |= PostSys_Message_pathAddress_set(message, tmpAdrPath.value, pathLen);
   result |= PostSys_Message_pathName_set(message, tmpNamePath.value, pathLen);
   result |= PostSys_Message_pathComponent_set(
