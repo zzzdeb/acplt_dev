@@ -21,6 +21,7 @@
 #include "CTree.h"
 #include "PostSys.h"
 #include "ksbase_helper.h"
+#include "ksmsg.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
@@ -31,18 +32,11 @@
 
 #include "ksapi_commonFuncs.h"
 
-#include "sync.ovt"
-
 #define SYNC_SRC_INIT 0
 #define SYNC_SRC_SYNCCREATEREQUESTED 1
 #define SYNC_SRC_TRANSPORTREQUESTED 2
 #define SYNC_SRC_DONE 4
 #define SYNC_SRC_ERROR 64
-
-const OV_STRING classesToConfiugure[] = {[FBCOMLIBSET] = "fbcomlib/setVar",
-                                         [FBCOMLIBGET] = "fbcomlib/getVar",
-                                         [KSAPIGET] = "ksapi/getVar",
-                                         [KSAPISET] = "ksapi/setVar"};
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
@@ -52,7 +46,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
                                                   const OV_BOOL         value) {
-  OV_RESULT result = OV_ERR_OK;
+  /* OV_RESULT result = OV_ERR_OK; */
   pobj->v_reset = value;
   if(value) {
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
@@ -63,30 +57,28 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
     }
     // shutting down
     for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
-      if(i == FBCOMLIBGET || i == KSAPIGET) continue;
+      if(i != KSAPISET) {
+        ov_logfile_warning("sync_dsync: cant handle %d", i);
+        continue;
+      }
+      const OV_STRING     classesToConfiugure[] = {[KSAPIGET] = "ksapi/getVar",
+                                               [KSAPISET] = "ksapi/setVar"};
       OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
       if(pssc) {
         OV_INSTPTR_ov_object pobj = NULL;
         Ov_ForEachChild(ov_instantiation, pssc, pobj) {
           /* checking if right one */
           if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
-            /* if(i == FBCOMLIBSET) */
-            /*   Ov_StaticPtrCast(fbcomlib_setVar, pobj)->v_actimode = 0; */
-            /* else if(i == KSAPISET) { */
-            OV_INSTPTR_sync_getSetAdapt pMsgCrtr = NULL;
-            Ov_ForEachChildEx(ov_containment, Ov_StaticPtrCast(ov_domain, pobj),
-                              pMsgCrtr, sync_getSetAdapt) {
-              break;
-            };
-
-            if(!pMsgCrtr) {
-              ov_logfile_warning("%s has no msgCreatorchild",
-                                 pobj->v_identifier);
+            OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
+                ov_containment, Ov_StaticPtrCast(ov_domain, pobj), "msgClient",
+                ksmsg_msgClient);
+            if(!pMsgClnt) {
+              ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
               continue;
             }
-            pMsgCrtr->v_actimode = 0;
-            ov_logfile_info("%s.actimode = 0", pMsgCrtr->v_identifier);
-          }
+            pMsgClnt->v_actimode = 0;
+            ov_logfile_info("%s.actimode = 0", pMsgClnt->v_identifier);
+          };
         }
       }
     }
@@ -96,22 +88,16 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
   return OV_ERR_OK;
 }
 
-OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
-                                                  OV_INSTPTR_ov_object  pobj) {
-  OV_RESULT                   result = OV_ERR_OK;
-  OV_INSTPTR_sync_getSetAdapt pMsgCrtr = NULL;
-  OV_STRING                   dstHost = NULL;
-  OV_STRING                   dstServer = NULL;
-  OV_STRING                   dstInst = NULL;
-  OV_STRING                   dstHostPort = NULL;
-  OV_STRING                   dstServerPort = NULL;
+OV_INSTPTR_ksmsg_msgClient dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
+                                                 OV_INSTPTR_ov_object  pobj) {
+  OV_RESULT                  result = OV_ERR_OK;
+  OV_INSTPTR_ksmsg_msgClient pMsgClnt = NULL;
+  OV_STRING                  dstHost = NULL;
+  OV_STRING                  dstServer = NULL;
+  OV_STRING                  dstInst = NULL;
+  OV_STRING                  dstHostPort = NULL;
+  OV_STRING                  dstServerPort = NULL;
 
-  OV_INSTPTR_fb_task pUrtask =
-      Ov_StaticPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
-  if(!pUrtask) {
-    ov_logfile_error("urtask couldnt found");
-    return NULL;
-  }
   result = ks_splitOneStringPath(pinst->v_destKS, &dstHost, &dstHostPort,
                                  &dstServer, &dstServerPort, &dstInst);
   if(Ov_Fail(result)) {
@@ -119,167 +105,36 @@ OV_INSTPTR_sync_getSetAdapt dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
     return NULL;
   }
 
-  if(Ov_CanCastTo(fbcomlib_setVar, pobj)) {
-    OV_INSTPTR_fbcomlib_setVar pobjCasted =
-        Ov_StaticPtrCast(fbcomlib_setVar, pobj);
-    result =
-        Ov_CreateIDedObject(sync_getSetAdapt, pMsgCrtr, pobjCasted, "MsgCrtr");
-    if(result) {
-      // todo info
-      ov_logfile_info("%s", ov_result_getresulttext(result));
-      return NULL;
-    }
-
-    result = Ov_Link(fb_tasklist, pobjCasted, pMsgCrtr);
-    if(Ov_Fail(result)) {
-      ov_logfile_error("%u: %s: couldnt link fbsetvar_alt to fbsetvar", result,
-                       ov_result_getresulttext(result));
-      return NULL;
-    }
-    pMsgCrtr->v_actimode = 1;
-    pMsgCrtr->v_iexreq = 1;
-
-    PostSys_msgCreator_pathLen_set(
-        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
-    pMsgCrtr->v_type = 0;
-
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[0], dstServer);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[0],
-                       PLAYER_SRCNODE_PATH_DEST);
-
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[1], pobjCasted->v_host);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[1],
-                       pobjCasted->v_server);
-    ov_string_setvalue(&pMsgCrtr->v_instancePath, pobjCasted->v_path);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[1],
-                       DEFAULT_POSTSYS_EXECUTER);
-    pobjCasted->v_doSend = 0;
-    pobjCasted->v_doCyclic = 0;
-
-    /* ov_string_setvalue(&pobjCasted->v_host, "localhost"); */
-    /* // TODO: 'echo $USER:' change MANAGER to current Server Name '!v */
-    /* // strftime("%c") */
-    /* ov_string_setvalue(&pobjCasted->v_server, "MANAGER"); */
-    /* ov_string_setvalue( */
-    /*     &pobjCasted->v_path, */
-    /*     ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
-     */
-
-    /* ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER); */
-
-  } else if(Ov_CanCastTo(fbcomlib_getVar, pobj)) {
-    OV_INSTPTR_fbcomlib_getVar pobjCasted =
-        Ov_StaticPtrCast(fbcomlib_getVar, pobj);
-    result =
-        Ov_CreateIDedObject(sync_getSetAdapt, pMsgCrtr, pobjCasted, "MsgCrtr");
-    if(result) {
-      // todo info
-      ov_logfile_info("%s", ov_result_getresulttext(result));
-      return NULL;
-    }
-
-    PostSys_msgCreator_pathLen_set(
-        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
-    pMsgCrtr->v_type = 1;
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[0], dstServer);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[0],
-                       PLAYER_SRCNODE_PATH_DEST);
-
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[1], pobjCasted->v_host);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[1],
-                       pobjCasted->v_server);
-    ov_string_setvalue(&pMsgCrtr->v_instancePath, pobjCasted->v_path);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[1],
-                       DEFAULT_POSTSYS_EXECUTER);
-
-    ov_string_setvalue(&pobjCasted->v_host, "localhost");
-    // TODO: 'echo $USER:' change MANAGER to current Server Name '!v
-    // strftime("%c")
-    ov_string_setvalue(&pobjCasted->v_server, "MANAGER");
-    ov_string_setvalue(
-        &pobjCasted->v_path,
-        ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
-    ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER);
-  } else if(Ov_CanCastTo(ksapi_setVar, pobj)) {
-    if(Ov_CanCastTo(fbcomlib_setVar, pobj->v_pouterobject)) {
-      ov_logfile_warning("%s part of fbcomlib_setvar", pobj->v_identifier);
-      return NULL;
-    };
-    OV_INSTPTR_ksapi_setVar pobjCasted = Ov_StaticPtrCast(ksapi_setVar, pobj);
-    result =
-        Ov_CreateIDedObject(sync_getSetAdapt, pMsgCrtr, pobjCasted, "MsgCrtr");
-    if(result) {
-      // todo info
-      ov_logfile_info("%s", ov_result_getresulttext(result));
-      return NULL;
-    }
-    PostSys_msgCreator_pathLen_set(
-        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
-
-    pMsgCrtr->v_type = 0;
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[0], dstServer);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[0],
-                       PLAYER_SRCNODE_PATH_DEST);
-
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[1],
-                       pobjCasted->v_serverHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[1],
-                       pobjCasted->v_serverName);
-    ov_string_setvalue(&pMsgCrtr->v_instancePath, pobjCasted->v_path);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[1],
-                       DEFAULT_POSTSYS_EXECUTER);
-
-    ov_string_setvalue(&pobjCasted->v_serverHost, "localhost");
-    // TODO: 'echo $USER:' change MANAGER to current Server Name '!v
-    // strftime("%c")
-    ov_string_setvalue(&pobjCasted->v_serverName, "MANAGER");
-    ov_string_setvalue(
-        &pobjCasted->v_path,
-        ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
-    ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER);
-  } else if(Ov_CanCastTo(ksapi_getVar, pobj)) {
-    OV_INSTPTR_ksapi_getVar pobjCasted = Ov_StaticPtrCast(ksapi_getVar, pobj);
-    result =
-        Ov_CreateIDedObject(sync_getSetAdapt, pMsgCrtr, pobjCasted, "MsgCrtr");
-    if(result) {
-      // todo info
-      ov_logfile_info("%s", ov_result_getresulttext(result));
-      return NULL;
-    }
-    PostSys_msgCreator_pathLen_set(
-        Ov_StaticPtrCast(PostSys_msgCreator, pMsgCrtr), 2);
-
-    pMsgCrtr->v_type = 1;
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[0], dstHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[0], dstServer);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[0],
-                       PLAYER_SRCNODE_PATH_DEST);
-
-    ov_string_setvalue(&pMsgCrtr->v_receiverHost.value[1],
-                       pobjCasted->v_serverHost);
-    ov_string_setvalue(&pMsgCrtr->v_receiverName.value[1],
-                       pobjCasted->v_serverName);
-    ov_string_setvalue(&pMsgCrtr->v_instancePath, pobjCasted->v_path);
-    ov_string_setvalue(&pMsgCrtr->v_receiverInstance.value[1],
-                       DEFAULT_POSTSYS_EXECUTER);
-
-    ov_string_setvalue(&pobjCasted->v_serverHost, "localhost");
-    // TODO: 'echo $USER:' change MANAGER to current Server Name '!v
-    // strftime("%c")
-    ov_string_setvalue(&pobjCasted->v_serverName, "MANAGER");
-    ov_string_setvalue(
-        &pobjCasted->v_path,
-        ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgCrtr), 2));
-    ov_string_append(&pobjCasted->v_path, MSGCREATOR_TRIGGER);
-  } else {
-    ov_logfile_error("%s is not from right class", pobj->v_identifier);
+  /* if(Ov_CanCastTo(ksapi_setVar, pobj)) { */
+  OV_INSTPTR_ksapi_setVar pobjCasted = Ov_StaticPtrCast(ksapi_setVar, pobj);
+  result = Ov_CreateObject(ksmsg_msgClient, pMsgClnt, pobjCasted, "msgClient");
+  if(result) {
+    // TODO: zzz: give more info Mo 10 Dez 2018 15:51:15 CET
+    ov_logfile_info("%s", ov_result_getresulttext(result));
     return NULL;
   }
+  // TODO: zzz: create this function Mo 10 Dez 2018 15:50:42 CET
+  ksmsg_msgClient_pathLen_set(pMsgClnt, 3);
 
-  return pMsgCrtr;
+  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0], pinst->v_selfHost);
+  ov_string_setvalue(&pMsgClnt->v_pathName.value[0], pinst->v_selfServer);
+  ov_string_setvalue(
+      &pMsgClnt->v_pathInstance.value[0],
+      ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgClnt), 2));
+
+  ov_string_setvalue(&pMsgClnt->v_pathHost.value[1], dstHost);
+  ov_string_setvalue(&pMsgClnt->v_pathName.value[1], dstServer);
+  ov_string_setvalue(&pMsgClnt->v_pathInstance.value[1],
+                     PLAYER_SRCNODE_PATH_DEST);
+
+  ov_string_setvalue(&pMsgClnt->v_pathHost.value[2], pobjCasted->v_serverHost);
+  ov_string_setvalue(&pMsgClnt->v_pathName.value[2], pobjCasted->v_serverName);
+  ov_string_setvalue(&pMsgClnt->v_pathInstance.value[2],
+                     DEFAULT_POSTSYS_EXECUTER);
+
+  // TODO: zzz: caution! reseting Mo 10 Dez 2018 19:13:12 CET
+  // TODO: zzz: change status so that it can go on Mo 10 Dez 2018 16:31:06 CET
+  return pMsgClnt;
 }
 
 OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
@@ -360,6 +215,15 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_info("dsyncDst created successfully. Transporting...");
       /* } */
       // setvar
+      const OV_STRING classesToConfiugure[] = {[KSAPIGET] = "ksapi/getVar",
+                                               [KSAPISET] = "ksapi/setVar"};
+
+      proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
+      if(!proot) {
+        ov_logfile_error("sync_syncDownload: srcPath no proot");
+        pinst->v_result = OV_ERR_GENERIC;
+        return;
+      }
       for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
         OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
         if(pssc) {
@@ -368,9 +232,9 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
             /* checking if right one */
             if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
               /* create Msg alternative */
-              OV_INSTPTR_sync_getSetAdapt pMsgCrtr =
+              OV_INSTPTR_ksmsg_msgClient pMsgClnt =
                   dsync_createSetVarAlt(pinst, pobj);
-              if(!pMsgCrtr) { // todo info
+              if(!pMsgClnt) { // todo info
                               //				ov_logfile_error("couldnt
                               // create
                               // setvar_alt %s", pobj->v_identifier);

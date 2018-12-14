@@ -1,5 +1,5 @@
 {
-  "Libraries": ["ov", "fbcomlib", "ksapi", "iec61131stdfb"],
+    "Libraries": ["ov", "fbcomlib", "ksapi", "iec61131stdfb"],
     "Tree": {
         "env": {
             "class": "ov/domain",
@@ -9,35 +9,12 @@
                     "children": {
                         "fbSetvar": {
                             "variables": {
-                                "sendVar": ["ANY", [
-                                    ["VOID", null], 0, [0, 0]
-                                ]],
+																"sendVar":["INT", 1],
                                 "doReset": ["BOOL", false],
-                                "varResult": ["UINT", 0],
                                 "host": ["STRING", "127.0.0.1"],
                                 "server": ["STRING", "MANAGER"],
-                                "path": ["STRING", "/TechUnits/dsyncTest/env/server/fbSetvarClient"],
-                                "doSend": ["BOOL", false],
-                                "sendRequested": ["BOOL", false],
-                                "doCyclic": ["BOOL", false],
-                                "stateString": ["STRING", null],
-                                "state": ["INT", 0],
-                                "errorCode": ["UINT", 0],
-                                "opResult": ["UINT", 0],
-                                "timeout": ["UINT", 10],
-                                "retryAfter": ["UINT", 300],
-                                "requestSendTime": ["TIME", [0, 0]],
-                                "iexreq": ["BOOL", false],
-                                "eexreq": ["BOOL", false],
-                                "maxcalctime": ["TIME_SPAN", [0, 0]],
-                                "methcount": ["UINT", 0],
-                                "actimode": ["INT", 0],
-                                "proctime": ["TIME", [1542627276, 805800]],
-                                "cyctime": ["TIME_SPAN", [0, 0]],
-                                "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                "path": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/server/fbSetvarClient.IN1"],
+                                "actimode": ["INT", 1]
                             },
                             "links": {
                                 "taskparent": {
@@ -46,26 +23,7 @@
                                     "children": ["this"]
                                 }
                             },
-                            "class": "fbcomlib/setVar",
-                            "parts": {
-                                "apiSet": {
-                                    "variables": {
-                                        "varValue": ["ANY", [
-                                            ["VOID", null], -1554083320, [0, 0]
-                                        ]],
-                                        "varRes": ["UINT", 0],
-                                        "serverHost": ["STRING", null],
-                                        "serverName": ["STRING", null],
-                                        "path": ["STRING", null],
-                                        "status": ["INT", 0],
-                                        "result": ["UINT", 0],
-                                        "holdConnection": ["BOOL", false],
-                                        "Reset": ["BOOL", false],
-                                        "Submit": ["BOOL", false]
-                                    },
-                                    "class": "ksapi/setVar"
-                                }
-                            }
+                            "class": "fbcomlib/setVar"
                         },
                         "fbGetvar": {
                             "variables": {
@@ -76,8 +34,7 @@
                                 "varResult": ["UINT", 0],
                                 "host": ["STRING", "127.0.0.1"],
                                 "server": ["STRING", "MANAGER"],
-                                "path": ["STRING", "/TechUnits/dsyncTest/env/server/fbGetvarClient"],
-                                "doSend": ["BOOL", false],
+                                "path": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/server/fbGetvarClient.IN1"],
                                 "sendRequested": ["BOOL", false],
                                 "doCyclic": ["BOOL", false],
                                 "stateString": ["STRING", null],
@@ -94,10 +51,9 @@
                                 "actimode": ["INT", 0],
                                 "proctime": ["TIME", [1542627295, 655545]],
                                 "cyctime": ["TIME_SPAN", [0, 0]],
+                                "doSend": ["BOOL", false],
                                 "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                "calctime": ["TIME_SPAN", [0, 0]]
                             },
                             "links": {
                                 "taskparent": {
@@ -109,20 +65,6 @@
                             "class": "fbcomlib/getVar",
                             "parts": {
                                 "apiGet": {
-                                    "variables": {
-                                        "varValue": ["ANY", [
-                                            ["VOID", null], -1554081272, [0, 0]
-                                        ]],
-                                        "varRes": ["UINT", 0],
-                                        "serverHost": ["STRING", null],
-                                        "serverName": ["STRING", null],
-                                        "path": ["STRING", null],
-                                        "status": ["INT", 0],
-                                        "result": ["UINT", 0],
-                                        "holdConnection": ["BOOL", false],
-                                        "Reset": ["BOOL", false],
-                                        "Submit": ["BOOL", false]
-                                    },
                                     "class": "ksapi/getVar"
                                 }
                             }
@@ -135,7 +77,7 @@
                                 "varRes": ["UINT", 0],
                                 "serverHost": ["STRING", "127.0.0.1"],
                                 "serverName": ["STRING", "MANAGER"],
-                                "path": ["STRING", "/TechUnits/dsyncTest/env/server/ksapiGetvarClient"],
+                                "path": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/server/ksapiGetvarClient.IN1"],
                                 "status": ["INT", 0],
                                 "result": ["UINT", 0],
                                 "holdConnection": ["BOOL", false],
@@ -152,7 +94,7 @@
                                 "varRes": ["UINT", 0],
                                 "serverHost": ["STRING", "127.0.0.1"],
                                 "serverName": ["STRING", "MANAGER"],
-                                "path": ["STRING", "/TechUnits/dsyncTest/env/server/ksapiSetvarClient.IN1"],
+                                "path": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/server/ksapiSetvarClient.IN1"],
                                 "status": ["INT", 0],
                                 "result": ["UINT", 0],
                                 "holdConnection": ["BOOL", false],
@@ -173,129 +115,33 @@
                             "variables": {
                                 "IN1": ["ANY", [
                                     ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "IN2": ["ANY", [
-                                    ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "OUT": ["ANY", [
-                                    ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "iexreq": ["BOOL", false],
-                                "eexreq": ["BOOL", false],
-                                "maxcalctime": ["TIME_SPAN", [0, 0]],
-                                "methcount": ["UINT", 0],
-                                "actimode": ["INT", 0],
-                                "proctime": ["TIME", [1542627825, 472436]],
-                                "cyctime": ["TIME_SPAN", [0, 0]],
-                                "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                ]]
                             },
-                            "links": {
-                                "taskparent": {
-                                    "of_association": "fb/tasklist",
-                                    "parents": ["/Tasks/UrTask"],
-                                    "children": ["this"]
-                                }
-                            },
-                            "class": "iec61131stdfb/ADD"
+                            "class": "sync/dummy"
                         },
                         "ksapiSetvarClient": {
                             "variables": {
                                 "IN1": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 1932490350]
-                                ]],
-                                "IN2": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 32539]
-                                ]],
-                                "OUT": ["ANY", [
                                     ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "iexreq": ["BOOL", false],
-                                "eexreq": ["BOOL", true],
-                                "maxcalctime": ["TIME_SPAN", [0, 0]],
-                                "methcount": ["UINT", 0],
-                                "actimode": ["INT", 0],
-                                "proctime": ["TIME", [1542627825, 472436]],
-                                "cyctime": ["TIME_SPAN", [0, 0]],
-                                "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                ]]
                             },
-                            "links": {
-                                "taskparent": {
-                                    "of_association": "fb/tasklist",
-                                    "parents": ["/Tasks/UrTask"],
-                                    "children": ["this"]
-                                }
-                            },
-                            "class": "iec61131stdfb/ADD"
+                            "class": "sync/dummy"
                         },
                         "ksapiGetvarClient": {
                             "variables": {
                                 "IN1": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 1932490350]
-                                ]],
-                                "IN2": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 32539]
-                                ]],
-                                "OUT": ["ANY", [
                                     ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "iexreq": ["BOOL", false],
-                                "eexreq": ["BOOL", true],
-                                "maxcalctime": ["TIME_SPAN", [0, 0]],
-                                "methcount": ["UINT", 0],
-                                "actimode": ["INT", 0],
-                                "proctime": ["TIME", [1542627825, 472436]],
-                                "cyctime": ["TIME_SPAN", [0, 0]],
-                                "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                ]]
                             },
-                            "links": {
-                                "taskparent": {
-                                    "of_association": "fb/tasklist",
-                                    "parents": ["/Tasks/UrTask"],
-                                    "children": ["this"]
-                                }
-                            },
-                            "class": "iec61131stdfb/ADD"
+                            "class": "sync/dummy"
                         },
                         "fbSetvarClient": {
                             "variables": {
                                 "IN1": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 1650863986]
-                                ]],
-                                "IN2": ["ANY", [
-                                    ["SINGLE_PV", 0], 1, [196640, 32539]
-                                ]],
-                                "OUT": ["ANY", [
                                     ["SINGLE", 0], 0, [32, 0]
-                                ]],
-                                "iexreq": ["BOOL", false],
-                                "eexreq": ["BOOL", true],
-                                "maxcalctime": ["TIME_SPAN", [0, 0]],
-                                "methcount": ["UINT", 0],
-                                "actimode": ["INT", 0],
-                                "proctime": ["TIME", [1542627825, 472436]],
-                                "cyctime": ["TIME_SPAN", [0, 0]],
-                                "ErrState": ["INT", 0],
-                                "calctime": ["TIME_SPAN", [0, 0]],
-                                "Xpos": ["INT", 0],
-                                "Ypos": ["INT", 0]
+                                ]]
                             },
-                            "links": {
-                                "taskparent": {
-                                    "of_association": "fb/tasklist",
-                                    "parents": ["/Tasks/UrTask"],
-                                    "children": ["this"]
-                                }
-                            },
-                            "class": "iec61131stdfb/ADD"
+                            "class": "sync/dummy"
                         }
                     }
                 }

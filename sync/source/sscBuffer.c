@@ -41,13 +41,12 @@ OV_DLLFNCEXPORT void sync_sscBuffer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   /* buffering msg */
   OV_INSTPTR_sync_Buffer pbuf = NULL;
   /* getting buffer pointer */
-  // todo:
-  Ov_CreateObject(sync_Buffer, pbuf, pinst, "buffer");
-
+  pbuf = Ov_SearchChildEx(ov_containment, pinst, "buffer", sync_Buffer);
+  if(!pbuf) result = Ov_CreateObject(sync_Buffer, pbuf, pinst, "buffer");
   /* copy msg to buffer */
-  result = Ov_CreateObject(PostSys_Message, pMsgCpy, pbuf, pMsg->v_identifier);
+  result = Ov_CreateIDedObject(sync_bufferMessage, pMsgCpy, pbuf, "Message");
   if(result) {
-    ov_logfile_error("Error: %s", ov_result_getresulttext(result));
+    ov_logfile_error("sync_sscBuffer: %s", ov_result_getresulttext(result));
     return;
   }
 

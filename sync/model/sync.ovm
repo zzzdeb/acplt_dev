@@ -5,11 +5,12 @@
 #include "fbcomlib.ovm"
 #include "ssc.ovm"
 #include "ksapi.ovm"
+#include "ksmsg.ovm"
 #include "PostSys.ovm"
 
 LIBRARY sync
 	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
+	AUTHOR    = "zzz";
 	COPYRIGHT = "";
 	COMMENT   = "";
 	
@@ -27,6 +28,37 @@ LIBRARY sync
 		END_OPERATIONS;
 	END_CLASS;
 
+	CLASS	syncDownload					:	CLASS	CTree/Download
+			IS_INSTANTIABLE;
+			COMMENT	=	"like download but changes paths in elements to make copied tree work correctly";
+			VARIABLES
+			srcPath	:	STRING 
+							FLAGS="i"
+							COMMENT			=	"path of tree on src site"
+							INITIALVALUE	=	"";
+			END_VARIABLES;
+			OPERATIONS
+					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			END_OPERATIONS;
+	END_CLASS;
+
+	CLASS	bufferMessage					:	CLASS	PostSys/Message
+			IS_INSTANTIABLE;
+			COMMENT	=	"msg to Buffer with try count";
+			VARIABLES
+				round	:	UINT 
+								FLAGS="o"
+								COMMENT			=	"how many round is the message in inbox"
+								INITIALVALUE	=	0;
+			END_VARIABLES;
+			PARTS
+	
+			END_PARTS;
+			OPERATIONS
+					
+			END_OPERATIONS;
+	END_CLASS;
+
 
 	CLASS	sscBuffer					:	CLASS	PostSys/node
 		IS_INSTANTIABLE;
@@ -41,14 +73,14 @@ LIBRARY sync
 		END_OPERATIONS;
 	END_CLASS;
 
-	CLASS	player					:	CLASS	fb/functionblock
-		IS_INSTANTIABLE;
+  CLASS	player:	CLASS	ksbase/ComTask
+	IS_INSTANTIABLE;
 		COMMENT	=	"";
 		VARIABLES
 		END_VARIABLES;
 		OPERATIONS
 			constructor			:	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			typemethod	:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;
 	
@@ -68,6 +100,7 @@ LIBRARY sync
 							INITIALVALUE	=	FALSE;
 			END_VARIABLES;
 			PARTS
+  			syncDownload	:	CLASS	sync/syncDownload;
 		    kssetter	:	CLASS	ksapi/setVar;
 				player	:	CLASS	sync/player;
 			END_PARTS;
@@ -75,7 +108,6 @@ LIBRARY sync
 					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
 			END_OPERATIONS;
 	END_CLASS;
-
 
 	CLASS	dsync					:	CLASS	fb/functionblock
 		IS_INSTANTIABLE;
@@ -110,6 +142,8 @@ LIBRARY sync
 			result 		: INT FLAGS="o"
 				COMMENT		=	"result"
 				INITIALVALUE	=	0;
+		  /* pcache	:	CTYPE <DSYNC_PCACHE> FLAGS="h" */
+		  /* 				COMMENT			=	"Pointers to objects to configure"; */
 		END_VARIABLES;
 		PARTS
 			transport	:	CLASS CTree/Transport;
@@ -126,18 +160,6 @@ LIBRARY sync
 			//prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
 			//genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
 			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-
-	CLASS getSetAdapt	: CLASS PostSys/msgCreator
-		IS_INSTANTIABLE;
-		COMMENT = "Extention of fbcomlib/pkgSetVariable. Can show if value changed since last set";
-		VARIABLES
-			value : ANY HAS_ACCESSORS FLAGS="i" COMMENT="value to get or set";
-			instancePath : STRING FLAGS="i" COMMENT="value path";
-			type	: UINT COMMENT="0: set, 1: get" INITIALVALUE=0;
-		END_VARIABLES;
-		OPERATIONS
 		END_OPERATIONS;
 	END_CLASS;
 

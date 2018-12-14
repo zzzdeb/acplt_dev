@@ -1,13 +1,7 @@
 #ifndef sync_OVT_INCLUDED
 #define sync_OVT_INCLUDED
-
 /*
         Define your data types here.
 */
-#define DEFAULT_POSTSYS_EXECUTER "/comminucation/PostSys/exec"
-#define MSGCREATOR_TRIGGER ".value"
-#define PLAYER_PATH_DEST "/data/dsyncDst.player"
-#define PLAYER_SRCNODE_PATH_DEST "/data/dsyncDst.player/srcNode"
-#define PLAYER_DSTNODE_PATH_DEST "/data/dsyncDst.player/dstNode"
 
 #endif
