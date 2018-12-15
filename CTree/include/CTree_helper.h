@@ -1,4 +1,4 @@
-#ifdef _CTREE_HELPER_
+#ifndef _CTREE_HELPER_
 #define _CTREE_HELPER_
 
 #include "cJSON.h"

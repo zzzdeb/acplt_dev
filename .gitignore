@@ -7,6 +7,7 @@
 !/cexception
 !/geometry2d
 !/CTree
+/CTree/test/*
 !/CTreeTest
 !/eks
 !/graphSearch
