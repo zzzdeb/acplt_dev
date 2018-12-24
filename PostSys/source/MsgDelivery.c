@@ -150,7 +150,7 @@ OV_DLLFNCEXPORT OV_RESULT
 OV_BOOL PostSys_isValidMsg(const OV_INSTPTR_PostSys_Message msg) {
   OV_UINT pathLen = msg->v_pathAddress.veclen;
   if(pathLen < 2) {
-    ov_logfile_error("%s", msg->v_identifier);
+		ov_logfile_error("pahtlen of %s %d", msg->v_identifier, pathLen);
     return 0;
   }
 

@@ -52,10 +52,12 @@
 OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
   OV_STRING resstr = NULL;
 
-  if(pre == NULL) return resstr;
+  if(pre == NULL)
+    return resstr;
 
   ov_string_setvalue(&resstr, pre);
-  if(path == NULL) return resstr;
+  if(path == NULL)
+    return resstr;
   ov_string_append(&resstr, path + 1);
   return resstr;
 }
@@ -66,7 +68,8 @@ OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
   OV_INSTPTR_ov_class pclass = NULL;
   pclass = ov_class_search(neutralpath);
 
-  if(pclass != NULL) return pclass;
+  if(pclass != NULL)
+    return pclass;
 
   OV_STRING path = NULL;
   ov_string_print(&path, "%s%s", "/acplt/", neutralpath);
@@ -82,7 +85,8 @@ OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
   pclass = Ov_StaticPtrCast(ov_class,
                             ov_path_getobjectpointer(path, VERSION_FOR_CTREE));
   ov_string_setvalue(&path, NULL);
-  if(pclass != NULL) return pclass;
+  if(pclass != NULL)
+    return pclass;
 
   return NULL;
 }
@@ -120,14 +124,17 @@ OV_DLLFNCEXPORT OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue,
 OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
                       const cJSON* jstrueval) {
   OV_RESULT result = OV_ERR_OK;
-  if(!value || !jstrueval) return OV_ERR_BADVALUE;
+  if(!value || !jstrueval)
+    return OV_ERR_BADVALUE;
 
   cJSON*  jselem = NULL;
   OV_INT  i = 0;
   OV_UINT vecLen = 0;
-  if(type & OV_VT_ISVECTOR) vecLen = cJSON_GetArraySize(jstrueval);
+  if(type & OV_VT_ISVECTOR)
+    vecLen = cJSON_GetArraySize(jstrueval);
   switch(type & OV_VT_KSMASK) {
-    case OV_VT_VOID: break;
+    case OV_VT_VOID:
+      break;
     case OV_VT_BYTE:
       if(!cJSON_IsNumber(jstrueval)) {
         return OV_ERR_BADPARAM;
@@ -336,7 +343,9 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
         i++;
       }
       break;
-    case OV_VT_STRUCT_VEC: result = OV_ERR_NOTIMPLEMENTED; break;
+    case OV_VT_STRUCT_VEC:
+      result = OV_ERR_NOTIMPLEMENTED;
+      break;
 
     case OV_VT_BOOL_PV:
     case OV_VT_INT_PV:
@@ -354,7 +363,8 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
     case OV_VT_DOUBLE_PV_VEC:
     case OV_VT_STRING_PV_VEC:
     case OV_VT_TIME_PV_VEC:
-    case OV_VT_TIME_SPAN_PV_VEC: return OV_ERR_NOTIMPLEMENTED;
+    case OV_VT_TIME_SPAN_PV_VEC:
+      return OV_ERR_NOTIMPLEMENTED;
 
     case OV_VT_ANY:
       if(!cJSON_IsArray(jstrueval) || cJSON_GetArraySize(jstrueval) != 3 ||
@@ -380,16 +390,19 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
         return result;
       }
       break;
-    case OV_VT_POINTER: return OV_ERR_NOTIMPLEMENTED;
+    case OV_VT_POINTER:
+      return OV_ERR_NOTIMPLEMENTED;
 
-    default: return OV_ERR_BADPARAM; // TODO: revise it
+    default:
+      return OV_ERR_BADPARAM; // TODO: revise it
   }
   return result;
 }
 
 /* checks if jsvariable in "IDENT":["TYPE","VALUE"] format is */
 OV_BOOL isJsonValidVariable(cJSON* jsvariable) {
-  if(!jsvariable) return 0;
+  if(!jsvariable)
+    return 0;
   if(!cJSON_IsArray(jsvariable) || !jsvariable->string ||
      cJSON_GetArraySize(jsvariable) != 2 ||
      !cJSON_IsString(cJSON_GetArrayItem(jsvariable, 0)))
@@ -403,11 +416,13 @@ OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue, const cJSON* jsvalue) {
   cJSON*      jstrueval = NULL;
   OV_VAR_TYPE type = 0;
   /* checking param */
-  if(!pvalue || !jsvalue) return OV_ERR_BADPARAM;
+  if(!pvalue || !jsvalue)
+    return OV_ERR_BADPARAM;
   /* getting type */
   result = CTree_helper_strToOVType(
       &type, cJSON_GetArrayItem(jsvalue, VARTYPE_POS)->valuestring);
-  if(result) return result;
+  if(result)
+    return result;
 
   pvalue->vartype = type;
   /* getting jsvalue */
@@ -427,7 +442,8 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
   /* getting type */
   result = CTree_helper_strToOVType(
       &type, cJSON_GetArrayItem(jsvalue, VARTYPE_POS)->valuestring);
-  if(result) return result;
+  if(result)
+    return result;
   if(type != pelement->elemunion.pvar->v_vartype) {
     if(pelement->elemunion.pvar->v_vartype == OV_VT_ANY) {
       ov_logfile_info("checkng if anyvar is in normal format");
@@ -579,7 +595,9 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
           cJSON_DeleteItemFromArray(jslibs_cpy, currentIndex);
           deleted++;
           break;
-        default: jscurrent = jscurrent->next; currentIndex++;
+        default:
+          jscurrent = jscurrent->next;
+          currentIndex++;
       }
     }
   }
@@ -611,7 +629,8 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
   OV_INSTPTR_ov_object      pobj =
       ov_path_getobjectpointer(objpath, VERSION_FOR_CTREE);
 
-  if(jsobj == NULL || pobj == NULL || pinst == NULL) return OV_ERR_BADPARAM;
+  if(jsobj == NULL || pobj == NULL || pinst == NULL)
+    return OV_ERR_BADPARAM;
 
   jslinks = cJSON_GetObjectItem(jsobj, LINKSNAME);
   if(jslinks != NULL) {
@@ -653,7 +672,8 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
         else {
           ov_string_setvalue(&link_parent_path,
                              cJSON_GetStringValue(jsasparent));
-          if(link_parent_path == NULL) continue;
+          if(link_parent_path == NULL)
+            continue;
 
           if(*link_parent_path == '~')
             link_parent_path = inverse_path2(pinst->v_path, link_parent_path);
@@ -670,7 +690,8 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
         OV_STRING path = NULL;
         cJSON_ArrayForEach(jsaschild, jsaschildren) {
           ov_string_setvalue(&path, cJSON_GetStringValue(jsaschild));
-          if(*path == '~') path = inverse_path2(pinst->v_path, path);
+          if(*path == '~')
+            path = inverse_path2(pinst->v_path, path);
 
           if(ov_string_compare(cJSON_GetStringValue(jsaschild), "this") ==
              OV_STRCMP_EQUAL)
@@ -1045,7 +1066,8 @@ OV_DLLFNCEXPORT OV_RESULT
 
   // geting obj
   OV_STRING tmp = strrchr(root_path, '/');
-  if(strchr(tmp, '.')) tmp = strrchr(root_path, '.');
+  if(strchr(tmp, '.'))
+    tmp = strrchr(root_path, '.');
   char tmpchar = *tmp;
 
   *(tmp) = 0;
@@ -1088,7 +1110,8 @@ OV_DLLFNCEXPORT OV_RESULT
   /* beta */
   //	download_tree_beta(pinst, jstree, Ov_StaticPtrCast(ov_domain, proot));
   //	4. Link
-  if(!res) res = link_objects(pinst, jstree->child, root_path);
+  if(!res)
+    res = link_objects(pinst, jstree->child, root_path);
 FREE:
   // 5. Free
   cJSON_Delete(pinst->v_cache.jsbase);
