@@ -36,6 +36,10 @@ LIBRARY sync
 							FLAGS="i"
 							COMMENT			=	"path of tree on src site"
 							INITIALVALUE	=	"";
+			state	:	INT 
+					FLAGS="o"
+					COMMENT			=	"state of Download"
+					INITIALVALUE	=	0;
 			END_VARIABLES;
 			OPERATIONS
 					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
