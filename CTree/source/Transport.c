@@ -406,7 +406,8 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_RESULT result = OV_ERR_OK;
 
   ov_string_setvalue(&pinst->p_upload.v_path, pinst->v_path);
-  CTree_Upload_typemethod(&pinst->p_upload, NULL);
+  CTree_Upload_typemethod(Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload),
+                          NULL);
   if(Ov_Fail(pinst->p_upload.v_result)) {
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     ov_logfile_error("Transport failed.");
