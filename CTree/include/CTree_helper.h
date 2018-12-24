@@ -4,6 +4,9 @@
 #include "cJSON.h"
 #include "libov/ov_macros.h"
 
+#define CTREE_COMMON_INTERNALERROR 128
+#define CTREE_COMMON_EXTERNALERROR 64
+
 OV_RESULT valueToJSON(cJSON** pjsvalue, const OV_VAR_TYPE vartype,
                       const OV_BYTE* var, const OV_UINT size);
 

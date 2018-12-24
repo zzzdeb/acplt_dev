@@ -19,6 +19,7 @@
 #endif
 
 #include "CTree.h"
+#include "CTree_helper.h"
 #include "libov/ov_logfile.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
@@ -29,9 +30,6 @@
 #include "ksbase_helper.h"
 
 #include <stdarg.h>
-
-#define CTREE_COMMON_INTERNALERROR 128
-#define CTREE_COMMON_EXTERNALERROR 64
 
 enum State { INITIAL, LIBSSENT_WAITING, TREESENT_WAITING, DONE };
 
@@ -107,7 +105,8 @@ CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
   OV_RESULT result = OV_ERR_OK;
   OV_STRING tmpStr = NULL;
 
-  if(!pClient || !pVtblClient) return OV_ERR_BADPARAM;
+  if(!pClient || !pVtblClient)
+    return OV_ERR_BADPARAM;
 
   *pClient = NULL;
   *pVtblClient = NULL;
@@ -146,7 +145,8 @@ CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
 
   /*	here we definitely have a client object	*/
   Ov_GetVTablePtr(ksbase_ClientBase, *pVtblClient, *pClient);
-  if(!pVtblClient) return OV_ERR_BADOBJTYPE;
+  if(!pVtblClient)
+    return OV_ERR_BADOBJTYPE;
 
   return OV_ERR_OK;
 }
@@ -347,7 +347,8 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
 
   ov_string_setvalue(&path, pinst->v_targetDownloadPath);
 
-  if(!path) ov_string_setvalue(&path, DOWNLOAD_PATH);
+  if(!path)
+    ov_string_setvalue(&path, DOWNLOAD_PATH);
 
   ov_logfile_info("%s: path Transport", path);
   if(pinst->p_upload.v_tree) {

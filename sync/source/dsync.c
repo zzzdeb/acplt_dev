@@ -22,6 +22,7 @@
 #include "PostSys.h"
 #include "ksbase_helper.h"
 #include "ksmsg.h"
+#include "ksmsg_helper.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
@@ -35,7 +36,8 @@
 #define SYNC_SRC_INIT 0
 #define SYNC_SRC_SYNCCREATEREQUESTED 1
 #define SYNC_SRC_TRANSPORTREQUESTED 2
-#define SYNC_SRC_DONE 4
+#define SYNC_SRC_WAITINGFORSHUTDOWN 4
+#define SYNC_SRC_DONE 8
 #define SYNC_SRC_ERROR 64
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
@@ -46,23 +48,32 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
                                                   const OV_BOOL         value) {
-  /* OV_RESULT result = OV_ERR_OK; */
+  OV_RESULT result = OV_ERR_OK;
   pobj->v_reset = value;
   if(value) {
-    OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
-    if(!proot) { // todo badparam info
-      ov_logfile_error("root couldt be found");
-      pobj->v_result = OV_ERR_GENERIC;
-      return 0;
+    /*check if request expected*/
+    if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN) {
+      ov_logfile_error(
+          "sync_dsync: shutdown requested, where no request expected");
+      return OV_ERR_BADVALUE;
     }
+
+    /*go on */
+    OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
+    if(!proot) {
+      ov_logfile_error("root couldt be found");
+      pobj->v_status = DSYNC_DST_ERROR;
+      pobj->v_result = OV_ERR_GENERIC;
+      return OV_ERR_GENERIC;
+    }
+    const OV_STRING classesToConfiugure[] = {[KSAPISET] = "ksapi/setVar",
+                                             [KSAPIGET] = "ksapi/getVar"};
     // shutting down
     for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
-      if(i != KSAPISET) {
+      if(i != KSAPISET && i != KSAPIGET) {
         ov_logfile_warning("sync_dsync: cant handle %d", i);
         continue;
       }
-      const OV_STRING     classesToConfiugure[] = {[KSAPIGET] = "ksapi/getVar",
-                                               [KSAPISET] = "ksapi/setVar"};
       OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
       if(pssc) {
         OV_INSTPTR_ov_object pobj = NULL;
@@ -76,8 +87,19 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
               ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
               continue;
             }
-            pMsgClnt->v_actimode = 0;
-            ov_logfile_info("%s.actimode = 0", pMsgClnt->v_identifier);
+            Ov_WarnIf(pMsgClnt->v_pathLen != 3);
+            result = ksmsg_msgClient_path_deleteElement(pMsgClnt, 1);
+            if(Ov_Fail(result)) {
+              ov_logfile_error("%u: %s: failed to delete path element", result,
+                               ov_result_getresulttext(result));
+              return result;
+            }
+            if(i == KSAPISET) {
+              pMsgClnt->v_actimode = 0;
+              // TODO: zzz: make sure it doesnt work again :2018 Dez 20 11:56
+              pMsgClnt->v_state = KSBASE_CLST_ERROR;
+              ov_logfile_info("%s.actimode = 0", pMsgClnt->v_identifier);
+            }
           };
         }
       }
@@ -88,8 +110,8 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
   return OV_ERR_OK;
 }
 
-OV_INSTPTR_ksmsg_msgClient dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
-                                                 OV_INSTPTR_ov_object  pobj) {
+OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
+                                                OV_INSTPTR_ov_object  pobj) {
   OV_RESULT                  result = OV_ERR_OK;
   OV_INSTPTR_ksmsg_msgClient pMsgClnt = NULL;
   OV_STRING                  dstHost = NULL;
@@ -97,6 +119,8 @@ OV_INSTPTR_ksmsg_msgClient dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
   OV_STRING                  dstInst = NULL;
   OV_STRING                  dstHostPort = NULL;
   OV_STRING                  dstServerPort = NULL;
+
+  OV_INSTPTR_ksbase_ClientBase pClient = NULL;
 
   result = ks_splitOneStringPath(pinst->v_destKS, &dstHost, &dstHostPort,
                                  &dstServer, &dstServerPort, &dstInst);
@@ -106,14 +130,28 @@ OV_INSTPTR_ksmsg_msgClient dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
   }
 
   /* if(Ov_CanCastTo(ksapi_setVar, pobj)) { */
-  OV_INSTPTR_ksapi_setVar pobjCasted = Ov_StaticPtrCast(ksapi_setVar, pobj);
-  result = Ov_CreateObject(ksmsg_msgClient, pMsgClnt, pobjCasted, "msgClient");
-  if(result) {
-    // TODO: zzz: give more info Mo 10 Dez 2018 15:51:15 CET
-    ov_logfile_info("%s", ov_result_getresulttext(result));
-    return NULL;
+  OV_INSTPTR_ksapi_KSApiCommon pobjCasted =
+      Ov_StaticPtrCast(ksapi_KSApiCommon, pobj);
+
+  Ov_ForEachChildEx(ov_containment, pobjCasted, pClient, ksbase_ClientBase) {
+    /*	find the object in the containment which is
+          derived from ClientBase	*/
+    break;
   }
-  // TODO: zzz: create this function Mo 10 Dez 2018 15:50:42 CET
+  if(Ov_CanCastTo(ksmsg_msgClient, pClient)) {
+    pMsgClnt = Ov_StaticPtrCast(ksmsg_msgClient, pClient);
+  } else {
+    Ov_Unlink(ov_containment, pobjCasted, pClient);
+    result =
+        Ov_CreateObject(ksmsg_msgClient, pMsgClnt, pobjCasted, "msgClient");
+    if(result) {
+      // TODO: zzz: give more info Mo 10 Dez 2018 15:51:15 CET
+      ov_logfile_info("%s couldnt create msgClient",
+                      ov_result_getresulttext(result));
+      return NULL;
+    }
+    Ov_Link(ov_containment, pobjCasted, pClient);
+  }
   ksmsg_msgClient_pathLen_set(pMsgClnt, 3);
 
   ov_string_setvalue(&pMsgClnt->v_pathHost.value[0], pinst->v_selfHost);
@@ -131,8 +169,6 @@ OV_INSTPTR_ksmsg_msgClient dsync_createSetVarAlt(OV_INSTPTR_sync_dsync pinst,
   ov_string_setvalue(&pMsgClnt->v_pathName.value[2], pobjCasted->v_serverName);
   ov_string_setvalue(&pMsgClnt->v_pathInstance.value[2],
                      DEFAULT_POSTSYS_EXECUTER);
-
-  // TODO: zzz: caution! reseting Mo 10 Dez 2018 19:13:12 CET
   // TODO: zzz: change status so that it can go on Mo 10 Dez 2018 16:31:06 CET
   return pMsgClnt;
 }
@@ -154,39 +190,52 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_sync_dsyncDst pdsyncDst = &pinst->p_dsyncDstTemp;
   OV_INSTPTR_ov_object     proot = NULL;
 
+  ov_memstack_lock();
   switch(pinst->v_status) {
     case SYNC_SRC_INIT:
       /* check */
-      ov_memstack_lock();
       proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
-      if(!proot) { // todo badparam info
+      if(!proot) {
         ov_logfile_error("root couldt be found");
         pinst->v_status = SYNC_SRC_ERROR;
         ov_memstack_unlock();
         return;
       } /* configure dest server */
       pinst->p_ksCrtObj.v_path = NULL;
-      ov_memstack_lock();
       ks_splitOneStringPath(pinst->v_destKS, &dstHost, NULL, &dstName, NULL,
                             NULL);
       ov_string_print(&ptrans->v_targetKS, "//%s/%s%s", dstHost, dstName,
                       dsyncDstPath);
-      ov_memstack_unlock();
 
-      ov_string_print(
-          &pdsyncDst->v_srcKS, "//%s/%s%s", pinst->v_selfHost,
-          pinst->v_selfServer,
+      OV_STRING srcKS = NULL;
+      ov_string_print(&srcKS, "//%s/%s%s", pinst->v_selfHost,
+                      pinst->v_selfServer, pinst->v_srcPath, 2);
+      ov_string_setvalue(
+          &pdsyncDst->v_syncPath,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pinst), 2));
+      result = sync_dsyncDst_srcKS_set(pdsyncDst, srcKS);
+      result |= sync_dsyncDst_dstKS_set(pdsyncDst, pinst->v_destKS);
+      if(Ov_Fail(result)) {
+        ov_logfile_error("%u: %s: srcKS set failed", result,
+                         ov_result_getresulttext(result));
+        pinst->v_status = SYNC_SRC_ERROR;
+        return;
+      }
+      ov_string_setvalue(&srcKS, NULL);
 
       ov_string_setvalue(&pdsyncDst->p_syncDownload.v_srcPath,
                          pinst->v_srcPath);
       ov_string_setvalue(
           &ptrans->v_path,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pdsyncDst), 2));
+      pdsyncDst->v_actimode = 1;
+      pdsyncDst->v_status = DSYNC_DST_ACTIVE;
       CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
                                  NULL);
+      pdsyncDst->v_actimode = 0;
       pinst->v_status = SYNC_SRC_SYNCCREATEREQUESTED;
       ov_logfile_info("sync on destination requested");
+      ov_memstack_unlock();
       return;
       break;
     case SYNC_SRC_SYNCCREATEREQUESTED:
@@ -206,6 +255,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
           ov_logfile_error("%u: %s: ksapi dsyncDst creation unsuccessful",
                            result, ov_result_getresulttext(result));
           pinst->v_result = result;
+          ov_memstack_unlock();
           return;
         } else {
           ov_logfile_warning("%u: %s: dsyncDst", result,
@@ -222,6 +272,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       if(!proot) {
         ov_logfile_error("sync_syncDownload: srcPath no proot");
         pinst->v_result = OV_ERR_GENERIC;
+        ov_memstack_unlock();
         return;
       }
       for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
@@ -233,17 +284,13 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
             if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
               /* create Msg alternative */
               OV_INSTPTR_ksmsg_msgClient pMsgClnt =
-                  dsync_createSetVarAlt(pinst, pobj);
-              if(!pMsgClnt) { // todo info
-                              //				ov_logfile_error("couldnt
-                              // create
-                              // setvar_alt %s", pobj->v_identifier);
-
-                // TODO: zzz: handle if no msgcreater created Mo 03 Dez 2018
-                // 16:24:17 CET
-
-                /* ov_memstack_unlock(); */
-                /* return; */
+                  dsync_createKsxdrAlt(pinst, pobj);
+              if(!pMsgClnt) {
+                ov_logfile_error("sync_dsync: could not create Client %s",
+                                 pobj->v_identifier);
+                pinst->v_status = SYNC_SRC_ERROR;
+                ov_memstack_unlock();
+                return;
               }
             }
           }
@@ -262,22 +309,35 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
                       DSYNC_DOWNLOAD_PATH_DEST_EXT);
       CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
                                  NULL);
+
       pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
       ov_logfile_info("transport requested");
+      ov_memstack_unlock();
       return;
       break;
     case SYNC_SRC_TRANSPORTREQUESTED:
-      // todo
       if(pinst->p_transport.v_status == 3) {
         ov_logfile_info("transport done successfully");
+        pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
       } else {
-        ov_logfile_error("sync failed at transport");
-        pinst->v_status = SYNC_SRC_ERROR;
+        if(pinst->p_transport.v_status &
+           (CTREE_COMMON_INTERNALERROR | CTREE_COMMON_EXTERNALERROR)) {
+          ov_logfile_error("sync failed at transport");
+          pinst->v_status = SYNC_SRC_ERROR;
+        }
       }
       break;
-    case SYNC_SRC_DONE: ov_logfile_info("sync in SYNC_SRC_DONE"); break;
-    case SYNC_SRC_ERROR: pinst->v_actimode = 0; break;
-    default: // TODO: zzz: give more info and set Do 29 Nov 2018 16:20:10 CET
+    case SYNC_SRC_WAITINGFORSHUTDOWN:
+      break;
+    case SYNC_SRC_DONE:
+      ov_logfile_info("sync in SYNC_SRC_DONE");
+      pinst->v_actimode = 0;
+      break;
+    case SYNC_SRC_ERROR:
+      pinst->v_actimode = 0;
+      break;
+    default:
+      ov_logfile_error("sync_dsync: unknown status %d", pinst->v_status);
       ov_memstack_unlock();
       return;
   }
