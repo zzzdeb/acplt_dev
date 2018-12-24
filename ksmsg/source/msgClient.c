@@ -95,10 +95,17 @@ ksmsg_msgClient_path_deleteElement(OV_INSTPTR_ksmsg_msgClient pMsgClnt,
     ov_logfile_debug("ksmsg_msgClient: index too big");
     return OV_ERR_BADVALUE;
   }
+  OV_STRING tmpStr = NULL;
   for(OV_UINT i = ind; i < newLen; ++i) {
+    tmpStr = pMsgClnt->v_pathHost.value[i];
     pMsgClnt->v_pathHost.value[i] = pMsgClnt->v_pathHost.value[i + 1];
-    pMsgClnt->v_pathName.value[i] = pMsgClnt->v_pathHost.value[i + 1];
-    pMsgClnt->v_pathInstance.value[i] = pMsgClnt->v_pathHost.value[i + 1];
+    pMsgClnt->v_pathHost.value[i + 1] = tmpStr;
+    tmpStr = pMsgClnt->v_pathName.value[i];
+    pMsgClnt->v_pathName.value[i] = pMsgClnt->v_pathName.value[i + 1];
+    pMsgClnt->v_pathName.value[i + 1] = tmpStr;
+    tmpStr = pMsgClnt->v_pathInstance.value[i];
+    pMsgClnt->v_pathInstance.value[i] = pMsgClnt->v_pathInstance.value[i + 1];
+    pMsgClnt->v_pathInstance.value[i + 1] = tmpStr;
   }
   pMsgClnt->v_pathLen = newLen;
   result |= Ov_SetDynamicVectorLength(&pMsgClnt->v_pathHost, newLen, STRING);
