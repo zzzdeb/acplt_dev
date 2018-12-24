@@ -64,14 +64,21 @@ LIBRARY sync
 	END_CLASS;
 
 
-	CLASS	sscBuffer					:	CLASS	PostSys/node
+	CLASS	bufferer					:	CLASS	PostSys/node
 		IS_INSTANTIABLE;
 		COMMENT	=	"buffers messages send through this node";
 		VARIABLES
 			/* Input *************************************************/
 			SourcePref	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
 			DestPref	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+			lastBufferedMsg	:	STRING 
+					FLAGS="o"
+					COMMENT			=	"id of last buffered msg"
+					INITIALVALUE	=	"";
 		END_VARIABLES;
+		PARTS
+				buffer	:	CLASS	sync/Buffer;
+		END_PARTS;
 		OPERATIONS
 			typemethod			:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
