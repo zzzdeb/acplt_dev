@@ -115,8 +115,9 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 
   // snprintf(msgIdentifier, sizeof(msgPrefix) + 11, "%s%u", msgPrefix,
   // 	pobj->v_msgsInQueue);
-  result = PostSys_createAnonymousMessage(pobj, "Message",
-                                          (OV_INSTPTR_ov_object*)(&pMsg));
+  result =
+      PostSys_createAnonymousMessage(Ov_StaticPtrCast(ov_domain, pobj),
+                                     "Message", (OV_INSTPTR_ov_object*)(&pMsg));
   if(Ov_Fail(result)) {
     ov_logfile_error("Couldn't create Object 'Message' Reason: %s",
                      ov_result_getresulttext(result));
@@ -245,13 +246,27 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
       Ov_StaticPtrCast(PostSys_msgCreator, pfb);
   OV_INSTPTR_PostSys_Message     pMsg = NULL;
   OV_INSTPTR_PostSys_MsgDelivery pMsgDelivery = NULL;
+  OV_BOOL                        isOk = 0;
 
   Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) { break; }
 
   if(pMsg) {
-    pMsgDelivery = Ov_GetParent(PostSys_MsgDelivery2Message, pMsg);
-    if(pMsgDelivery) { /*	this message was already tried to be send
-                        */
+    if(pMsg->v_msgStatus == MSGNEW) pMsg->v_msgStatus = MSGREADYFORSENDING;
+
+    if(pMsg->v_msgStatus == MSGREADYFORSENDING) {
+      pMsgDelivery = Ov_StaticPtrCast(
+          PostSys_MsgDelivery,
+          Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
+      if(pMsgDelivery) {
+        isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
+        pinst->v_tries = 0;
+        if(!isOk) {
+          // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+          Ov_DeleteObject(pMsg);
+          return;
+        }
+      }
+    } else if(pMsg->v_msgStatus == MSGWAITING) {
       pinst->v_tries++;
       if(pinst->v_tries > 3) {
         Ov_DeleteObject(pMsg);
@@ -259,20 +274,18 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           break;
         }
         if(pMsg) {
-          Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsg);
+          if(pMsg->v_msgStatus == MSGNEW)
+            pMsg->v_msgStatus = MSGREADYFORSENDING;
+          isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
           pinst->v_tries = 0;
+          if(!isOk) {
+            // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+            Ov_DeleteObject(pMsg);
+            return;
+          }
         }
-      }
-    } else {
-      pMsgDelivery = Ov_StaticPtrCast(
-          PostSys_MsgDelivery,
-          Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
-      if(pMsgDelivery) {
-        Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsg);
-        pinst->v_tries = 0;
       }
     }
   }
-
   return;
 }
