@@ -49,6 +49,7 @@
 #include "ks_logfile.h"
 #include "ksbase_helper.h"
 #include "ksmsg.h"
+#include "ksmsg_helper.h"
 #include "ksxdr.h"
 #include "ksxdr_config.h"
 #include "ksxdr_services.h"
@@ -81,6 +82,30 @@ OV_DLLFNCEXPORT void ksmsg_msgClient_destructor(OV_INSTPTR_ov_object pobj) {
   Ov_HeapFree(this->v_answerItems);
   this->v_answerItemsLen = 0;
   return;
+}
+
+OV_DLLFNCEXPORT
+OV_RESULT
+ksmsg_msgClient_path_deleteElement(OV_INSTPTR_ksmsg_msgClient pMsgClnt,
+                                   OV_UINT                    ind) {
+  OV_RESULT result = OV_ERR_OK;
+
+  OV_UINT newLen = pMsgClnt->v_pathLen - 1;
+  if(ind >= pMsgClnt->v_pathLen) {
+    ov_logfile_debug("ksmsg_msgClient: index too big");
+    return OV_ERR_BADVALUE;
+  }
+  for(OV_UINT i = ind; i < newLen; ++i) {
+    pMsgClnt->v_pathHost.value[i] = pMsgClnt->v_pathHost.value[i + 1];
+    pMsgClnt->v_pathName.value[i] = pMsgClnt->v_pathHost.value[i + 1];
+    pMsgClnt->v_pathInstance.value[i] = pMsgClnt->v_pathHost.value[i + 1];
+  }
+  pMsgClnt->v_pathLen = newLen;
+  result |= Ov_SetDynamicVectorLength(&pMsgClnt->v_pathHost, newLen, STRING);
+  result |= Ov_SetDynamicVectorLength(&pMsgClnt->v_pathName, newLen, STRING);
+  result |=
+      Ov_SetDynamicVectorLength(&pMsgClnt->v_pathInstance, newLen, STRING);
+  return result;
 }
 
 OV_DLLFNCEXPORT OV_UINT
@@ -158,6 +183,7 @@ OV_RESULT msgClient_handleMessage(OV_INSTPTR_ksmsg_msgClient pinst,
             atoi(vals.value[i]);
       }
     } else if(ov_string_compare(op, "RES:SET") == OV_STRCMP_EQUAL) {
+      pinst->v_answerItems[i].result = atoi(vals.value[i]);
     }
   }
   return result;
