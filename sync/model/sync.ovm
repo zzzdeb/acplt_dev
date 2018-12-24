@@ -63,6 +63,16 @@ LIBRARY sync
 			END_OPERATIONS;
 	END_CLASS;
 
+	CLASS	Buffer					:	CLASS	ov/domain
+		IS_INSTANTIABLE;
+		COMMENT	=	"sync ssc-s in path with targetKS copies";
+		VARIABLES
+			/* Input *************************************************/
+		END_VARIABLES;
+		OPERATIONS
+
+		END_OPERATIONS;
+	END_CLASS;
 
 	CLASS	bufferer					:	CLASS	PostSys/node
 		IS_INSTANTIABLE;
@@ -174,16 +184,6 @@ LIBRARY sync
 		END_OPERATIONS;
 	END_CLASS;
 
-	CLASS	Buffer					:	CLASS	ov/domain
-		IS_INSTANTIABLE;
-		COMMENT	=	"sync ssc-s in path with targetKS copies";
-		VARIABLES
-			/* Input *************************************************/
-		END_VARIABLES;
-		OPERATIONS
-			
-		END_OPERATIONS;
-	END_CLASS;
 	
 	// CLASS	Buffer					:	CLASS	ov/domain
 	// 	IS_INSTANTIABLE;
