@@ -64,7 +64,8 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_INSTPTR_ksmsg_msgClient this = Ov_StaticPtrCast(ksmsg_msgClient, pobj);
 
   result = ksbase_ComTask_constructor(pobj);
-  if(result) return result;
+  if(result)
+    return result;
   OV_INSTPTR_ov_domain pInbox = NULL;
   result = Ov_CreateObject(ov_domain, pInbox, this, "Inbox");
 
@@ -267,7 +268,9 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
                                             Ov_StaticPtrCast(ov_domain, this));
       // TODO: zzz: close connection Mo 10 Dez 2018 18:25:03 CET
       return;
-    case KSBASE_CLST_ERROR: thisCl->v_actimode = 0; return;
+    case KSBASE_CLST_ERROR:
+      thisCl->v_actimode = 0;
+      return;
     default:
       KS_logfile_debug((
           "entering default in msgClient typemethod - this should not happen"));

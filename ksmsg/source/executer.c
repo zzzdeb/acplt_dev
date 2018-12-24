@@ -57,7 +57,8 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   }
 
   Ov_ForEachChildEx(ov_containment, pinbox, pMsg, PostSys_Message) { break; }
-  if(!pMsg) return;
+  if(!pMsg)
+    return;
   ov_logfile_info("postExec: %s", pMsg->v_msgBody);
   OV_STRING     srv = NULL;
   OV_STRING     op = NULL;
