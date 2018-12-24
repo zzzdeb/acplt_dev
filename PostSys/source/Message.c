@@ -35,7 +35,8 @@ OV_DLLFNCEXPORT OV_ACCESS PostSys_Message_getaccess(OV_INSTPTR_ov_object pobj,
           return OV_AC_READWRITE;
       }
       break;
-    default: break;
+    default:
+      break;
   }
 
   return ov_object_getaccess(pobj, pelem, pticket);
@@ -79,6 +80,27 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_Message_pathComponent_set(
     const OV_UINT veclen) {
   return Ov_SetDynamicVectorValue(&pobj->v_pathComponent, value, veclen,
                                   STRING);
+}
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_Message_copy(
+    OV_INSTPTR_PostSys_Message pMsgCpy, const OV_INSTPTR_PostSys_Message pMsg) {
+  OV_RESULT result = OV_ERR_OK;
+  result =
+      Ov_SetDynamicVectorValue(&pMsgCpy->v_pathName, pMsg->v_pathName.value,
+                               pMsg->v_pathName.veclen, STRING);
+  result |= Ov_SetDynamicVectorValue(&pMsgCpy->v_pathComponent,
+                                     pMsg->v_pathComponent.value,
+                                     pMsg->v_pathComponent.veclen, STRING);
+  result |= Ov_SetDynamicVectorValue(&pMsgCpy->v_pathAddress,
+                                     pMsg->v_pathAddress.value,
+                                     pMsg->v_pathAddress.veclen, STRING);
+  result |= ov_string_setvalue(&pMsgCpy->v_msgBody, pMsg->v_msgBody);
+  result |= ov_string_setvalue(&pMsgCpy->v_msgID, pMsg->v_msgID);
+  pMsgCpy->v_expectAnswer = pMsg->v_expectAnswer;
+  pMsgCpy->v_msgStatus = pMsg->v_msgStatus;
+  pMsgCpy->v_sendBy = pMsg->v_sendBy;
+  pMsgCpy->v_pathLen = pMsg->v_pathLen;
+  return result;
 }
 
 OV_DLLFNCEXPORT OV_STRING

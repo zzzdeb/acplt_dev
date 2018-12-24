@@ -1,4 +1,3 @@
-
 #ifndef OV_COMPILE_LIBRARY_PostSys_helper
 #define OV_COMPILE_LIBRARY_PostSys_helper
 
@@ -35,5 +34,8 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_createAnonymousMessage(
 OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(
     const OV_STRING value, OV_INSTPTR_PostSys_Message* createdMsg,
     OV_INSTPTR_ov_domain* msgCreatedIn);
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_Message_copy(
+    OV_INSTPTR_PostSys_Message pMsgCpy, const OV_INSTPTR_PostSys_Message pMsg);
 
 #endif

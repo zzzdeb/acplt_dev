@@ -20,47 +20,65 @@
 #endif
 
 #include "PostSys.h"
+#include "PostSys_helpers.h"
+#include "ksbase.h"
 #include "libov/ov_macros.h"
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_node_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                result = OV_ERR_OK;
+  OV_INSTPTR_PostSys_node  pinst = Ov_StaticPtrCast(PostSys_node, pobj);
+  OV_INSTPTR_PostSys_inbox pInbox = NULL;
+
+  result = ksbase_ComTask_constructor(pobj);
+
+  result |= Ov_CreateObject(PostSys_inbox, pInbox, pinst, "inbox");
+  return result;
+}
 
 OV_DLLFNCEXPORT void PostSys_node_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   /*
    *   local variables
    */
-  OV_INSTPTR_PostSys_node        pinst = Ov_StaticPtrCast(PostSys_node, this);
+  OV_INSTPTR_PostSys_node  pinst = Ov_StaticPtrCast(PostSys_node, this);
+  OV_INSTPTR_PostSys_inbox pInb = Ov_StaticPtrCast(
+      PostSys_inbox, Ov_SearchChild(ov_containment, pinst, "inbox"));
   OV_INSTPTR_PostSys_Message     pMsg = NULL;
   OV_INSTPTR_PostSys_MsgDelivery pMsgDelivery = NULL;
+  OV_BOOL                        isOk = 0;
 
-  Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) { break; }
+  Ov_ForEachChildEx(ov_containment, pInb, pMsg, PostSys_Message) { break; }
 
   if(pMsg) {
-    pMsgDelivery = Ov_GetParent(PostSys_MsgDelivery2Message, pMsg);
-    if(pMsgDelivery) { /*	this message was already tried to be send
-                        */
-      // TODO: zzz: num of tries: Sa 01 Dez 2018 18:34:50 CET
-      //			pinst->v_tries++;
-      //			if(pinst->v_tries > 3) {
-      //				Ov_DeleteObject(pMsg);
-      //				Ov_ForEachChildEx(ov_containment, pinst,
-      // pMsg, PostSys_Message)
-      //				{
-      //					break;
-      //				}
-      //				if(pMsg) {
-      //					Ov_Link(PostSys_MsgDelivery2Message,
-      // pMsgDelivery, pMsg); 					pinst->v_tries
-      // = 0;
-      //				}
-      //			}
-    } else {
-      pMsgDelivery = Ov_StaticPtrCast(
-          PostSys_MsgDelivery,
-          Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
-      if(pMsgDelivery) {
-        Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsg);
-        //				pinst->v_tries = 0;
-      }
+    // TODO: zzz: num of tries: Sa 01 Dez 2018 18:34:50 CET
+    switch(pMsg->v_msgStatus) {
+      case MSGNEW:
+      case MSGNEWARRIVED:
+      case MSGDONERECEIVE:
+      case MSGDONE:
+        pMsg->v_msgStatus = MSGREADYFORSENDING;
+      case MSGREADYFORSENDING:
+        pMsgDelivery = Ov_StaticPtrCast(
+            PostSys_MsgDelivery,
+            Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
+        if(pMsgDelivery) {
+          isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
+          if(!isOk) {
+            // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+            Ov_DeleteObject(pMsg);
+            return;
+          }
+        }
+        break;
+      case MSGWAITING:
+        // TODO: zzz: handle if msg is to long waiting :2018 Dez 19 22:42
+        return;
+      case MSGRECEIVERERROR:
+      case MSGFATALERROR:
+      default:
+        ov_logfile_error("msgerror");
+        Ov_DeleteObject(pMsg);
+        return;
     }
   }
-
   return;
 }
