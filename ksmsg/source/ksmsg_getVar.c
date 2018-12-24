@@ -10,6 +10,7 @@
 #endif
 
 /* #include "KSDATAPACKET_xdrhandling.h" */
+#include "CTree_helper.h"
 #include "PostSys.h"
 #include "PostSys_helpers.h"
 #include "acplt_simpleMsgHandling.h"
@@ -62,7 +63,7 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestGetVar(
   pobj->v_sentProcID = KS_GETVAR;
 
   // todo check lenght r same, and check if it is greater than 2
-  pathLen = pobj->v_pathHost.veclen;
+  pathLen = pobj->v_pathLen;
   ov_string_setvalue(&pobj->v_pathHost.value[pathLen - 1], pobj->v_serverHost);
   ov_string_setvalue(&pobj->v_pathName.value[pathLen - 1], pobj->v_serverName);
 
@@ -82,8 +83,9 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestGetVar(
   if(ksmsg_msgClient_msgsInQueue_get(pobj) >= pobj->v_queueLength)
     return OV_ERR_NOACCESS;
 
-  result = PostSys_createAnonymousMessage(pobj, "Message",
-                                          (OV_INSTPTR_ov_object*)(&pMsg));
+  result =
+      PostSys_createAnonymousMessage(Ov_StaticPtrCast(ov_domain, pobj),
+                                     "Message", (OV_INSTPTR_ov_object*)(&pMsg));
   if(Ov_Fail(result)) {
     ov_logfile_error("Couldn't create Object 'Message' Reason: %s",
                      ov_result_getresulttext(result));
@@ -122,7 +124,10 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestGetVar(
   pMsg->v_sendBy = MSG_SEND_KSSETVAR; /*	send via ks-setvar	*/
 
   /*	generic part set, now build the body	*/
-  OV_STRING*    empty_vec = Ov_HeapMalloc(items_length * sizeof(OV_STRING));
+  OV_STRING* empty_vec = Ov_HeapMalloc(items_length * sizeof(OV_STRING));
+  for(OV_UINT i = 0; i < items_length; ++i) {
+    empty_vec[i] = NULL;
+  }
   OV_STRING_VEC ids = {items_length, paths};
 
   OV_STRING_VEC values = {items_length, empty_vec};
@@ -183,6 +188,9 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestSetVar(
    */
   OV_RESULT                  result = OV_ERR_OK;
   OV_INSTPTR_ksmsg_msgClient thisCl = Ov_StaticPtrCast(ksmsg_msgClient, this);
+  OV_UINT                    pathLen = 0;
+  OV_INSTPTR_ksmsg_msgClient pobj = Ov_StaticPtrCast(ksmsg_msgClient, this);
+  OV_INSTPTR_PostSys_Message pMsg = NULL;
 
   if((thisCl->v_state != KSBASE_CLST_COMPLETED) &&
      (thisCl->v_state != KSBASE_CLST_INITIAL))
@@ -201,6 +209,118 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestSetVar(
   /*	set ProcID	*/
   thisCl->v_sentProcID = KS_SETVAR;
 
+  // todo check lenght r same, and check if it is greater than 2
+  pathLen = pobj->v_pathLen;
+  ov_string_setvalue(&pobj->v_pathHost.value[pathLen - 1], pobj->v_serverHost);
+  ov_string_setvalue(&pobj->v_pathName.value[pathLen - 1], pobj->v_serverName);
+
+  OV_STRING_VEC* a[3] = {&pobj->v_pathHost, &pobj->v_pathName,
+                         &pobj->v_pathInstance};
+  for(OV_UINT i = 0; i < 3; i++) {
+    for(OV_UINT j = 0; j < pathLen; j++) {
+      if(!a[i]->value[j]) {
+        ov_logfile_debug("ksmsg_ksmsg_setVar: value is NULL");
+        pobj->v_state = KSBASE_CLST_ERROR;
+        return OV_ERR_BADVALUE;
+      }
+    }
+  }
+  ov_memstack_lock();
+
+  if(ksmsg_msgClient_msgsInQueue_get(pobj) >= pobj->v_queueLength)
+    return OV_ERR_NOACCESS;
+
+  result =
+      PostSys_createAnonymousMessage(Ov_StaticPtrCast(ov_domain, pobj),
+                                     "Message", (OV_INSTPTR_ov_object*)(&pMsg));
+  if(Ov_Fail(result)) {
+    ov_logfile_error("Couldn't create Object 'Message' Reason: %s",
+                     ov_result_getresulttext(result));
+    ov_memstack_unlock();
+    return OV_ERR_OK;
+  }
+
+  OV_STRING_VEC tmpStrVec = {0};
+  Ov_SetDynamicVectorLength(&tmpStrVec, pathLen, STRING);
+
+  /*setting Host path */
+  result =
+      PostSys_Message_pathAddress_set(pMsg, pobj->v_pathHost.value, pathLen);
+  if(Ov_Fail(result)) {
+    Ov_DeleteObject(pMsg);
+    ov_memstack_unlock();
+    return result;
+  }
+
+  /* setting Servername path */
+  result = PostSys_Message_pathName_set(pMsg, pobj->v_pathName.value, pathLen);
+  if(Ov_Fail(result)) {
+    Ov_DeleteObject(pMsg);
+    ov_memstack_unlock();
+    return result;
+  }
+  /*setting Inst path */
+  result = PostSys_Message_pathComponent_set(pMsg, pobj->v_pathInstance.value,
+                                             pathLen);
+  if(Ov_Fail(result)) {
+    Ov_DeleteObject(pMsg);
+    ov_memstack_unlock();
+    return result;
+  }
+
+  pMsg->v_sendBy = MSG_SEND_KSSETVAR; /*	send via ks-setvar	*/
+
+  /*	generic part set, now build the body	*/
+  OV_STRING* empty_vec = Ov_HeapMalloc(items_length * sizeof(OV_STRING));
+  OV_STRING* valStrs = Ov_HeapMalloc(items_length * sizeof(OV_STRING));
+  OV_STRING* paths = Ov_HeapMalloc(items_length * sizeof(OV_STRING));
+  for(OV_UINT i = 0; i < items_length; ++i) {
+    empty_vec[i] = NULL;
+    valStrs[i] = NULL;
+    paths[i] = NULL;
+  }
+
+  for(OV_UINT i = 0; i < items_length; ++i) {
+    cJSON* pjsvalue = cJSON_CreateArray();
+    result = valueToJSON(
+        &pjsvalue, items_val[i].var_current_props.value.vartype,
+        &(items_val[i].var_current_props.value.valueunion.val_byte), 0);
+    OV_STRING valstr = cJSON_Print(pjsvalue);
+    ov_logfile_info("ksmsg_msgClient_requestSetVar: %s", valstr);
+    ov_string_setvalue(&valStrs[i], valstr);
+    free(valstr);
+  }
+
+  OV_STRING_VEC ids = {items_length, paths};
+  for(OV_UINT i = 0; i < items_length; ++i) {
+    ov_string_setvalue(&paths[i], items_val[i].path_and_name);
+  }
+
+  OV_STRING_VEC values = {items_length, valStrs};
+  OV_STRING_VEC types = {items_length, empty_vec};
+  OV_STRING_VEC units = {items_length, empty_vec};
+  OV_STRING     msgBody = acplt_simpleMsg_GenerateFlatBody(
+      "ProcessControl", "SET", FALSE, NULL, &ids, &values, &units, &types);
+  Ov_HeapFree(empty_vec);
+  Ov_HeapFree(valStrs);
+  if(!msgBody) {
+    Ov_DeleteObject(pMsg);
+    ov_memstack_unlock();
+    return OV_ERR_HEAPOUTOFMEMORY;
+  }
+
+  //    ov_logfile_debug("length: %lu\nmessageBody:\n%s\n", tempctr, msgBody);
+
+  result = PostSys_Message_msgBody_set(pMsg, msgBody);
+  if(Ov_Fail(result)) {
+    Ov_DeleteObject(pMsg);
+    ov_memstack_unlock();
+    return result;
+  }
+  pobj->v_msgsInQueue++;
+  ov_memstack_unlock();
+
+  pobj->v_actimode = 1;
   return OV_ERR_OK;
 }
 
