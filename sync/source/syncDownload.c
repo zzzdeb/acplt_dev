@@ -48,6 +48,13 @@ OV_RESULT syncDownloadConfigureSetGet(OV_INSTPTR_sync_syncDownload pinst,
     }
     ov_string_setvalue(&pMsgClnt->v_pathInstance.value[1],
                        PLAYER_DSTNODE_PATH_DEST);
+    ov_string_setvalue(&pMsgClnt->v_pathHost.value[0],
+                       pMsgClnt->v_pathHost.value[1]);
+    ov_string_setvalue(&pMsgClnt->v_pathName.value[0],
+                       pMsgClnt->v_pathName.value[1]);
+    ov_string_setvalue(
+        &pMsgClnt->v_pathInstance.value[0],
+        ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgClnt), 2));
   } else {
     ov_logfile_error("%s is not from right class", pobj->v_identifier);
     return OV_ERR_BADPARAM;
