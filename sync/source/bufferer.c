@@ -19,6 +19,7 @@
 #endif
 
 #include "sync.h"
+#include "sync_helper.h"
 
 #include "PostSys.h"
 #include "PostSys_helpers.h"
@@ -41,41 +42,77 @@ OV_DLLFNCEXPORT void sync_bufferer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   OV_INSTPTR_PostSys_Message pMsg = NULL;
   OV_INSTPTR_PostSys_Message pMsgCpy = NULL;
   /*OV_INSTPTR_PostSys_MsgDelivery pMsgDelivery = NULL;*/
+  OV_UINT waitingLen = pinst->v_msgsWaitingRes.veclen;
+  OV_BOOL buffering = (pinst->v_status != BUFFERER_NOBUFFERING);
 
-  pMsg = Ov_StaticPtrCast(PostSys_Message, Ov_GetChild(ov_containment, pInb));
-  OV_BOOL lastFound = 0;
-  Ov_ForEachChildEx(ov_containment, pInb, pMsg, PostSys_Message) {
-    if(lastFound) {
-      break;
+  if(buffering ? 1 : !waitingLen) {
+    Ov_ForEachChildEx(ov_containment, pInb, pMsg, PostSys_Message) {
+      if(!Ov_GetParent(sync_buffered, pMsg)) {
+        if(buffering) {
+          break;
+        } else {
+          if(pMsg->v_refMsgID) {
+            for(OV_UINT i = 0; i < waitingLen; ++i) {
+              if(ov_string_compare(pinst->v_msgsWaitingRes.value[i],
+                                   pMsg->v_refMsgID) == OV_STRCMP_EQUAL) {
+                ov_logfile_info("sync_bufferer: result to msg %s arrived",
+                                pMsg->v_refMsgID);
+                break;
+              }
+            }
+          }
+        }
+      }
     }
-    if(ov_string_compare(pMsg->v_msgID, pinst->v_lastBufferedMsg) ==
-       OV_STRCMP_EQUAL) {
-      lastFound = 1;
-    }
-    continue;
-  }
-  if(!lastFound) {
-    Ov_ForEachChildEx(ov_containment, pInb, pMsg, PostSys_Message) { break; }
-  }
-  if(!pMsg)
-    return;
+    if(!pMsg)
+      return;
 
-  /* buffering msg */
-  OV_INSTPTR_sync_Buffer pbuf = &pinst->p_buffer;
-  /* copy msg to buffer */
-  result = Ov_CreateIDedObject(PostSys_Message, pMsgCpy, pbuf, "Message");
-  if(result) {
-    ov_logfile_error("sync_bufferer: %s", ov_result_getresulttext(result));
-    return;
+    /* buffering MSG */
+    OV_INSTPTR_sync_Buffer pbuf = &pinst->p_buffer;
+    /* copy MSG to buffer */
+    result = Ov_CreateIDedObject(PostSys_Message, pMsgCpy, pbuf, "Message");
+    if(result) {
+      ov_logfile_error("sync_bufferer: %s", ov_result_getresulttext(result));
+      return;
+    }
+    result = PostSys_Message_copy(pMsgCpy, pMsg);
+    if(Ov_Fail(result)) {
+      ov_logfile_error("%u: %s: could not create copy of MSG", result,
+                       ov_result_getresulttext(result));
+      return;
+    }
+    Ov_Link(sync_buffered, pinst, pMsg);
+    /* keeping track of msgs to send answer back */
+    if(pMsg->v_refMsgID) {
+      ov_logfile_info("sync_bufferer: answer msg with refid %s, body %s",
+                      pMsg->v_refMsgID, pMsg->v_msgBody);
+      OV_UINT i = 0;
+      for(i = 0; i < pinst->v_msgsWaitingRes.veclen; ++i) {
+        if(ov_string_compare(pinst->v_msgsWaitingRes.value[i],
+                             pMsg->v_refMsgID) == OV_STRCMP_EQUAL) {
+          ov_string_setvalue(&pinst->v_msgsWaitingRes.value[i], NULL);
+          pinst->v_msgsWaitingRes.value[i] =
+              pinst->v_msgsWaitingRes.value[waitingLen - 1];
+          pinst->v_msgsWaitingRes.value[waitingLen - 1] = NULL;
+          Ov_SetDynamicVectorLength(&pinst->v_msgsWaitingRes, waitingLen - 1,
+                                    STRING);
+          break;
+        }
+      }
+      if(i == waitingLen) {
+        ov_logfile_warning("sync_bufferer: msgRefId %s: was not expected",
+                           pMsg->v_refMsgID);
+      }
+    } else {
+      Ov_SetDynamicVectorLength(&pinst->v_msgsWaitingRes,
+                                pinst->v_msgsWaitingRes.veclen + 1, STRING);
+
+      ov_string_setvalue(
+          &pinst->v_msgsWaitingRes.value[pinst->v_msgsWaitingRes.veclen - 1],
+          pMsg->v_msgID);
+    }
   }
-  result = PostSys_Message_copy(pMsgCpy, pMsg);
-  if(Ov_Fail(result)) {
-    ov_logfile_error("%u: %s: could not create copy of msg", result,
-                     ov_result_getresulttext(result));
-    return;
-  }
-  /* sending msg */
+  /* sending MSG */
   PostSys_node_typemethod(Ov_StaticPtrCast(ksbase_ComTask, pinst));
-  ov_string_setvalue(&pinst->v_lastBufferedMsg, pMsg->v_msgID);
   return;
 }

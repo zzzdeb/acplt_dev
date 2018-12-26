@@ -30,4 +30,6 @@ typedef struct {
 #define DSYNC_DST_DONE 8
 #define DSYNC_DST_ERROR 64
 
+#define BUFFERER_INIT 0
+#define BUFFERER_NOBUFFERING 1
 #endif

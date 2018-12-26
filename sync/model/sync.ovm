@@ -85,6 +85,13 @@ LIBRARY sync
 					FLAGS="o"
 					COMMENT			=	"id of last buffered msg"
 					INITIALVALUE	=	"";
+			status	:	INT
+					FLAGS="o"
+					COMMENT			=	"0: ACTIVE, 1: STOP_BUFFERING"
+					INITIALVALUE	=	0;
+			msgsWaitingRes[]	:	STRING
+					FLAGS="o"
+					COMMENT			=	"msgs sent & waiting res";
 		END_VARIABLES;
 		PARTS
 				buffer	:	CLASS	sync/Buffer;
@@ -215,7 +222,10 @@ LIBRARY sync
 	
 	//CLASS db	: CLASS fb/functionblock
 	
-	
+		ASSOCIATION	buffered: ONE_TO_MANY
+			PARENT bufferer	: CLASS sync/bufferer;
+			CHILD	 bufferedMsgs		: CLASS PostSys/Message;
+		END_ASSOCIATION;
 	
 	//ASSOCIATION	syncSscVar	: ONE_TO_ONE
 	//	PARENT ssc	: CLASS ssc/SequentialStateChart;
