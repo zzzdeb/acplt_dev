@@ -44,7 +44,7 @@ OV_DLLFNCEXPORT void sync_dummy_typemethod(OV_INSTPTR_fb_functionblock pfb,
   /*
    *   local variables
    */
-  OV_INSTPTR_sync_dummy pinst = Ov_StaticPtrCast(sync_dummy, pfb);
+  /*OV_INSTPTR_sync_dummy pinst = Ov_StaticPtrCast(sync_dummy, pfb);*/
 
   return;
 }
