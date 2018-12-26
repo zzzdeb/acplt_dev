@@ -52,7 +52,8 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
   pobj->v_reset = value;
   if(value) {
     /*check if request expected*/
-    if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN) {
+    if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN &&
+       pobj->v_status != SYNC_SRC_TRANSPORTREQUESTED) {
       ov_logfile_error(
           "sync_dsync: shutdown requested, where no request expected");
       return OV_ERR_BADVALUE;
@@ -95,9 +96,14 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
               return result;
             }
             if(i == KSAPISET) {
-              pMsgClnt->v_actimode = 0;
-              // TODO: zzz: make sure it doesnt work again :2018 Dez 20 11:56
-              pMsgClnt->v_state = KSBASE_CLST_ERROR;
+              // TODO: zzz: make sure it doesnt work again :2018 Dez 20
+              // 11:56
+              OV_INSTPTR_fbcomlib_setVar pfbsetVar = Ov_StaticPtrCast(
+                  fbcomlib_setVar,
+                  Ov_StaticPtrCast(ksapi_setVar, pobj)->v_pouterobject);
+              if(pfbsetVar) {
+                pfbsetVar->v_actimode = 0;
+              }
               ov_logfile_info("%s.actimode = 0", pMsgClnt->v_identifier);
             }
           };
@@ -249,6 +255,16 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       /*   return; */
       /* } else if(pkscrt->v_status & KSAPI_COMMON_REQUESTCOMPLETED) { */
       /* configure setvar & getvar */
+      if(ptrans->v_status &
+         (CTREE_COMMON_EXTERNALERROR | CTREE_COMMON_EXTERNALERROR)) {
+        ov_logfile_error("sync_dsync: transport failed");
+        pinst->v_status = SYNC_SRC_ERROR;
+        ov_memstack_unlock();
+        return;
+      } else if(ptrans->v_status != CTREE_TRANSPORT_DONE) {
+        ov_memstack_unlock();
+        return;
+      }
       result = ptrans->v_result;
       if(Ov_Fail(result)) {
         if(result != OV_ERR_ALREADYEXISTS) {
@@ -316,7 +332,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       return;
       break;
     case SYNC_SRC_TRANSPORTREQUESTED:
-      if(pinst->p_transport.v_status == 3) {
+      if(pinst->p_transport.v_status == CTREE_TRANSPORT_DONE) {
         ov_logfile_info("transport done successfully");
         pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
       } else {
