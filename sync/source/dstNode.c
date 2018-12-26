@@ -22,9 +22,9 @@ OV_DLLFNCEXPORT void sync_dstNode_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   /*
    *   local variables
    */
-  OV_INSTPTR_sync_dstNode pinst = Ov_StaticPtrCast(sync_dstNode, this);
+  /*OV_INSTPTR_sync_dstNode pinst = Ov_StaticPtrCast(sync_dstNode, this);*/
 
-  /* code */
+  PostSys_node_typemethod(this);
 
   return;
 }

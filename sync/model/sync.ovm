@@ -105,9 +105,39 @@ LIBRARY sync
 	IS_INSTANTIABLE;
 		COMMENT	=	"";
 		VARIABLES
+			srcHost	:	STRING 
+							FLAGS="i"
+							COMMENT			=	"Hostname of src"
+							INITIALVALUE	=	"";
+		  srcServer:	STRING 
+		  				FLAGS="i"
+		  				COMMENT			=	"src server name"
+		  				INITIALVALUE	=	"";
+			srcPath	: STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
+			dstHost	:	STRING 
+							FLAGS="i"
+							COMMENT			=	"Hostname of dst"
+							INITIALVALUE	=	"";
+		  dstServer:	STRING 
+		  				FLAGS="i"
+		  				COMMENT			=	"dst server name"
+		  				INITIALVALUE	=	"";
+			dstPath	: STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
+			switch	:	BOOL 
+							HAS_SET_ACCESSOR
+						  FLAGS="i"
+							COMMENT			=	"switches active nodes"
+							INITIALVALUE	=	FALSE;
+			status	:	INT 
+					FLAGS="o"
+					COMMENT			=	"0: INIT, 1: PLAYING, 2: WAITING ANSWERS, 4: DONE"
+					INITIALVALUE	=	0;
 		END_VARIABLES;
+		PARTS
+				bufNode	:	CLASS	sync/bufferer;
+				dstNode	:	CLASS	sync/dstNode;
+		END_PARTS;
 		OPERATIONS
-			constructor			:	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
 			typemethod	:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
 	END_CLASS;

@@ -32,4 +32,11 @@ typedef struct {
 
 #define BUFFERER_INIT 0
 #define BUFFERER_NOBUFFERING 1
+
+#define PLAYER_INIT 0
+#define PLAYER_PLAYING 1
+#define PLAYER_WAITING_RESULTS 2
+#define PLAYER_DONE 4
+#define PLAYER_ERROR 8
+
 #endif
