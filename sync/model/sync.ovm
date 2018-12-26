@@ -70,7 +70,7 @@ LIBRARY sync
 			/* Input *************************************************/
 		END_VARIABLES;
 		OPERATIONS
-
+			
 		END_OPERATIONS;
 	END_CLASS;
 
@@ -143,14 +143,33 @@ LIBRARY sync
 	END_CLASS;
 	
 
-	CLASS	dsyncDst					:	CLASS	fb/functionblock
+	CLASS	dsyncDst					:	CLASS	ksbase/ComTask
 			IS_INSTANTIABLE;
 			COMMENT	=	"dsync on dest site to regulate";
 			VARIABLES
-			srcKS	:	STRING
+			result 		: INT FLAGS="o"
+				COMMENT		=	"result"
+				INITIALVALUE	=	0;
+			srcKS	:	STRING HAS_SET_ACCESSOR
 							FLAGS="i"
 							COMMENT			=	"srcKS"
 							INITIALVALUE	=	"";
+			dstKS	:	STRING HAS_SET_ACCESSOR
+							FLAGS="i"
+							COMMENT			=	"srcKS"
+							INITIALVALUE	=	"";
+			status		:	INT 
+							FLAGS="o" 
+							COMMENT			= "Status: 0: initial;"
+							INITIALVALUE = 0;
+		  syncPath	:	STRING 
+		  				FLAGS="i"
+		  				COMMENT			=	"path of sync"
+		  				INITIALVALUE	=	"";
+		  path	:	STRING 
+		  				FLAGS="i"
+		  				COMMENT			=	"path to copied tree"
+		  				INITIALVALUE	=	"";
 			switch	:	BOOL 
 							HAS_SET_ACCESSOR
 						  FLAGS="i"
@@ -163,7 +182,8 @@ LIBRARY sync
 				player	:	CLASS	sync/player;
 			END_PARTS;
 			OPERATIONS
-					typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+				constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+				typemethod	:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
 			END_OPERATIONS;
 	END_CLASS;
 
