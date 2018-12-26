@@ -29,6 +29,8 @@
 
 #include "sync_helper.h"
 
+#include "ksapi.h"
+
 OV_BOOL startsWith(const char* pre, const char* str) {
   size_t lenpre = strlen(pre), lenstr = strlen(str);
   return lenstr < lenpre ? FALSE : strncmp(pre, str, lenpre) == 0;
@@ -39,6 +41,7 @@ OV_RESULT syncDownloadConfigureSetGet(OV_INSTPTR_sync_syncDownload pinst,
   if(Ov_CanCastTo(ksapi_setVar, pobj) || Ov_CanCastTo(ksapi_getVar, pobj)) {
     OV_INSTPTR_ksapi_KSApiCommon pobjCasted =
         Ov_StaticPtrCast(ksapi_KSApiCommon, pobj);
+
     OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
         ov_containment, pobjCasted, "msgClient", ksmsg_msgClient);
     if(!pMsgClnt) {
