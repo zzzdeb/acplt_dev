@@ -65,7 +65,8 @@ OV_STRING className_from_path(const OV_STRING factory) {
   OV_STRING* neutral = NULL;
   ov_string_setvalue(&resstr, factory);
   neutral = ov_string_split(resstr, "/", &len);
-  if(len < 2) return NULL;
+  if(len < 2)
+    return NULL;
   ov_string_print(&resstr, "%s/%s", neutral[len - 2], neutral[len - 1]);
   ov_string_freelist(neutral);
   return resstr;
@@ -76,9 +77,11 @@ OV_STRING className_from_path(const OV_STRING factory) {
  */
 OV_STRING pathAbsToRel(const OV_STRING pre, const OV_STRING path) {
   OV_STRING resstr = NULL;
-  if(path == NULL) return resstr;
+  if(path == NULL)
+    return resstr;
   ov_string_setvalue(&resstr, path);
-  if(pre == NULL) return resstr;
+  if(pre == NULL)
+    return resstr;
 
   OV_UINT prelen = ov_string_getlength(pre);
   OV_UINT pathlen = ov_string_getlength(path);
@@ -146,9 +149,9 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
 
   /* getting type as string */
   OV_STRING typestr = NULL;
-  result = ov_string_setvalue(&typestr, CTree_helper_ovtypeToStr(vartype));
+  typestr = CTree_helper_ovtypeToStr(vartype);
 
-  if(Ov_OK(result)) {
+  if(typestr) {
     cJSON_AddItemToArray(*pjsvalue, cJSON_CreateString(typestr));
   } else {
     // TODO: Erase it
@@ -169,15 +172,33 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
   //	}
 
   switch(vartype & OV_VT_KSMASK) {
-    case OV_VT_VOID: jsvalue = cJSON_CreateNull(); break;
-    case OV_VT_BYTE: jsvalue = cJSON_CreateNumber(*((OV_UINT*)var)); break;
+    case OV_VT_VOID:
+      jsvalue = cJSON_CreateNull();
+      break;
+    case OV_VT_BYTE:
+      jsvalue = cJSON_CreateNumber(*((OV_UINT*)var));
+      break;
 
-    case OV_VT_BOOL: jsvalue = cJSON_CreateBool(*((OV_BOOL*)var)); break;
-    case OV_VT_INT: jsvalue = cJSON_CreateNumber(*((OV_INT*)var)); break;
-    case OV_VT_UINT: jsvalue = cJSON_CreateNumber(*((OV_UINT*)var)); break;
-    case OV_VT_SINGLE: jsvalue = cJSON_CreateNumber(*((OV_SINGLE*)var)); break;
-    case OV_VT_DOUBLE: jsvalue = cJSON_CreateNumber(*((OV_DOUBLE*)var)); break;
+    case OV_VT_BOOL:
+      jsvalue = cJSON_CreateBool(*((OV_BOOL*)var));
+      break;
+    case OV_VT_INT:
+      jsvalue = cJSON_CreateNumber(*((OV_INT*)var));
+      break;
+    case OV_VT_UINT:
+      jsvalue = cJSON_CreateNumber(*((OV_UINT*)var));
+      break;
+    case OV_VT_SINGLE:
+      jsvalue = cJSON_CreateNumber(*((OV_SINGLE*)var));
+      break;
+    case OV_VT_DOUBLE:
+      jsvalue = cJSON_CreateNumber(*((OV_DOUBLE*)var));
+      break;
     case OV_VT_STRING:
+      if(var == NULL) {
+        jsvalue = cJSON_CreateNull();
+        break;
+      }
       if(*((OV_STRING*)var) == NULL) {
         jsvalue = cJSON_CreateNull();
         break;
@@ -201,8 +222,12 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
       cJSON_AddItemToArray(jsvalue,
                            cJSON_CreateNumber(((OV_TIME_SPAN*)var)->usecs));
       break;
-    case OV_VT_STATE: jsvalue = cJSON_CreateString(NOTSUPPORTEDTYPE); break;
-    case OV_VT_STRUCT: jsvalue = cJSON_CreateString(NOTSUPPORTEDTYPE); break;
+    case OV_VT_STATE:
+      jsvalue = cJSON_CreateString(NOTSUPPORTEDTYPE);
+      break;
+    case OV_VT_STRUCT:
+      jsvalue = cJSON_CreateString(NOTSUPPORTEDTYPE);
+      break;
 
     case OV_VT_CTYPE:
 
@@ -215,7 +240,9 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
       jsvalue = cJSON_CreateString(NOTSUPPORTEDTYPE);
       break;
 
-    case OV_VT_POINTER: jsvalue = cJSON_CreateNumber(*((OV_UINT*)var)); break;
+    case OV_VT_POINTER:
+      jsvalue = cJSON_CreateNumber(*((OV_UINT*)var));
+      break;
 
     case OV_VT_BYTE_VEC:
       jsvalue = cJSON_CreateArray();
@@ -325,7 +352,9 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
     case OV_VT_DOUBLE_PV_VEC:
     case OV_VT_STRING_PV_VEC:
     case OV_VT_TIME_PV_VEC:
-    case OV_VT_TIME_SPAN_PV_VEC: result = OV_ERR_NOTIMPLEMENTED; return result;
+    case OV_VT_TIME_SPAN_PV_VEC:
+      result = OV_ERR_NOTIMPLEMENTED;
+      return result;
     case OV_VT_ANY:
       jsvalue = cJSON_CreateArray();
       cJSON_AddItemToArray(jsvalue, cJSON_CreateArray());
@@ -333,7 +362,8 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
 
       result = valueToJSON(&jsvalue->child, ((OV_ANY*)var)->value.vartype,
                            &(((OV_ANY*)var)->value.valueunion.val_byte), 0);
-      if(result) return result;
+      if(result)
+        return result;
       /* state */
       cJSON_AddItemToArray(jsvalue, cJSON_CreateNumber(((OV_ANY*)var)->state));
       /* time */
@@ -342,7 +372,8 @@ OV_DLLFNCEXPORT OV_RESULT valueToJSON(cJSON**           pjsvalue,
       cJSON_AddItemToArray(jstmp, cJSON_CreateNumber(((OV_TIME*)var)->usecs));
       cJSON_AddItemToArray(jsvalue, jstmp);
       break;
-    default: return OV_ERR_BADPARAM;
+    default:
+      return OV_ERR_BADPARAM;
   }
   cJSON_AddItemToArray(*pjsvalue, jsvalue);
   return result;
@@ -396,6 +427,12 @@ OV_RESULT getVars(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
     }
 
     /* adding variable to json tree */
+    if(!child.pvalue) {
+      ov_logfile_warning("CTree_Upload: %s.%s=NULL, probably IS_DERIVED",
+                         child.pobj->v_identifier,
+                         child.elemunion.pvar->v_identifier);
+      continue;
+    }
     jschild =
         cJSON_AddArrayToObject(jsvars, child.elemunion.pvar->v_identifier);
     valueToJSON(&jschild, child.elemunion.pvar->v_vartype, child.pvalue,
@@ -575,11 +612,16 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
         if(!cJSON_GetArraySize(jslinksarray))
           cJSON_DeleteItemFromObject(jslinks, one_result->identifier);
         break;
-      case KS_OT_VARIABLE: break;
-      case OV_OT_HISTORY: break;
-      case OV_OT_STRUCTURE: break;
-      case OV_OT_ANY: break;
-      default: break;
+      case KS_OT_VARIABLE:
+        break;
+      case OV_OT_HISTORY:
+        break;
+      case OV_OT_STRUCTURE:
+        break;
+      case OV_OT_ANY:
+        break;
+      default:
+        break;
     }
 
     if(Ov_Fail(res)) {
@@ -602,7 +644,8 @@ OV_RESULT get_ep(OV_INSTPTR_CTree_Upload pinst, cJSON* jsobj,
   /*
    deleting empty links
    */
-  if(!cJSON_GetArraySize(jslinks)) cJSON_DeleteItemFromObject(jsobj, LINKSNAME);
+  if(!cJSON_GetArraySize(jslinks))
+    cJSON_DeleteItemFromObject(jsobj, LINKSNAME);
   ov_string_setvalue(&var_path, NULL);
   return res;
 }
@@ -716,7 +759,8 @@ OV_RESULT crawl_tree(OV_INSTPTR_CTree_Upload    pinst,
    */
   if(!cJSON_GetArraySize(jschildren))
     cJSON_DeleteItemFromObject(jsobj, CHILDRENNAME);
-  if(!cJSON_GetArraySize(jsparts)) cJSON_DeleteItemFromObject(jsobj, PARTSNAME);
+  if(!cJSON_GetArraySize(jsparts))
+    cJSON_DeleteItemFromObject(jsobj, PARTSNAME);
 
   return res;
 }
@@ -810,9 +854,14 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_RESULT res = CTree_Upload_execute(pinst);
   pinst->v_result = res;
   switch(res) {
-    case OV_ERR_OK: ov_logfile_info("Upload done."); break;
-    case OV_ERR_BADPARAM: ov_logfile_error("Upload failed BadParam."); break;
-    default: ov_logfile_error("Upload failed.");
+    case OV_ERR_OK:
+      ov_logfile_info("Upload done.");
+      break;
+    case OV_ERR_BADPARAM:
+      ov_logfile_error("Upload failed BadParam.");
+      break;
+    default:
+      ov_logfile_error("Upload failed.");
   }
   cJSON_Delete(pinst->v_cache.jsbase);
   return;

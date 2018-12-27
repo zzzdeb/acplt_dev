@@ -454,6 +454,13 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
         /*     &type, cJSON_GetArrayItem(jstrueval,
          * VARTYPE_POS)->valuestring); */
 
+        // TODO: zzz: check if it is only for strings :2018 Dez 27 13:40
+        if(!pelement->pvalue) {
+          ov_logfile_warning("CTree_Download: %s has Null value: Probably IS_DERIVED",
+                             pelement->pobj->v_identifier);
+          return OV_ERR_OK;
+        }
+
         result = jsonToVarvalue(&((OV_ANY*)pelement->pvalue)->value, jsvalue);
         return result;
       }
@@ -717,9 +724,10 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
                             passoc->v_identifier);
           else {
             if(res == OV_ERR_ALREADYEXISTS) {
-              ov_logfile_warning("%s is already linked with %s through %s",
-                                 pparent->v_identifier, pchild->v_identifier,
-                                 passoc->v_identifier);
+              /* ov_logfile_warning("%s is already linked with %s through %s",
+               */
+              /* pparent->v_identifier, pchild->v_identifier, */
+              /* passoc->v_identifier); */
               res = OV_ERR_OK;
             } else {
               Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
