@@ -456,8 +456,9 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
 
         // TODO: zzz: check if it is only for strings :2018 Dez 27 13:40
         if(!pelement->pvalue) {
-          ov_logfile_warning("CTree_Download: %s has Null value: Probably IS_DERIVED",
-                             pelement->pobj->v_identifier);
+          ov_logfile_warning(
+              "CTree_Download: %s has Null value: Probably IS_DERIVED",
+              pelement->pobj->v_identifier);
           return OV_ERR_OK;
         }
 
@@ -772,7 +773,7 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
 
   OV_INSTPTR_ov_class  pclass = NULL;
   OV_INSTPTR_ov_object pobj = NULL;
-  OV_BOOL              created = 0;
+  /* OV_BOOL              created = 0; */
   //	OV_INSTPTR_ov_class pclassobj = NULL;
   OV_STRING identifier = NULL;
 
@@ -868,7 +869,7 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
           //			Download_log_exit(pinst, OV_MT_INFO,
           // res, "created %s/%s", parentpath, identifier);
           ov_logfile_info("created %s/%s", parentpath, identifier);
-          created = 1;
+          /* created = 1; */
         }
         break;
       case CTREE_PARTS:
