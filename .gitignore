@@ -23,11 +23,12 @@
 !/PostSys
 !/PostSysTest
 !/ksmsg
+!/lbalance
+!/lbalanceTest
 
 !/ovhelper
 /*/source/sourcetemplates
 /*/build
-!/**/Makefile
 /*/draft
 /*/.svn
 /*/Debug (Windows)
