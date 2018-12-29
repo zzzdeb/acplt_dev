@@ -1,0 +1,308 @@
+
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+snippet - "->" i
+->
+endsnippet
+
+snippet incov "include libov/ov_"
+#include "libov/ov_${1:ov}.h"
+endsnippet
+
+snippet osc "Ov_StaticPtrCast" w
+Ov_StaticPtrCast(${2:ov_object}, ${1:${VISUAL:pobj}})
+endsnippet
+
+context "re.match('^\s+\w+_typemethod\(', snip.buffer[snip.line])"
+snippet osc "Ov_StaticPtrCast" we
+Ov_StaticPtrCast(${2:fb_functionblock}, ${1:${VISUAL:pobj}})
+endsnippet
+
+# context "re.match('^\s+[^=]*\w*_\w*_\w*(\s*', snip.buffer[snip.line])"
+# snippet osp "" be
+# Ov_StaticPtrCast(${2:lib_class}, ${1:${VISUAL:pobjjj}})
+# endsnippet
+
+snippet ofor "for loop (for)"
+for (OV_UINT ${2:i} = 0; $2 < ${1:i}; ${3:++$2}) {
+	${VISUAL}$0
+}
+
+endsnippet
+
+snippet if "if(Ov_Fail(result))" "re.match('^\s+[^=]*result\s*=', snip.buffer[snip.line-1])" be
+if(Ov_Fail(result)){
+  ov_logfile_error("%u: %s: $1", result, ov_result_getresulttext(result));
+  return result;
+}
+endsnippet
+
+
+snippet oifres "if(Ov_Fail(res))"
+if(Ov_Fail(result)){
+  ov_logfile_error("%u: %s: $1", result, ov_result_getresulttext(result));
+  return result;
+}
+endsnippet
+
+snippet oif "if(Ov_Fail(res))"
+if($1){
+  pinst->v_status = $2;
+  ov_logfile_error("`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`: $3");
+  return${4: result};
+}
+endsnippet
+
+snippet todo "ov todo"
+//TODO: `echo $USER:` ${1:desc} :`!v strftime("%Y %b %d %H:%M ")`
+endsnippet
+
+snippet opd "ov ptr" b
+OV_INSTPTR_${1:ov_object} ${2:pobj} = ${3:NULL};
+
+endsnippet
+
+snippet op "ov ptr"
+OV_INSTPTR_${1:ov_object}
+endsnippet
+
+
+snippet oresd "ov result"
+OV_RESULT result=OV_ERR_OK;
+return result;
+endsnippet
+
+snippet ofunc "ov function"
+${1:OV_RESULT} $2(){
+	OV_RESULT result = OV_ERR_OK;
+	$3
+	return result;
+}
+
+endsnippet
+
+snippet ologi "ov_info"
+ov_logfile_info("${3:`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`}: ${1:%s}"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet ologe "ov error"
+ov_logfile_error("${3:`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`}: ${1:%s}"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet ologw "ov warn"
+ov_logfile_warning("${3:`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`}: ${1:%s}"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet ologd "ov error"
+ov_logfile_debug("${3:`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`}: ${1:%s}"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet ostrd "ov "
+OV_STRING ${1:tmpStr} = ${2:NULL};
+endsnippet
+
+snippet ouintd "ov result"
+OV_UINT ${1:len} = ${2:0};
+
+endsnippet
+
+snippet ointd "ov result"
+OV_INT ${1:i} = ${2:0};
+endsnippet
+
+#ov_path_
+snippet opathpa "get path"
+ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, ${3:pinst}), 2)
+endsnippet
+
+snippet opathpo "get path"
+${1:Ov_StaticPtrCast(${2:, }}ov_path_getobjectpointer(${3:path}, 2)${1/(\w+)(.*)/(?1:\):)(?2::)/}
+endsnippet
+
+#ov_string_
+snippet ostrs "ov_string_setvalue"
+ov_string_setvalue(${2:&}${1:${VISUAL:var}}, ${3:src})${4:;}
+endsnippet
+
+snippet ostra "ov_string_append"
+ov_string_append(${1:&}${2:dest}, ${3:src})${4:;}
+endsnippet
+
+snippet ostrsp "split"
+OV_UINT ${4:slen} = 0;
+OV_STRING* ${1:splited} = ov_string_split(${2:${VISUAL}}, ${3:sep}, &$4);
+ov_string_freelist($1);
+endsnippet
+  
+
+
+snippet ostrp "ov_string_print"
+ov_string_print(${1:&}${2:${VISUAL:var}}, "${3:%s}"${3/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$4${3/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet ostrc "ov_string_compare" w
+ov_string_compare(${1:${VISUAL}}, $2)==OV_STRCMP_EQUAL
+endsnippet
+
+snippet s "str"
+"${VISUAL}${0:${VISUAL/(.*)/(?1::str)/}}"
+endsnippet
+
+
+# ovunity
+snippet ovtestcase "TEST()"
+TEST(${1:`!v substitute(expand("%:t"), 'Test.c', '', 'b')`}, $1_${2:test_name} {
+  OV_RESULT                 result = OV_ERR_OK;
+  OV_INSTPTR_$3_$1 pobj = NULL;
+  OV_STRING                 case_name = "case_$2";
+  OV_STRING                 case_path = ovunity_getCasePath(gpinst, case_name);
+
+  /* create case */
+  OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
+  if(!pcase) Throw(OV_ERR_GENERIC);
+
+  ovunity_ovCase_build1(pcase);
+  pobj = Ov_StaticPtrCast($3_$1,ovunity_ovCase_getObjPath(pcase));
+
+  ${3:`!v substitute(expand("%:p:h:h:t"), 'Test', '', 'b')`}_$1_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj), gpltc);
+}
+
+RUN_TEST_CASE($1, $1_$2);
+
+endsnippet
+
+snippet ofsetvar "ofsetvar"
+OV_DLLFNCEXPORT OV_RESULT ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_${3:var}_set(OV_INSTPTR_$1_$2 pinst,
+                                               const OV_${4:ANY}${4/(ANY)|(.*)/(?1:*)(?2:)/}         value) {
+
+   ${4/(ANY)|(BOOL)|(.*)/(?2:)(?1:return ov_variable_setanyvalue\(&:)(?3:)/}pinst->v_$3${4/(ANY)|(BOOL)|(.*)|(_VEC)/(?3:)(?1:, value\);:)(?2: = value;)/}
+	 return 0;
+}
+endsnippet
+
+snippet ofgetvar "ofgetvar"
+OV_DLLFNCEXPORT OV_${3:TYPE}${3/(ANY)|(.*)/(?1:*)(?2:)/} ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_${4:var}_get(OV_INSTPTR_$1_$2 pinst) {
+  return ${3/(ANY)(.*)/(?1:&)(?2:)/}pinst->v_$4;
+}
+endsnippet
+
+snippet otempsrcfile "template of source file"
+/******************************************************************************
+ *
+ *   FILE
+ *   ----
+ *   `!v expand("%:t")`
+ *
+ *   History
+ *   -------
+ *   `!v strftime("%c")`   File created
+ *
+ ******************************************************************************/
+
+#ifndef OV_COMPILE_LIBRARY_${1:`!v expand("%:p:h:h:t")`}
+#define OV_COMPILE_LIBRARY_$1
+#endif
+
+#include "$1.h"
+
+#include "libov/ov_macros.h"
+
+
+
+endsnippet
+
+snippet otempAssocSrcfile "template of association source file"
+/******************************************************************************
+ *
+ *   FILE
+ *   ----
+ *   `!v expand("%:t")`
+ *
+ *   History
+ *   -------
+ *   `!v strftime("%Y-%b-%d")` File created
+ *
+ ******************************************************************************/
+
+#ifndef OV_COMPILE_LIBRARY_${1:`!v expand("%:p:h:h:t")`}
+#define OV_COMPILE_LIBRARY_$1
+#endif
+
+#include "$1.h"
+
+#include "libov/ov_association.h"
+#include "libov/ov_macros.h"
+
+
+OV_IMPL_LINK($1_${2:`!v expand("%:t:r")`})
+OV_IMPL_UNLINK($1_$2)
+OV_IMPL_GETACCESS($1_$2)
+
+endsnippet
+
+snippet offbtm "fb/typemethod template"
+OV_DLLFNCEXPORT void ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_typemethod(OV_INSTPTR_fb_functionblock pfb,
+                                           OV_TIME*                    pltc) {
+  /*
+   *   local variables
+   */
+  OV_INSTPTR_$1_$2 pinst = Ov_StaticPtrCast($1_$2, pfb);
+
+  $0
+
+  return;
+}
+
+endsnippet
+
+snippet ofkstm "ks/typemethod template"
+OV_DLLFNCEXPORT void ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_typemethod(OV_INSTPTR_ksbase_ComTask this){
+  /*
+   *   local variables
+   */
+  OV_INSTPTR_$1_$2 pinst = Ov_StaticPtrCast($1_$2, this);
+
+	${3:/* code */}
+
+
+  return;
+}
+
+endsnippet
+
+snippet olock "ov_memstack_lock" b
+ov_memstack_lock();
+${1:${VISUAL}}
+ov_memstack_unlock();
+endsnippet
+
+
+snippet ofconst "ov/constructor"
+OV_DLLFNCEXPORT OV_RESULT
+                ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_constructor(OV_INSTPTR_ov_object pobj) {
+		OV_RESULT result = OV_ERR_OK;
+		OV_INSTPTR_$1_$2 pinst = Ov_StaticPtrCast($1_$2, pobj);
+
+  result =  ov_object_constructor(pobj);
+
+	${3:your code}
+
+  return result;
+}
+endsnippet
+
+snippet ofdest"ov/destructor"
+OV_DLLFNCEXPORT void
+                ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_destructor(OV_INSTPTR_ov_object pobj) {
+		OV_RESULT result = OV_ERR_OK;
+		OV_INSTPTR_$1_$2 pinst = Ov_StaticPtrCast($1_$2, pobj);
+
+  result =  ov_object_destructor(pobj);
+
+	${3:your code}
+
+  return;
+}
+endsnippet
+
