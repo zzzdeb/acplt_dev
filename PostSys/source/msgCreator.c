@@ -27,6 +27,55 @@
 
 #include "PostSys_helper.h"
 #include "acplt_simpleMsgHandling.h"
+#include "ksbase_helper.h"
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_dst_set(
+    OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS) {
+  return PostSys_msgCreator_pathElem_set(
+      pinst, dstKS, PostSys_msgCreator_pathLen_get(pinst) - 1);
+}
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathElem_set(
+    OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS, OV_UINT index) {
+  OV_RESULT result = OV_ERR_OK;
+  OV_ANY    srvnameprops;
+  OV_STRING dstHost = NULL;
+  OV_STRING dstServer = NULL;
+  OV_STRING dstInst = NULL;
+  OV_STRING dstHostPort = NULL;
+  OV_STRING dstServerPort = NULL;
+
+  if(PostSys_msgCreator_pathLen_get(pinst) <= index) {
+    return OV_ERR_BADPARAM;
+  }
+
+  ov_memstack_lock();
+  result = ks_splitOneStringPath(dstKS, &dstHost, &dstHostPort, &dstServer,
+                                 &dstServerPort, &dstInst);
+  if(Ov_Fail(result)) {
+    ov_logfile_error("%u: %s:", result, ov_result_getresulttext(result));
+    ov_memstack_unlock();
+    return result;
+  }
+  if(!dstHost) {
+    result |= ov_string_setvalue(&dstHost, "localhost");
+    result |= ov_vendortree_getservername(&srvnameprops, NULL);
+    result |= ov_string_setvalue(&dstServer,
+                                 srvnameprops.value.valueunion.val_string);
+    if(Ov_Fail(result)) {
+      ov_logfile_error("PostSys_msgCreator: %u: %s: ", result,
+                       ov_result_getresulttext(result));
+      ov_memstack_unlock();
+      return result;
+    }
+  }
+  result |= ov_string_setvalue(&pinst->v_receiverHost.value[index], dstHost);
+  result |= ov_string_setvalue(&pinst->v_receiverName.value[index], dstServer);
+  result |=
+      ov_string_setvalue(&pinst->v_receiverInstance.value[index], dstInst);
+  ov_memstack_unlock();
+  return result;
+}
 
 OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,
                                   OV_STRING* Host, OV_STRING* Name,
@@ -55,6 +104,11 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
   return OV_ERR_OK;
 }
 
+OV_DLLFNCEXPORT OV_UINT
+                PostSys_msgCreator_pathLen_get(OV_INSTPTR_PostSys_msgCreator pinst) {
+  return pinst->v_pathLen;
+}
+
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
     OV_INSTPTR_PostSys_msgCreator pobj, const OV_STRING value) {
   OV_RESULT                  result;
@@ -79,15 +133,19 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
   tempAny.value.vartype = OV_VT_VOID;
   tempAny.value.valueunion.val_double = 0.0;
 
-  if(!value || !*value) return OV_ERR_OK;
+  if(!value || !*value)
+    return OV_ERR_OK;
 
-  if(pobj->v_msgsInQueue >= pobj->v_queueLength) return OV_ERR_NOACCESS;
+  if(pobj->v_msgsInQueue >= pobj->v_queueLength)
+    return OV_ERR_NOACCESS;
 
   for(i = 0; value[i] != '\0'; i++) {
-    if(value[i] == ';') tempctr++;
+    if(value[i] == ';')
+      tempctr++;
   }
   if(tempctr != 2)
-    return OV_ERR_BADVALUE; /*	an order has exactly 2 ";" in it	*/
+    return OV_ERR_BADVALUE; /*	an order has exactly 2 ";" in it
+                             */
 
   // todo check lenght r same, and check if it is greater than 2
   pathLen = pobj->v_receiverHost.veclen;
@@ -95,7 +153,8 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
                          &pobj->v_receiverInstance};
   for(OV_UINT i = 0; i < 3; i++) {
     for(OV_UINT j = 0; j < pathLen; j++) {
-      if(!a[i]->value[j]) return OV_ERR_BADVALUE;
+      if(!a[i]->value[j])
+        return OV_ERR_BADVALUE;
     }
   }
 
@@ -251,7 +310,8 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) { break; }
 
   if(pMsg) {
-    if(pMsg->v_msgStatus == MSGNEW) pMsg->v_msgStatus = MSGREADYFORSENDING;
+    if(pMsg->v_msgStatus == MSGNEW)
+      pMsg->v_msgStatus = MSGREADYFORSENDING;
 
     if(pMsg->v_msgStatus == MSGREADYFORSENDING) {
       pMsgDelivery = Ov_StaticPtrCast(
