@@ -1,0 +1,171 @@
+{
+  "Libraries": ["ov", "fbcomlib", "ksapi", "iec61131stdfb"],
+  "Path": "/TechUnits/env",
+  "Tree": {
+    "env": {
+      "children": {
+        "dst": {
+          "class": "ov/domain"
+        },
+        "server": {
+          "children": {
+            "fbGetvarClient": {
+              "class": "sync/dummy",
+              "variables": {
+                "IN1": ["ANY", [
+                  ["SINGLE", 0], 0, [32, 0]
+                ]]
+              }
+            },
+            "fbSetvarClient": {
+              "class": "sync/dummy",
+              "variables": {
+                "IN1": ["ANY", [
+                  ["SINGLE", 0], 0, [32, 0]
+                ]]
+              }
+            },
+            "ksapiGetvarClient": {
+              "class": "sync/dummy",
+              "variables": {
+                "IN1": ["ANY", [
+                  ["SINGLE", 0], 0, [32, 0]
+                ]]
+              }
+            },
+            "ksapiSetvarClient": {
+              "class": "sync/dummy",
+              "variables": {
+                "IN1": ["ANY", [
+                  ["SINGLE", 0], 0, [32, 0]
+                ]]
+              }
+            }
+          },
+          "class": "ov/domain"
+        },
+        "src": {
+          "children": {
+            "GSE1": {
+              "children": {
+                "fbGetvar": {
+                  "class": "fbcomlib/getVar",
+                  "links": {
+                    "taskparent": {
+                      "children": ["this"],
+                      "of_association": "fb/tasklist",
+                      "parents": ["/Tasks/UrTask"]
+                    }
+                  },
+                  "parts": {
+                    "apiGet": {
+                      "class": "ksapi/getVar"
+                    }
+                  },
+                  "variables": {
+                    "ErrState": ["INT", 0],
+                    "actimode": ["INT", 1],
+                    "calctime": ["TIME_SPAN", [0, 0]],
+                    "cyctime": ["TIME_SPAN", [0, 0]],
+                    "doCyclic": ["BOOL", true],
+                    "doReset": ["BOOL", false],
+                    "doSend": ["BOOL", false],
+                    "eexreq": ["BOOL", false],
+                    "errorCode": ["UINT", 0],
+                    "host": ["STRING", "127.0.0.1"],
+                    "iexreq": ["BOOL", true],
+                    "maxcalctime": ["TIME_SPAN", [0, 0]],
+                    "methcount": ["UINT", 0],
+                    "opResult": ["UINT", 0],
+                    "path": [
+                      "STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbGetvarClient.IN1"
+                    ],
+                    "proctime": ["TIME", [1542627295, 655545]],
+                    "receivedVar": ["ANY", [
+                      ["VOID", null], 0, [0, 0]
+                    ]],
+                    "requestSendTime": ["TIME", [0, 0]],
+                    "retryAfter": ["UINT", 300],
+                    "sendRequested": ["BOOL", true],
+                    "server": ["STRING", "MANAGER"],
+                    "state": ["INT", 0],
+                    "stateString": ["STRING", null],
+                    "timeout": ["UINT", 10],
+                    "varResult": ["UINT", 0]
+                  }
+                },
+                "fbSetvar": {
+                  "class": "fbcomlib/setVar",
+                  "links": {
+                    "taskparent": {
+                      "children": ["this"],
+                      "of_association": "fb/tasklist",
+                      "parents": ["/Tasks/UrTask"]
+                    }
+                  },
+                  "variables": {
+                    "actimode": ["INT", 1],
+                    "doCyclic": ["BOOL", true],
+                    "doReset": ["BOOL", false],
+                    "host": ["STRING", "127.0.0.1"],
+                    "iexreq": ["BOOL", true],
+                    "path": [
+                      "STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbSetvarClient.IN1"
+                    ],
+                    "sendRequested": ["BOOL", true],
+                    "sendVar": ["INT", 1],
+                    "server": ["STRING", "MANAGER"]
+                  }
+                },
+                "ksapiGetvar": {
+                  "class": "ksapi/getVar",
+                  "variables": {
+                    "Reset": ["BOOL", false],
+                    "Submit": ["BOOL", false],
+                    "holdConnection": ["BOOL", false],
+                    "path": [
+                      "STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/ksapiGetvarClient.IN1"
+                    ],
+                    "result": ["UINT", 0],
+                    "serverHost": ["STRING", "127.0.0.1"],
+                    "serverName": ["STRING", "MANAGER"],
+                    "status": ["INT", 0],
+                    "varRes": ["UINT", 0],
+                    "varValue": ["ANY", [
+                      ["VOID", null], 1559061717, [0, 0]
+                    ]]
+                  }
+                },
+                "ksapiSetvar": {
+                  "class": "ksapi/setVar",
+                  "variables": {
+                    "Reset": ["BOOL", false],
+                    "Submit": ["BOOL", false],
+                    "holdConnection": ["BOOL", false],
+                    "path": [
+                      "STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/ksapiSetvarClient.IN1"
+                    ],
+                    "result": ["UINT", 0],
+                    "serverHost": ["STRING", "127.0.0.1"],
+                    "serverName": ["STRING", "MANAGER"],
+                    "status": ["INT", 0],
+                    "varRes": ["UINT", 0],
+                    "varValue": ["ANY", [
+                      ["VOID", null], 1559061717, [0, 0]
+                    ]]
+                  }
+                }
+              },
+              "class": "ov/domain"
+            },
+            "BRAD": {
+              "class": "lbalance/BRAD"
+            }
+          },
+          "class": "ov/domain"
+        }
+      },
+      "class": "ov/domain"
+    }
+  }
+}
