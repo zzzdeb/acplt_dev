@@ -32,7 +32,8 @@
 
 void exitInfo(void) {
   ov_logfile_info("exitInfo");
-  if(errno) perror("terminating␣with␣error␣condition");
+  if(errno)
+    perror("terminating␣with␣error␣condition");
   fputs("Good␣Bye\n", stderr);
 }
 OV_RESULT updateAddonlibs();
@@ -47,7 +48,8 @@ OV_DLLFNCEXPORT OV_RESULT
 
   /* do what the base class does first */
   result = ov_object_constructor(pobj);
-  if(Ov_Fail(result)) return result;
+  if(Ov_Fail(result))
+    return result;
 
   atexit(exitInfo);
 
@@ -177,7 +179,8 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
     if(daddonlibs) {
       while((dir = readdir(daddonlibs)) != NULL) {
         //			ov_logfile_info(dir->d_name);
-        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..")) continue;
+        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+          continue;
         strvec.veclen++;
       }
       closedir(daddonlibs);
@@ -198,14 +201,16 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
     if(daddonlibs) {
       OV_STRING tmpFilename = NULL;
       while((dir = readdir(daddonlibs)) != NULL) {
-        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..")) continue;
+        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+          continue;
         //					dir = readdir(daddonlibs);
         //			ov_logfile_info(dir->d_name);
         strvec.value[i] = NULL;
         OV_UINT extLen = 0;
         extLen = strlen(LIBEXTENSION);
         OV_RESULT tmpres = strget(&strvec.value[i], dir->d_name, 0, -extLen);
-        if(tmpres) ov_logfile_error("cant open librarie %s", dir->d_name);
+        if(tmpres)
+          ov_logfile_error("cant open librarie %s", dir->d_name);
         i++;
       }
       ov_string_setvalue(&tmpFilename, NULL);

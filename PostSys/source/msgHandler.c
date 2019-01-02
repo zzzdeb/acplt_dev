@@ -27,9 +27,11 @@
 #include <strings.h>
 
 OV_BOOL ov_strvector_containsnull(const OV_STRING_VEC* vec) {
-  if(!vec) return 0;
+  if(!vec)
+    return 0;
   for(OV_UINT i = 0; i < vec->veclen; ++i) {
-    if(!vec->value[i]) return 1;
+    if(!vec->value[i])
+      return 1;
   }
   return 0;
 }
