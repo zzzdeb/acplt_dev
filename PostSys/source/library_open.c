@@ -21,7 +21,7 @@
 #endif
 
 #include "PostSys.h"
-#include "PostSys_helpers.h"
+#include "PostSys_helper.h"
 #include "libov/ov_library.h"
 #include "libov/ov_logfile.h"
 #include "libov/ov_macros.h"
@@ -68,13 +68,15 @@ OV_RESULT ov_library_setglobalvars_PostSys_new(void) {
       ov_memstack_unlock();
       return result;
     }
-    if(Ov_OK(result)) PostSysDelivery->v_cycInterval = 1;
+    if(Ov_OK(result))
+      PostSysDelivery->v_cycInterval = 1;
   }
   /*	create protocol identificator for msgs	*/
   pIdentificator = Ov_StaticPtrCast(
       PostSys_msgIdentificator,
       Ov_SearchChild(ov_containment, PostSysDelivery, "Identificator"));
-  if(pIdentificator) Ov_DeleteObject(pIdentificator);
+  if(pIdentificator)
+    Ov_DeleteObject(pIdentificator);
   pIdentificator = NULL;
 
   result = Ov_CreateObject(PostSys_msgIdentificator, pIdentificator,

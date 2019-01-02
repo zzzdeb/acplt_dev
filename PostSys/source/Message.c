@@ -6,7 +6,7 @@
 
 //#include "ServiceProviderConfig.h"
 
-#include "PostSys_helpers.h"
+#include "PostSys_helper.h"
 #include "libov/ov_element.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_ov.h"
@@ -148,6 +148,11 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_Message_pathLen_set(
   pobj->v_pathLen = value;
   Ov_HeapFree(tmp);
   return result;
+}
+
+OV_DLLFNCEXPORT OV_UINT
+                PostSys_Message_pathLen_get(OV_INSTPTR_PostSys_Message pinst) {
+  return pinst->v_pathLen;
 }
 
 OV_DLLFNCEXPORT OV_RESULT

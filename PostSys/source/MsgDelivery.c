@@ -3,7 +3,7 @@
 #endif
 
 #include "PostSys.h"
-#include "PostSys_helpers.h"
+#include "PostSys_helper.h"
 #include "acplt_simpleMsgHandling.h"
 #include "ks_logfile.h"
 #include "ksapi.h"
@@ -26,8 +26,10 @@ static OV_RESULT PostSys_initiateConnection(OV_INSTPTR_ksbase_Channel pChannel,
   OV_VTBLPTR_ksbase_Channel pVtblChannel = NULL;
   if((pChannel->v_ConnectionState != KSBASE_CONNSTATE_OPEN) &&
      (pChannel->v_ConnectionState != KSBASE_CONNSTATE_OPENING)) {
-    if(!port) return OV_ERR_BADPARAM;
-    if(!host) return OV_ERR_BADPARAM;
+    if(!port)
+      return OV_ERR_BADPARAM;
+    if(!host)
+      return OV_ERR_BADPARAM;
 
     Ov_GetVTablePtr(ksbase_Channel, pVtblChannel, pChannel);
     result = pVtblChannel->m_OpenConnection(pChannel, host, port);
@@ -54,7 +56,8 @@ static OV_RESULT PostSys_trySend(OV_INSTPTR_PostSys_Message pMsg,
        pChannel->v_outData.length) /*	everything sent	*/
     {
       pMsg->v_msgStatus = MSGDONE;
-      if(pChannel->v_CloseAfterSend == TRUE) Ov_DeleteObject(pChannel);
+      if(pChannel->v_CloseAfterSend == TRUE)
+        Ov_DeleteObject(pChannel);
     }
   }
   return OV_ERR_OK;
@@ -128,7 +131,8 @@ OV_DLLFNCEXPORT OV_RESULT
 
   /* do what the base class does first */
   result = ksbase_ComTask_constructor(pobj);
-  if(Ov_Fail(result)) return result;
+  if(Ov_Fail(result))
+    return result;
 
   this->v_actimode = TRUE;
   this->v_cycInterval = 1;
@@ -150,7 +154,7 @@ OV_DLLFNCEXPORT OV_RESULT
 OV_BOOL PostSys_isValidMsg(const OV_INSTPTR_PostSys_Message msg) {
   OV_UINT pathLen = msg->v_pathAddress.veclen;
   if(pathLen < 2) {
-		ov_logfile_error("pahtlen of %s %d", msg->v_identifier, pathLen);
+    ov_logfile_error("pahtlen of %s %d", msg->v_identifier, pathLen);
     return 0;
   }
 
@@ -204,7 +208,8 @@ PostSys_MsgDelivery_typemethod(OV_INSTPTR_ksbase_ComTask pfb) {
              !pChannel->v_ConnectionState) {
             /*	everything is sent or Channel disappeared or connection is
              * closed	*/
-            if(!pChannel->v_ConnectionState) Ov_DeleteObject(pChannel);
+            if(!pChannel->v_ConnectionState)
+              Ov_DeleteObject(pChannel);
             Ov_DeleteObject(msg);
           } else if(pChannel->v_ConnectionState >
                     128) { /*	connection error	*/
@@ -795,8 +800,10 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(
   }
 
   /*	fill in return information	*/
-  if(createdMsg) *createdMsg = message;
-  if(msgCreatedIn) *msgCreatedIn = inboxdomain;
+  if(createdMsg)
+    *createdMsg = message;
+  if(msgCreatedIn)
+    *msgCreatedIn = inboxdomain;
 
   // Collecting Garbage
   ov_memstack_unlock();

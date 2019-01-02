@@ -25,7 +25,7 @@
 #include "libov/ov_result.h"
 #include "libov/ov_vendortree.h"
 
-#include "PostSys_helpers.h"
+#include "PostSys_helper.h"
 #include "acplt_simpleMsgHandling.h"
 
 OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,

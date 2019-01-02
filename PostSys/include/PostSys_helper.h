@@ -35,7 +35,50 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(
     const OV_STRING value, OV_INSTPTR_PostSys_Message* createdMsg,
     OV_INSTPTR_ov_domain* msgCreatedIn);
 
+/**
+ * @brief duplicate
+ *
+ * @param pMsgCpy
+ * @param pMsg
+ *
+ * @return result
+ */
 OV_DLLFNCEXPORT OV_RESULT PostSys_Message_copy(
     OV_INSTPTR_PostSys_Message pMsgCpy, const OV_INSTPTR_PostSys_Message pMsg);
+
+/**
+ * @brief pointer to inbox. if no inbox exists creates one.
+ *
+ * @param pdom parent object of inbox
+ *
+ * @return inbox
+ */
+OV_DLLFNCEXPORT OV_INSTPTR_PostSys_inbox
+                PostSys_inbox_get(OV_INSTPTR_ov_domain pdom, OV_BOOL create);
+
+/**
+ * @brief sets only dst through ks. Other nodes in path stays same.
+ *
+ * @param pinst
+ * @param dstKS
+ * [//host[:MANAGERPort]/servername[:serverport]/]instancePath
+ *
+ * @return result
+ */
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_dst_set(
+    OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS);
+
+/**
+ * @brief sets indexth element in path. returns BADPARAM if index >= pathLen
+ *
+ * @param pinst
+ * @param dstKS
+ * [//host[:MANAGERPort]/servername[:serverport]/]instancePath
+ * @param index
+ *
+ * @return
+ */
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathElem_set(
+    OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS, OV_UINT index);
 
 #endif
