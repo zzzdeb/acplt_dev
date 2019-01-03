@@ -34,6 +34,12 @@ OV_DLLFNCEXPORT OV_UINT
   return sum;
 }
 
+OV_DLLFNCEXPORT OV_RESULT lbalance_appMonitor_reset_set(
+    OV_INSTPTR_lbalance_appMonitor pinst, const OV_BOOL value) {
+  pinst->v_reset = value;
+  return 0;
+}
+
 OV_DLLFNCEXPORT void
 lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   /*
@@ -103,19 +109,17 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
       for(OV_UINT j = 0; j < wlen; ++j) {
         ov_string_get(&appName, pobj->v_identifier, 0,
                       strcspn(pobj->v_identifier, LB_APPMON_GSENAME_SEP));
-        ov_logfile_debug("lbalance_appMonitor: appName=%s", appName);
+        /* ov_logfile_debug("lbalance_appMonitor: appName=%s", appName); */
         if(ov_string_compare(appName, wNameVec.value[j]) == OV_STRCMP_EQUAL) {
           pinst->v_loads.value[appsLen] = wVec.value[j];
           ov_string_setvalue(&pinst->v_apps.value[appsLen], pobj->v_identifier);
           /* getting req */
           pinst->p_upload.v_getVar = 0;
-          ov_memstack_lock();
           ov_string_setvalue(
               &pinst->p_upload.v_path,
               ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
           CTree_Upload_typemethod(
               Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload), NULL);
-          ov_memstack_unlock();
           if(pinst->p_upload.v_result) {
             ov_logfile_error("lbalance_appMonitor: upload failed to get reqs");
             ov_memstack_unlock();

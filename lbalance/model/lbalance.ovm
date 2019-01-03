@@ -37,8 +37,11 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "common class to handle error";
     VARIABLES
-      status  : INT 
-        FLAGS="o"
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      status  : INT FLAGS="o" 
         COMMENT     = "0: INIT, 1-63: custom, 64: INTERNALERROR, 128: EXTERNALERROR"
         INITIALVALUE  = 0;
       result  : INT 
@@ -126,10 +129,6 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "receives info from neighbors & creates databank";
     VARIABLES
-      reset : BOOL HAS_SET_ACCESSOR
-          FLAGS="i"
-          COMMENT     = "resets values"
-          INITIALVALUE  = FALSE;
       loads[] : UINT
           FLAGS="o"
           COMMENT     = "list of neigborloads";
@@ -196,10 +195,6 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "receives Request as msg";
     VARIABLES
-      D : BOOL HAS_SET_ACCESSOR
-          FLAGS="i"
-          COMMENT     = "resets"
-          INITIALVALUE  = FALSE;
       reqIPs[]  : STRING
           FLAGS="o"
           COMMENT     = "IPs of requests";

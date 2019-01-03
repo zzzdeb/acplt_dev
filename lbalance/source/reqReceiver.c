@@ -22,29 +22,15 @@
 #include "lbalance.h"
 #include "libov/ov_macros.h"
 
-OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_D_set(
+OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_reset_set(
     OV_INSTPTR_lbalance_reqReceiver pobj, const OV_BOOL value) {
-  pobj->v_D = value;
-  return OV_ERR_OK;
+  OV_RESULT result = OV_ERR_OK;
+  if(value && !pobj->v_reset) {
+    result |= Ov_SetDynamicVectorLength(&pobj->v_reqIPs, 0, STRING);
+    result |= Ov_SetDynamicVectorLength(&pobj->v_reqLoads, 0, UINT);
 }
-
-OV_DLLFNCEXPORT OV_RESULT
-                lbalance_reqReceiver_constructor(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  OV_INSTPTR_lbalance_reqReceiver pinst =
-      Ov_StaticPtrCast(lbalance_reqReceiver, pobj);
-  OV_RESULT result;
-
-  /* do what the base class does first */
-  result = fb_functionblock_constructor(pobj);
-  if(Ov_Fail(result))
+  pobj->v_reset = value;
     return result;
-
-  /* do what */
-
-  return OV_ERR_OK;
 }
 
 OV_DLLFNCEXPORT void
