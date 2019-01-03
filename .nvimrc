@@ -96,7 +96,9 @@ augroup END
 nmap <localleader>s :%s//
 
 nmap <localleader>ev :vsplit .nvimrc<cr>
-nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm \| let @/='CLASS\[^S\]*".expand('%:t:r')."'"<cr>n
+nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm \| let @/='CLASS\[^S\]*".expand('%:t:r')."\[^S\]*:'"<cr>n
+let @/='CLASS\[^S\]*\[^S\]*\:'"<cr>
+
 nmap <localleader>eof :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovf"<cr>
 nmap <localleader>eot :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovt"<cr>
 nmap <localleader>em :execute ":vsplit ".expand("%:h:h")."/build/linux/Makefile"<cr>
@@ -109,6 +111,7 @@ nmap <localleader>r :vsplit term://$ACPLT_HOME/system/sysbin/ov_runtimeserver\ -
 nnoremap <localleader>r :vsplit term://$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
 nnoremap <localleader>rj:T $ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
 tnoremap <localleader>r $ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
+nnoremap <localleader>r i$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr><esc>
 
 nnoremap <localleader>ra :!curl "http://localhost:7509/setVar?format=plain&path=/TechUnits/dsyncTest/case_self2dsync/obj.actimode&newvalue=3"<cr>
 nnoremap <localleader>rs :!curl "http://localhost:7509/createObject?format=plain&path=/TechUnits/dsyncTest&factory=/acplt/syncTest/dsyncTest"<cr>

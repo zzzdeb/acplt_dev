@@ -14,6 +14,10 @@ snippet osc "Ov_StaticPtrCast" w
 Ov_StaticPtrCast(${2:ov_object}, ${1:${VISUAL:pobj}})
 endsnippet
 
+snippet odc "Ov_DynamicPtrCast" w
+Ov_DynamicPtrCast(${2:ov_object}, ${1:${VISUAL:pobj}})
+endsnippet
+
 context "re.match('^\s+\w+_typemethod\(', snip.buffer[snip.line])"
 snippet osc "Ov_StaticPtrCast" we
 Ov_StaticPtrCast(${2:fb_functionblock}, ${1:${VISUAL:pobj}})
@@ -126,7 +130,7 @@ endsnippet
 
 #ov_string_
 snippet ostrs "ov_string_setvalue"
-ov_string_setvalue(${2:&}${1:${VISUAL:var}}, ${3:src})${4:;}
+ov_string_setvalue(${2:&}${1:${VISUAL:var}}, ${3:NULL})${4:;}
 endsnippet
 
 snippet ostra "ov_string_append"
