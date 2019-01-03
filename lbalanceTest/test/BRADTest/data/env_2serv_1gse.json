@@ -158,8 +158,36 @@
               },
               "class": "ov/domain"
             },
+            "GSE1_1": {
+              "class": "ov/domain"
+            },
+            "GSE2": {
+              "class": "ov/domain"
+            },
             "BRAD": {
-              "class": "lbalance/BRAD"
+              "class": "lbalance/BRAD",
+              "parts": {
+                "appMonitor": {
+                  "class": "lbalance/appMonitor",
+                  "variables": {
+                    "weights": ["STRING_VEC", ["GSE1&10", "GSE2&20"]],
+                    "appPaths": ["STRING_VEC", ["/TechUnits/BRADTest/case_2serv_1gse/env/src"]],
+                    "actimode": ["INT", 1 ],
+                    "iexreq": ["BOOL", true]
+                  }
+                }
+              },
+              "links": {
+                "taskparent": {
+                  "of_association": "fb/tasklist",
+                  "children": ["this"],
+                  "parents": ["/Tasks/UrTask"]
+                }
+              }
+              ,"variables": {
+                "actimode": ["INT", 1],
+                "iexreq": ["BOOL", true]
+              }
             }
           },
           "class": "ov/domain"

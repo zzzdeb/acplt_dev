@@ -1,42 +1,47 @@
 #include "ov.ovm"
 #include "fb.ovm"
+#include "ovunity.ovm"
+#include "lbalance.ovm"
+
+/*
+*
+*   Copyright (C) 
+*   Chair of Process Control Engineering,
+*   D-52056 Aachen, Germany.
+*   All rights reserved.
+*
+*
+*   This file is part of the ACPLT/OV Package 
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*
+*/
 
 LIBRARY lbalanceTest
-	VERSION   = "V0.1 (DD-Mon-YYYY)";
-	AUTHOR    = "";
-	COPYRIGHT = "";
-	COMMENT   = "";
-	
-	/**
-		Documentation of a.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-	*/
-	CLASS a : CLASS fb/functionblock
+	VERSION   = "V0.1 (2019-Jan-02)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
+	COMMENT   = "testing bib lbalance";
+
+	CLASS	BRADTest					:	CLASS	ovunity/main
 		IS_INSTANTIABLE;
+		COMMENT	=	"testing lbalance/BRAD";
 		VARIABLES
-			// Add variables here. The syntax is:
-			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
-			// Example:
-			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";
-			// Example for a fb/functionblock based class
-			// inputNAme : UINT HAS_SET_ACCESSOR FLAGS = "i" COMMENT = "Input of type UINT" INITIALVALUE = 5;
 		END_VARIABLES;
+		PARTS
+		END_PARTS;
 		OPERATIONS
-			// Declare functions here. You may use your own function types, e.g. MY_FUNC,
-			// if MY_FUNC is declared in lbalanceTest.ovf. Implement the functions in a.c.
-			// fb/functionblock based classes have to implement typemethod
-			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
 		END_OPERATIONS;
-	END_CLASS;
-	
-	/**
-		Add associations and their documentation here.
-		Association syntax is:
-	*/
-	//ASSOCIATION assocName : ONE_TO_MANY
-	//	PARENT parentVarName : CLASS ov/object;
-	//	CHILD  childVarName : CLASS ov/object;
-	//END_ASSOCIATION;
+	END_CLASS; 
 	
 END_LIBRARY;
