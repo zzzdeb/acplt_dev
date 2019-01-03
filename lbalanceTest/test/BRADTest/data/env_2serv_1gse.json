@@ -5,7 +5,49 @@
     "env": {
       "children": {
         "dst": {
-          "class": "ov/domain"
+          "class": "ov/domain",
+          "children": {
+          "BRAD": {
+              "class": "lbalance/BRAD",
+              "parts": {
+                "appMonitor": {
+                  "class": "lbalance/appMonitor",
+                  "variables": {
+                    "weights": ["STRING_VEC", ["GSE1&10", "GSE2&20"]],
+                    "appPaths": ["STRING_VEC", ["/TechUnits/BRADTest/case_2serv_1gse/env/dst"]],
+                    "actimode": ["INT", 1 ],
+                    "iexreq": ["BOOL", true]
+                  }
+                },
+                "mock": {
+                  "class": "lbalance/mock",
+                  "links": {
+                    "taskparent": {
+                      "children": [ "this"],
+                      "of_association": "fb/tasklist",
+                      "parents": [ "/Tasks/UrTask" ]
+                    }
+                  },
+                  "parts": {
+                  },
+                  "variables": {
+                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/dst/GSE1"]
+                  }
+                }
+              },
+              "links": {
+                "taskparent": {
+                  "of_association": "fb/tasklist",
+                  "children": ["this"],
+                  "parents": ["/Tasks/UrTask"]
+                }
+              }
+              ,"variables": {
+                "actimode": ["INT", 1],
+                "iexreq": ["BOOL", true]
+              }
+            }
+          }
         },
         "server": {
           "children": {
@@ -174,6 +216,21 @@
                     "appPaths": ["STRING_VEC", ["/TechUnits/BRADTest/case_2serv_1gse/env/src"]],
                     "actimode": ["INT", 1 ],
                     "iexreq": ["BOOL", true]
+                  }
+                },
+                "mock": {
+                  "class": "lbalance/mock",
+                  "links": {
+                    "taskparent": {
+                      "children": [ "this"],
+                      "of_association": "fb/tasklist",
+                      "parents": [ "/Tasks/UrTask" ]
+                    }
+                  },
+                  "parts": {
+                  },
+                  "variables": {
+                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/src/GSE1"]
                   }
                 }
               },
