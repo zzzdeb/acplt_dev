@@ -240,20 +240,73 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT	=	"initiate send";
     VARIABLES
-      outApp	:	STRING
+
+  CLASS mock          : CLASS fb/functionblock
+    IS_INSTANTIABLE;
+    COMMENT = "mocking outputs of other";
+    VARIABLES
+      fieldDevices[] : STRING  FLAGS="i" COMMENT="List of visible field devices";
+      sysOS : STRING FLAGS="o" COMMENT="Operating System of this system (linux, nt, ...)";
+      sysOSVersion : STRING FLAGS="o" COMMENT="Operating System (Kernel) Version";
+      cpuType : STRING FLAGS="o" COMMENT="Model name of this system's CPU.";
+      cpuUsage : SINGLE FLAGS="o" COMMENT="Average CPU usage (computation time/total time) during last update interval";
+      memSize : UINT FLAGS="o" COMMENT="System memory in kiB";
+      memUsed : UINT FLAGS="o" COMMENT="Used memory in kiB (does not include Buffers and Caches on Linuxes)";
+      ovArch : STRING FLAGS="o" COMMENT="OV cpu architecture (i386, amd64, arm, arm64)";
+      ovDBSize : UINT FLAGS="o" COMMENT="Maximum size of the OV database in kiB";
+      ovDBUsed : UINT FLAGS="o" COMMENT="Current size of the OV database in kiB";
+      ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
+      ovFbUrCycTime : TIME_SPAN FLAGS="o" COMMENT="Cycle time of the Fb UrTask in s";
+      ovFbUrCalcTime : TIME_SPAN FLAGS="o" COMMENT="Required calculation time of the Fb UrTask's last execution in s";
+      
+      cpuLastTicks : UINT COMMENT="Saved number of total cpu time ticks at last measurement";
+      cpuLastIdleTicks : UINT COMMENT="Saved number of cpu idle time ticks at last measurement";
+      ovServers[] : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
+
+      apps[]  : STRING
+        FLAGS="i"
+        COMMENT     = "Apps on this node";
+      appReq[]: STRING
+        FLAGS="i"
+        COMMENT     = "requirements of apps";
+      loads[] : UINT
           FLAGS="i"
-          COMMENT			=	"app to send out"
-          INITIALVALUE	=	"";
-      reset	:	BOOL HAS_SET_ACCESSOR
+        COMMENT     = "loads of apps";
+      neigborIPs[]  : STRING 
+          FLAGS="o"
+          COMMENT     = "IPs of neighbors";
+      serverNames[] : STRING
+          FLAGS="o"
+          COMMENT     = "names of neighbors";
+      outApp  : STRING 
+          FLAGS="o"
+          COMMENT     = "app to be sent"
+          INITIALVALUE  = "";
+      outLoad : UINT 
+          FLAGS="o"
+          COMMENT     = "load of app to be sent"
+          INITIALVALUE  = 0;
+      outRequirements  : STRING
+          FLAGS="o"
+          COMMENT     = "requirements of app"
+          INITIALVALUE  = "";
+      destination : STRING
+          FLAGS="o"
+          COMMENT     = "ks ov destination"
+          INITIALVALUE  = "";
+      reqIndex  : UINT 
+          FLAGS="o"
+          COMMENT     = "Tell client not to close the connection after each request"
+          INITIALVALUE  = 0;
+      reqLoads[]  : UINT
           FLAGS="i"
-          COMMENT			=	"resets"
-          INITIALVALUE	=	FALSE;
+          COMMENT     = "loads of requests";
     END_VARIABLES;
     PARTS
-      inbox	:	CLASS	PostSys/inbox;
     END_PARTS;
     OPERATIONS
-      typemethod	:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
 
