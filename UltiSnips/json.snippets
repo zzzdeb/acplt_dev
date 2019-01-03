@@ -1,0 +1,46 @@
+snippet ojsonobj "ojson obj"
+"${1:name} ": {
+  "class": "${2:class}",
+  "children":
+  "links": {
+    "taskparent": {
+      "children": [ "this"],
+      "of_association": "fb/tasklist",
+      "parents": [ "/Tasks/UrTask" ]${5:,}
+    }
+  },
+  "parts": {
+    "apiGet": {
+     "class": "ksapi/getVar"
+    }
+  },
+  "variables": {
+    ojsonvar$5
+  }
+}
+endsnippet
+
+
+snippet ojsonlink "link"
+"${1:taskparent}": {
+   "of_association": "${2:fb/tasklist}",
+   "children": ["${3:this}"],
+   "parents": ["${4:/Tasks/UrTask}"]
+}
+endsnippet
+
+snippet ojsonvar "var"
+"${1:actimode} ": ["${2:INT} ", ${3:1}],
+endsnippet
+
+snippet ojsonlinks "links"
+,"links": {
+  ojsonlink$0
+}
+endsnippet
+
+snippet ojsonvars "vars"
+,"variables": {
+  ojsonvar$0
+}
+endsnippet

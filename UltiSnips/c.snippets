@@ -41,7 +41,7 @@ endsnippet
 
 snippet oifres "if(Ov_Fail(res))"
 if(Ov_Fail(result)){
-  ov_logfile_error("%u: %s: $1", result, ov_result_getresulttext(result));
+  ov_logfile_error("${3:`!v expand("%:p:h:h:t")`_`!v expand("%:t:r")`}: %u: %s: $1", result, ov_result_getresulttext(result));
   return result;
 }
 endsnippet
@@ -71,6 +71,10 @@ endsnippet
 snippet oresd "ov result"
 OV_RESULT result=OV_ERR_OK;
 return result;
+endsnippet
+
+snippet res= "result |= "
+  result |= 
 endsnippet
 
 snippet ofunc "ov function"
@@ -152,7 +156,7 @@ endsnippet
 
 # ovunity
 snippet ovtestcase "TEST()"
-TEST(${1:`!v substitute(expand("%:t"), 'Test.c', '', 'b')`}, $1_${2:test_name} {
+TEST(${1:`!v substitute(expand("%:t"), 'Test.c', '', 'b')`}, $1_${2:test_name}) {
   OV_RESULT                 result = OV_ERR_OK;
   OV_INSTPTR_$3_$1 pobj = NULL;
   OV_STRING                 case_name = "case_$2";
@@ -212,6 +216,81 @@ snippet otempsrcfile "template of source file"
 
 endsnippet
 
+snippet otempunitysrcfile "template of source file"
+/******************************************************************************
+ *
+ *   FILE
+ *   ----
+ *   `!v expand("%:t")`
+ *
+ *   History
+ *   -------
+ *   `!v strftime("%c")`   File created
+ *
+ ******************************************************************************/
+
+#ifndef OV_COMPILE_LIBRARY_${1:`!v expand("%:p:h:h:t")`}
+#define OV_COMPILE_LIBRARY_$1
+#endif
+
+#include "$1.h"
+#include "${1/Test//}.h"
+
+#include "libov/ov_macros.h"
+
+#include "unity.h"
+#include "unity_fixture.h"
+
+#include "ovunity.h"
+#include "ovunity_helper.h"
+
+#include "CException.h"
+
+
+OV_INSTPTR_ovunity_main gpinst;
+OV_TIME*                gpltc;
+
+TEST_GROUP(${2:`!v substitute(expand("%:t"), 'Test.c', '', 'b')`});
+
+TEST_SETUP($2) {
+  ov_memstack_lock();
+}
+
+TEST_TEAR_DOWN($2) { ov_memstack_unlock(); }
+
+ovtestcase$0
+
+TEST_GROUP_RUNNER($2) {
+
+}
+
+
+static void RunAllTests(void) { RUN_TEST_GROUP($2); }
+
+OV_DLLFNCEXPORT void
+$1_$2_typemethod(OV_INSTPTR_fb_functionblock pfb,
+                                  OV_TIME*                    pltc) {
+  /*
+   *   local variables
+   */
+  OV_INSTPTR_$1_$2 pinst = Ov_StaticPtrCast($1_$2, pfb);
+
+  gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
+  //	gpobj = &Ov_StaticPtrCast($1_$2,gpinst)->p_obj;
+  gpltc = pltc;
+
+  // todo
+  char* ahome = getenv("ACPLT_HOME");
+  ov_string_print(&pinst->v_sysPath, "%s/dev/$1/test/$2",
+                  ahome);
+
+  const char*  argv[] = {"$2", "-v"};
+  CEXCEPTION_T e;
+  Try { UnityMain(2, argv, RunAllTests); }
+  Catch(e) { ov_logfile_error("$2 fail"); }
+  return;
+}
+endsnippet
 snippet otempAssocSrcfile "template of association source file"
 /******************************************************************************
  *

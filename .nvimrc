@@ -93,9 +93,10 @@ augroup ovm
     au BufWritePost *.ovm !acplt_builder -l %:h:h:t
 augroup END
 
+nmap <localleader>s :%s//
 
 nmap <localleader>ev :vsplit .nvimrc<cr>
-nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm"<cr>
+nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm \| let @/='CLASS\[^S\]*".expand('%:t:r')."'"<cr>n
 nmap <localleader>eof :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovf"<cr>
 nmap <localleader>eot :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovt"<cr>
 nmap <localleader>em :execute ":vsplit ".expand("%:h:h")."/build/linux/Makefile"<cr>
@@ -113,8 +114,3 @@ nnoremap <localleader>ra :!curl "http://localhost:7509/setVar?format=plain&path=
 nnoremap <localleader>rs :!curl "http://localhost:7509/createObject?format=plain&path=/TechUnits/dsyncTest&factory=/acplt/syncTest/dsyncTest"<cr>
 tnoremap <Esc> <C-\><C-n>
 
-"navigate
-tnoremap <c-h> <C-\><C-N><C-w>h
-tnoremap <c-j> <C-\><C-N><C-w>j
-tnoremap <c-k> <C-\><C-N><C-w>k
-tnoremap <c-l> <C-\><C-N><C-w>l
