@@ -20,6 +20,8 @@
 #include "lbalance_helper.h"
 
 #include "libov/ov_macros.h"
+#include "libov/ov_path.h"
+#include "libov/ov_result.h"
 
 #include "object_helper.h"
 
@@ -40,6 +42,7 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   OV_INSTPTR_lbalance_appMonitor pinst =
       Ov_StaticPtrCast(lbalance_appMonitor, pfb);
 
+  OV_UINT mappsLen = 0;
   OV_UINT appsLen = 0;
   OV_UINT wlen = 0;
 
@@ -47,9 +50,13 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   OV_UINT_VEC   wVec = {0};
   OV_STRING_VEC wNameVec = {0};
 
+  OV_STRING reqStr = NULL;
+
+  ov_memstack_lock();
+
   wlen = pinst->v_weights.veclen;
-  Ov_SetDynamicVectorLength(&wNameVec, appsLen, STRING);
-  Ov_SetDynamicVectorLength(&wVec, appsLen, UINT);
+  Ov_SetDynamicVectorLength(&wNameVec, wlen, STRING);
+  Ov_SetDynamicVectorLength(&wVec, wlen, UINT);
   for(OV_UINT i = 0; i < wlen; ++i) {
     OV_UINT    slen = 0;
     OV_STRING* splited =
@@ -58,6 +65,7 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
       pinst->v_status = LB_APPMON_ERROR;
       pinst->v_result = OV_ERR_BADPARAM;
       ov_logfile_error("lbalance_appMonitor: bad weights value");
+      ov_memstack_unlock();
       return;
     }
     ov_string_setvalue(&wNameVec.value[i], splited[0]);
@@ -65,34 +73,74 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
     ov_string_freelist(splited);
   }
 
+  /* getting max appslen */
+  for(OV_UINT i = 0; i < pinst->v_appPaths.veclen; ++i) {
+    OV_INSTPTR_ov_domain pdom = NULL;
+    OV_INSTPTR_ov_object pobj = NULL;
+    pdom = Ov_StaticPtrCast(
+        ov_domain, ov_path_getobjectpointer(pinst->v_appPaths.value[i], 2));
+    if(!pdom) {
+      ov_logfile_error("lbalance_appMonitor: bad path appPaths[%u]=%s", i,
+                       pinst->v_appPaths.value[i]);
+      ov_memstack_unlock();
+      return;
+    }
+    Ov_ForEachChild(ov_containment, pdom, pobj) { mappsLen++; }
+  }
+
+  Ov_SetDynamicVectorLength(&pinst->v_apps, mappsLen, STRING);
+  Ov_SetDynamicVectorLength(&pinst->v_appReq, mappsLen, STRING);
+  Ov_SetDynamicVectorLength(&pinst->v_loads, mappsLen, UINT);
+
+  for(OV_UINT i = 0; i < pinst->v_appPaths.veclen; ++i) {
+    // TODO: zzz: check if break breaks everything :2018 Dez 28 14:10
+    OV_INSTPTR_ov_domain pdom = NULL;
+    OV_INSTPTR_ov_object pobj = NULL;
+    pdom = Ov_StaticPtrCast(
+        ov_domain, ov_path_getobjectpointer(pinst->v_appPaths.value[i], 2));
+    Ov_ForEachChild(ov_containment, pdom, pobj) {
+      OV_STRING appName = NULL;
+      for(OV_UINT j = 0; j < wlen; ++j) {
+        ov_string_get(&appName, pobj->v_identifier, 0,
+                      strcspn(pobj->v_identifier, LB_APPMON_GSENAME_SEP));
+        ov_logfile_debug("lbalance_appMonitor: appName=%s", appName);
+        if(ov_string_compare(appName, wNameVec.value[j]) == OV_STRCMP_EQUAL) {
+          pinst->v_loads.value[i] = wVec.value[j];
+          ov_string_setvalue(&pinst->v_apps.value[i], pobj->v_identifier);
+          /* getting req */
+          pinst->p_upload.v_getVar = 0;
+          ov_string_setvalue(
+              &pinst->p_upload.v_path,
+              ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
+          CTree_Upload_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj),
+                                  NULL);
+          if(pinst->p_upload.v_result) {
+            ov_logfile_error("lbalance_appMonitor: upload failed to get reqs");
+            ov_memstack_unlock();
+            return;
+          }
+          if(pinst->p_upload.v_libs.veclen) {
+            ov_string_setvalue(&reqStr, pinst->p_upload.v_libs.value[0]);
+            for(OV_UINT i = 1; i < pinst->p_upload.v_libs.veclen; ++i) {
+              ov_string_append(&reqStr, LB_APPMON_APPREQ_SEP);
+              ov_string_append(&reqStr, pinst->p_upload.v_libs.value[i]);
+            }
+            ov_string_setvalue(&pinst->v_appReq.value[i], reqStr);
+            ov_string_setvalue(&reqStr, NULL);
+          }
+          appsLen++;
+          break;
+        }
+      }
+      ov_string_setvalue(&appName, NULL);
+    }
+  }
+
   Ov_SetDynamicVectorLength(&pinst->v_apps, appsLen, STRING);
   Ov_SetDynamicVectorLength(&pinst->v_appReq, appsLen, STRING);
   Ov_SetDynamicVectorLength(&pinst->v_loads, appsLen, UINT);
 
-  for(OV_UINT i = 0; i < appsLen; ++i) {
-    // TODO: zzz: check if break breaks everything :2018 Dez 28 14:10
-    OV_STRING appName = NULL;
-    for(OV_UINT j = 0; j < wlen; ++j) {
-      ov_string_get(&appName, pinst->v_apps.value[i], 0,
-                    strcspn(pinst->v_apps.value[i], LB_APPMON_GSENAME_SEP));
-      ov_logfile_debug("lbalance_appMonitor: appName=%s", appName);
-      appName = pinst->v_apps.value[i];
-      if(ov_string_compare(appName, wNameVec.value[i]) == OV_STRCMP_EQUAL) {
-        pinst->v_loads.value[i] = wVec.value[j];
-        break;
-      }
-    }
-    ov_string_setvalue(&appName, NULL);
-  }
-
-  for(OV_UINT i = 0; i < 5; ++i) {
-    for(OV_UINT j = 0; j < 5; ++j) {
-      if(j == 3) {
-        ov_logfile_info("lbalance_appMonitor: %d", j);
-        break;
-      }
-    }
-  }
+  ov_memstack_unlock();
   return;
 }
 

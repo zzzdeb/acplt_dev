@@ -52,12 +52,14 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   OV_STRING                  value = NULL;
   OV_STRING                  order = NULL;
   OV_RESULT                  result = OV_ERR_OK;
-  OV_STRING                  order = NULL;
   OV_STRING                  service = NULL;
   OV_STRING_VEC              ids = {0, NULL};
   OV_STRING_VEC              values = {0, NULL};
   OV_STRING_VEC              types = {0, NULL};
   OV_STRING_VEC              units = {0, NULL};
+
+  OV_INSTPTR_lbalance_neighborDB pinst =
+      Ov_StaticPtrCast(lbalance_neighborDB, pfb);
 
   OV_UINT waitingMsgsLen = 0;
   OV_UINT nLen = 0;
@@ -68,9 +70,6 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   cJSON* jsload = NULL;
   cJSON* jscap = NULL;
   cJSON* jsinfo = NULL;
-
-  OV_INSTPTR_lbalance_neighborDB pinst =
-      Ov_StaticPtrCast(lbalance_neighborDB, pfb);
 
   Ov_ForEachChildEx(ov_containment, &pinst->p_inbox, pMsg, PostSys_Message) {
     waitingMsgsLen++;

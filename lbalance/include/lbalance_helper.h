@@ -18,6 +18,7 @@
 
 #define LB_APPMON_W_SEP "&"
 #define LB_APPMON_GSENAME_SEP "_"
+#define LB_APPMON_APPREQ_SEP "&"
 
 #define LB_APPMON_INIT 0
 #define LB_APPMON_DONE 1

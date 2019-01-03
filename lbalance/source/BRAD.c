@@ -23,6 +23,25 @@
 #include "lbalance_helper.h"
 #include "libov/ov_macros.h"
 
+OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                result = OV_ERR_OK;
+  OV_INSTPTR_lbalance_BRAD pinst = Ov_StaticPtrCast(lbalance_BRAD, pobj);
+
+  result = ov_object_constructor(pobj);
+
+  /* ov_fb_connect(&pinst->p_appMonitor, "apps", &pinst->p_nbInformer, "apps");
+   */
+  Ov_Link(fb_tasklist, pinst, &pinst->p_appMonitor);
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB); */
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_reqSender); */
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_nbInformer); */
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator); */
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier); */
+  /* Ov_Link(fb_tasklist, pinst, &pinst->p_dsync); */
+
+  return result;
+}
+
 OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_init_set(OV_INSTPTR_lbalance_BRAD pobj,
                                                  const OV_BOOL value) {
   if(value && !pobj->v_init) {
