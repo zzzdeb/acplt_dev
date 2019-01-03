@@ -5,6 +5,7 @@
 #include "ksxdr.ovm"
 #include "ksapi.ovm"
 #include "kshttp.ovm"
+#include "ovhelper.ovm"
 
 LIBRARY CTree
 	VERSION   = "V0.1 (15-Mon-2018)";

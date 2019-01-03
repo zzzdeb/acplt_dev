@@ -115,13 +115,15 @@ OV_RESULT filesToBytes(OV_BYTE_VEC* bvec, OV_STRING path) {
     return OV_ERR_GENERIC;
   }
 
-  if(lib) fclose(lib);
+  if(lib)
+    fclose(lib);
   ov_memstack_unlock();
   return result;
 }
 /*/a/b/c/d.so to d.so*/
 OV_STRING name_from_path(const OV_STRING path) {
-  if(!path) return NULL;
+  if(!path)
+    return NULL;
   OV_STRING ret = NULL;
   char*     found = strrchr(path, '/');
   if(found)
@@ -224,12 +226,14 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   for(OV_UINT i = 0; i < pinst->v_filesToSend.veclen; i++) {
     result = filesToBytes(&pbfiles[i], pinst->v_filesToSend.value[i]);
     switch(result) {
-      case OV_ERR_OK: break;
+      case OV_ERR_OK:
+        break;
       case OV_ERR_BADPATH:
         ov_logfile_warning("file: %s doesnt exist",
                            pinst->v_filesToSend.value[i]);
         break;
-      default: return result;
+      default:
+        return result;
     }
   }
   /* byte positions*/

@@ -29,6 +29,7 @@
 
 #include "libov/ov_macros.h"
 #include "libov/ov_vendortree.h"
+#include "object_helper.h"
 
 void exitInfo(void) {
   ov_logfile_info("exitInfo");
@@ -208,7 +209,8 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
         strvec.value[i] = NULL;
         OV_UINT extLen = 0;
         extLen = strlen(LIBEXTENSION);
-        OV_RESULT tmpres = strget(&strvec.value[i], dir->d_name, 0, -extLen);
+        OV_RESULT tmpres =
+            ov_string_get(&strvec.value[i], dir->d_name, 0, -extLen);
         if(tmpres)
           ov_logfile_error("cant open librarie %s", dir->d_name);
         i++;

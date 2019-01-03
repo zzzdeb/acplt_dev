@@ -105,15 +105,17 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
                       strcspn(pobj->v_identifier, LB_APPMON_GSENAME_SEP));
         ov_logfile_debug("lbalance_appMonitor: appName=%s", appName);
         if(ov_string_compare(appName, wNameVec.value[j]) == OV_STRCMP_EQUAL) {
-          pinst->v_loads.value[i] = wVec.value[j];
-          ov_string_setvalue(&pinst->v_apps.value[i], pobj->v_identifier);
+          pinst->v_loads.value[appsLen] = wVec.value[j];
+          ov_string_setvalue(&pinst->v_apps.value[appsLen], pobj->v_identifier);
           /* getting req */
           pinst->p_upload.v_getVar = 0;
+          ov_memstack_lock();
           ov_string_setvalue(
               &pinst->p_upload.v_path,
               ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
-          CTree_Upload_typemethod(Ov_StaticPtrCast(fb_functionblock, pobj),
-                                  NULL);
+          CTree_Upload_typemethod(
+              Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload), NULL);
+          ov_memstack_unlock();
           if(pinst->p_upload.v_result) {
             ov_logfile_error("lbalance_appMonitor: upload failed to get reqs");
             ov_memstack_unlock();
@@ -121,11 +123,11 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           }
           if(pinst->p_upload.v_libs.veclen) {
             ov_string_setvalue(&reqStr, pinst->p_upload.v_libs.value[0]);
-            for(OV_UINT i = 1; i < pinst->p_upload.v_libs.veclen; ++i) {
+            for(OV_UINT k = 1; k < pinst->p_upload.v_libs.veclen; ++k) {
               ov_string_append(&reqStr, LB_APPMON_APPREQ_SEP);
-              ov_string_append(&reqStr, pinst->p_upload.v_libs.value[i]);
+              ov_string_append(&reqStr, pinst->p_upload.v_libs.value[k]);
             }
-            ov_string_setvalue(&pinst->v_appReq.value[i], reqStr);
+            ov_string_setvalue(&pinst->v_appReq.value[appsLen], reqStr);
             ov_string_setvalue(&reqStr, NULL);
           }
           appsLen++;
