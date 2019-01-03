@@ -57,8 +57,7 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
         for(OV_UINT i = 0; i < nlen; ++i) {
           /* create neighbor ks*/
           result |=
-              ov_string_print(&dstKS, "%s/%s%s", pinst->v_neigborIPs.value[i],
-
+              ov_string_print(&dstKS, "//%s/%s%s", pinst->v_neigborIPs.value[i],
                               pinst->v_serverNames.value[i], LB_NDB_PATH);
           /* send to neighbor */
           result |= PostSys_msgCreator_dst_set(pbcaster, dstKS);
