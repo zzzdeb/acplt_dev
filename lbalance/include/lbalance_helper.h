@@ -4,6 +4,7 @@
 #define LBALANCE_SEP "&"
 
 #define LB_NDB_PATH "/data/lbalance/ndatabank"
+#define LB_REQREC_PATH "/data/lbalance/reqReceiver"
 
 #define LB_INTERNALERROR 64
 #define LB_EXTERNALERROR 128
@@ -29,6 +30,11 @@
 #define LB_BRAD_A 2
 #define LB_BRAD_D 3
 
+#define LB_REQSENDER_INIT 0
+#define LB_REQSENDER_SENT 1
+
+#define LB_REQREC_INIT 0
+
 #define LB_NBINFORMER_INIT 0
 #define LB_NBINFORMER_SENT 1
 #define LB_NBINFORMER_JSONLEN 4
@@ -37,3 +43,4 @@
 #define LB_NBINFORMER_CAPPOS 2
 #define LB_NBINFORMER_INFOPOS 3
 
+#define LB_ACCEPTNOTIFIER_INIT 0

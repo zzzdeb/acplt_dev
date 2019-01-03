@@ -71,7 +71,7 @@ LIBRARY lbalance
         COMMENT     = "Apps on this node";
       appReq[]: STRING
         FLAGS="o"
-        COMMENT     = "requirments of apps";
+        COMMENT     = "requirements of apps";
       loads[] : UINT
         FLAGS="o"
         COMMENT     = "loads of apps";
@@ -80,7 +80,7 @@ LIBRARY lbalance
         COMMENT     = "sum of loads";
     END_VARIABLES;
     PARTS
-      upload	:	CLASS	CTree/Upload;
+      upload  : CLASS CTree/Upload;
     END_PARTS;
     OPERATIONS
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
@@ -167,9 +167,9 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "load of app to be sent"
           INITIALVALUE  = 0;
-      outRequirments  : STRING
+      outRequirements  : STRING
           FLAGS="i"
-          COMMENT     = "requirments of app"
+          COMMENT     = "requirements of app"
           INITIALVALUE  = "";
       destination : STRING
           FLAGS="i"
@@ -185,6 +185,7 @@ LIBRARY lbalance
           INITIALVALUE  = "";
     END_VARIABLES;
     PARTS
+      sender : CLASS PostSys/msgCreator;
     END_PARTS;
     OPERATIONS
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
@@ -236,10 +237,22 @@ LIBRARY lbalance
     END_OPERATIONS;
   END_CLASS;
 
-  CLASS	sendInitiator					:	CLASS	fb/functionblock
+  CLASS sendInitiator         : CLASS lbalance/Common
     IS_INSTANTIABLE;
-    COMMENT	=	"initiate send";
+    COMMENT = "initiate send";
     VARIABLES
+      outApp  : STRING
+          FLAGS="i"
+          COMMENT     = "app to send out"
+          INITIALVALUE  = "";
+    END_VARIABLES;
+    PARTS
+      inbox : CLASS PostSys/inbox;
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
 
   CLASS mock          : CLASS fb/functionblock
     IS_INSTANTIABLE;
@@ -270,7 +283,7 @@ LIBRARY lbalance
         FLAGS="i"
         COMMENT     = "requirements of apps";
       loads[] : UINT
-          FLAGS="i"
+        FLAGS="i"
         COMMENT     = "loads of apps";
       neigborIPs[]  : STRING 
           FLAGS="o"
@@ -338,18 +351,19 @@ LIBRARY lbalance
           FLAGS="o"
           COMMENT     = "triggers neighborInformer"
           INITIALVALUE  = FALSE;
-      timeLastEvent	:	TIME
+      timeLastEvent : TIME
           FLAGS="o"
-          COMMENT			=	"begin of phase";
+          COMMENT     = "begin of phase";
     END_VARIABLES;
     PARTS
-      appMonitor	:	CLASS	lbalance/appMonitor;
-      nbInformer	:	CLASS	lbalance/neighborInformer;
-      nbDB	:	CLASS	lbalance/neighborDB;
-      reqSender	:	CLASS	lbalance/reqSender;
-      reqReceiver	:	CLASS	lbalance/reqReceiver;
+      appMonitor  : CLASS lbalance/appMonitor;
+      nbInformer  : CLASS lbalance/neighborInformer;
+      nbDB  : CLASS lbalance/neighborDB;
+      reqSender : CLASS lbalance/reqSender;
+      reqReceiver : CLASS lbalance/reqReceiver;
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
+      mock: CLASS lbalance/mock;
       //dsync: CLASS sync/dsync;
     END_PARTS;
     OPERATIONS

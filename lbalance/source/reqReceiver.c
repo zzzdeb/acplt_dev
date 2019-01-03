@@ -20,6 +20,7 @@
 #endif
 
 #include "lbalance.h"
+#include "lbalance_helper.h"
 #include "libov/ov_macros.h"
 
 OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_reset_set(
@@ -28,9 +29,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_reset_set(
   if(value && !pobj->v_reset) {
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqIPs, 0, STRING);
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqLoads, 0, UINT);
-}
+  }
   pobj->v_reset = value;
-    return result;
+  return result;
 }
 
 OV_DLLFNCEXPORT void
@@ -41,6 +42,14 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
    */
   OV_INSTPTR_lbalance_reqReceiver pinst =
       Ov_StaticPtrCast(lbalance_reqReceiver, pfb);
+  switch(pinst->v_status) {
+    case LB_REQREC_INIT:
+      /* pinst->p_inbox */
+
+      break;
+
+      LB_CASEERROR;
+  }
 
   return;
 }
