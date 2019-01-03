@@ -9,6 +9,7 @@
 #include "fb.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
+#include "libov/ov_result.h"
 
 OV_DLLFNCEXPORT OV_RESULT
                 object_setNamedVariable(const OV_INSTPTR_ov_object pTargetObj,
@@ -64,4 +65,34 @@ OV_DLLFNCEXPORT OV_BOOL object_isDescendant(const OV_INSTPTR_ov_object pparent,
   }
   ov_memstack_unlock();
   return 0;
+}
+
+OV_DLLFNCEXPORT OV_INSTPTR_fb_connection
+                ov_fb_connect(OV_INSTPTR_fb_object fromObj, OV_STRING fromName,
+                              OV_INSTPTR_fb_object toObj, OV_STRING toName) {
+  OV_RESULT                result = OV_ERR_OK;
+  OV_INSTPTR_fb_connection pconn = NULL;
+  OV_INSTPTR_ov_domain     pconnDom =
+      Ov_StaticPtrCast(ov_domain, ov_path_getobjectpointer("/Cons", 2));
+  if(!pconnDom) {
+    ov_logfile_error("ovhelper_object_helper: could not get /Cons ");
+    return NULL;
+  }
+
+  Ov_CreateIDedObject(fb_connection, pconn, pconnDom, "fb_connection");
+  if(!pconn) {
+    ov_logfile_error("ovhelper_object_helper: could not create fb_connection");
+    return NULL;
+  }
+  result |= fb_connection_sourceport_set(pconn, fromName);
+  result |= fb_connection_targetport_set(pconn, fromName);
+  result |= Ov_Link(fb_inputconnections, toObj, pconn);
+  result |= Ov_Link(fb_outputconnections, fromObj, pconn);
+  result |= fb_connection_on_set(pconn, 1);
+  if(Ov_Fail(result)) {
+    ov_logfile_error("ovhelper_object_helper: %u: %s: could not set ports",
+                     result, ov_result_getresulttext(result));
+    return NULL;
+  }
+  return pconn;
 }
