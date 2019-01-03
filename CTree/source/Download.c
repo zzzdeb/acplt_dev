@@ -874,6 +874,17 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
         break;
       case CTREE_PARTS:
         ov_string_print(&elementpath, "%s.%s", parentpath, identifier);
+        // TODO: zzz: sometimes ov_path_resolve resolves malformed path without
+        // error :2019 Jan 03 17:11
+        OV_INSTPTR_ov_object ptmp = ov_path_getobjectpointer(elementpath, 2);
+        if(!ptmp) {
+          Download_log(pinst, OV_MT_ERROR, OV_ERR_GENERIC,
+                       "couldnt find part ,%s.%s,", parentpath, identifier);
+          ov_string_setvalue(&identifier, NULL);
+          ov_string_setvalue(&parentpath, NULL);
+          ov_string_setvalue(&elementpath, NULL);
+          return OV_ERR_BADPARAM;
+        }
         /*
          *	instructions
          */
