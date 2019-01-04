@@ -123,8 +123,7 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           ov_string_setvalue(
               &pinst->p_upload.v_path,
               ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pobj), 2));
-          CTree_Upload_typemethod(
-              Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload), NULL);
+          CTree_Upload_execute(&pinst->p_upload);
           if(pinst->p_upload.v_result) {
             ov_logfile_error("lbalance_appMonitor: upload failed to get reqs");
             ov_memstack_unlock();
