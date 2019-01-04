@@ -841,6 +841,9 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst) {
     Upload_log(pinst, OV_MT_ERROR, res, "Couldnt set json to v_libs.");
     return res;
   }
+  if(pinst->v_keepJson) {
+    cJSON_Delete(pinst->v_cache.jsbase);
+  }
   return res;
 }
 
@@ -863,6 +866,8 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
     default:
       ov_logfile_error("Upload failed.");
   }
-  cJSON_Delete(pinst->v_cache.jsbase);
+  if(pinst->v_cache.jsbase) {
+    cJSON_Delete(pinst->v_cache.jsbase);
+  }
   return;
 }

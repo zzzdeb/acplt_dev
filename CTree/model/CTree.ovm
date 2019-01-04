@@ -8,282 +8,286 @@
 #include "ovhelper.ovm"
 
 LIBRARY CTree
-	VERSION   = "V0.1 (15-Mon-2018)";
-	AUTHOR    = "Zolboo Erdenebayar";
-	COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
-	COMMENT   = "Upload and Download tree in json format";
-	
+  VERSION   = "V0.1 (15-Mon-2018)";
+  AUTHOR    = "Zolboo Erdenebayar";
+  COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
+  COMMENT   = "Upload and Download tree in json format";
+  
 
 
-	/**
-		Documentation of Common.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-	*/
-	
-	CLASS Common : CLASS fb/functionblock
-		VARIABLES
-			result		:	INT FLAGS="o"
-				COMMENT			= "Result: 0: Success; 1: Error; 4: Bad Param"
-				INITIALVALUE	=	0;
-			ErrorMsg:	STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
-			trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do. !!!Error Result means either set didnt work or Object returns Error"  INITIALVALUE=0;
-		END_VARIABLES;
-	END_CLASS;
-	
-	CLASS Download : CLASS CTree/Common
-		IS_INSTANTIABLE;
-		VARIABLES
-			json: STRING FLAGS="i" COMMENT="Tree to download as json format";
-			path: STRING FLAGS="i" COMMENT="where to download" INITIALVALUE="/TechUnits";
-			force: BOOL FLAGS="i" COMMENT="TODO: if to create tree, eventhough the root doesnt exist" INITIALVALUE=FALSE;
-			cache: C_TYPE <CTreeDownloadCache> COMMENT="Cache of Object";
-		END_VARIABLES;
-		OPERATIONS
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	/**
-		Documentation of Writefiles.
-	*/
-	CLASS WriteFiles : CLASS CTree/Common
-		IS_INSTANTIABLE;
-		VARIABLES
-			filesToWrite[]: STRING FLAGS="i" COMMENT="Files to write";
-			filesPositions[]: UINT FLAGS= "i"	COMMENT="Positions of files in Bytevec"; 
-			byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
-		END_VARIABLES;
-		OPERATIONS
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-			write		 : C_FUNCTION <CTREE_WRITEFILES_WRITE>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	/**
-		Documentation of SendFiles.
-	*/
-	CLASS SendFiles : CLASS CTree/Common
-		IS_INSTANTIABLE;
-		VARIABLES
-			targetKS:	STRING FLAGS="i" COMMENT="IP(:PORT(default 7509))/serverName \n f.e. localhost/MANAGER" INITIALVALUE="";
-			filesToSend[]: STRING FLAGS="i" COMMENT="Files to send. /home/a/b/d.so or ../c/d";
-			whereToSend[]: STRING FLAGS="i" COMMENT="Where to save files on target server. /home/a/b/c/d or ../a/b/d";
-			//filesPositions[]: UINT FLAGS= "i"	COMMENT="Positions of files in Bytevec"; 
-			//byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
-			
-			reset		:	BOOL	HAS_SET_ACCESSOR
-				FLAGS="i"
-				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
-				INITIALVALUE	= FALSE;
-			status		:	INT FLAGS="o" 
-				COMMENT			= "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
-				INITIALVALUE	=	0;
-			postCallback:		C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
-		END_VARIABLES;
-		PARTS
-			ks	:	CLASS ksxdr/xdrClient;
-		END_PARTS;
-		OPERATIONS
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	
-	/**
-		Documentation of Copy.
-		@note Javadoc syntax is allowed here.
-		@attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-	*/
-	CLASS Upload : CLASS CTree/Common
-		IS_INSTANTIABLE;
-		VARIABLES
-			getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
-			path: STRING FLAGS="i" COMMENT="path of object to upload as json" INITIALVALUE="/TechUnits";
-			
-			tree: STRING FLAGS="o" COMMENT="tree as json";
-			libs[]: STRING FLAGS="o" COMMENT="libs used in tree";
-			
-			cache:	C_TYPE <CTreeUploadCache> COMMENT="Cache";
-		END_VARIABLES;
-		OPERATIONS
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	CLASS LoadLibs : CLASS CTree/Common
-		IS_INSTANTIABLE;
-		VARIABLES
-			targetKS:	STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
-			status : UINT FLAGS="o"	COMMENT="State of object; 0: Initial; 1: Info requested; 2: Info received; 3: Data sent; 4: Done" INITIALVALUE=0;
-			targetOS: STRING FLAGS="ho" COMMENT="OS of target server";
-			targetArch: UINT FLAGS="ho" COMMENT="Architecture of target server";
-			targetLibs[]: STRING FLAGS="ho" COMMENT="Libraries on target server addonlibs"; 
-			OS: STRING FLAGS="ho" COMMENT="OS of current server";
-			Arch: UINT FLAGS="ho" COMMENT="Architecture of current server";
-			libsToSend[]: STRING FLAGS="i" COMMENT="Libraries to send";
-			
-			reset		:	BOOL	HAS_SET_ACCESSOR
-				FLAGS="i"
-				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
-				INITIALVALUE	= FALSE;
-			
-			postCallback:		C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
-			//autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
-			
-			//libsToDownload[]: STRING FLAGS="i" COMMENT="Libraries to download";
-			//libsPositions[]: UINT FLAGS= "i"	COMMENT="Positions of libraries in Bytevec"; 
-			//byteLibs: ANY FLAGS="i" COMMENT = "Libraries as Bytevec";
-			
-		END_VARIABLES;
-		PARTS
-			ks:		CLASS	ksxdr/xdrClient;
-			sendFiles:	CLASS	CTree/SendFiles;
-		END_PARTS;
-		OPERATIONS
-			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
-			startup      : C_FUNCTION <OV_FNC_STARTUP>;
-    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
-    		
-			typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	CLASS	Transport					:	CLASS	CTree/Common
-		IS_INSTANTIABLE;
-		COMMENT	=	"Transport of tree from one server to another with Upload and Download";
-		VARIABLES
-			/* Input *************************************************/
-			targetKS:	STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
-			targetDownloadPath:	STRING FLAGS="i" COMMENT="path of download object." INITIALVALUE="";
-			
-			path: STRING FLAGS="i" COMMENT="path of object to transport as json" INITIALVALUE="/TechUnits";
-			holdConnection	:	BOOL FLAGS="i"
-				COMMENT			=	"Tell client not to close the connection after each request"
-				INITIALVALUE	=	FALSE;
-			reset		:	BOOL	HAS_SET_ACCESSOR
-				FLAGS="i"
-				COMMENT	=	"Rising edge triggers reset of Client object and sets status and result to 0"
-				INITIALVALUE	= FALSE;
-			autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
-			
-			status		:	INT FLAGS="o" 
-				COMMENT			= "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: upload request sent; 3: completed;"
-				INITIALVALUE	=	0;
+  /**
+    Documentation of Common.
+    @note Javadoc syntax is allowed here.
+    @attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+  */
+  
+  CLASS Common : CLASS fb/functionblock
+    VARIABLES
+      result    : INT FLAGS="o"
+        COMMENT     = "Result: 0: Success; 1: Error; 4: Bad Param"
+        INITIALVALUE  = 0;
+      ErrorMsg: STRING FLAGS="o" COMMENT = "Error log" INITIALVALUE="";
+      trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do. !!!Error Result means either set didnt work or Object returns Error"  INITIALVALUE=0;
+    END_VARIABLES;
+  END_CLASS;
+  
+  CLASS Download : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    VARIABLES
+      json: STRING FLAGS="i" COMMENT="Tree to download as json format";
+      path: STRING FLAGS="i" COMMENT="where to download" INITIALVALUE="/TechUnits";
+      force: BOOL FLAGS="i" COMMENT="TODO: if to create tree, eventhough the root doesnt exist" INITIALVALUE=FALSE;
+      cache: C_TYPE <CTreeDownloadCache> COMMENT="Cache of Object";
+    END_VARIABLES;
+    OPERATIONS
+      typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  /**
+    Documentation of Writefiles.
+  */
+  CLASS WriteFiles : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    VARIABLES
+      filesToWrite[]: STRING FLAGS="i" COMMENT="Files to write";
+      filesPositions[]: UINT FLAGS= "i" COMMENT="Positions of files in Bytevec"; 
+      byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
+    END_VARIABLES;
+    OPERATIONS
+      typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+      write    : C_FUNCTION <CTREE_WRITEFILES_WRITE>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  /**
+    Documentation of SendFiles.
+  */
+  CLASS SendFiles : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    VARIABLES
+      targetKS: STRING FLAGS="i" COMMENT="IP(:PORT(default 7509))/serverName \n f.e. localhost/MANAGER" INITIALVALUE="";
+      filesToSend[]: STRING FLAGS="i" COMMENT="Files to send. /home/a/b/d.so or ../c/d";
+      whereToSend[]: STRING FLAGS="i" COMMENT="Where to save files on target server. /home/a/b/c/d or ../a/b/d";
+      //filesPositions[]: UINT FLAGS= "i" COMMENT="Positions of files in Bytevec"; 
+      //byteFiles: ANY FLAGS="i" COMMENT = "Files as Bytevec";
+      
+      reset   : BOOL  HAS_SET_ACCESSOR
+        FLAGS="i"
+        COMMENT = "Rising edge triggers reset of Client object and sets status and result to 0"
+        INITIALVALUE  = FALSE;
+      status    : INT FLAGS="o" 
+        COMMENT     = "Status: 0: initial; 1: request sent, waiting for answer; 2: completed;"
+        INITIALVALUE  = 0;
+      postCallback:   C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
+    END_VARIABLES;
+    PARTS
+      ks  : CLASS ksxdr/xdrClient;
+    END_PARTS;
+    OPERATIONS
+      typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  
+  /**
+    Documentation of Copy.
+    @note Javadoc syntax is allowed here.
+    @attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
+  */
+  CLASS Upload : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    VARIABLES
+      getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
+      path: STRING FLAGS="i" COMMENT="path of object to upload as json" INITIALVALUE="/TechUnits";
+      
+      tree: STRING FLAGS="o" COMMENT="tree as json";
+      libs[]: STRING FLAGS="o" COMMENT="libs used in tree";
+      
+      cache:  C_TYPE <CTreeUploadCache> COMMENT="Cache";
+      keepJson : BOOL
+          FLAGS="i"
+          COMMENT="If true, cJSON in pinst->v_jsbase, is not deleted after execute !!careful !!memleak"
+          INITIALVALUE=FALSE;
+    END_VARIABLES;
+    OPERATIONS
+      typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  CLASS LoadLibs : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    VARIABLES
+      targetKS: STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
+      status : UINT FLAGS="o" COMMENT="State of object; 0: Initial; 1: Info requested; 2: Info received; 3: Data sent; 4: Done" INITIALVALUE=0;
+      targetOS: STRING FLAGS="ho" COMMENT="OS of target server";
+      targetArch: UINT FLAGS="ho" COMMENT="Architecture of target server";
+      targetLibs[]: STRING FLAGS="ho" COMMENT="Libraries on target server addonlibs"; 
+      OS: STRING FLAGS="ho" COMMENT="OS of current server";
+      Arch: UINT FLAGS="ho" COMMENT="Architecture of current server";
+      libsToSend[]: STRING FLAGS="i" COMMENT="Libraries to send";
+      
+      reset   : BOOL  HAS_SET_ACCESSOR
+        FLAGS="i"
+        COMMENT = "Rising edge triggers reset of Client object and sets status and result to 0"
+        INITIALVALUE  = FALSE;
+      
+      postCallback:   C_TYPE<KSBASE_CALLBACKSTRUCT> COMMENT="calls outerobject if assignment is from outerobject";
+      //autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
+      
+      //libsToDownload[]: STRING FLAGS="i" COMMENT="Libraries to download";
+      //libsPositions[]: UINT FLAGS= "i"  COMMENT="Positions of libraries in Bytevec"; 
+      //byteLibs: ANY FLAGS="i" COMMENT = "Libraries as Bytevec";
+      
+    END_VARIABLES;
+    PARTS
+      ks:   CLASS ksxdr/xdrClient;
+      sendFiles:  CLASS CTree/SendFiles;
+    END_PARTS;
+    OPERATIONS
+      constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
+      startup      : C_FUNCTION <OV_FNC_STARTUP>;
+        shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
+        
+      typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  CLASS Transport         : CLASS CTree/Common
+    IS_INSTANTIABLE;
+    COMMENT = "Transport of tree from one server to another with Upload and Download";
+    VARIABLES
+      /* Input *************************************************/
+      targetKS: STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
+      targetDownloadPath: STRING FLAGS="i" COMMENT="path of download object." INITIALVALUE="";
+      
+      path: STRING FLAGS="i" COMMENT="path of object to transport as json" INITIALVALUE="/TechUnits";
+      holdConnection  : BOOL FLAGS="i"
+        COMMENT     = "Tell client not to close the connection after each request"
+        INITIALVALUE  = FALSE;
+      reset   : BOOL  HAS_SET_ACCESSOR
+        FLAGS="i"
+        COMMENT = "Rising edge triggers reset of Client object and sets status and result to 0"
+        INITIALVALUE  = FALSE;
+      autoUpload: BOOL FLAGS="i" COMMENT="if the Upload object in target server automatically created, triggered and deleted";
+      
+      status    : INT FLAGS="o" 
+        COMMENT     = "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: upload request sent; 3: completed;"
+        INITIALVALUE  = 0;
 
-		  targetHost	:	STRING FLAGS="h"
-		  				COMMENT			=	"targetHost"
-		  				INITIALVALUE	=	"";
-		  targetHostPort	:	STRING FLAGS="h"
-		  				COMMENT			=	"targetHostPort"
-		  				INITIALVALUE	=	"";
-		  targetServer	:	STRING FLAGS="h"
-		  				COMMENT			=	"targetServer"
-		  				INITIALVALUE	=	"";
-		  targetServerPort	:	STRING FLAGS="h"
-		  				COMMENT			=	"targetServerPort"
-		  				INITIALVALUE	=	"";
-		  targetPath	:	STRING FLAGS="h"
-		  				COMMENT			=	"targetPath"
-		  				INITIALVALUE	=	"";
-		END_VARIABLES;
-		PARTS
-			loadlibs	:	CLASS CTree/LoadLibs;
-			upload		:	CLASS CTree/Upload;
-		END_PARTS;
-		OPERATIONS
-			startup				:	C_FUNCTION <OV_FNC_STARTUP>;
-			shutdown			:	C_FUNCTION <OV_FNC_SHUTDOWN>;
-			submit				:	C_FUNCTION <CTREE_FNC_SUBMIT>;
-			//getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
-			prepareSubmit		:	C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
-			genSetForSubmit		:	C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
-			typemethod			:	C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	CLASS dbinfoExt : CLASS ov/object
-		IS_INSTANTIABLE;
-		VARIABLES
-			serversystem : STRING             FLAGS = "o"  COMMENT = "Server-Plattform";
-			serversystemarch : UINT             FLAGS = "o"  COMMENT = "Server-Plattform architecture";
-			acplthome : STRING             FLAGS = "o"  COMMENT = "ACPLT-Home path";
-			addonlibs[] : STRING   HAS_GET_ACCESSOR      FLAGS = "o"  COMMENT = "libs in ../addonlibs";
-			lastUpdate : TIME   FLAGS = "o"  COMMENT = "Last update of libraries";
-		END_VARIABLES;
-		OPERATIONS
-			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-			destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
-			startup      : C_FUNCTION <OV_FNC_STARTUP>;
-    		shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
-			getaccess    : C_FUNCTION <OV_FNC_GETACCESS>;
-		END_OPERATIONS;
-	END_CLASS;
+      targetHost  : STRING FLAGS="h"
+              COMMENT     = "targetHost"
+              INITIALVALUE  = "";
+      targetHostPort  : STRING FLAGS="h"
+              COMMENT     = "targetHostPort"
+              INITIALVALUE  = "";
+      targetServer  : STRING FLAGS="h"
+              COMMENT     = "targetServer"
+              INITIALVALUE  = "";
+      targetServerPort  : STRING FLAGS="h"
+              COMMENT     = "targetServerPort"
+              INITIALVALUE  = "";
+      targetPath  : STRING FLAGS="h"
+              COMMENT     = "targetPath"
+              INITIALVALUE  = "";
+    END_VARIABLES;
+    PARTS
+      loadlibs  : CLASS CTree/LoadLibs;
+      upload    : CLASS CTree/Upload;
+    END_PARTS;
+    OPERATIONS
+      startup       : C_FUNCTION <OV_FNC_STARTUP>;
+      shutdown      : C_FUNCTION <OV_FNC_SHUTDOWN>;
+      submit        : C_FUNCTION <CTREE_FNC_SUBMIT>;
+      //getaccess     : C_FUNCTION <OV_FNC_GETACCESS>;    /*  just to make all variables visible on KS  */
+      prepareSubmit   : C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
+      genSetForSubmit   : C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;
+      typemethod      : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  CLASS dbinfoExt : CLASS ov/object
+    IS_INSTANTIABLE;
+    VARIABLES
+      serversystem : STRING             FLAGS = "o"  COMMENT = "Server-Plattform";
+      serversystemarch : UINT             FLAGS = "o"  COMMENT = "Server-Plattform architecture";
+      acplthome : STRING             FLAGS = "o"  COMMENT = "ACPLT-Home path";
+      addonlibs[] : STRING   HAS_GET_ACCESSOR      FLAGS = "o"  COMMENT = "libs in ../addonlibs";
+      lastUpdate : TIME   FLAGS = "o"  COMMENT = "Last update of libraries";
+    END_VARIABLES;
+    OPERATIONS
+      constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
+      startup      : C_FUNCTION <OV_FNC_STARTUP>;
+        shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
+      getaccess    : C_FUNCTION <OV_FNC_GETACCESS>;
+    END_OPERATIONS;
+  END_CLASS;
 
-	CLASS helper : CLASS ov/object
-		VARIABLES
-		END_VARIABLES;
-		OPERATIONS
-			ovtypeToStr 	: C_FUNCTION <OVTYPE_TO_STRING>;
-			strToOVType 	: C_FUNCTION <STRING_TO_OVTYPE>;
-			accessToStr	:	C_FUNCTION <ACCESS_TO_STRING>;
-			getfactory	: C_FUNCTION <GET_FACTORY>;
-			strlistcat: C_FUNCTION <STR_LIST_CAT>;
-			
-			setKSParam	:	C_FUNCTION <SET_KSPARAM>;
-		END_OPERATIONS;
-	END_CLASS;
-	
-	
-	CLASS test : CLASS fb/functionblock
-	IS_INSTANTIABLE;
-	VARIABLES
-		//varVoid: C_TYPE<OV_VOID>;
-		varByte: ANY FLAGS="i";
-		varBool: BOOL FLAGS="o" COMMENT= "a ";
-		varInt: INT  FLAGS="o" INITIALVALUE=-1;
-		varUint: UINT  FLAGS="o" INITIALVALUE=1;
-		varSingle: SINGLE FLAGS="i" INITIALVALUE=1.1;
-		varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
-		varString: STRING FLAGS="i" INITIALVALUE="string test";
-		varTime:	TIME FLAGS="i";
-		varFunctionedTimefromVarTime:	TIME FLAGS="i";
-		varTimeSpan:	TIME_SPAN FLAGS="o";
-		varState:	C_TYPE<OV_STATE> FLAGS="i";
-		varStruct:	C_TYPE<TestStruct> FLAGS="i";
-		
-		
-		varByteVec:	ANY FLAGS="o";
-		varBoolVec[]: BOOL FLAGS="i";
-		varIntVec[]:	INT FLAGS="i";
-		varUintVec[]:	UINT FLAGS="o";
-		varSingleVec[]:	SINGLE FLAGS="i";
-		varDoubleVec[]:	DOUBLE FLAGS="o";
-		varStringVec[]:	STRING FLAGS="i";
-		varTimeVec[]:	TIME FLAGS="o";
-		varTimeSpanVec[]:	TIME_SPAN FLAGS="i";
-		//varStructVec:	C_TYPE<TestStruct>;
-		
-	END_VARIABLES;
-	PARTS
-		testpart1:	CLASS ksxdr/xdrClient;
-		testpart2:	CLASS ksxdr/xdrClient;
-	END_PARTS;
-	OPERATIONS
-		typemethod		: C_FUNCTION <FB_FNC_TYPEMETHOD>;
-		startup				:	C_FUNCTION <OV_FNC_STARTUP>;
-		shutdown				:	C_FUNCTION <OV_FNC_SHUTDOWN>;
-	END_OPERATIONS;
-	END_CLASS;
+  CLASS helper : CLASS ov/object
+    VARIABLES
+    END_VARIABLES;
+    OPERATIONS
+      ovtypeToStr   : C_FUNCTION <OVTYPE_TO_STRING>;
+      strToOVType   : C_FUNCTION <STRING_TO_OVTYPE>;
+      accessToStr : C_FUNCTION <ACCESS_TO_STRING>;
+      getfactory  : C_FUNCTION <GET_FACTORY>;
+      strlistcat: C_FUNCTION <STR_LIST_CAT>;
+      
+      setKSParam  : C_FUNCTION <SET_KSPARAM>;
+    END_OPERATIONS;
+  END_CLASS;
+  
+  
+  CLASS test : CLASS fb/functionblock
+  IS_INSTANTIABLE;
+  VARIABLES
+    //varVoid: C_TYPE<OV_VOID>;
+    varByte: ANY FLAGS="i";
+    varBool: BOOL FLAGS="o" COMMENT= "a ";
+    varInt: INT  FLAGS="o" INITIALVALUE=-1;
+    varUint: UINT  FLAGS="o" INITIALVALUE=1;
+    varSingle: SINGLE FLAGS="i" INITIALVALUE=1.1;
+    varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
+    varString: STRING FLAGS="i" INITIALVALUE="string test";
+    varTime:  TIME FLAGS="i";
+    varFunctionedTimefromVarTime: TIME FLAGS="i";
+    varTimeSpan:  TIME_SPAN FLAGS="o";
+    varState: C_TYPE<OV_STATE> FLAGS="i";
+    varStruct:  C_TYPE<TestStruct> FLAGS="i";
+    
+    
+    varByteVec: ANY FLAGS="o";
+    varBoolVec[]: BOOL FLAGS="i";
+    varIntVec[]:  INT FLAGS="i";
+    varUintVec[]: UINT FLAGS="o";
+    varSingleVec[]: SINGLE FLAGS="i";
+    varDoubleVec[]: DOUBLE FLAGS="o";
+    varStringVec[]: STRING FLAGS="i";
+    varTimeVec[]: TIME FLAGS="o";
+    varTimeSpanVec[]: TIME_SPAN FLAGS="i";
+    //varStructVec: C_TYPE<TestStruct>;
+    
+  END_VARIABLES;
+  PARTS
+    testpart1:  CLASS ksxdr/xdrClient;
+    testpart2:  CLASS ksxdr/xdrClient;
+  END_PARTS;
+  OPERATIONS
+    typemethod    : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    startup       : C_FUNCTION <OV_FNC_STARTUP>;
+    shutdown        : C_FUNCTION <OV_FNC_SHUTDOWN>;
+  END_OPERATIONS;
+  END_CLASS;
 
-	/**
-		Add associations and their documentation here.
-		Association syntax is:
-	*/
-	//ASSOCIATION assocName : ONE_TO_MANY
-	//	PARENT parentVarName : CLASS ov/object;
-	//	CHILD  childVarName : CLASS ov/object;
-	//END_ASSOCIATION;
-	
+  /**
+    Add associations and their documentation here.
+    Association syntax is:
+  */
+  //ASSOCIATION assocName : ONE_TO_MANY
+  //  PARENT parentVarName : CLASS ov/object;
+  //  CHILD  childVarName : CLASS ov/object;
+  //END_ASSOCIATION;
+  
 END_LIBRARY;
