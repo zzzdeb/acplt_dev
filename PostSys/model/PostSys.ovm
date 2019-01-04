@@ -186,10 +186,9 @@ END_CLASS;
         FLAGS = "p"
         COMMENT = "Length of Message Queue. If full, no new orders are accepted"
         INITIALVALUE  = 1;
-      msgsInQueue : UINT
+      msgsInQueue : UINT IS_DERIVED HAS_GET_ACCESSOR
         FLAGS = "h"
-        COMMENT = "NUMBER of messages currently waiting to be sent"
-        INITIALVALUE  = 0;
+        COMMENT = "NUMBER of messages currently waiting to be sent";
       receiverInstance[]  : STRING
         FLAGS = "i"
         COMMENT = "Instance which will receive the Message ink. path. Last one is destination";
@@ -199,7 +198,7 @@ END_CLASS;
       receiverHost[]  : STRING
         FLAGS = "i"
         COMMENT = "Hostname of receiving machine ink. path. Last one is destination";
-      pathLen : UINT
+      pathLen : UINT 
         HAS_ACCESSORS
         FLAGS = "i"
         COMMENT = "Pathlen to travel";
@@ -209,6 +208,7 @@ END_CLASS;
         INITIALVALUE = 0;
     END_VARIABLES;
     OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
       typemethod  : C_FUNCTION  <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;

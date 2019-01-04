@@ -29,10 +29,47 @@
 #include "acplt_simpleMsgHandling.h"
 #include "ksbase_helper.h"
 
+OV_DLLFNCEXPORT OV_RESULT
+                PostSys_msgCreator_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                     result = OV_ERR_OK;
+  OV_INSTPTR_PostSys_msgCreator pinst =
+      Ov_StaticPtrCast(PostSys_msgCreator, pobj);
+
+  result = fb_functionblock_constructor(pobj);
+  result |= PostSys_msgCreator_pathLen_set(pinst, 1);
+  result |=
+      PostSys_msgCreator_dst_set(pinst, "//localhost:7509/MANAGER/TechUnits");
+
+  return result;
+}
+
+OV_DLLFNCEXPORT OV_UINT
+                PostSys_msgCreator_msgsInQueue_get(OV_INSTPTR_PostSys_msgCreator pinst) {
+  OV_UINT                    msgs = 0;
+  OV_INSTPTR_PostSys_Message pMsg = NULL;
+  Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) { msgs++; }
+  return msgs;
+}
+
+OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathElem_push(
+    OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS) {
+  OV_RESULT result = OV_ERR_OK;
+  OV_UINT   currentLen = PostSys_msgCreator_pathLen_get(pinst);
+  result |= PostSys_msgCreator_pathLen_set(pinst, currentLen + 1);
+  result |= PostSys_msgCreator_pathElem_set(pinst, dstKS, currentLen);
+  return result;
+}
+
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_dst_set(
     OV_INSTPTR_PostSys_msgCreator pinst, OV_STRING dstKS) {
-  return PostSys_msgCreator_pathElem_set(
+  OV_RESULT result = OV_ERR_OK;
+  if(!PostSys_msgCreator_pathLen_get(pinst)) {
+    result |= PostSys_msgCreator_pathLen_set(pinst, 1);
+    ov_logfile_warning("PostSys_msgCreator: pathLen was 0");
+  }
+  result |= PostSys_msgCreator_pathElem_set(
       pinst, dstKS, PostSys_msgCreator_pathLen_get(pinst) - 1);
+  return result;
 }
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathElem_set(
@@ -86,13 +123,13 @@ OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
     OV_INSTPTR_PostSys_msgCreator pobj, const OV_UINT value) {
-  pobj->v_pathLen = value;
   OV_STRING_VEC* tmp[] = {&pobj->v_receiverHost, &pobj->v_receiverName,
                           &pobj->v_receiverInstance};
-  OV_UINT        len = tmp[1]->veclen;
+  OV_UINT        len = PostSys_msgCreator_pathLen_get(pobj);
   for(OV_UINT i = 0; i < 3; i++) {
     if(len != value) {
       Ov_SetDynamicVectorLength(tmp[i], value, STRING);
+      /* setting added values to NULL */
       if(len < value) {
         for(OV_UINT j = len; j < value; j++) {
           tmp[i]->value[j] = NULL;
@@ -100,13 +137,12 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
       }
     }
   }
-
   return OV_ERR_OK;
 }
 
 OV_DLLFNCEXPORT OV_UINT
                 PostSys_msgCreator_pathLen_get(OV_INSTPTR_PostSys_msgCreator pinst) {
-  return pinst->v_pathLen;
+  return pinst->v_receiverHost.veclen;
 }
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
@@ -136,7 +172,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
   if(!value || !*value)
     return OV_ERR_OK;
 
-  if(pobj->v_msgsInQueue >= pobj->v_queueLength)
+  if(PostSys_msgCreator_msgsInQueue_get(pobj) >= pobj->v_queueLength)
     return OV_ERR_NOACCESS;
 
   for(i = 0; value[i] != '\0'; i++) {
@@ -148,7 +184,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
                              */
 
   // todo check lenght r same, and check if it is greater than 2
-  pathLen = pobj->v_receiverHost.veclen;
+  pathLen = PostSys_msgCreator_pathLen_get(pobj);
   OV_STRING_VEC* a[3] = {&pobj->v_receiverHost, &pobj->v_receiverName,
                          &pobj->v_receiverInstance};
   for(OV_UINT i = 0; i < 3; i++) {
@@ -289,7 +325,6 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
     ov_memstack_unlock();
     return result;
   }
-  pobj->v_msgsInQueue++;
   ov_memstack_unlock();
 
   return OV_ERR_OK;
