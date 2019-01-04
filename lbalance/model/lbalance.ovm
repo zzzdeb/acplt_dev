@@ -37,10 +37,6 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "common class to handle error";
     VARIABLES
-      reset : BOOL HAS_SET_ACCESSOR
-          FLAGS="i"
-          COMMENT="Resets lbalance objects"
-          INITIALVALUE=FALSE;
       status  : INT FLAGS="o" 
         COMMENT     = "0: INIT, 1-63: custom, 64: INTERNALERROR, 128: EXTERNALERROR"
         INITIALVALUE  = 0;
@@ -60,6 +56,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";
@@ -91,6 +91,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "inform neighbors about yourself";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       sum : UINT 
         FLAGS="i"
         COMMENT     = "sum of loads";
@@ -129,6 +133,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "receives info from neighbors & creates databank";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       loads[] : UINT
           FLAGS="o"
           COMMENT     = "list of neigborloads";
@@ -159,6 +167,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "request sender to one neighbor";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       outApp  : STRING 
           FLAGS="i"
           COMMENT     = "app to be sent"
@@ -183,12 +195,17 @@ LIBRARY lbalance
           FLAGS="o"
           COMMENT     = "request"
           INITIALVALUE  = "";
+      tmpREQRECPATH : STRING
+          FLAGS="i"
+          COMMENT="temporary path to receiver"
+          INITIALVALUE="";
     END_VARIABLES;
     PARTS
       sender : CLASS PostSys/msgCreator;
     END_PARTS;
     OPERATIONS
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
     END_OPERATIONS;
   END_CLASS;
 
@@ -196,6 +213,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "receives Request as msg";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       reqIPs[]  : STRING
           FLAGS="o"
           COMMENT     = "IPs of requests";
@@ -218,6 +239,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "notifies the choosen node about acceptance";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       reqIPs[]  : STRING
           FLAGS="i"
           COMMENT     = "IPs of requests";
@@ -241,6 +266,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "initiate send";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       outApp  : STRING
           FLAGS="i"
           COMMENT     = "app to send out"
@@ -327,6 +356,10 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "sync state machine";
     VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
       init  : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
           COMMENT     = "sets back to B state"

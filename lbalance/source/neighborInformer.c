@@ -32,6 +32,13 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_neighborInformer_B_set(
   return 0;
 }
 
+OV_DLLFNCEXPORT OV_RESULT lbalance_neighborInformer_reset_set(
+    OV_INSTPTR_lbalance_neighborInformer pinst, const OV_BOOL value) {
+  pinst->v_reset = value;
+
+  return 0;
+}
+
 OV_DLLFNCEXPORT void
 lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                      OV_TIME*                    pltc) {

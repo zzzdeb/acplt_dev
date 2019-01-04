@@ -27,6 +27,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_reset_set(
     OV_INSTPTR_lbalance_reqReceiver pobj, const OV_BOOL value) {
   OV_RESULT result = OV_ERR_OK;
   if(value && !pobj->v_reset) {
+    pobj->v_status = 0;
+    pobj->v_result = 0;
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqIPs, 0, STRING);
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqLoads, 0, UINT);
   }

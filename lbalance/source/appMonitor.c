@@ -36,8 +36,13 @@ OV_DLLFNCEXPORT OV_UINT
 
 OV_DLLFNCEXPORT OV_RESULT lbalance_appMonitor_reset_set(
     OV_INSTPTR_lbalance_appMonitor pinst, const OV_BOOL value) {
+  OV_RESULT result = OV_ERR_OK;
+  if(value && !pinst->v_reset) {
+    pinst->v_status = 0;
+    pinst->v_result = 0;
+  }
   pinst->v_reset = value;
-  return 0;
+  return result;
 }
 
 OV_DLLFNCEXPORT void

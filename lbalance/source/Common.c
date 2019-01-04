@@ -18,12 +18,6 @@
 
 #include "libov/ov_macros.h"
 
-OV_DLLFNCEXPORT OV_RESULT lbalance_Common_reset_set(
-    OV_INSTPTR_lbalance_Common pinst, const OV_BOOL value) {
-  pinst->v_reset = value;
-  return 0;
-}
-
 OV_DLLFNCEXPORT void lbalance_Common_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                                 OV_TIME* pltc) {
   /*
