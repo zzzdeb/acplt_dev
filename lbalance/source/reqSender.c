@@ -27,6 +27,31 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_result.h"
 
+OV_DLLFNCEXPORT OV_RESULT
+                lbalance_reqSender_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                     result = OV_ERR_OK;
+  OV_INSTPTR_lbalance_reqSender pinst =
+      Ov_StaticPtrCast(lbalance_reqSender, pobj);
+
+  result = fb_functionblock_constructor(pobj);
+  result |= Ov_Link(fb_tasklist, pinst, &pinst->p_sender);
+  pinst->p_sender.v_actimode = 1;
+  pinst->p_sender.v_iexreq = 1;
+
+  return result;
+}
+
+OV_DLLFNCEXPORT OV_RESULT lbalance_reqSender_reset_set(
+    OV_INSTPTR_lbalance_reqSender pinst, const OV_BOOL value) {
+  OV_RESULT result = OV_ERR_OK;
+  if(value && !pinst->v_reset) {
+    pinst->v_status = 0;
+    pinst->v_result = 0;
+  }
+  pinst->v_reset = value;
+  return result;
+}
+
 OV_DLLFNCEXPORT OV_UINT
                 lbalance_reqSender_outLoad_get(OV_INSTPTR_lbalance_reqSender pobj) {
   return pobj->v_outLoad;
@@ -62,7 +87,6 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   switch(pinst->v_status) {
     case LB_REQSENDER_INIT:
       if(pinst->v_R) {
-        // TODO: zzz: checkparam :2019 Jan 03 14:05
         /* pinst->v_sysInfo */
         if(!pinst->v_outApp || !pinst->v_outRequirements ||
            !pinst->v_destination) {
@@ -97,16 +121,16 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
 
         /* create neighbor ks*/
         if(targetHostPort) {
-          result |=
-              ov_string_print(&dstKS, "//%s:%d/%s%s", targetHost,
-                              targetHostPort, targetServer, LB_REQREC_PATH);
+          result |= ov_string_print(&dstKS, "//%s:%d/%s%s", targetHost,
+                                    targetHostPort, targetServer,
+                                    pinst->v_tmpREQRECPATH);
         } else {
           result |= ov_string_print(&dstKS, "//%s/%s%s", targetHost,
-                                    targetServer, LB_REQREC_PATH);
+                                    targetServer, pinst->v_tmpREQRECPATH);
         }
         /* send to neighbor */
         result |= PostSys_msgCreator_dst_set(psender, dstKS);
-        result |= ov_string_append(&order, ";;");
+        result |= ov_string_append(&order, "a;a;");
         /* result |= ov_string_append(&order, ";"); */
         cJSON* jsMsg = cJSON_CreateArray();
         /* order is important. see helper */

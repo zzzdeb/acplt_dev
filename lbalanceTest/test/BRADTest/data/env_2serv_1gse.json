@@ -19,6 +19,12 @@
                     "iexreq": ["BOOL", true]
                   }
                 },
+                    "reqSender": {
+                      "class": "lbalance/reqSender",
+                      "variables": {
+                        "tmpREQRECPATH": ["STRING", "/TechUnits/BRADTest/case_2serv_1gse/env/src/BRAD.reqReceiver"]
+                      }
+                    },
                 "mock": {
                   "class": "lbalance/mock",
                   "links": {
@@ -218,6 +224,12 @@
                     "iexreq": ["BOOL", true]
                   }
                 },
+                    "reqSender": {
+                      "class": "lbalance/reqSender",
+                      "variables": {
+                        "tmpREQRECPATH": ["STRING", "/TechUnits/BRADTest/case_2serv_1gse/env/dst/BRAD.reqReceiver"]
+                      }
+                    },
                 "mock": {
                   "class": "lbalance/mock",
                   "links": {
