@@ -35,7 +35,7 @@ for (OV_UINT ${2:i} = 0; $2 < ${1:i}; ${3:++$2}) {
 
 endsnippet
 
-snippet if "if(Ov_Fail(result))" "re.match('^\s+[^=]*result\s*=', snip.buffer[snip.line-1])" be
+snippet if "if(Ov_Fail(result))" "re.match('^\s+[^=]*result\s*\|?=', snip.buffer[snip.line-1])" be
 if(Ov_Fail(result)){
   ov_logfile_error("%u: %s: $1", result, ov_result_getresulttext(result));
   return result;
@@ -61,6 +61,9 @@ endsnippet
 snippet todo "ov todo"
 //TODO: `echo $USER:` ${1:desc} :`!v strftime("%Y %b %d %H:%M ")`
 endsnippet
+snippet fix "ov fix"
+//FIXME: `echo $USER:` ${1:desc} :`!v strftime("%Y %b %d %H:%M ")`
+endsnippet
 
 snippet opd "ov ptr" b
 OV_INSTPTR_${1:ov_object} ${2:pobj} = ${3:NULL};
@@ -78,7 +81,7 @@ return result;
 endsnippet
 
 snippet res= "result |= "
-  result |= 
+result |= 
 endsnippet
 
 snippet ofunc "ov function"
@@ -198,18 +201,18 @@ endsnippet
 snippet otempsrcfile "template of source file"
 /******************************************************************************
  *
- *   FILE
+ *   file
  *   ----
  *   `!v expand("%:t")`
  *
- *   History
+ *   history
  *   -------
- *   `!v strftime("%c")`   File created
+ *   `!v strftime("%c")`   file created
  *
  ******************************************************************************/
 
-#ifndef OV_COMPILE_LIBRARY_${1:`!v expand("%:p:h:h:t")`}
-#define OV_COMPILE_LIBRARY_$1
+#ifndef ov_compile_library_${1:`!v expand("%:p:h:h:t")`}
+#define ov_compile_library_$1
 #endif
 
 #include "$1.h"
@@ -354,7 +357,7 @@ OV_DLLFNCEXPORT void ${1:`!v expand("%:p:h:h:t")`}_${2:`!v expand("%:t:r")`}_typ
 
 endsnippet
 
-snippet olock "ov_memstack_lock" b
+snippet omemlock "ov_memstack_lock" b
 ov_memstack_lock();
 ${1:${VISUAL}}
 ov_memstack_unlock();
@@ -389,3 +392,53 @@ OV_DLLFNCEXPORT void
 }
 endsnippet
 
+snippet otemplibopenfile "template of source file"
+/******************************************************************************
+ *
+ *   file
+ *   ----
+ *   `!v expand("%:t")`
+ *
+ *   history
+ *   -------
+ *   `!v strftime("%c")` zzz file created
+ *
+ ******************************************************************************/
+
+#ifndef OV_COMPILE_LIBRARY_${1:`!v expand("%:p:h:h:t")`}
+#define OV_COMPILE_LIBRARY_$1
+#endif
+
+#include "$1.h"
+#ifdef ov_library_open_$1
+#undef ov_library_open_$1
+#endif
+#include "libov/ov_macros.h"
+
+OV_RESULT ov_library_setglobalvars_$1_new(void) {
+  OV_RESULT                   result = OV_ERR_OK;
+
+  result = ov_library_setglobalvars_$1();
+  if(Ov_Fail(result)) {
+    ologe
+    return result;
+  }
+
+  $0
+
+  return OV_ERR_OK;
+}
+OV_DLLFNCEXPORT OV_LIBRARY_DEF* ov_library_open_$1(void) {
+  /* local variables */
+  static OV_LIBRARY_DEF* OV_LIBRARY_DEF_$1_new;
+  /*
+   *       replace the 'setglobalvars' function created by the code generator
+   *       with a new one.
+   */
+  OV_LIBRARY_DEF_$1_new = ov_library_open_$1_old();
+  OV_LIBRARY_DEF_$1_new->setglobalvarsfnc =
+      ov_library_setglobalvars_$1_new;
+  return OV_LIBRARY_DEF_$1_new;
+}
+
+endsnippet
