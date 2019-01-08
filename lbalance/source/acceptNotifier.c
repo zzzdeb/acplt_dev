@@ -19,9 +19,28 @@
 #define OV_COMPILE_LIBRARY_lbalance
 #endif
 
+#include "PostSys.h"
+#include "PostSys_helper.h"
 #include "lbalance.h"
 #include "lbalance_helper.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_path.h"
+#include "libov/ov_result.h"
+
+OV_DLLFNCEXPORT OV_RESULT
+                lbalance_acceptNotifier_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                          result = OV_ERR_OK;
+  OV_INSTPTR_lbalance_acceptNotifier pinst =
+      Ov_StaticPtrCast(lbalance_acceptNotifier, pobj);
+
+  result = fb_functionblock_constructor(pobj);
+
+  result |= Ov_Link(fb_tasklist, pinst, &pinst->p_sender);
+  pinst->p_sender.v_actimode = 1;
+  pinst->p_sender.v_iexreq = 1;
+
+  return result;
+}
 
 OV_DLLFNCEXPORT OV_RESULT lbalance_acceptNotifier_reset_set(
     OV_INSTPTR_lbalance_acceptNotifier pinst, const OV_BOOL value) {
@@ -29,14 +48,20 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_acceptNotifier_reset_set(
   if(value && !pinst->v_reset) {
     pinst->v_status = 0;
     pinst->v_result = 0;
+    Ov_SetDynamicVectorLength(&pinst->v_reqIPs, 0, STRING);
+    pinst->v_index = 0;
+    pinst->v_A = 0;
   }
   pinst->v_reset = value;
   return result;
 }
 
 OV_DLLFNCEXPORT OV_RESULT lbalance_acceptNotifier_A_set(
-    OV_INSTPTR_lbalance_acceptNotifier pobj, const OV_BOOL value) {
-  pobj->v_A = value;
+    OV_INSTPTR_lbalance_acceptNotifier pinst, const OV_BOOL value) {
+  pinst->v_A = value;
+  if(!value && pinst->v_status == LB_ACCEPTNOTIFIER_SENT) {
+    pinst->v_status = LB_ACCEPTNOTIFIER_INIT;
+  }
   return OV_ERR_OK;
 }
 
@@ -46,10 +71,52 @@ lbalance_acceptNotifier_typemethod(OV_INSTPTR_fb_functionblock pfb,
   /*
    *   local variables
    */
+  OV_RESULT                          result = OV_ERR_OK;
   OV_INSTPTR_lbalance_acceptNotifier pinst =
       Ov_StaticPtrCast(lbalance_acceptNotifier, pfb);
+  OV_INSTPTR_PostSys_msgCreator psender =
+      Ov_DynamicPtrCast(PostSys_msgCreator, &pinst->p_sender);
+
+  OV_STRING dstKS = NULL;
+  OV_STRING order = NULL;
   switch(pinst->v_status) {
     case LB_ACCEPTNOTIFIER_INIT:
+      if(pinst->v_A) {
+        if(!pinst->v_reqIPs.veclen) {
+          ov_logfile_warning(
+              "lbalance_acceptNotifier: no reqIPs in this round");
+          pinst->v_status = LB_ACCEPTNOTIFIER_SENT;
+          return;
+        }
+        if(pinst->v_index >= pinst->v_reqIPs.veclen) {
+          pinst->v_status = LB_INTERNALERROR;
+          pinst->v_result = OV_ERR_BADVALUE;
+          return;
+        }
+        ov_memstack_lock();
+        /* create dstKS */
+        result |= ov_string_print(&dstKS, "%s%s",
+                                  pinst->v_reqIPs.value[pinst->v_index],
+                                  LB_SENDINIT_PATH);
+        ov_logfile_info("lbalance_acceptNotifier: %s chosen", dstKS);
+
+        /* send to neighbor */
+        result |= PostSys_msgCreator_dst_set(psender, dstKS);
+        result |= ov_string_print(&order, "a;a;%s", LB_ACCEPTNOTIFIER_KEYWORD);
+        result |= PostSys_msgCreator_order_set(psender, order);
+        ov_logfile_debug("lbalance_acceptNotifier: to: %s, %s", dstKS, order);
+        if(Ov_Fail(result)) {
+          ov_logfile_error("%u: %s: ", result, ov_result_getresulttext(result));
+          pinst->v_status = LB_INTERNALERROR;
+          pinst->v_result = result;
+          ov_memstack_unlock();
+          return;
+        }
+        ov_memstack_unlock();
+        pinst->v_status = LB_ACCEPTNOTIFIER_SENT;
+      }
+      break;
+    case LB_ACCEPTNOTIFIER_SENT:
 
       break;
 
