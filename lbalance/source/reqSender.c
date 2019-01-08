@@ -82,7 +82,14 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   OV_INSTPTR_PostSys_msgCreator psender =
       Ov_DynamicPtrCast(PostSys_msgCreator, &pinst->p_sender);
   OV_STRING order = NULL;
-  OV_STRING myIP = "//127.0.0.1:7509/MANAGER";
+  OV_STRING myIP = NULL;
+
+  OV_ANY servername = {0};
+  servername.value.vartype = OV_VT_VOID;
+  servername.value.valueunion.val_string = NULL;
+  ov_vendortree_getservername(&servername, NULL);
+  ov_string_print(&myIP, "//127.0.0.1/%s",
+                  servername.value.valueunion.val_string);
 
   switch(pinst->v_status) {
     case LB_REQSENDER_INIT:
@@ -143,6 +150,8 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         OV_STRING tmpStr = cJSON_Print(jsMsg);
         cJSON_Delete(jsMsg);
         result |= ov_string_append(&order, tmpStr);
+        ov_logfile_debug("lbalance_reqSender: to: %s; %s", dstKS, tmpStr);
+        free(tmpStr);
         result |= PostSys_msgCreator_order_set(psender, order);
         if(Ov_Fail(result)) {
           ov_logfile_error("%u: %s: ", result, ov_result_getresulttext(result));

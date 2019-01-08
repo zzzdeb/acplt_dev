@@ -155,6 +155,7 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
         }
 
         jsMsg = cJSON_Parse(value);
+        ov_logfile_debug("lbalance_reqReceiver: push: %s", value);
         if(!jsMsg || !cJSON_IsArray(jsMsg) ||
            cJSON_GetArraySize(jsMsg) != LB_REQREC_JSONLEN) {
           ov_logfile_warning("lbalance_neighborDB: msg: bad json format");
