@@ -31,6 +31,7 @@ sleep 1
 # weights 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.appMonitor.weights&newvalue=%7BGSE1%2610%7D%20%7BGSE2%2620%7D"
 
+curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.T%&newvalue=3"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.actimode&newvalue=1"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.iexreq&newvalue=1"
 nbIPs="\{localhost\}"
