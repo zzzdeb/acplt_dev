@@ -92,7 +92,8 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
            !pinst->v_destination) {
           ov_logfile_warning(
               "lbalance_reqSender: outApp or v_outRequirements  or "
-              "v_destination NULL");
+              "v_destination NULL in this Round");
+          pinst->v_status = LB_REQSENDER_SENT;
           return;
         }
         ov_memstack_lock();
@@ -121,12 +122,12 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
 
         /* create neighbor ks*/
         if(targetHostPort) {
-          result |= ov_string_print(&dstKS, "//%s:%d/%s%s", targetHost,
-                                    targetHostPort, targetServer,
-                                    pinst->v_tmpREQRECPATH);
+          result |=
+              ov_string_print(&dstKS, "//%s:%d/%s%s", targetHost,
+                              targetHostPort, targetServer, LB_REQREC_PATH);
         } else {
           result |= ov_string_print(&dstKS, "//%s/%s%s", targetHost,
-                                    targetServer, pinst->v_tmpREQRECPATH);
+                                    targetServer, LB_REQREC_PATH);
         }
         /* send to neighbor */
         result |= PostSys_msgCreator_dst_set(psender, dstKS);

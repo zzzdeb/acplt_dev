@@ -195,10 +195,6 @@ LIBRARY lbalance
           FLAGS="o"
           COMMENT     = "request"
           INITIALVALUE  = "";
-      tmpREQRECPATH : STRING
-          FLAGS="i"
-          COMMENT="temporary path to receiver"
-          INITIALVALUE="";
     END_VARIABLES;
     PARTS
       sender : CLASS PostSys/msgCreator;
