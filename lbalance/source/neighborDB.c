@@ -83,6 +83,7 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
 
   cJSON* jsMsg = NULL;
   cJSON* jsip = NULL;
+  cJSON* jsserv = NULL;
   cJSON* jsload = NULL;
   cJSON* jscap = NULL;
   cJSON* jsinfo = NULL;
@@ -174,6 +175,7 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         }
 
         jsMsg = cJSON_Parse(value);
+        ov_logfile_debug("lbalance_neighborDB: push: %s", value);
         if(!jsMsg || !cJSON_IsArray(jsMsg) ||
            cJSON_GetArraySize(jsMsg) != LB_NBINFORMER_JSONLEN) {
           ov_logfile_warning("lbalance_neighborDB: msg: bad json format");
@@ -183,6 +185,14 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
 
         jsip = cJSON_GetArrayItem(jsMsg, LB_NBINFORMER_IPPOS);
         if(!jsip || !cJSON_IsString(jsip)) {
+          ov_logfile_warning("lbalance_neighborDB: msg: bad json format at %d",
+                             LB_NBINFORMER_IPPOS);
+          Ov_DeleteObject(pMsg);
+          continue;
+        }
+
+        jsserv = cJSON_GetArrayItem(jsMsg, LB_NBINFORMER_SERVERPOS);
+        if(!jsserv || !cJSON_IsString(jsserv)) {
           ov_logfile_warning("lbalance_neighborDB: msg: bad json format at %d",
                              LB_NBINFORMER_IPPOS);
           Ov_DeleteObject(pMsg);
@@ -213,7 +223,8 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           continue;
         }
 
-        ov_string_setvalue(&pinst->v_IPs.value[currentInd], jsip->valuestring);
+        ov_string_print(&pinst->v_IPs.value[currentInd], "%s/%s",
+                        jsip->valuestring, jsserv->valuestring);
         pinst->v_caps.value[currentInd] = jscap->valueint;
         pinst->v_loads.value[currentInd] = jsload->valueint;
 

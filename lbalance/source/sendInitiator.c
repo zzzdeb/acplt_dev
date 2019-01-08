@@ -35,10 +35,10 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_sendInitiator_R_set(
   if(value && !pinst->v_R) {
     pinst->v_status = LB_SENDINIT_INIT;
     /* deleting all msgs in inbox */
+    ov_string_setvalue(&pinst->v_appPath, NULL);
     Ov_ForEachChildEx(ov_containment, &pinst->p_inbox, pMsg, PostSys_Message) {
       Ov_DeleteObject(pMsg);
     }
-    Ov_SetDynamicVectorLength(&pinst->v_appPaths, 0, STRING);
   }
   pinst->v_R = value;
   return result;
@@ -54,12 +54,9 @@ lbalance_sendInitiator_typemethod(OV_INSTPTR_fb_functionblock pfb,
       Ov_StaticPtrCast(lbalance_sendInitiator, pfb);
 
   OV_INSTPTR_PostSys_Message pMsg = NULL;
-  OV_STRING                  appPath = NULL;
   OV_RESULT                  result = OV_ERR_OK;
 
   OV_UINT waitingMsgsLen = 0;
-  fprintf(stderr, "%s", "test");
-  Ov_WarnIf(1);
 
   switch(pinst->v_status) {
     case LB_SENDINIT_INIT:
@@ -74,32 +71,17 @@ lbalance_sendInitiator_typemethod(OV_INSTPTR_fb_functionblock pfb,
           pinst->v_status = LB_SENDINIT_SENT;
           return;
         }
-        ov_logfile_info("lbalance_sendInitiator: accepted");
-
-        for(OV_UINT i = 0; i < pinst->v_appPaths.veclen; ++i) {
-          OV_INSTPTR_ov_domain pdom = NULL;
-          OV_INSTPTR_ov_object pobj = NULL;
-          pdom = Ov_StaticPtrCast(
-              ov_domain,
-              ov_path_getobjectpointer(pinst->v_appPaths.value[i], 2));
-          Ov_ForEachChild(ov_containment, pdom, pobj) {
-            if(ov_string_compare(pinst->v_outApp, pobj->v_identifier) ==
-               OV_STRCMP_EQUAL) {
-              ov_string_print(&appPath, "%s/%s", pinst->v_appPaths.value[i],
-                              pinst->v_outApp);
-              result |= ov_string_setvalue(&pinst->v_outApp, appPath);
-
-              if(Ov_Fail(result)) {
-                ov_logfile_error("%u: %s: ", result,
-                                 ov_result_getresulttext(result));
-                pinst->v_status = LB_INTERNALERROR;
-                pinst->v_result = result;
-                return;
-              }
-            }
-          }
+        ov_logfile_info("lbalance_sendInitiator: accepted %s", pinst->v_outApp);
+        result |= ov_string_setvalue(&pinst->v_appPath, pinst->v_outApp);
+        if(Ov_Fail(result)) {
+          ov_logfile_error("%u: %s: failed to set appPath", result,
+                           ov_result_getresulttext(result));
+          pinst->v_status = LB_INTERNALERROR;
+          pinst->v_result = result;
+          return;
         }
-
+        ov_logfile_info("lbalance_sendInitiator: accepting %s",
+                        pinst->v_appPath);
         break;
       }
     case LB_SENDINIT_SENT:

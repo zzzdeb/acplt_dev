@@ -76,15 +76,22 @@ OV_DLLFNCEXPORT void lbalance_mock_typemethod(OV_INSTPTR_fb_functionblock pfb,
    */
   OV_INSTPTR_lbalance_mock pinst = Ov_StaticPtrCast(lbalance_mock, pfb);
   for(OV_UINT i = 0; i < pinst->v_apps.veclen; ++i) {
-    if(ov_string_match(pinst->v_apps.value[i], "*/GSE1") == OV_STRCMP_EQUAL) {
-      ov_string_setvalue(&pinst->v_outApp, pinst->v_apps.value[i]);
-      pinst->v_outLoad = pinst->v_loads.value[i];
-      OV_UINT    slen = 0;
-      OV_STRING* splited = ov_string_split(pinst->v_appReq.value[i],
-                                           LB_APPMON_APPREQ_SEP, &slen);
-      ov_string_setvalue(&pinst->v_outRequirements, pinst->v_appReq.value[i]);
-      ov_string_freelist(splited);
+    /* if(ov_string_match(pinst->v_apps.value[i], " GSE1
+        ") == OV_STRCMP_EQUAL) { */
+    ov_string_setvalue(&pinst->v_outApp, pinst->v_apps.value[i]);
+    pinst->v_outLoad = pinst->v_loads.value[i];
+    OV_UINT    slen = 0;
+    OV_STRING* splited =
+        ov_string_split(pinst->v_appReq.value[i], LB_APPMON_APPREQ_SEP, &slen);
+    ov_string_setvalue(&pinst->v_outRequirements, pinst->v_appReq.value[i]);
+    ov_string_freelist(splited);
+    if(pinst->v_apps.veclen && pinst->v_neighborIPs.veclen) {
+      ov_string_print(&pinst->v_destination, "//%s/%s%s",
+                      pinst->v_neighborIPs.value[0],
+                      pinst->v_serverNames.value[0], pinst->v_apps.value[0]);
     }
+    break;
+    /* } */
   }
 
   return;

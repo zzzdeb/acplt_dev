@@ -79,6 +79,16 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
       if(pinst->v_B) {
         nlen = pinst->v_neighborIPs.veclen;
         Ov_AbortIf(nlen != pinst->v_serverNames.veclen);
+        /* paramcheck */
+        {
+          if(!nlen) {
+            ov_logfile_warning(
+                "lbalance_neighborInformer: no server to inform");
+            pinst->v_status = LB_NBINFORMER_SENT;
+            return;
+          }
+        }
+
         for(OV_UINT i = 0; i < nlen; ++i) {
           /* create neighbor ks*/
           result |= ov_string_print(&dstKS, "//%s/%s%s",
@@ -95,8 +105,17 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
           cJSON* jsMsg = cJSON_CreateArray();
           /* order is important. see helper */
           cJSON_AddItemToArray(jsMsg, cJSON_CreateString(myIP));
+          OV_ANY servername = {0};
+          servername.value.vartype = OV_VT_VOID;
+          servername.value.valueunion.val_string = NULL;
+          ov_vendortree_getservername(&servername, NULL);
+          cJSON_AddItemToArray(
+              jsMsg,
+              cJSON_CreateString(servername.value.valueunion.val_string));
           cJSON_AddItemToArray(jsMsg, cJSON_CreateNumber(pinst->v_sum));
-          cJSON_AddItemToArray(jsMsg, cJSON_CreateNumber(pinst->v_cap));
+          cJSON_AddItemToArray(
+              jsMsg,
+              cJSON_CreateNumber(lbalance_neighborInformer_cap_get(pinst)));
           cJSON_AddItemToArray(jsMsg, cJSON_CreateArray());
           OV_STRING tmpStr = cJSON_Print(jsMsg);
           if(tmpStr) {
@@ -109,6 +128,9 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
           /* result |= ov_string_append(&order, tmpStr); */
           /* result |= ov_string_append(&order, infoStr); */
           result |= PostSys_msgCreator_order_set(pbcaster, order);
+          ov_logfile_debug(
+              "lbalance_neighborInformer: informing neighbor %s with order: %s",
+              dstKS, order);
           if(Ov_Fail(result)) {
             ov_logfile_error("lbalance_neighborInformer %u: %s: ", result,
                              ov_result_getresulttext(result));
