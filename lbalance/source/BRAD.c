@@ -33,16 +33,12 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   /* ov_fb_connect(&pinst->p_appMonitor, "apps", &pinst->p_nbInformer, "apps");
    */
   /***********************************************************/
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "syncTrigger",
+                Ov_StaticPtrCast(fb_object, pinst), "init");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "R");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
-                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "reset");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "reset");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
-                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier), "A");
   /* ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "D", */
   /* Ov_StaticPtrCast(fb_object, &pinst->p), "D"); */
   /***********************************************************/
@@ -62,8 +58,14 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appPaths");
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
+  pinst->p_nbDB.v_actimode = 1;
+  pinst->p_nbDB.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "A");
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_nbInformer);
+  pinst->p_nbInformer.v_actimode = 1;
+  pinst->p_nbInformer.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "neighborIPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
                 "neighborIPs");
@@ -71,9 +73,17 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
                 "serverNames");
   /***********************************************************/
-  /* Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator); */
+  Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator);
+  pinst->p_sendInitiator.v_actimode = 1;
+  pinst->p_sendInitiator.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "outApp",
+                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "outApp");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
+                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "R");
+  /***********************************************************/
   /* Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier); */
-  /* Ov_Link(fb_tasklist, pinst, &pinst->p_dsync); */
+
+  /***********************************************************/
 
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqSender);
   pinst->p_reqSender.v_actimode = 1;
@@ -93,11 +103,23 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqReceiver);
   pinst->p_reqReceiver.v_actimode = 1;
   pinst->p_reqReceiver.v_iexreq = 1;
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier);
+  pinst->p_acceptNotifier.v_actimode = 1;
+  pinst->p_acceptNotifier.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
                 "reqIPs");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqLoads",
-                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqLoads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
+                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier), "A");
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_dsync);
+  pinst->p_dsync.v_actimode = 1;
+  pinst->p_dsync.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "appPath",
+                Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "srcPath");
+  ov_string_setvalue(&pinst->p_dsync.v_selfHost, "localhost");
+
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_mock);
   pinst->p_mock.v_actimode = 1;
@@ -105,6 +127,11 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqIndex",
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
                 "reqIndex");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqIndex",
+                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
+                "reqIndex");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqLoads",
+                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqLoads");
   return result;
 }
 
@@ -124,6 +151,7 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_init_set(OV_INSTPTR_lbalance_BRAD pobj,
     pobj->v_A = 0;
     pobj->v_D = 0;
     ov_time_gettime(&pobj->v_timeLastEvent);
+    ov_logfile_info("lbalance_BRAD: status inited by init");
   }
   pobj->v_init = value;
   return OV_ERR_OK;

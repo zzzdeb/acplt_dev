@@ -212,7 +212,7 @@ LIBRARY lbalance
   END_CLASS;
 
   CLASS reqReceiver         : CLASS lbalance/Common
-    IS_INSTANTIABLE;
+  IS_INSTANTIABLE;
     COMMENT = "receives Request as msg";
     VARIABLES
       reset : BOOL HAS_SET_ACCESSOR
@@ -224,8 +224,7 @@ LIBRARY lbalance
           COMMENT     = "IPs of requests";
       reqLoads[]  : UINT
           FLAGS="o"
-          COMMENT     = "loads of requests";
-      reqLoadRequirements[] : STRING
+          COMMENT     = "loads of requests"; reqLoadRequirements[] : STRING
           FLAGS="o"
           COMMENT     = "requirements of loads";
     END_VARIABLES;
@@ -252,14 +251,20 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "index of choosen node"
           INITIALVALUE  = 0;
+      dstPath : STRING
+          FLAGS="i"
+          COMMENT="Path of object to get notified"
+          INITIALVALUE="";
       A : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
           COMMENT     = "triggers accept"
           INITIALVALUE  = FALSE;
     END_VARIABLES;
     PARTS
+      sender : CLASS PostSys/msgCreator;
     END_PARTS;
     OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
@@ -276,6 +281,14 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "app to send out"
           INITIALVALUE  = "";
+      R : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers request"
+          INITIALVALUE  = FALSE;
+      appPath : STRING
+          FLAGS="i"
+          COMMENT="Path of app to send by dsync"
+          INITIALVALUE="";
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;
@@ -320,11 +333,11 @@ LIBRARY lbalance
       loads[] : UINT
         FLAGS="i"
         COMMENT     = "loads of apps";
-      neigborIPs[]  : STRING 
-          FLAGS="o"
+      neighborIPs[]  : STRING 
+          FLAGS="i"
           COMMENT     = "IPs of neighbors";
       serverNames[] : STRING
-          FLAGS="o"
+          FLAGS="i"
           COMMENT     = "names of neighbors";
       outApp  : STRING 
           FLAGS="o"
@@ -339,7 +352,7 @@ LIBRARY lbalance
           COMMENT     = "requirements of app"
           INITIALVALUE  = "";
       destination : STRING
-          FLAGS="o"
+          FLAGS="i"
           COMMENT     = "ks ov destination"
           INITIALVALUE  = "";
       reqIndex  : UINT 
@@ -403,7 +416,7 @@ LIBRARY lbalance
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
       mock: CLASS lbalance/mock;
-      //dsync: CLASS sync/dsync;
+      dsync: CLASS sync/dsync;
     END_PARTS;
     OPERATIONS
       constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
