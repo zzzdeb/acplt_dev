@@ -25,6 +25,22 @@
 
 #include "object_helper.h"
 
+OV_DLLFNCEXPORT OV_RESULT
+                lbalance_appMonitor_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                      result = OV_ERR_OK;
+  OV_INSTPTR_lbalance_appMonitor pinst =
+      Ov_StaticPtrCast(lbalance_appMonitor, pobj);
+
+  result = fb_functionblock_constructor(pobj);
+
+  OV_STRING paths[] = {"/TechUnits"};
+  Ov_SetDynamicVectorValue(&pinst->v_appPaths, paths, 1, STRING);
+
+  OV_STRING weights[] = {"GSE1&10", "GSE2&20"};
+  Ov_SetDynamicVectorValue(&pinst->v_weights, weights, 2, STRING);
+  return result;
+}
+
 OV_DLLFNCEXPORT OV_UINT
                 lbalance_appMonitor_sum_get(OV_INSTPTR_lbalance_appMonitor pinst) {
   OV_UINT sum = 0;
@@ -117,7 +133,8 @@ lbalance_appMonitor_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         /* ov_logfile_debug("lbalance_appMonitor: appName=%s", appName); */
         if(ov_string_compare(appName, wNameVec.value[j]) == OV_STRCMP_EQUAL) {
           pinst->v_loads.value[appsLen] = wVec.value[j];
-          ov_string_setvalue(&pinst->v_apps.value[appsLen], pobj->v_identifier);
+          ov_string_print(&pinst->v_apps.value[appsLen], "%s/%s",
+                          pinst->v_appPaths.value[i], pobj->v_identifier);
           /* getting req */
           pinst->p_upload.v_getVar = 0;
           ov_string_setvalue(

@@ -58,6 +58,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appReq");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "loads",
                 Ov_StaticPtrCast(fb_object, &pinst->p_mock), "loads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appPaths",
+                Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appPaths");
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
   /***********************************************************/

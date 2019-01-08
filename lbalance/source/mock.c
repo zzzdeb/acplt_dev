@@ -61,6 +61,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_mock_constructor(OV_INSTPTR_ov_object pobj) {
   ov_string_setvalue(&pinst->v_sysOS, "linux");
   OV_STRING servers[] = {"localhost\tlocalhost\t127.0.0.1\t7509\tMANAGER"};
   Ov_SetDynamicVectorValue(&pinst->v_ovServers, servers, 1, STRING);
+  OV_STRING appPaths[] = {"/TechUnits"};
+  Ov_SetDynamicVectorValue(&pinst->v_appPaths, appPaths, 1, STRING);
 
   monitor_update_libs(pinst);
 
@@ -74,7 +76,7 @@ OV_DLLFNCEXPORT void lbalance_mock_typemethod(OV_INSTPTR_fb_functionblock pfb,
    */
   OV_INSTPTR_lbalance_mock pinst = Ov_StaticPtrCast(lbalance_mock, pfb);
   for(OV_UINT i = 0; i < pinst->v_apps.veclen; ++i) {
-    if(ov_string_compare("GSE1", pinst->v_apps.value[i]) == OV_STRCMP_EQUAL) {
+    if(ov_string_match(pinst->v_apps.value[i], "*/GSE1") == OV_STRCMP_EQUAL) {
       ov_string_setvalue(&pinst->v_outApp, pinst->v_apps.value[i]);
       pinst->v_outLoad = pinst->v_loads.value[i];
       OV_UINT    slen = 0;
