@@ -62,7 +62,10 @@ imap <Leader>o <Esc><Leader>o
 set makeprg=make\ -C\ %:h/../build/linux\ -j\ debug
 
 nnoremap <leader>a :Ack<cr>
-nnoremap <c-b> :make<cr> 
+
+nmap <c-b> :make<cr> 
+au QuickFixCmdPost make exec 'cw' 
+
 ""nnoremap <Leader>b :!make -C %:h/../build/linux -j debug<cr>
 
 " function! g:UltiSnips_Complete()
@@ -91,6 +94,8 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 augroup ovm 
     au BufWrite *.ovm :sil !rm %:h:h/source/sourcetemplates/*
     au BufWritePost *.ovm !acplt_builder -l %:h:h:t
+
+    " au BufWritePost *.ovm :ped term://acplt_builder -l %:h:h:t 2>&1 \| grep -i Error
 augroup END
 
 nmap <localleader>s :%s//
