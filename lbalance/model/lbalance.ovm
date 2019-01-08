@@ -98,14 +98,14 @@ LIBRARY lbalance
       sum : UINT 
         FLAGS="i"
         COMMENT     = "sum of loads";
-      cap : UINT 
+      cap : UINT HAS_GET_ACCESSOR 
         FLAGS="i"
         COMMENT     = "capacity of this node";
       myIP  : STRING
           FLAGS="i"
           COMMENT     = "my IP"
-          INITIALVALUE  = "";
-      neigborIPs[]  : STRING 
+          INITIALVALUE  = "localhost";
+      neighborIPs[]  : STRING 
           FLAGS="i"
           COMMENT     = "IPs of neighbors";
       serverNames[] : STRING
@@ -124,6 +124,7 @@ LIBRARY lbalance
       broadcaster : CLASS PostSys/msgCreator;
     END_PARTS;
     OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
@@ -139,7 +140,7 @@ LIBRARY lbalance
           INITIALVALUE=FALSE;
       loads[] : UINT
           FLAGS="o"
-          COMMENT     = "list of neigborloads";
+          COMMENT     = "list of neighborloads";
       caps[]  : UINT
           FLAGS="o"
           COMMENT     = "capacity of neighbors";
@@ -153,6 +154,10 @@ LIBRARY lbalance
       sysInfos[]  : STRING
           FLAGS="o"
           COMMENT     = "sysinfos of neighbors";
+      A : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers accept"
+          INITIALVALUE  = FALSE;
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;
