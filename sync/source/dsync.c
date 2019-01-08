@@ -40,6 +40,15 @@
 #define SYNC_SRC_DONE 8
 #define SYNC_SRC_ERROR 64
 
+OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT result = OV_ERR_OK;
+  /* OV_INSTPTR_sync_dsync pinst = Ov_StaticPtrCast(sync_dsync, pobj); */
+
+  result = fb_functionblock_constructor(pobj);
+
+  return result;
+}
+
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
   pobj->v_reset = value;
@@ -126,6 +135,12 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
   OV_STRING                  dstHostPort = NULL;
   OV_STRING                  dstServerPort = NULL;
 
+  /* Getting Servername  */
+  OV_ANY servername = {0};
+  servername.value.vartype = OV_VT_VOID;
+  servername.value.valueunion.val_string = NULL;
+  ov_vendortree_getservername(&servername, NULL);
+
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
 
   result = ks_splitOneStringPath(pinst->v_destKS, &dstHost, &dstHostPort,
@@ -160,7 +175,8 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
   }
   ksmsg_msgClient_pathLen_set(pMsgClnt, 3);
 
-  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0], pinst->v_selfHost);
+  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0],
+                     servername.value.valueunion.val_string);
   ov_string_setvalue(&pMsgClnt->v_pathName.value[0], pinst->v_selfServer);
   ov_string_setvalue(
       &pMsgClnt->v_pathInstance.value[0],
@@ -196,6 +212,12 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_sync_dsyncDst pdsyncDst = &pinst->p_dsyncDstTemp;
   OV_INSTPTR_ov_object     proot = NULL;
 
+  /* Getting Servername  */
+  OV_ANY servername = {0};
+  servername.value.vartype = OV_VT_VOID;
+  servername.value.valueunion.val_string = NULL;
+  ov_vendortree_getservername(&servername, NULL);
+
   ov_memstack_lock();
   switch(pinst->v_status) {
     case SYNC_SRC_INIT:
@@ -214,7 +236,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
                       dsyncDstPath);
 
       OV_STRING srcKS = NULL;
-      ov_string_print(&srcKS, "//%s/%s%s", pinst->v_selfHost,
+      ov_string_print(&srcKS, "//%s/%s%s",
+                      servername.value.valueunion.val_string,
                       pinst->v_selfServer, pinst->v_srcPath, 2);
       ov_string_setvalue(
           &pdsyncDst->v_syncPath,
