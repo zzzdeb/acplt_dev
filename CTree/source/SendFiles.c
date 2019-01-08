@@ -181,10 +181,10 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
     return;
   }
   // debug
-  for(OV_UINT i = 0; i < itemsLength; i++) {
-    ov_logfile_info("%u: %s", itemsResults[i],
-                    ov_result_getresulttext(itemsResults[i]));
-  }
+  /* for(OV_UINT i = 0; i < itemsLength; i++) { */
+  /* ov_logfile_info("%u: %s", itemsResults[i], */
+  /* ov_result_getresulttext(itemsResults[i])); */
+  /* } */
 
   if(pinst->v_postCallback.callbackFunction)
     (*pinst->v_postCallback.callbackFunction)(

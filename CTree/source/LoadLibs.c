@@ -229,7 +229,6 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
 
 OV_DLLFNCEXPORT void dataSend_callback(const OV_INSTPTR_ov_domain this,
                                        const OV_INSTPTR_ov_domain that) {
-  ov_logfile_info("aaa");
   OV_INSTPTR_CTree_LoadLibs    pinst = Ov_StaticPtrCast(CTree_LoadLibs, this);
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, that);
