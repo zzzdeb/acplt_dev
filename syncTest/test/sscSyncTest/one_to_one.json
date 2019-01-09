@@ -1,0 +1,431 @@
+{
+    "Libraries": ["ov", "ssc", "fb"],
+    "Tree": {
+        "TechUnits": {
+            "class": "ov/domain",
+            "children": {
+                "source": {
+                    "class": "ov/domain",
+                    "children": {
+                        "ssc1": {
+                            "links": {
+                                "taskparent": {
+                                    "of_association": "fb/tasklist",
+                                    "parents": ["/Tasks/UrTask"],
+                                    "children": ["this"]
+                                }
+                            },
+                            "variables": {
+                                "EN": ["UINT", 0],
+                                "initStepName": ["STRING", "INIT"],
+                                "endStepName": ["STRING", "END"],
+                                "woStPhase": ["UINT", 1],
+                                "woStQualifier": ["UINT", 1],
+                                "workingState": ["UINT", 0],
+                                "woStText": ["STRING", "INIT"],
+                                "error": ["BOOL", false],
+                                "errorDetail": ["STRING", null],
+                                "activeStep": ["STRING", null],
+                                "iexreq": ["BOOL", true],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 0],
+                                "actimode": ["INT", 1],
+                                "proctime": ["TIME", "2018/08/03 09:50:15.929134"],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 0]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "class": "ssc/SequentialStateChart",
+                            "children": {
+                                "INIT": {
+                                    "variables": {
+                                        "internalRole": ["UINT", 0],
+                                        "X": ["BOOL", false],
+                                        "T": ["TIME_SPAN", [0, 0]],
+                                        "phase": ["UINT", 1],
+                                        "qualifier": ["UINT", 1],
+                                        "evTransTrigger": ["BOOL", false],
+                                        "error": ["BOOL", false],
+                                        "errorDetail": ["STRING", null],
+                                        "startTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                                        "iexreq": ["BOOL", true],
+                                        "eexreq": ["BOOL", false],
+                                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                        "methcount": ["UINT", 0],
+                                        "actimode": ["INT", 1],
+                                        "proctime": ["TIME", "2018/08/03 09:50:15.929055"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "ssc/step",
+                                    "parts": {
+                                        "entry": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.928996"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "do": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.929013"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "exit": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.929029"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        }
+                                    }
+                                },
+                                "END": {
+                                    "variables": {
+                                        "internalRole": ["UINT", 999],
+                                        "X": ["BOOL", false],
+                                        "T": ["TIME_SPAN", [0, 0]],
+                                        "phase": ["UINT", 1],
+                                        "qualifier": ["UINT", 1],
+                                        "evTransTrigger": ["BOOL", false],
+                                        "error": ["BOOL", false],
+                                        "errorDetail": ["STRING", null],
+                                        "startTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                                        "iexreq": ["BOOL", true],
+                                        "eexreq": ["BOOL", false],
+                                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                        "methcount": ["UINT", 0],
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:15.928638"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "ssc/step",
+                                    "parts": {
+                                        "entry": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.929074"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "do": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.929090"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "exit": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:15.929106"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        }
+                                    }
+                                }
+                            },
+                            "parts": {
+                                "actions": {
+                                    "class": "ov/domain"
+                                },
+                                "transConds": {
+                                    "class": "ov/domain"
+                                },
+                                "taskActiveStep": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:15.927724"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                },
+                                "trans": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:15.927759"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                },
+                                "intask": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:15.927797"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                }
+                            }
+                        }
+                    }
+                },
+                "target": {
+                    "class": "ov/domain",
+                    "children": {
+                        "ssc1": {
+                            "links": {
+                                "taskparent": {
+                                    "of_association": "fb/tasklist",
+                                    "parents": ["/Tasks/UrTask"],
+                                    "children": ["this"]
+                                }
+                            },
+                            "variables": {
+                                "EN": ["UINT", 0],
+                                "initStepName": ["STRING", "END"],
+                                "endStepName": ["STRING", "END"],
+                                "woStPhase": ["UINT", 1],
+                                "woStQualifier": ["UINT", 1],
+                                "workingState": ["UINT", 0],
+                                "woStText": ["STRING", "INIT"],
+                                "error": ["BOOL", false],
+                                "errorDetail": ["STRING", null],
+                                "activeStep": ["STRING", null],
+                                "iexreq": ["BOOL", true],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 0],
+                                "actimode": ["INT", 1],
+                                "proctime": ["TIME", "2018/08/03 09:50:26.281788"],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 0]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "class": "ssc/SequentialStateChart",
+                            "children": {
+                                "INIT": {
+                                    "variables": {
+                                        "internalRole": ["UINT", 0],
+                                        "X": ["BOOL", false],
+                                        "T": ["TIME_SPAN", [0, 0]],
+                                        "phase": ["UINT", 1],
+                                        "qualifier": ["UINT", 1],
+                                        "evTransTrigger": ["BOOL", false],
+                                        "error": ["BOOL", false],
+                                        "errorDetail": ["STRING", null],
+                                        "startTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                                        "iexreq": ["BOOL", true],
+                                        "eexreq": ["BOOL", false],
+                                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                        "methcount": ["UINT", 0],
+                                        "actimode": ["INT", 1],
+                                        "proctime": ["TIME", "2018/08/03 09:50:26.281710"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "ssc/step",
+                                    "parts": {
+                                        "entry": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281654"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "do": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281670"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "exit": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281686"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        }
+                                    }
+                                },
+                                "END": {
+                                    "variables": {
+                                        "internalRole": ["UINT", 999],
+                                        "X": ["BOOL", false],
+                                        "T": ["TIME_SPAN", [0, 0]],
+                                        "phase": ["UINT", 1],
+                                        "qualifier": ["UINT", 1],
+                                        "evTransTrigger": ["BOOL", false],
+                                        "error": ["BOOL", false],
+                                        "errorDetail": ["STRING", null],
+                                        "startTime": ["TIME", "1970/01/01 00:00:00.000000"],
+                                        "iexreq": ["BOOL", true],
+                                        "eexreq": ["BOOL", false],
+                                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                        "methcount": ["UINT", 0],
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:26.281190"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "ssc/step",
+                                    "parts": {
+                                        "entry": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281729"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "do": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281746"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        },
+                                        "exit": {
+                                            "variables": {
+                                                "actimode": ["INT", 1],
+                                                "proctime": ["TIME", "2018/08/03 09:50:26.281762"],
+                                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                                "ErrState": ["INT", 0],
+                                                "calctime": ["TIME_SPAN", [0, 0]],
+                                                "Xpos": ["INT", 0],
+                                                "Ypos": ["INT", 0]
+                                            },
+                                            "class": "fb/task"
+                                        }
+                                    }
+                                }
+                            },
+                            "parts": {
+                                "actions": {
+                                    "class": "ov/domain"
+                                },
+                                "transConds": {
+                                    "class": "ov/domain"
+                                },
+                                "taskActiveStep": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:26.280148"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                },
+                                "trans": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:26.280184"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                },
+                                "intask": {
+                                    "variables": {
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", "2018/08/03 09:50:26.280220"],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "fb/task"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits"
+}

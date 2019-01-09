@@ -229,7 +229,7 @@ OV_DLLFNCEXPORT void ovdatastruct_list_typemethod(
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_ovdatastruct_list pinst = Ov_StaticPtrCast(ovdatastruct_list, pfb);
+//	OV_INSTPTR_ovdatastruct_list pinst = Ov_StaticPtrCast(ovdatastruct_list, pfb);
 
 	return;
 }

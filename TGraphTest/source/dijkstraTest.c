@@ -30,7 +30,7 @@
 #include "ovunity_helper.h"
 
 
-OV_INSTPTR_TGraphTest_dijkstraTest gpinst;
+OV_INSTPTR_ovunity_main gpinst;
 OV_INSTPTR_TGraph_graph gpobj;
 OV_TIME *gpltc;
 
@@ -49,10 +49,19 @@ TEST_TEAR_DOWN( dijkstra) {
 }
 
 TEST( dijkstra, dijkstra_default) {
-	load_test_data("TGraphTest", "default.json");
-	OV_INSTPTR_TGraph_Node source = ov_path_getobjectpointer("/TechUnits/TGraphTest.obj.Nodes/PE025_0",2);
-	OV_INSTPTR_TGraph_Node target = ov_path_getobjectpointer("/TechUnits/TGraphTest.obj.Nodes/PE021_0",2);;
-	dijkstra_get_path(gpobj, source, target);
+	OV_STRING case_path = ovunity_getCasePath(gpinst,"case_default");
+	ovunity_loadEnv(gpinst, "default.json", case_path);
+//	gpinst
+	OV_STRING path = NULL;
+	ov_string_print(&path, "%s.%s", case_path, "Nodes/PE025_0", 2);
+	OV_INSTPTR_TGraph_Node source = (void*) ov_path_getobjectpointer(
+		path, 2);
+	ov_string_print(&path, "%s.%s", case_path, "Nodes/PE021_0", 2);
+	OV_INSTPTR_TGraph_Node target = (void*) ov_path_getobjectpointer(
+		path, 2);
+	ov_string_setvalue(&case_path, NULL);
+	ov_string_setvalue(&path, NULL);
+	dijkstra_get_path(source, target);
 }
 
 TEST_GROUP_RUNNER( dijkstra) {
@@ -68,10 +77,8 @@ OV_DLLFNCEXPORT void TGraphTest_dijkstraTest_typemethod(
 	/*
 	 *   local variables
 	 */
-	OV_INSTPTR_TGraphTest_dijkstraTest pinst = Ov_StaticPtrCast(
-		TGraphTest_dijkstraTest, pfb);
-	gpinst = Ov_StaticPtrCast(TGraphTest_dijkstraTest, pfb);
-	gpobj = &gpinst->p_obj;
+	gpinst = Ov_StaticPtrCast(ovunity_main, pfb);
+	gpobj = &(Ov_StaticPtrCast(TGraphTest_dijkstraTest, gpinst)->p_obj);
 	gpltc = pltc;
 
 	const char* argv[] = { "dijkstra", "-v" };
@@ -82,7 +89,7 @@ OV_DLLFNCEXPORT void TGraphTest_dijkstraTest_typemethod(
 			}
 				Catch(e)
 	{
-		ov_logfile_error("mega catch");
+		ov_logfile_error("dijkstraTest catch");
 	}
 	return;
 }

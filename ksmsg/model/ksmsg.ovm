@@ -1,0 +1,125 @@
+#include "ov.ovm"
+#include "ksbase.ovm"
+#include "ksxdr.ovm"
+#include "PostSys.ovm"
+
+
+LIBRARY ksmsg
+	VERSION   = "V0.1 (28-Jan-2018)";
+	AUTHOR    = "Zolboo Erdenebayar";
+	COPYRIGHT = "Lehrstuhl für Prozessleittechnik, RWTH Aachen University";
+	COMMENT   = "Library for handling ks-requests in XDR-format";
+	
+	/**
+	 *   
+		*   Licensed under the Apache License, Version 2.0 (the "License");
+		*   you may not use this file except in compliance with the License.
+		*   You may obtain a copy of the License at
+		*
+		*       http://www.apache.org/licenses/LICENSE-2.0
+		*
+		*   Unless required by applicable law or agreed to in writing, software
+		*   distributed under the License is distributed on an "AS IS" BASIS,
+		*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		*   See the License for the specific language governing permissions and
+		*   limitations under the License.
+	 *
+	 *	Checks whether received data is conforming to the ks-xdr protocol
+	 *	Criteria are: first byte equals 0x00 (not finished stream-fragment) or 0x80 (last stream-fragment) and program number equals ks program number
+	 *	ks-program number is 0x49678 (obtained from Sun)		
+	 */
+
+	CLASS	msgClient	:	CLASS	ksxdr/xdrClient
+		IS_INSTANTIABLE;
+		COMMENT	=	"message generation and reply processing for msg protocol";
+		VARIABLES
+			queueLength	:	UINT
+				FLAGS	=	"p"
+				COMMENT	=	"Length of Message Queue. If full, no new orders are accepted"
+				INITIALVALUE	=	1;
+			msgsInQueue	:	UINT HAS_GET_ACCESSOR
+				FLAGS	=	"h"
+				COMMENT	=	"NUMBER of messages currently waiting to be sent"
+				INITIALVALUE	=	0;
+			pathInstance[]	:	STRING
+				FLAGS	=	"i"
+				COMMENT	=	"Instance which will receive the Message ink. itself & path.";
+			pathName[]	:	STRING
+				FLAGS	=	"i"
+				COMMENT	=	"Name of receiving server ink. itself & path.";
+			pathHost[]	:	STRING
+				FLAGS	=	"i"
+				COMMENT	=	"Hostname of receiving machine ink. itself & path.";
+			pathLen	: UINT
+				HAS_SET_ACCESSOR
+				FLAGS = "i"
+				COMMENT = "Pathlen to travel";
+			tries	:	UINT
+				FLAGS	=	"h"
+				COMMENT	=	"Nummer of times a message was sheduled for sending"
+				INITIALVALUE = 0;
+		  answerItems:	C_TYPE <OV_GETVAR_ITEMS_PTR>
+				FLAGS="o";
+			answerItemsLen	:	UINT 
+							FLAGS="i"
+							COMMENT			=	"len"
+							INITIALVALUE	=	0;
+		END_VARIABLES;
+		PARTS
+		  msgCrtr	:	CLASS	PostSys/msgCreator;
+		END_PARTS;
+		OPERATIONS
+			/**
+			*	For each ks-service there is a generate function that generates the request message and a process function that processes the server's answer
+			*/
+			constructor :	C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			destructor :	C_FUNCTION <OV_FNC_DESTRUCTOR>;
+			reset				:	C_FUNCTION	<KSBASE_FNC_RESET>;
+			/* requestRegister		:	C_FUNCTION	<KSBASE_FNC_REQREG>; */
+			/* processRegister		:	C_FUNCTION	<KSBASE_FNC_PROCREG>; */
+			/* requestUnRegister	:	C_FUNCTION	<KSBASE_FNC_REQUNREG>; */
+			/* processUnRegister	:	C_FUNCTION	<KSBASE_FNC_PROCUNREG>; */
+			/* requestGetServer	:	C_FUNCTION	<KSBASE_FNC_REQGETSRV>; */
+			/* processGetServer	:	C_FUNCTION	<KSBASE_FNC_PROCGETSRV>; */
+			/* requestGetPP		:	C_FUNCTION	<KSBASE_FNC_REQGETPP>; */
+			/* processGetPP		:	C_FUNCTION	<KSBASE_FNC_PROCGETPP>; */
+			/* requestGetEP		:	C_FUNCTION	<KSBASE_FNC_REQGETEP>; */
+			/* processGetEP		:	C_FUNCTION	<KSBASE_FNC_PROCGETEP>; */
+			requestGetVar		:	C_FUNCTION	<KSBASE_FNC_REQGETVAR>;
+			processGetVar		:	C_FUNCTION	<KSBASE_FNC_PROCGETVAR>;
+			requestSetVar		:	C_FUNCTION	<KSBASE_FNC_REQSETVAR>;
+			processSetVar		:	C_FUNCTION	<KSBASE_FNC_PROCSETVAR>;
+			/* requestGetCanonicalPath		:	C_FUNCTION	<KSBASE_FNC_REQGETCANONPATH>; */
+			/* processGetCanonicalPath		:	C_FUNCTION	<KSBASE_FNC_PROCGECANONPATH>; */
+			/* requestCreateObject	:	C_FUNCTION	<KSBASE_FNC_REQCREATEOBJ>; */
+			/* processCreateObject	:	C_FUNCTION	<KSBASE_FNC_PROCCREATEOBJ>; */
+			/* requestDeleteObject	:	C_FUNCTION	<KSBASE_FNC_REQDELOBJ>; */
+			/* processDeleteObject	:	C_FUNCTION	<KSBASE_FNC_PROCDELOBJ>; */
+			/* requestRenameObject	:	C_FUNCTION	<KSBASE_FNC_REQRENAMEOBJ>; */
+			/* processRenameObject	:	C_FUNCTION	<KSBASE_FNC_PROCRENAMEOBJ>; */
+			/* requestLink			:	C_FUNCTION	<KSBASE_FNC_REQLINK>; */
+			/* processLink			:	C_FUNCTION	<KSBASE_FNC_PROCLINK>; */
+			/* requestUnLink		:	C_FUNCTION	<KSBASE_FNC_REQUNLINK>; */
+			/* processUnLink		:	C_FUNCTION	<KSBASE_FNC_PROCUNLINK>; */
+			typemethod 			: 	C_FUNCTION	<KSBASE_FNC_TYPEMETHOD>;
+			/* HandleData			:	C_FUNCTION	<KSBASE_FNC_HANDLEDATA>; */
+			/* startup				:	C_FUNCTION	<OV_FNC_STARTUP>; */
+			/* shutdown			:	C_FUNCTION	<OV_FNC_SHUTDOWN>; */
+		END_OPERATIONS;
+	END_CLASS;
+	
+
+	CLASS	executer					:	CLASS	ksbase/ComTask
+		IS_INSTANTIABLE;
+		COMMENT	=	"executes get&set";
+		VARIABLES
+
+		END_VARIABLES;
+		OPERATIONS
+				constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+				typemethod	:	C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+  END_CLASS;
+
+
+END_LIBRARY;

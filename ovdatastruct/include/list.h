@@ -17,6 +17,8 @@
 
 //Macros
 #define listIterate(list, element) for(element = (list != NULL) ? (list)->head: NULL; element != NULL; element = element->next)
+#define listIterateR(list, element) for(element = (list != NULL) ? (list)->last: NULL; element != NULL; element = element->prev)
+
 
 typedef struct listNode {
 	struct listNode *next;
@@ -24,6 +26,9 @@ typedef struct listNode {
 
 	void* data;
 } listNode_t;
+
+typedef listNode_t* listNode_p;
+
 
 typedef struct list {
 	//this link always point to first Link
@@ -37,6 +42,8 @@ typedef struct list {
 	int (*compare)(void*, void*);
 	OV_BOOL (*is_same)(void*, void*);
 } list_t;
+
+typedef list_t* list_p;
 
 listNode_t* createNode(void* data);
 

@@ -1,0 +1,38 @@
+{
+    "Libraries": ["lbalance"],
+    "Tree": {
+        "BRAD": {
+            "variables": {
+                "init": ["BOOL", false],
+                "T": ["SINGLE", 10],
+                "B": ["BOOL", false],
+                "R": ["BOOL", false],
+                "A": ["BOOL", false],
+                "D": ["BOOL", false],
+                "timeLastEvent": ["TIME", [0, 0]],
+                "status": ["INT", 0],
+                "result": ["INT", 0],
+                "iexreq": ["BOOL", false],
+                "eexreq": ["BOOL", false],
+                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                "methcount": ["UINT", 0],
+                "actimode": ["INT", 0],
+                "proctime": ["TIME", [1546468907, 57036]],
+                "cyctime": ["TIME_SPAN", [0, 0]],
+                "ErrState": ["INT", 0],
+                "calctime": ["TIME_SPAN", [0, 0]],
+                "Xpos": ["INT", 0],
+                "Ypos": ["INT", 0]
+            },
+            "links": {
+                "taskparent": {
+                    "of_association": "fb/tasklist",
+                    "parents": ["/Tasks/UrTask"],
+                    "children": ["this"]
+                }
+            },
+            "class": "lbalance/BRAD"
+        }
+    },
+    "Path": "/TechUnits/BRAD"
+}

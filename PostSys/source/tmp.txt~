@@ -1,0 +1,16 @@
+clang-check -extra-arg=cc -extra-arg=-g -extra-arg=-std=c99 -extra-arg=-m64
+-extra-arg=-Wall -extra-arg=-Wno-attributes
+-extra-arg='-I../../../cexception/ -extra-arg=-I../../../unity/'
+-extra-arg='-fvisibility=hidden -extra-arg=-DOV_SYSTEM_LINUX=1'
+-extra-arg=-DPLT_SYSTEM_LINUX=1
+-extra-arg=-Dov_library_open_PostSys=ov_library_open_PostSys_old
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/system/sysdevbase/ov/include/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/system/sysdevbase/ov/model/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/ksbase/model/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/ksbase/include/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/fb/model/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/fb/include/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/ksapi/model/
+-extra-arg=-I/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/ksapi/include/
+-extra-arg=-I../../model/ -extra-arg=-I../../include/ -extra-arg=-I. Message.c
+--

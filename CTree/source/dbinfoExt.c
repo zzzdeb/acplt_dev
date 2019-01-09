@@ -29,26 +29,27 @@
 
 #include "libov/ov_macros.h"
 #include "libov/ov_vendortree.h"
+#include "object_helper.h"
 
 void exitInfo(void) {
   ov_logfile_info("exitInfo");
-  if (errno)
+  if(errno)
     perror("terminating␣with␣error␣condition");
   fputs("Good␣Bye\n", stderr);
 }
 OV_RESULT updateAddonlibs();
 
 OV_DLLFNCEXPORT OV_RESULT
-CTree_dbinfoExt_constructor(OV_INSTPTR_ov_object pobj) {
+                CTree_dbinfoExt_constructor(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
   OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
-  OV_RESULT result;
+  OV_RESULT                  result;
 
   /* do what the base class does first */
   result = ov_object_constructor(pobj);
-  if (Ov_Fail(result))
+  if(Ov_Fail(result))
     return result;
 
   atexit(exitInfo);
@@ -80,7 +81,8 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_destructor(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
+  //  pobj);
 
   /* do what */
 
@@ -94,7 +96,8 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_startup(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
+  //  pobj);
 
   /* do what the base class does first */
   ov_object_startup(pobj);
@@ -108,7 +111,8 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_shutdown(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
+  //  pobj);
 
   /* do what */
 
@@ -118,21 +122,22 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_shutdown(OV_INSTPTR_ov_object pobj) {
   return;
 }
 
-OV_DLLFNCEXPORT OV_STRING *
-CTree_dbinfoExt_addonlibs_get(OV_INSTPTR_CTree_dbinfoExt pobj,
-                              OV_UINT *pveclen) {
+OV_DLLFNCEXPORT OV_STRING*
+                CTree_dbinfoExt_addonlibs_get(OV_INSTPTR_CTree_dbinfoExt pobj,
+                                              OV_UINT*                   pveclen) {
   ov_logfile_info("libs getter");
   *pveclen = pobj->v_addonlibs.veclen;
   return pobj->v_addonlibs.value;
 }
 
 OV_DLLFNCEXPORT OV_ACCESS CTree_dbinfoExt_getaccess(OV_INSTPTR_ov_object pobj,
-                                                    const OV_ELEMENT *pelem,
-                                                    const OV_TICKET *pticket) {
+                                                    const OV_ELEMENT*    pelem,
+                                                    const OV_TICKET* pticket) {
   /*
    *   local variables
    */
-  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt, pobj);
+  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
+  //  pobj);
   /*
    *	switch based on the element's type
    */
@@ -162,20 +167,20 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
   OV_RESULT result = OV_ERR_OK;
 
   const OV_UINT libdirnum = 1;
-  OV_STRING libdirs[1] = {0};
+  OV_STRING     libdirs[1] = {0};
   ov_string_print(&libdirs[0], "%s/system/addonlibs", getenv("ACPLT_HOME"));
 
-  DIR *daddonlibs = NULL;
-  struct dirent *dir = NULL;
-  OV_STRING_VEC strvec = {0};
+  DIR*           daddonlibs = NULL;
+  struct dirent* dir = NULL;
+  OV_STRING_VEC  strvec = {0};
 
-  for (OV_UINT k = 0; k < libdirnum; k++) {
+  for(OV_UINT k = 0; k < libdirnum; k++) {
     /*addonlibs*/
     daddonlibs = opendir(libdirs[k]);
-    if (daddonlibs) {
-      while ((dir = readdir(daddonlibs)) != NULL) {
+    if(daddonlibs) {
+      while((dir = readdir(daddonlibs)) != NULL) {
         //			ov_logfile_info(dir->d_name);
-        if (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
           continue;
         strvec.veclen++;
       }
@@ -188,28 +193,29 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
   ov_logfile_info("   %u", strvec.veclen);
   ov_memstack_lock();
   strvec.value =
-      (OV_STRING *)ov_memstack_alloc(strvec.veclen * sizeof(OV_STRING));
+      (OV_STRING*)ov_memstack_alloc(strvec.veclen * sizeof(OV_STRING));
   ov_memstack_unlock();
 
   OV_UINT i = 0;
-  for (OV_UINT k = 0; k < libdirnum; k++) {
+  for(OV_UINT k = 0; k < libdirnum; k++) {
     daddonlibs = opendir(libdirs[k]);
-    if (daddonlibs) {
+    if(daddonlibs) {
       OV_STRING tmpFilename = NULL;
-      while ((dir = readdir(daddonlibs)) != NULL) {
-        if (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
+      while((dir = readdir(daddonlibs)) != NULL) {
+        if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
           continue;
         //					dir = readdir(daddonlibs);
         //			ov_logfile_info(dir->d_name);
         strvec.value[i] = NULL;
         OV_UINT extLen = 0;
         extLen = strlen(LIBEXTENSION);
-        OV_RESULT tmpres = strget(&strvec.value[i], dir->d_name, 0, -extLen);
-        if (tmpres)
+        OV_RESULT tmpres =
+            ov_string_get(&strvec.value[i], dir->d_name, 0, -extLen);
+        if(tmpres)
           ov_logfile_error("cant open librarie %s", dir->d_name);
         i++;
       }
-      ov_string_setvalue(tmpFilename, NULL);
+      ov_string_setvalue(&tmpFilename, NULL);
       closedir(daddonlibs);
     }
   }

@@ -1,6 +1,7 @@
 #include "ov.ovm"
 #include "fb.ovm"
 #include "ovdatastruct.ovm"
+#include "geometry2d.ovm"
 
 LIBRARY TGraph
 	VERSION   = "V0.1 (DD-Mon-YYYY)";
@@ -20,6 +21,7 @@ LIBRARY TGraph
 		END_PARTS;
 		OPERATIONS
 			constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+			getaccess			:	C_FUNCTION <OV_FNC_GETACCESS>;		/*	just to make all variables visible on KS	*/
 			linkNodes  : C_FUNCTION <TGRAPH_FNC_LINKNODES>;
 			areNodesLinked  : C_FUNCTION <TGRAPH_FNC_ARENODESLINKED>;
 		END_OPERATIONS;
@@ -45,13 +47,12 @@ LIBRARY TGraph
 		CLASS Edge : CLASS fb/functionblock
 		IS_INSTANTIABLE; 
 		VARIABLES
-			Length : 		SINGLE 	 FLAGS = "i" 		COMMENT = "Distance between nodes" 	INITIALVALUE = 0.0;				
-			Direction[] : 	UINT 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
+			Direction[] : 	SINGLE 	 FLAGS = "i" 		COMMENT = "Direction between nodes";
 			Actuator:		STRING	 FLAGS = "i" 		COMMENT = "PnID Actuator ID" 		INITIALVALUE = "N";
-			actVelocity:	SINGLE	 FLAGS = "i" 		COMMENT = "Actuator speed and direction" 		INITIALVALUE = 5.0;
-			physicalCost:	SINGLE 	HAS_GET_ACCESSOR FLAGS = "i" 			COMMENT = "Weight due to travel" 	INITIALVALUE = 0.0;
-			trafficCost:	SINGLE 	 FLAGS = "i"  		COMMENT = "Weight due to traffice" 	INITIALVALUE = 0.0;
-			totalCost:		SINGLE HAS_GET_ACCESSOR FLAGS = "i" 		COMMENT = "Total weight";// Add variables here. The syntax is:
+			actVelocity[]:	SINGLE	 FLAGS = "i" 		COMMENT = "Actuator speed and direction";
+			physicalCost[]:	SINGLE 	HAS_GET_ACCESSOR FLAGS = "i" 			COMMENT = "Weight due to travel";
+			trafficCost[]:	SINGLE 	 FLAGS = "i"  		COMMENT = "Weight due to traffice";
+			totalCost[]:		SINGLE HAS_GET_ACCESSOR FLAGS = "i" 		COMMENT = "Total weight";// Add variables here. The syntax is:
 			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
 			// Example:
 			// varName : STRING HAS_GET_ACCESSOR COMMENT="Description of varname.";

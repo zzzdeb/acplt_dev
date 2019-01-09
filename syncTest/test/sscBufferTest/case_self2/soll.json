@@ -1,0 +1,116 @@
+{
+    "Libraries": ["ovunity", "PostSys", "ov"],
+    "Tree": {
+        "case_self2": {
+            "variables": {
+                "sysPath": ["STRING", "/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/case_self2"],
+                "path": ["STRING", "/TechUnits/msgCreatorTest/case_self2"],
+                "objPath": ["STRING", "/TechUnits/msgCreatorTest/case_self2/obj"],
+                "envPath": ["STRING", "/TechUnits/msgCreatorTest/case_self2/env"],
+                "objFilePath": ["STRING", "/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/obj_self2.json"],
+                "envFilePath": ["STRING", "/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/env_2emptyInbox.json"],
+                "iexreq": ["BOOL", false],
+                "eexreq": ["BOOL", false],
+                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                "methcount": ["UINT", 0],
+                "actimode": ["INT", 0],
+                "cyctime": ["TIME_SPAN", [0, 0]],
+                "ErrState": ["INT", 0],
+                "Xpos": ["INT", 0],
+                "Ypos": ["INT", 0]
+            },
+            "links": {
+                "main": {
+                    "of_association": "ovunity/case",
+                    "parents": ["/TechUnits/msgCreatorTest"],
+                    "children": ["this"]
+                }
+            },
+            "class": "ovunity/ovCase",
+            "children": {
+                "obj": {
+                    "variables": {
+                        "order": ["STRING", null],
+                        "queueLength": ["UINT", 1],
+                        "msgsInQueue": ["UINT", 0],
+                        "receiverInstance": ["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+                        "receiverName": ["STRING_VEC", ["MANAGER", "MANAGER"]],
+                        "receiverHost": ["STRING_VEC", ["localhost", "localhost"]],
+                        "tries": ["UINT", 0],
+                        "iexreq": ["BOOL", false],
+                        "eexreq": ["BOOL", false],
+                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                        "methcount": ["UINT", 1],
+                        "actimode": ["INT", 0],
+                        "cyctime": ["TIME_SPAN", [0, 0]],
+                        "ErrState": ["INT", 0],
+                        "Xpos": ["INT", 0],
+                        "Ypos": ["INT", 0]
+                    },
+                    "links": {
+                        "taskparent": {
+                            "of_association": "fb/tasklist",
+                            "parents": ["/Tasks/UrTask"],
+                            "children": ["this"]
+                        }
+                    },
+                    "class": "PostSys/msgCreator"
+                },
+                "env": {
+                    "class": "ov/domain",
+                    "children": {
+                        "node1": {
+                            "class": "ov/domain",
+                            "children": {
+                                "inbox": {
+                                    "variables": {
+                                        "actimode": ["INT", 1],
+                                        "cycInterval": ["INT", 5]
+                                    },
+                                    "links": {
+                                        "RootComTask": {
+                                            "of_association": "ksbase/AssocComTaskList",
+                                            "parents": ["/communication/RootComTask"],
+                                            "children": ["this"]
+                                        }
+                                    },
+                                    "class": "PostSys/node"
+                                }
+                            }
+                        },
+                        "node2": {
+                            "class": "ov/domain",
+                            "children": {
+                                "inbox": {
+                                    "variables": {
+                                        "holdConnection": ["BOOL", false]
+                                    },
+                                    "class": "PostSys/inbox",
+                                    "children": {
+                                        "0000000000000406_Message": {
+                                            "variables": {
+                                                "pathAddress": ["STRING_VEC", ["none", "localhost", "localhost"]],
+                                                "pathName": ["STRING_VEC", ["MANAGER", "MANAGER", "MANAGER"]],
+                                                "pathComponent": ["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/obj", "/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+                                                "currentInd": ["UINT", 2],
+                                                "msgStatus": ["INT", 3],
+                                                "msgID": ["STRING", "341350270"],
+                                                "refMsgID": ["STRING", null],
+                                                "auth": ["STRING", null],
+                                                "msgBody": ["STRING", "ac"],
+                                                "sendBy": ["CTYPE", "not supported"],
+                                                "expectAnswer": ["BOOL", false]
+                                            },
+                                            "class": "PostSys/Message"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/msgCreatorTest/case_self2"
+}

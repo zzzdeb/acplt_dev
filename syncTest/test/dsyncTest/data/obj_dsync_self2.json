@@ -1,0 +1,235 @@
+{
+    "Libraries": ["sync", "CTree", "ksxdr"],
+    "Tree": {
+        "dsync": {
+            "variables": {
+                "destKS": ["STRING", "//127.0.0.1:7509/MANAGER/TechUnits/dsyncTest/case_self2dsync/env/dst/image"],
+                "srcPath": ["STRING", "/TechUnits/dsyncTest/case_self2dsync/env/src"],
+								"selfHost": ["STRING", "127.0.0.1"],
+								"selfServer": ["STRING", "MANAGER"],
+                "holdConnection": ["BOOL", false],
+                "reset": ["BOOL", false],
+                "status": ["INT", 0],
+                "iexreq": ["BOOL", false],
+                "eexreq": ["BOOL", false]
+            },
+            "links": {
+                "taskparent": {
+                    "of_association": "fb/tasklist",
+                    "parents": ["/Tasks/UrTask"],
+                    "children": ["this"]
+                }
+            },
+            "class": "sync/dsync",
+            "parts": {
+                "transport": {
+                    "variables": {
+                        "targetKS": ["STRING", null],
+                        "targetPath": ["STRING", null],
+                        "holdConnection": ["BOOL", false],
+                        "reset": ["BOOL", false],
+                        "autoUpload": ["BOOL", false],
+                        "status": ["INT", 0],
+                        "getVar": ["BOOL", true],
+                        "path": ["STRING", "/TechUnits"],
+                        "tree": ["STRING", null],
+                        "libs": ["STRING_VEC", []],
+                        "cache": ["CTYPE", "not supported"],
+                        "result": ["INT", 0],
+                        "ErrorMsg": ["STRING", null],
+                        "trigger": ["INT", 0],
+                        "iexreq": ["BOOL", false],
+                        "eexreq": ["BOOL", false],
+                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                        "methcount": ["UINT", 0],
+                        "actimode": ["INT", 0],
+                        "proctime": ["TIME", [1542626937, 775306]],
+                        "cyctime": ["TIME_SPAN", [0, 0]],
+                        "ErrState": ["INT", 0],
+                        "calctime": ["TIME_SPAN", [0, 0]],
+                        "Xpos": ["INT", 0],
+                        "Ypos": ["INT", 0]
+                    },
+                    "class": "CTree/Transport",
+                    "parts": {
+                        "loadlibs": {
+                            "variables": {
+                                "targetKS": ["STRING", "localhost/MANAGER"],
+                                "status": ["UINT", 0],
+                                "targetOS": ["STRING", null],
+                                "targetArch": ["UINT", 0],
+                                "targetLibs": ["STRING_VEC", []],
+                                "OS": ["STRING", null],
+                                "Arch": ["UINT", 0],
+                                "libsToSend": ["STRING_VEC", []],
+                                "reset": ["BOOL", false],
+                                "postCallback": ["CTYPE", "not supported"],
+                                "result": ["INT", 0],
+                                "ErrorMsg": ["STRING", null],
+                                "trigger": ["INT", 0],
+                                "iexreq": ["BOOL", false],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 0],
+                                "actimode": ["INT", 0],
+                                "proctime": ["TIME", [1542626937, 775183]],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 0]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "class": "CTree/LoadLibs",
+                            "parts": {
+                                "ks": {
+                                    "variables": {
+                                        "ManagerPort": ["STRING", "7509"],
+                                        "msgAccepted": ["INT", 0],
+                                        "msgStatus": ["INT", 0],
+                                        "rpcErrCode": ["INT", 0],
+                                        "sentProcID": ["UINT", 0],
+                                        "sentXID": ["UINT", 0],
+                                        "timeLastEvent": ["TIME", [0, 0]],
+                                        "timeout": ["UINT", 30],
+                                        "dataToSend": ["CTYPE", "not supported"],
+                                        "tempXID": ["UINT", 0],
+                                        "tempCallback": ["CTYPE", "not supported"],
+                                        "dataReceived": ["CTYPE", "not supported"],
+                                        "serverHost": ["STRING", null],
+                                        "serverName": ["STRING", null],
+                                        "serverPort": ["STRING", null],
+                                        "state": ["UINT", 0],
+                                        "runningKSservice": ["UINT", 0],
+                                        "callback": ["CTYPE", "not supported"],
+                                        "holdConnection": ["BOOL", false],
+                                        "actimode": ["INT", 0],
+                                        "cycInterval": ["INT", 5],
+                                        "NextExecTime": ["TIME", [1542626937, 785119]]
+                                    },
+                                    "links": {
+                                        "RootComTask": {
+                                            "of_association": "ksbase/AssocComTaskList",
+                                            "parents": ["/communication/RootComTask"],
+                                            "children": ["this"]
+                                        }
+                                    },
+                                    "class": "ksxdr/xdrClient"
+                                },
+                                "sendFiles": {
+                                    "variables": {
+                                        "targetKS": ["STRING", null],
+                                        "filesToSend": ["STRING_VEC", []],
+                                        "whereToSend": ["STRING_VEC", []],
+                                        "reset": ["BOOL", false],
+                                        "status": ["INT", 0],
+                                        "postCallback": ["CTYPE", "not supported"],
+                                        "result": ["INT", 0],
+                                        "ErrorMsg": ["STRING", null],
+                                        "trigger": ["INT", 0],
+                                        "iexreq": ["BOOL", false],
+                                        "eexreq": ["BOOL", false],
+                                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                        "methcount": ["UINT", 0],
+                                        "actimode": ["INT", 0],
+                                        "proctime": ["TIME", [1542626937, 775123]],
+                                        "cyctime": ["TIME_SPAN", [0, 0]],
+                                        "ErrState": ["INT", 0],
+                                        "calctime": ["TIME_SPAN", [0, 0]],
+                                        "Xpos": ["INT", 0],
+                                        "Ypos": ["INT", 0]
+                                    },
+                                    "class": "CTree/SendFiles",
+                                    "parts": {
+                                        "ks": {
+                                            "variables": {
+                                                "ManagerPort": ["STRING", "7509"],
+                                                "msgAccepted": ["INT", 0],
+                                                "msgStatus": ["INT", 0],
+                                                "rpcErrCode": ["INT", 0],
+                                                "sentProcID": ["UINT", 0],
+                                                "sentXID": ["UINT", 0],
+                                                "timeLastEvent": ["TIME", [0, 0]],
+                                                "timeout": ["UINT", 30],
+                                                "dataToSend": ["CTYPE", "not supported"],
+                                                "tempXID": ["UINT", 0],
+                                                "tempCallback": ["CTYPE", "not supported"],
+                                                "dataReceived": ["CTYPE", "not supported"],
+                                                "serverHost": ["STRING", null],
+                                                "serverName": ["STRING", null],
+                                                "serverPort": ["STRING", null],
+                                                "state": ["UINT", 0],
+                                                "runningKSservice": ["UINT", 0],
+                                                "callback": ["CTYPE", "not supported"],
+                                                "holdConnection": ["BOOL", false],
+                                                "actimode": ["INT", 0],
+                                                "cycInterval": ["INT", 5],
+                                                "NextExecTime": ["TIME", [1542626937, 785121]]
+                                            },
+                                            "links": {
+                                                "RootComTask": {
+                                                    "of_association": "ksbase/AssocComTaskList",
+                                                    "parents": ["/communication/RootComTask"],
+                                                    "children": ["this"]
+                                                }
+                                            },
+                                            "class": "ksxdr/xdrClient"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "upload": {
+                            "variables": {
+                                "getVar": ["BOOL", true],
+                                "path": ["STRING", "/TechUnits"],
+                                "tree": ["STRING", null],
+                                "libs": ["STRING_VEC", []],
+                                "cache": ["CTYPE", "not supported"],
+                                "result": ["INT", 0],
+                                "ErrorMsg": ["STRING", null],
+                                "trigger": ["INT", 0],
+                                "iexreq": ["BOOL", false],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 0],
+                                "actimode": ["INT", 0],
+                                "proctime": ["TIME", [1542626937, 775241]],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 0]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "class": "CTree/Upload"
+                        }
+                    }
+                },
+                "upload": {
+                    "variables": {
+                        "getVar": ["BOOL", true],
+                        "path": ["STRING", "/TechUnits"],
+                        "tree": ["STRING", null],
+                        "libs": ["STRING_VEC", []],
+                        "cache": ["CTYPE", "not supported"],
+                        "result": ["INT", 0],
+                        "ErrorMsg": ["STRING", null],
+                        "trigger": ["INT", 0],
+                        "iexreq": ["BOOL", false],
+                        "eexreq": ["BOOL", false],
+                        "maxcalctime": ["TIME_SPAN", [0, 0]],
+                        "methcount": ["UINT", 0],
+                        "actimode": ["INT", 0],
+                        "proctime": ["TIME", [1542626937, 775344]],
+                        "cyctime": ["TIME_SPAN", [0, 0]],
+                        "ErrState": ["INT", 0],
+                        "calctime": ["TIME_SPAN", [0, 0]],
+                        "Xpos": ["INT", 0],
+                        "Ypos": ["INT", 0]
+                    },
+                    "class": "CTree/Upload"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits/dsync"
+}

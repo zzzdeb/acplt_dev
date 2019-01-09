@@ -1,0 +1,426 @@
+#include "ov.ovm"
+#include "fb.ovm"
+#include "PostSys.ovm"
+#include "sync.ovm"
+#include "CTree.ovm"
+
+/*
+*
+*   Copyright (C) 
+*   Chair of Process Control Engineering,
+*   D-52056 Aachen, Germany.
+*   All rights reserved.
+*
+*
+*   This file is part of the ACPLT/OV Package 
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*
+*/
+
+LIBRARY lbalance
+  VERSION   = "V0.1 (2018-Dez-27)";
+  AUTHOR    = "Zolboo Erdenebayar";
+  COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
+  COMMENT   = "deploy";
+
+  CLASS Common          : CLASS fb/functionblock
+    IS_INSTANTIABLE;
+    COMMENT = "common class to handle error";
+    VARIABLES
+      status  : INT FLAGS="o" 
+        COMMENT     = "0: INIT, 1-63: custom, 64: INTERNALERROR, 128: EXTERNALERROR"
+        INITIALVALUE  = 0;
+      result  : INT 
+        FLAGS="o"
+        COMMENT     = "OV_RESULT ov object"
+        INITIALVALUE  = 0;
+    END_VARIABLES;
+    PARTS
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS appMonitor          : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      appPaths[]  : STRING
+        FLAGS="i"
+        COMMENT     = "Paths of GSEs";
+      weights[] : STRING
+        FLAGS="i"
+        COMMENT     = "weights of Apps";
+      apps[]  : STRING
+        FLAGS="o"
+        COMMENT     = "Apps on this node";
+      appReq[]: STRING
+        FLAGS="o"
+        COMMENT     = "requirements of apps";
+      loads[] : UINT
+        FLAGS="o"
+        COMMENT     = "loads of apps";
+      sum : UINT HAS_GET_ACCESSOR IS_DERIVED
+        FLAGS="o"
+        COMMENT     = "sum of loads";
+    END_VARIABLES;
+    PARTS
+      upload  : CLASS CTree/Upload;
+    END_PARTS;
+    OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS; 
+
+  CLASS neighborInformer          : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "inform neighbors about yourself";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      sum : UINT 
+        FLAGS="i"
+        COMMENT     = "sum of loads";
+      cap : UINT HAS_GET_ACCESSOR 
+        FLAGS="i"
+        COMMENT     = "capacity of this node";
+      myIP  : STRING
+          FLAGS="i"
+          COMMENT     = "my IP"
+          INITIALVALUE  = "localhost";
+      neighborIPs[]  : STRING 
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
+      serverNames[] : STRING
+          FLAGS="i"
+          COMMENT     = "names of neighbors";
+      B : BOOL HAS_SET_ACCESSOR
+        FLAGS="i"
+        COMMENT     = "triggers neighborInformer"
+        INITIALVALUE  = FALSE;
+      broadcast : STRING
+        FLAGS="o"
+        COMMENT     = "msg to broadcast"
+        INITIALVALUE  = "";
+    END_VARIABLES;
+    PARTS
+      broadcaster : CLASS PostSys/msgCreator;
+    END_PARTS;
+    OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  
+  CLASS neighborDB          : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "receives info from neighbors & creates databank";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      loads[] : UINT
+          FLAGS="o"
+          COMMENT     = "list of neighborloads";
+      caps[]  : UINT
+          FLAGS="o"
+          COMMENT     = "capacity of neighbors";
+      IPs[] : STRING
+          FLAGS="o"
+          COMMENT     = "IPs of neighbors";
+      syncTrigger : BOOL
+          FLAGS="o"
+          COMMENT     = "get triggered if one of neighbor broadcasts"
+          INITIALVALUE  = FALSE;
+      sysInfos[]  : STRING
+          FLAGS="o"
+          COMMENT     = "sysinfos of neighbors";
+      A : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers accept"
+          INITIALVALUE  = FALSE;
+    END_VARIABLES;
+    PARTS
+      inbox : CLASS PostSys/inbox;
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+
+  CLASS reqSender         : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "request sender to one neighbor";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      outApp  : STRING 
+          FLAGS="i"
+          COMMENT     = "app to be sent"
+          INITIALVALUE  = "";
+      outLoad : UINT HAS_ACCESSORS
+          FLAGS="i"
+          COMMENT     = "load of app to be sent"
+          INITIALVALUE  = 0;
+      outRequirements  : STRING
+          FLAGS="i"
+          COMMENT     = "requirements of app"
+          INITIALVALUE  = "";
+      destination : STRING
+          FLAGS="i"
+          COMMENT     = "ks ov destination"
+          INITIALVALUE  = "";
+      R : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers request"
+          INITIALVALUE  = FALSE;
+      request : STRING
+          FLAGS="o"
+          COMMENT     = "request"
+          INITIALVALUE  = "";
+    END_VARIABLES;
+    PARTS
+      sender : CLASS PostSys/msgCreator;
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS reqReceiver         : CLASS lbalance/Common
+  IS_INSTANTIABLE;
+    COMMENT = "receives Request as msg";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      reqIPs[]  : STRING
+          FLAGS="o"
+          COMMENT     = "IPs of requests";
+      reqLoads[]  : UINT
+          FLAGS="o"
+          COMMENT     = "loads of requests"; reqLoadRequirements[] : STRING
+          FLAGS="o"
+          COMMENT     = "requirements of loads";
+    END_VARIABLES;
+    PARTS
+      inbox : CLASS PostSys/inbox;
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS acceptNotifier          : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "notifies the choosen node about acceptance";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      reqIPs[]  : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of requests";
+      index : INT
+          FLAGS="i"
+          COMMENT     = "index of choosen node"
+          INITIALVALUE  = 0;
+      dstPath : STRING
+          FLAGS="i"
+          COMMENT="Path of object to get notified"
+          INITIALVALUE="";
+      A : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers accept"
+          INITIALVALUE  = FALSE;
+    END_VARIABLES;
+    PARTS
+      sender : CLASS PostSys/msgCreator;
+    END_PARTS;
+    OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS sendInitiator         : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "initiate send";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      outApp  : STRING
+          FLAGS="i"
+          COMMENT     = "app to send out"
+          INITIALVALUE  = "";
+      R : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "triggers request"
+          INITIALVALUE  = FALSE;
+      appPath : STRING
+          FLAGS="i"
+          COMMENT="Path of app to send by dsync"
+          INITIALVALUE="";
+    END_VARIABLES;
+    PARTS
+      inbox : CLASS PostSys/inbox;
+    END_PARTS;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS mock          : CLASS fb/functionblock
+    IS_INSTANTIABLE;
+    COMMENT = "mocking outputs of other";
+    VARIABLES
+      fieldDevices[] : STRING  FLAGS="i" COMMENT="List of visible field devices";
+      sysOS : STRING FLAGS="o" COMMENT="Operating System of this system (linux, nt, ...)";
+      sysOSVersion : STRING FLAGS="o" COMMENT="Operating System (Kernel) Version";
+      cpuType : STRING FLAGS="o" COMMENT="Model name of this system's CPU.";
+      cpuUsage : SINGLE FLAGS="o" COMMENT="Average CPU usage (computation time/total time) during last update interval";
+      memSize : UINT FLAGS="o" COMMENT="System memory in kiB";
+      memUsed : UINT FLAGS="o" COMMENT="Used memory in kiB (does not include Buffers and Caches on Linuxes)";
+      ovArch : STRING FLAGS="o" COMMENT="OV cpu architecture (i386, amd64, arm, arm64)";
+      ovDBSize : UINT FLAGS="o" COMMENT="Maximum size of the OV database in kiB";
+      ovDBUsed : UINT FLAGS="o" COMMENT="Current size of the OV database in kiB";
+      ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
+      ovFbUrCycTime : TIME_SPAN FLAGS="o" COMMENT="Cycle time of the Fb UrTask in s";
+      ovFbUrCalcTime : TIME_SPAN FLAGS="o" COMMENT="Required calculation time of the Fb UrTask's last execution in s";
+      
+      cpuLastTicks : UINT COMMENT="Saved number of total cpu time ticks at last measurement";
+      cpuLastIdleTicks : UINT COMMENT="Saved number of cpu idle time ticks at last measurement";
+      ovServers[] : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
+
+
+      appPaths[]  : STRING
+        FLAGS="i"
+        COMMENT     = "Paths of GSEs";
+      apps[]  : STRING
+        FLAGS="i"
+        COMMENT     = "Apps on this node";
+      appReq[]: STRING
+        FLAGS="i"
+        COMMENT     = "requirements of apps";
+      loads[] : UINT
+        FLAGS="i"
+        COMMENT     = "loads of apps";
+      neighborIPs[]  : STRING 
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
+      serverNames[] : STRING
+          FLAGS="i"
+          COMMENT     = "names of neighbors";
+      outApp  : STRING 
+          FLAGS="o"
+          COMMENT     = "app to be sent"
+          INITIALVALUE  = "";
+      outLoad : UINT 
+          FLAGS="o"
+          COMMENT     = "load of app to be sent"
+          INITIALVALUE  = 0;
+      outRequirements  : STRING
+          FLAGS="o"
+          COMMENT     = "requirements of app"
+          INITIALVALUE  = "";
+      destination : STRING
+          FLAGS="i"
+          COMMENT     = "ks ov destination"
+          INITIALVALUE  = "";
+      reqIndex  : UINT 
+          FLAGS="o"
+          COMMENT     = "Tell client not to close the connection after each request"
+          INITIALVALUE  = 0;
+      reqLoads[]  : UINT
+          FLAGS="i"
+          COMMENT     = "loads of requests";
+    END_VARIABLES;
+    PARTS
+    END_PARTS;
+    OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
+  CLASS BRAD          : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "sync state machine";
+    VARIABLES
+      reset : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="Resets lbalance objects"
+          INITIALVALUE=FALSE;
+      init  : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT     = "sets back to B state"
+          INITIALVALUE  = FALSE;
+      T : SINGLE
+          FLAGS="i"
+          COMMENT     = "Interval to stay in one state"
+          INITIALVALUE  = 10.0;
+      B : BOOL HAS_SET_ACCESSOR
+          FLAGS="o"
+          COMMENT     = "triggers neighborInformer"
+          INITIALVALUE  = FALSE;
+      R : BOOL HAS_SET_ACCESSOR
+          FLAGS="o"
+          COMMENT     = "triggers request"
+          INITIALVALUE  = FALSE;
+      A : BOOL HAS_SET_ACCESSOR
+          FLAGS="o"
+          COMMENT     = "triggers accept"
+          INITIALVALUE  = FALSE;
+      D : BOOL HAS_SET_ACCESSOR
+          FLAGS="o"
+          COMMENT     = "triggers neighborInformer"
+          INITIALVALUE  = FALSE;
+      timeLastEvent : TIME
+          FLAGS="o"
+          COMMENT     = "begin of phase";
+    END_VARIABLES;
+    PARTS
+      appMonitor  : CLASS lbalance/appMonitor;
+      nbInformer  : CLASS lbalance/neighborInformer;
+      nbDB  : CLASS lbalance/neighborDB;
+      reqSender : CLASS lbalance/reqSender;
+      reqReceiver : CLASS lbalance/reqReceiver;
+      acceptNotifier: CLASS lbalance/acceptNotifier;
+      sendInitiator: CLASS lbalance/sendInitiator;
+      mock: CLASS lbalance/mock;
+      dsync: CLASS sync/dsync;
+    END_PARTS;
+    OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+END_LIBRARY;

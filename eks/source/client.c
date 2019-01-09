@@ -41,7 +41,7 @@ OV_DLLFNCEXPORT void eks_client_startup(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_eks_client pinst = Ov_StaticPtrCast(eks_client, pobj);
+//  OV_INSTPTR_eks_client pinst = Ov_StaticPtrCast(eks_client, pobj);
 
   /* do what the base class does first */
   ksxdr_xdrClient_startup(pobj);
@@ -55,7 +55,7 @@ OV_DLLFNCEXPORT void eks_client_shutdown(OV_INSTPTR_ov_object pobj) {
   /*
    *   local variables
    */
-  OV_INSTPTR_eks_client pinst = Ov_StaticPtrCast(eks_client, pobj);
+//  OV_INSTPTR_eks_client pinst = Ov_StaticPtrCast(eks_client, pobj);
 
   /* do what */
 
@@ -138,7 +138,7 @@ eks_client_getVar(OV_INSTPTR_eks_client pobj, const OV_GETVAR_PAR *gvParams,
    */
   OV_RESULT result = OV_ERR_OK;
   OV_UINT numberOfItems = gvParams->identifiers_len;
-  OV_GETVAR_ITEM *pitem = NULL;
+//  OV_GETVAR_ITEM *pitem = NULL;
 
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, pobj);
@@ -242,7 +242,7 @@ eks_client_getVarCallback(const OV_INSTPTR_ov_domain this,
 
   // pinst->v_pGetVarRes = NULL;
   ov_memstack_unlock();
-  OV_INSTPTR_ov_domain pparent = Ov_GetParent(ov_containment, pinst);
+//  OV_INSTPTR_ov_domain pparent = Ov_GetParent(ov_containment, pinst);
 
   return;
 }

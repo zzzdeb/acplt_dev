@@ -20,6 +20,7 @@
 
 #include "CTree.h"
 #include "ksbase.h"
+#include "ksbase_helper.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include <stdio.h>
@@ -30,14 +31,14 @@
  * String
  */
 OV_DLLFNCEXPORT OV_STRING
-CTree_helper_strlistcat(const OV_STRING_VEC *const vector) {
+                CTree_helper_strlistcat(const OV_STRING_VEC* const vector) {
   OV_STRING res = NULL;
-  OV_UINT len = 0;
+  OV_UINT   len = 0;
   //	for (int i = 0; i < vector->veclen; i++)
   //		len += strlen(vector->value[i]);
   //	res = (OV_STRING) ov_memstack_alloc(len + 1);
 
-  for (int i = 0; i < vector->veclen; i++) {
+  for(int i = 0; i < vector->veclen; i++) {
     len += ov_string_getlength(vector->value[i]);
     ov_string_append(&res, vector->value[i]);
   }
@@ -47,7 +48,7 @@ CTree_helper_strlistcat(const OV_STRING_VEC *const vector) {
  * Functions
  */
 OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
-  if (pobj == NULL)
+  if(pobj == NULL)
     return NULL;
 
   OV_STRING factory = NULL;
@@ -60,12 +61,12 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
   return factory;
 }
 
-OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
-                       OV_STRING *port, OV_STRING *serverName,
-                       OV_STRING *path) {
+OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING* serverHost,
+                       OV_STRING* port, OV_STRING* serverName,
+                       OV_STRING* path) {
   OV_RESULT result = OV_ERR_OK;
 
-  if (kspath == NULL)
+  if(kspath == NULL)
     return OV_ERR_BADPARAM;
 
   OV_STRING serverNameStr = NULL;
@@ -74,21 +75,21 @@ OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
   OV_STRING kspathcopy = NULL;
   ov_string_setvalue(&kspathcopy, kspath);
   OV_STRING portStr = strchr(kspathcopy, ':');
-  if (portStr) {
+  if(portStr) {
     *portStr = 0;
     portStr++;
     serverNameStr = strchr(portStr, '/');
   } else {
     serverNameStr = strchr(kspathcopy, '/');
   }
-  if (serverNameStr) {
+  if(serverNameStr) {
     *serverNameStr = 0;
     serverNameStr++;
   }
 
-  if (serverNameStr) {
+  if(serverNameStr) {
     pathStr = strchr(serverNameStr, '/');
-    if (pathStr) {
+    if(pathStr) {
       *pathStr = 0;
       pathStr++;
     }
@@ -101,32 +102,32 @@ OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
   //		return OV_ERR_BADPARAM;
   //	}
   //
-  if (serverHost && !result) {
+  if(serverHost && !result) {
     result = ov_string_setvalue(serverHost, kspathcopy);
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_string_setvalue(&kspathcopy, NULL);
       result = OV_ERR_GENERIC;
     }
   }
 
-  if (port && !result) {
+  if(port && !result) {
     result = ov_string_setvalue(port, portStr);
     ;
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       result = OV_ERR_GENERIC;
     }
   }
 
-  if (serverName && !result) {
+  if(serverName && !result) {
     result = ov_string_setvalue(serverName, serverNameStr);
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       result = OV_ERR_GENERIC;
     }
   }
 
-  if (path && !result) {
+  if(path && !result) {
     result = ov_string_setvalue(path, pathStr);
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       result = OV_ERR_GENERIC;
     }
   }
@@ -144,22 +145,23 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
   OV_STRING serverPort = NULL;
   OV_STRING serverName = NULL;
   OV_STRING serverPath = NULL;
-  result =
-      parse_kspath(param, &serverHost, &serverPort, &serverName, &serverPath);
+  OV_STRING serverNamePort = NULL;
+  ks_splitOneStringPath(param, &serverHost, &serverPort, &serverName,
+                        &serverNamePort, &serverPath);
 
-  if (!serverHost) {
+  if(!serverHost) {
     return OV_ERR_BADPARAM;
   }
 
   result = ksbase_ClientBase_serverHost_set(
       (OV_INSTPTR_ksbase_ClientBase)pclient, serverHost);
-  if (Ov_Fail(result)) {
+  if(Ov_Fail(result)) {
     return result;
   }
-  if (serverName) {
+  if(serverName) {
     result = ksbase_ClientBase_serverName_set(
         (OV_INSTPTR_ksbase_ClientBase)pclient, serverName);
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       return result;
     }
   }
@@ -172,7 +174,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
  */
 
 typedef struct {
-  OV_UINT veclen;
+  OV_UINT     veclen;
   OV_VAR_TYPE value[];
 } OV_VARTYPE_VEC;
 
@@ -195,7 +197,7 @@ const OV_VARTYPE_VEC OV_VAR_TYPE_LIST = {
               OV_VT_HAS_STATE,   OV_VT_HAS_TIMESTAMP, OV_VT_KSMASK}};
 
 typedef struct {
-  OV_UINT veclen;
+  OV_UINT     veclen;
   KS_VAR_TYPE value[];
 } KS_VARTYPE_VEC;
 
@@ -245,228 +247,209 @@ const KS_VARTYPE_VEC KS_VAR_TYPE_LIST = {.veclen = 39,
 
                                                    KS_VT_ANY}};
 
-
 /*	----------------------------------------------------------------------
  */
 /*
  *	Return value type of getAccessor
  */
 OV_DLLFNCEXPORT OV_STRING CTree_helper_ovtypeToStr(OV_VAR_TYPE vartype) {
-  switch (vartype) {
-  case OV_VT_VOID:
-    return "VOID";
-  case OV_VT_BYTE:
-    return "BYTE";
-  case OV_VT_BOOL:
-    return "BOOL";
-  case OV_VT_INT:
-    return "INT";
-  case OV_VT_UINT:
-    return "UINT";
-  case OV_VT_SINGLE:
-    return "SINGLE";
-  case OV_VT_DOUBLE:
-    return "DOUBLE";
-  case OV_VT_STRING:
-    return "STRING";
-  case OV_VT_TIME:
-    return "TIME";
-  case OV_VT_TIME_SPAN:
-    return "TIME_SPAN";
-  case OV_VT_STATE:
-    return "OV_STATE";
-  case OV_VT_STRUCT:
-    return "OV_STRUCT";
+  OV_STRING typestr = NULL;
+  switch(vartype & OV_VT_KSMASK) {
+    case OV_VT_VOID:
+      ov_string_setvalue(&typestr, "VOID");
+      break;
+    case OV_VT_BYTE:
+      ov_string_setvalue(&typestr, "BYTE");
+      break;
+    case OV_VT_BOOL:
+      ov_string_setvalue(&typestr, "BOOL");
+      break;
+    case OV_VT_INT:
+      ov_string_setvalue(&typestr, "INT");
+      break;
+    case OV_VT_UINT:
+      ov_string_setvalue(&typestr, "UINT");
+      break;
+    case OV_VT_SINGLE:
+      ov_string_setvalue(&typestr, "SINGLE");
+      break;
+    case OV_VT_DOUBLE:
+      ov_string_setvalue(&typestr, "DOUBLE");
+      break;
+    case OV_VT_STRING:
+      ov_string_setvalue(&typestr, "STRING");
+      break;
+    case OV_VT_TIME:
+      ov_string_setvalue(&typestr, "TIME");
+      break;
+    case OV_VT_TIME_SPAN:
+      ov_string_setvalue(&typestr, "TIME_SPAN");
+      break;
+    case OV_VT_STATE:
+      ov_string_setvalue(&typestr, "OV_STATE");
+      break;
+    case OV_VT_STRUCT:
+      ov_string_setvalue(&typestr, "OV_STRUCT");
+      break;
 
-  case OV_VT_BYTE_VEC:
-    return "BYTE_VEC";
-  case OV_VT_BOOL_VEC:
-    return "BOOL_VEC";
-  case OV_VT_INT_VEC:
-    return "INT_VEC";
-  case OV_VT_UINT_VEC:
-    return "UINT_VEC";
-  case OV_VT_SINGLE_VEC:
-    return "SINGLE_VEC";
-  case OV_VT_DOUBLE_VEC:
-    return "DOUBLE_VEC";
-  case OV_VT_STRING_VEC:
-    return "STRING_VEC";
-  case OV_VT_TIME_VEC:
-    return "TIME_VEC";
-  case OV_VT_TIME_SPAN_VEC:
-    return "TIME_SPAN_VEC";
-  case OV_VT_TIME_SERIES:
-    return "TIME_SERIES";
-  case OV_VT_STATE_VEC:
-    return "STATE_VEC";
+    case OV_VT_CTYPE:
+      ov_string_setvalue(&typestr, "CTYPE");
+      break;
+    case OV_VT_POINTER:
+      ov_string_setvalue(&typestr, "POINTER");
+      break;
 
-  case OV_VT_STRUCT_VEC:
-    return "STRUCT_VEC";
+    case OV_VT_BYTE_VEC:
+      ov_string_setvalue(&typestr, "BYTE_VEC");
+      break;
+    case OV_VT_BOOL_VEC:
+      ov_string_setvalue(&typestr, "BOOL_VEC");
+      break;
+    case OV_VT_INT_VEC:
+      ov_string_setvalue(&typestr, "INT_VEC");
+      break;
+    case OV_VT_UINT_VEC:
+      ov_string_setvalue(&typestr, "UINT_VEC");
+      break;
+    case OV_VT_SINGLE_VEC:
+      ov_string_setvalue(&typestr, "SINGLE_VEC");
+      break;
+    case OV_VT_DOUBLE_VEC:
+      ov_string_setvalue(&typestr, "DOUBLE_VEC");
+      break;
+    case OV_VT_STRING_VEC:
+      ov_string_setvalue(&typestr, "STRING_VEC");
+      break;
+    case OV_VT_TIME_VEC:
+      ov_string_setvalue(&typestr, "TIME_VEC");
+      break;
+    case OV_VT_TIME_SPAN_VEC:
+      ov_string_setvalue(&typestr, "TIME_SPAN_VEC");
+      break;
+    case OV_VT_TIME_SERIES:
+      ov_string_setvalue(&typestr, "TIME_SERIES");
+      break;
+    case OV_VT_STATE_VEC:
+      ov_string_setvalue(&typestr, "STATE_VEC");
+      break;
 
-  case OV_VT_BOOL_PV:
-    return "BOOL_PV";
-  case OV_VT_INT_PV:
-    return "INT_PV";
-  case OV_VT_UINT_PV:
-    return "UINT_PV*";
-  case OV_VT_SINGLE_PV:
-    return "SINGLE_PV";
-  case OV_VT_DOUBLE_PV:
-    return "DOUBLE_PV";
-  case OV_VT_STRING_PV:
-    return "STRING_PV";
-  case OV_VT_TIME_PV:
-    return "TIME_PV";
-  case OV_VT_TIME_SPAN_PV:
-    return "TIME_SPAN_PV";
-
-  case OV_VT_BOOL_PV_VEC:
-    return "BOOL_PV_VEC";
-  case OV_VT_INT_PV_VEC:
-    return "INT_PV_VEC";
-  case OV_VT_UINT_PV_VEC:
-    return "UINT_PV_VEC";
-  case OV_VT_SINGLE_PV_VEC:
-    return "SINGLE_PV_VEC";
-  case OV_VT_DOUBLE_PV_VEC:
-    return "DOUBLE_PV_VEC";
-  case OV_VT_STRING_PV_VEC:
-    return "STRING_PV_VEC";
-  case OV_VT_TIME_PV_VEC:
-    return "TIME_PV_VEC";
-  case OV_VT_TIME_SPAN_PV_VEC:
-    return "TIME_SPAN_PV_VEC";
-
-  case OV_VT_ANY:
-    return "ANY";
-  default:
-    ov_logfile_error("Unknown value type. %u\n", vartype);
-    return NULL;
-    exit(EXIT_FAILURE);
+    case OV_VT_STRUCT_VEC:
+      ov_string_setvalue(&typestr, "STRUCT_VEC");
+      break;
+    case OV_VT_ANY:
+      ov_string_setvalue(&typestr, "ANY");
+      break;
+    default:
+      ov_logfile_error("Unknown value type. %u\n", vartype);
+      return NULL;
   }
-  return NULL;
+  if(vartype & OV_VT_HAS_STATE) {
+    ov_string_append(&typestr, "&S");
+  }
+  if(vartype & OV_VT_HAS_TIMESTAMP) {
+    ov_string_append(&typestr, "&T");
+  }
+  return typestr;
 }
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE *vartype,
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_strToOVType(OV_VAR_TYPE*    vartype,
                                                    const OV_STRING typestr) {
-  if (!typestr || !vartype) {
+  if(!typestr || !vartype) {
     return OV_ERR_BADPARAM;
   }
-  if (ov_string_compare(typestr, "VOID") == OV_STRCMP_EQUAL)
+  OV_UINT    len = 0;
+  OV_STRING* splited = ov_string_split(typestr, "&", &len);
+  if(ov_string_compare(splited[0], "VOID") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_VOID;
-  else if (ov_string_compare(typestr, "BYTE") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "CTYPE") == OV_STRCMP_EQUAL)
+    *vartype = OV_VT_CTYPE;
+  else if(ov_string_compare(splited[0], "BYTE") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_BYTE;
-  else if (ov_string_compare(typestr, "BOOL") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "BOOL") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_BOOL;
-  else if (ov_string_compare(typestr, "INT") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "INT") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_INT;
-  else if (ov_string_compare(typestr, "UINT") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "UINT") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_UINT;
-  else if (ov_string_compare(typestr, "SINGLE") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "SINGLE") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_SINGLE;
-  else if (ov_string_compare(typestr, "DOUBLE") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "DOUBLE") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_DOUBLE;
-  else if (ov_string_compare(typestr, "STRING") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "STRING") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STRING;
-  else if (ov_string_compare(typestr, "TIME") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "TIME") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_TIME;
-  else if (ov_string_compare(typestr, "TIME_SPAN") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "TIME_SPAN") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_TIME_SPAN;
-  else if (ov_string_compare(typestr, "OV_STATE") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "OV_STATE") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STATE;
-  else if (ov_string_compare(typestr, "OV_STRUCT") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "OV_STRUCT") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STRUCT;
-
-  else if (ov_string_compare(typestr, "BYTE_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "BYTE_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_BYTE_VEC;
-  else if (ov_string_compare(typestr, "BOOL_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "BOOL_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_BOOL_VEC;
-  else if (ov_string_compare(typestr, "INT_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "INT_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_INT_VEC;
-  else if (ov_string_compare(typestr, "UINT_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "UINT_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_UINT_VEC;
-  else if (ov_string_compare(typestr, "SINGLE_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "SINGLE_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_SINGLE_VEC;
-  else if (ov_string_compare(typestr, "DOUBLE_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "DOUBLE_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_DOUBLE_VEC;
-  else if (ov_string_compare(typestr, "STRING_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "STRING_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STRING_VEC;
-  else if (ov_string_compare(typestr, "TIME_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "TIME_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_TIME_VEC;
-  else if (ov_string_compare(typestr, "TIME_SPAN_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "TIME_SPAN_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_TIME_SPAN_VEC;
-  else if (ov_string_compare(typestr, "TIME_SERIES") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "TIME_SERIES") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_TIME_SERIES;
-  else if (ov_string_compare(typestr, "STATE_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "STATE_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STATE_VEC;
 
-  else if (ov_string_compare(typestr, "STRUCT_VEC") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "STRUCT_VEC") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_STRUCT_VEC;
 
-  else if (ov_string_compare(typestr, "BOOL_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_BOOL_PV;
-  else if (ov_string_compare(typestr, "INT_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_INT_PV;
-  else if (ov_string_compare(typestr, "UINT_PV*") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_UINT_PV;
-  else if (ov_string_compare(typestr, "SINGLE_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_SINGLE_PV;
-  else if (ov_string_compare(typestr, "DOUBLE_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_DOUBLE_PV;
-  else if (ov_string_compare(typestr, "STRING_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_STRING_PV;
-  else if (ov_string_compare(typestr, "TIME_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_TIME_PV;
-  else if (ov_string_compare(typestr, "TIME_SPAN_PV") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_TIME_SPAN_PV;
-
-  else if (ov_string_compare(typestr, "BOOL_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_BOOL_PV_VEC;
-  else if (ov_string_compare(typestr, "INT_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_INT_PV_VEC;
-  else if (ov_string_compare(typestr, "UINT_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_UINT_PV_VEC;
-  else if (ov_string_compare(typestr, "SINGLE_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_SINGLE_PV_VEC;
-  else if (ov_string_compare(typestr, "DOUBLE_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_DOUBLE_PV_VEC;
-  else if (ov_string_compare(typestr, "STRING_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_STRING_PV_VEC;
-  else if (ov_string_compare(typestr, "TIME_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_TIME_PV_VEC;
-  else if (ov_string_compare(typestr, "TIME_SPAN_PV_VEC") == OV_STRCMP_EQUAL)
-    *vartype = OV_VT_TIME_SPAN_PV_VEC;
-
-  else if (ov_string_compare(typestr, "ANY") == OV_STRCMP_EQUAL)
+  else if(ov_string_compare(splited[0], "ANY") == OV_STRCMP_EQUAL)
     *vartype = OV_VT_ANY;
   else {
-    vartype = OV_VT_VOID;
+    *vartype = OV_VT_VOID;
     return OV_ERR_BADPARAM;
+  }
+  for(OV_UINT i = 1; i < len; ++i) {
+    if(ov_string_compare(splited[1], "S") == OV_STRCMP_EQUAL)
+      *vartype = *vartype | OV_VT_HAS_STATE;
+    else if(ov_string_compare(splited[1], "T") == OV_STRCMP_EQUAL)
+      *vartype = *vartype | OV_VT_HAS_TIMESTAMP;
+    else {
+      *vartype = OV_VT_VOID;
+      return OV_ERR_BADPARAM;
+    }
   }
   return OV_ERR_OK;
 }
 
-OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(OV_STRING *accessstr,
-                                                   const OV_ACCESS *access) {
+OV_DLLFNCEXPORT OV_RESULT CTree_helper_accessToStr(OV_STRING*       accessstr,
+                                                   const OV_ACCESS* access) {
   ov_string_setvalue(accessstr, "");
-  if (*access & KS_AC_NONE)
+  if(*access & KS_AC_NONE)
     ov_string_append(accessstr, "NONE ");
-  else if (*access & KS_AC_READ)
+  else if(*access & KS_AC_READ)
     ov_string_append(accessstr, "READ ");
-  if (*access & KS_AC_WRITE)
+  if(*access & KS_AC_WRITE)
     ov_string_append(accessstr, "WRITE ");
-  if (*access & KS_AC_DELETEABLE)
+  if(*access & KS_AC_DELETEABLE)
     ov_string_append(accessstr, "DELETEABLE ");
-  if (*access & KS_AC_RENAMEABLE)
+  if(*access & KS_AC_RENAMEABLE)
     ov_string_append(accessstr, "RENAMEABLE ");
-  if (*access & KS_AC_LINKABLE)
+  if(*access & KS_AC_LINKABLE)
     ov_string_append(accessstr, "LINKABLE ");
-  if (*access & KS_AC_UNLINKABLE)
+  if(*access & KS_AC_UNLINKABLE)
     ov_string_append(accessstr, "UNLINKABLE ");
-  if (*access & KS_AC_INSTANTIABLE)
+  if(*access & KS_AC_INSTANTIABLE)
     ov_string_append(accessstr, "INSTANTIABLE ");
-  if (*access & KS_AC_PART)
+  if(*access & KS_AC_PART)
     ov_string_append(accessstr, "PART ");
 
   return OV_ERR_OK;

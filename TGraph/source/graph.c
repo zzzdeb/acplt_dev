@@ -19,10 +19,14 @@
 #endif
 
 #include "TGraph.h"
-#include "libov/ov_macros.h"
-#include "geometry2d.h"
-#include "CException.h"
+
 #include "libov/ov_ov.h"
+#include "libov/ov_macros.h"
+#include "libov/ov_vector.h"
+
+#include "CException.h"
+#include "geometry2d_.h"
+
 #include "dijkstra.h"
 #include "TGraph_visualization.h"
 #include "tgraph_geometry.h"
@@ -44,23 +48,21 @@ OV_DLLFNCEXPORT OV_RESULT TGraph_graph_constructor(OV_INSTPTR_ov_object pobj) {
 	return OV_ERR_OK;
 }
 
-//#define TGraph_ForEachChild(pparent, pchild)								\
-//				OV_INSTPTR_TGraph_Edge out = NULL;									\
-//				Ov_ForEachChildEx(TGraph_Start, nodes[i], out, TGraph_Edge)
-//				{
-//					OV_INSTPTR_TGraph_Node child = Ov_GetParent(TGraph_End, out);
-//					if(child == nodes[(i + 1) % 2]) return TRUE;
-//		}\
-//	(pchild)=Ov_GetNextChild(assoc, (pchild)))
+OV_DLLFNCEXPORT OV_ACCESS TGraph_graph_getaccess(OV_INSTPTR_ov_object pobj,
+		const OV_ELEMENT *pelem, const OV_TICKET *pticket) {
+	/*
+	 *   local variables
+	 */
+	OV_INSTPTR_TGraph_graph pinst = Ov_StaticPtrCast(TGraph_graph, pobj);
 
-
+	return OV_AC_LINKABLE | OV_AC_READWRITE | OV_AC_DELETEABLE;
+}
 
 OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
 	OV_RESULT res = 0;
-	Position_t* p1 = positionFromNode(n1);
-	Position_t* p2 = positionFromNode(n2);
-	OV_SINGLE dist = pointDist(&p1->pos, &p2->pos);
+	Position_p p1 = positionFromNode(n1);
+	Position_p p2 = positionFromNode(n2);
 
 	OV_INSTPTR_TGraph_Edge edge = NULL;
 	OV_STRING name = NULL;
@@ -73,7 +75,14 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
 	ov_string_setvalue(&name, NULL);
 	Ov_Link(TGraph_Start, n1, edge);
 	Ov_Link(TGraph_End, n2, edge);
-	edge->v_Length = dist;
+
+	//getting direction
+	Position_p diff = positionSubstract(p2, p1);
+	pointRotate(&diff->pos, -p1->dir);
+	edge->v_Direction.value[0] = diff->pos.x;
+	edge->v_Direction.value[1] = diff->pos.y;
+	edge->v_Direction.value[2] = radToDeg(diff->dir);
+//	edge->v_trafficCost = edge->v_Length/edge->v_Actuator
 	return edge;
 }
 
@@ -82,6 +91,9 @@ OV_INSTPTR_TGraph_Edge TGraph_graph_linkNodes(OV_INSTPTR_TGraph_graph pinst,
  */
 OV_DLLFNCEXPORT OV_INSTPTR_TGraph_Edge TGraph_graph_areNodesLinked(
 		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+	if(!n1 || !n2)
+		Throw(OV_ERR_BADPARAM);
+
 	OV_INSTPTR_TGraph_Node nodes[] = { n1, n2 };
 	for (OV_UINT i = 0; i < 1; ++i) {
 		OV_INSTPTR_TGraph_Edge out = NULL;

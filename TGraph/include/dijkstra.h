@@ -23,94 +23,17 @@
 
 #include <stdlib.h>
 
-enum RollerAction {
-	UP, RIGHT, DOWN, LEFT, HEAT, TURN, MAXCHILDNUM
-};
-const OV_STRING const actionToStr[MAXCHILDNUM] =
-		{ [UP] = "up", [RIGHT] = "right", [DOWN] = "down", [LEFT] = "left", [HEAT
-				]="heat", [TURN]="turn" };
-
-enum Datatype {
-	ROLLER, SCHIEBER, OFEN, DREHTISCH
-};
-enum Level {
-	LEVEL0, LEVEL1, NEUTRAL
-};
-
-enum Color {
-	WHITE, GRAY, BLACK, COLORNUM
-};
-
-const OV_STRING const colorToStr[COLORNUM] = { [WHITE] = "white", [GRAY
-		] = "gray", [BLACK] = "black" };
-
-/* data type for list */
-typedef struct Data_s {
-	OV_INSTPTR_TGraph_Node self;
-
-	struct Data_s *prev;
-	OV_SINGLE dist;
-	enum Color color;
-	list_t* neighbours;
-	enum RollerAction actions;
-} Data_t;
-
-void initData(Data_t *d, OV_INSTPTR_TGraph_Node obj) {
-	Ov_AbortIf(!d);
-	d->self = obj;
-	d->prev = NULL;
-	d->dist = -1;
-	d->color = WHITE;
-	d->neighbours = constructList(sizeof(Data_t));
-	return;
-}
-
-Data_t* constructData(OV_INSTPTR_TGraph_Node obj) {
-	Data_t* data = ov_memstack_alloc(sizeof(Data_t));
-	initData(data, obj);
-	return data;
-}
-
-/* compares 2 data as topology */
-OV_BOOL is_samedata(Data_t *r1, Data_t *r2) {
-	if(r1->self == r2->self) return 1;
-	return 0;
-}
-
-/* how to print data in listPrint */
-void printData(struct listNode *node) {
-	ov_logfile_info("(%s: %f, %s)", ((Data_t *) node->data)->self->v_identifier,
-		((Data_t *) node->data)->dist, colorToStr[((Data_t *) node->data)->color]);
-}
-
 /* print Node */
-void printNode(struct listNode* node){
+void printNode(struct listNode* node) {
 	ov_logfile_info("(%s)", ((OV_INSTPTR_TGraph_Node) node->data)->v_identifier);
 }
-/* get children of parent for bfs and adds it to children*/
-//list_t* get_children(Data_t *parent) {
-//	list_t *children = constructList(sizeof(Data_t));
-//	children->is_same = &is_samedata;
-//
-//	OV_INSTPTR_TGraph_Node prev = NULL;
-//
-//	prev = Ov_StaticPtrCast(TGraph_Node, parent->self);
-//// TODO:
-//	OV_INSTPTR_TGraph_Edge out = NULL;
-//	Ov_ForEachChildEx(TGraph_Start, prev, out, TGraph_Edge)
-//	{
-//		OV_INSTPTR_TGraph_Node child = Ov_GetParent(TGraph_End, out);
-//		if(child == nodes[(i + 1) % 2]) return TRUE;
-//	}
-//
-//// adding child if ok
-//	if(childNode->self) {
-//		insertFirst(children, childNode);
-//	}
-//	return children;
-//}
+/* print Edge */
+void printEdge(struct listNode* node) {
+	ov_logfile_info("(%s)", ((OV_INSTPTR_TGraph_Edge) node->data)->v_identifier);
+}
+
 OV_BOOL is_same_int(OV_INT* i1, OV_INT* i2) {
-	return *i1==*i2;
+	return *i1 == *i2;
 }
 
 int int_relation(void* a, void* b) {
@@ -122,17 +45,16 @@ int int_relation(void* a, void* b) {
 }
 
 OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist) {
-	if(!listLength(Nodes))
-		return -1;
+	if(!listLength(Nodes)) return -1;
 
 	listNode_t* child = NULL;
 	OV_INT minChild = -1;
 	OV_SINGLE minDist = -1;
-	listIterate(Nodes, child){
-		OV_INT current = *(OV_INT*)child->data;
-		if(dist[current]==-1)
-			continue;
-		if(dist[current]<minDist || minDist==-1){
+	listIterate(Nodes, child)
+	{
+		OV_INT current = *(OV_INT*) child->data;
+		if(dist[current] == -1) continue;
+		if(dist[current] < minDist || minDist == -1) {
 			minChild = current;
 			minDist = dist[current];
 		}
@@ -140,50 +62,66 @@ OV_INT getMinChild(list_t* Nodes, OV_SINGLE* dist) {
 	return minChild;
 }
 
-//dijkstra
-list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
-		OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+list_p dijkstra_get_path_toset(OV_INSTPTR_TGraph_Node n1,
+		OV_INSTPTR_TGraph_Node* targetSet, OV_UINT len,
+		OV_INSTPTR_TGraph_Node* target) {
+	/*param check*/
+	if(!n1 || !targetSet) Throw(OV_ERR_BADPARAM);
+	/* if target == source */
+	for (OV_UINT i = 0; i < len; i++) {
+		if(n1 == targetSet[i]) {
+			*target = targetSet[i];
+			return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+		}
+	}
+
+	OV_STRING path = ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, n1), 2);
+	OV_PATH resolved;
+	ov_path_resolve(&resolved, NULL, path, 2);
+	OV_INSTPTR_TGraph_graph Graph = Ov_StaticPtrCast(TGraph_graph,
+		resolved.elements[resolved.size - 3].pobj);
+
 	OV_INSTPTR_ov_domain Nodes = &(Graph->p_Nodes);
 	OV_INT source = -1;
-	OV_INT target = -1;
 	OV_INSTPTR_TGraph_Node node = NULL;
-//n = getKnonenZahl;
+	//n = getKnonenZahl;
 	OV_UINT n = 0;
 	Ov_ForEachChildEx(ov_containment, Nodes, node, TGraph_Node)
 	{
 		n++;
 	}
 
-//OV_Node vert[] = allocate(n*p);
+	//OV_Node vert[] = allocate(n*p);
 	OV_INSTPTR_TGraph_Node* V = ov_memstack_alloc(
 		n * sizeof(OV_INSTPTR_TGraph_Node));
 	OV_INT i = 0;
 	Ov_ForEachChildEx(ov_containment, Nodes, node, TGraph_Node)
 	{
 		if(node == n1) source = i;
-		if(node == n2) target = i;
 		V[i++] = node;
 	}
 
-//OV_INT prev[] = allocate(n);
+	//OV_INT prev[] = allocate(n);
 	OV_INT* prev = ov_memstack_alloc(n * sizeof(OV_INT));
 	for (OV_UINT i = 0; i < n; ++i) {
 		prev[i] = -1;
 	}
 
-//	OV_SINGLE dist[] = allocate(n);
+	//	OV_SINGLE dist[] = allocate(n);
 	OV_SINGLE* dist = ov_memstack_alloc(n * sizeof(OV_SINGLE));
 	for (OV_UINT i = 0; i < n; ++i) {
 		dist[i] = -1;
 	}
-//	OV_INT adj[][] = allocate(n * n);
-	OV_INT** adj = ov_memstack_alloc(n * sizeof(OV_INT*));
+	//	OV_INT adj[][] = allocate(n * n);
+	OV_SINGLE** adj = ov_memstack_alloc(n * sizeof(OV_SINGLE*));
 	for (OV_UINT i = 0; i < n; ++i) {
-		adj[i] = ov_memstack_alloc(n * sizeof(OV_INT));
+		adj[i] = ov_memstack_alloc(n * sizeof(OV_SINGLE));
 		for (OV_UINT j = 0; j < n; ++j) {
 			OV_INSTPTR_TGraph_Edge edge = TGraph_graph_areNodesLinked(V[i], V[j]);
 			if(edge) {
-				adj[i][j] = edge->v_Length;
+				OV_UINT tmp1;
+				OV_SINGLE* costs = TGraph_Edge_totalCost_get(edge, &tmp1);
+				adj[i][j] = costs[0] > costs[1] ? costs[0] : costs[1];
 			} else
 				adj[i][j] = -1;
 		}
@@ -191,8 +129,9 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 
 	//begin
 	list_t* Unexplored = constructList(sizeof(OV_INT));
-	Unexplored->is_same = &is_same_int;
 	Unexplored->compare = &int_relation;
+	Unexplored->is_same = &is_same_int;
+
 	for (OV_UINT i = 0; i < n; ++i) {
 		OV_INT* tmp = ov_memstack_alloc(sizeof(OV_INT));
 		*tmp = i;
@@ -202,30 +141,35 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 
 	while (listLength(Unexplored)) {
 		OV_INT current = getMinChild(Unexplored, dist);
-		if(current==-1)
-			break;
+		if(current == -1) break;
 
-		if(current == target) {
-			list_t* path = constructList(sizeof(OV_INSTPTR_TGraph_Node));
-			path->printNode =	&printNode;
-			do{
-				insertFirst(path, V[current]);
-				current = prev[current];
-			} while(current>=0);
-			listPrint(path);
-			return path;
+		for (OV_UINT i = 0; i < len; i++) {
+			if(V[current] == targetSet[i]) {
+				if(target) {
+					*target = targetSet[i];
+				}
+				list_t* pathList = constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+				pathList->printNode = &printEdge;
+				do {
+					insertFirst(pathList,
+						TGraph_graph_areNodesLinked(V[prev[current]], V[current]));
+					current = prev[current];
+				} while (current != source);
+				listPrint(pathList);
+				return pathList;
+			}
 		}
 		// Node with the least distance
 		// will be selected first
-//		remove u from Q
+		//		remove u from Q
 		listRemove(Unexplored, &current);
 
-//		for v in adj[u]:
+		//		for v in adj[u]:
 		for (OV_UINT v = 0; v < n; ++v) {
 			if(adj[current][v] < 0) continue;
 
 			OV_SINGLE alt = dist[current] + adj[current][v];
-			if(alt < dist[v] || dist[v]==-1) {            // A shorter path to v has been found
+			if(alt < dist[v] || dist[v] == -1) { // A shorter path to v has been found
 				dist[v] = alt;
 				prev[v] = current;
 			}
@@ -233,6 +177,18 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 	}
 	return NULL;
 }
+
+//dijkstra
+list_p dijkstra_get_path(OV_INSTPTR_TGraph_Node n1, OV_INSTPTR_TGraph_Node n2) {
+	/*param check*/
+	if(!n1 || !n2) Throw(OV_ERR_BADPARAM);
+	/* if target == source */
+	if(n1 == n2) {
+		return constructList(sizeof(OV_INSTPTR_TGraph_Edge));
+	}
+	return dijkstra_get_path_toset(n1, &n2, 1, NULL);
+}
+
 
 /* execute dijksta */
 //OV_RESULT dijkstra(list_t* graph, list_t *path, Data_t *proot, Data_t *ptarget) {
@@ -373,7 +329,4 @@ list_t* dijkstra_get_path(OV_INSTPTR_TGraph_graph Graph,
 //			return NULL;
 //	}
 //}
-
-
-
 #endif /* DIJKSTRA_H_ */

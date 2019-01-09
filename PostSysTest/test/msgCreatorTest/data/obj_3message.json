@@ -1,0 +1,29 @@
+{
+    "Libraries": ["PostSys"],
+    "Tree": {
+        "msgCreator": {
+            "variables": {
+                "order": ["STRING", null],
+                "queueLength": ["UINT", 1],
+                "msgsInQueue": ["UINT", 0],
+                "receiverInstance": ["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+                "receiverName": ["STRING_VEC", ["MANAGER", "MANAGER"]],
+                "receiverHost": ["STRING_VEC", ["localhost", "localhost"]],
+                "tries": ["UINT", 0],
+                "iexreq": ["BOOL", false],
+                "eexreq": ["BOOL", true],
+                "methcount": ["UINT", 0],
+                "actimode": ["INT", 0]
+            },
+            "links": {
+                "taskparent": {
+                    "of_association": "fb/tasklist",
+                    "parents": ["/Tasks/UrTask"],
+                    "children": ["this"]
+                }
+            },
+            "class": "PostSys/msgCreator"
+        }
+    },
+    "Path": "/TechUnits/msgCreator"
+}

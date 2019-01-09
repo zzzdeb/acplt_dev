@@ -470,7 +470,7 @@ OV_RESULT graphSearch_bfs_execute(OV_INSTPTR_graphSearch_bfs pinst) {
 	OV_UINT numberOfStations = 1 + pinst->v_recipe.veclen;
 	recipes = Ov_HeapMalloc(numberOfStations * sizeof(Data_t));
 	initData(&recipes[0], proot);
-	Ov_StaticPtrCast(SMSTopologie_Schieber, proot)->v_CurrentLocation;
+//	Ov_StaticPtrCast(SMSTopologie_Schieber, proot)->v_CurrentLocation;
 	for (OV_UINT i = 0; i < pinst->v_recipe.veclen; ++i) {
 		ov_string_print(&pathStr, "%s/%s", pinst->v_topologie,
 			pinst->v_recipe.value[i]);

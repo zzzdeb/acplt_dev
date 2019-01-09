@@ -1,0 +1,13 @@
+#ifndef ksmsg_OVF_INCLUDED
+#define ksmsg_OVF_INCLUDED
+
+#include "ksxdr.ovt"
+/* 
+	Declare your C functions here. 
+	Example:
+	typedef OV_DLLFNCEXPORT void MY_FUNC(
+		OV_STRING varName
+	);
+*/
+
+#endif

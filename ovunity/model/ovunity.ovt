@@ -1,6 +1,8 @@
 #ifndef ovunity_OVT_INCLUDED
 #define ovunity_OVT_INCLUDED
 
+#include "cJSON.h"
+
 /* 
 	Define your data types here. 
 */

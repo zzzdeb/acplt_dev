@@ -1,0 +1,67 @@
+{
+	"Libraries":	[],
+	"Tree":	{
+		"case_self2":	{
+			"variables":	{
+				"sysPath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/case_self2"],
+				"path":	["/TechUnits/msgCreatorTest/case_self2"],
+				"objPath":	["/TechUnits/msgCreatorTest/case_self2/obj"],
+				"envPath":	["/TechUnits/msgCreatorTest/case_self2/env"],
+				"objFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/obj_self2.json"],
+				"envFilePath":	["/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/PostSysTest/test/msgCreatorTest/data/env_2emptyInbox.json"]
+			},
+			"links":	{
+				"main":	{
+					"parents":	["/TechUnits/msgCreatorTest"]
+				}
+			},
+			"children":	{
+				"obj":	{
+					"variables":	{
+						"receiverInstance":	[["/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+						"eexreq":	[false],
+						"methcount":	[1]
+					}
+				},
+				"env":	{
+					"children":	{
+						"node1":	{
+							"children":	{
+								"inbox":	{
+									"variables":	{
+									},
+									"class":	"PostSys/node"
+								}
+							}
+						},
+						"node2":	{
+							"children":	{
+								"inbox":	{
+									"children":	{
+										"0000000000000406_Message":	{
+											"variables":	{
+												"pathAddress":	["STRING_VEC", ["none", "localhost", "localhost"]],
+												"pathName":	["STRING_VEC", ["MANAGER", "MANAGER", "MANAGER"]],
+												"pathComponent":	["STRING_VEC", ["/TechUnits/msgCreatorTest/case_self2/obj", "/TechUnits/msgCreatorTest/case_self2/env/node1", "/TechUnits/msgCreatorTest/case_self2/env/node2"]],
+												"currentInd":	["UINT", 2],
+												"msgStatus":	["INT", 3],
+												"msgID":	["STRING", "341350270"],
+												"refMsgID":	["STRING", null],
+												"auth":	["STRING", null],
+												"msgBody":	["STRING", "ac"],
+												"sendBy":	["CTYPE", "not supported"],
+												"expectAnswer":	["BOOL", false]
+											},
+											"class":	"PostSys/Message"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"Path":	"/TechUnits/msgCreatorTest/case_self2"
+}

@@ -1,0 +1,8 @@
+#ifndef geometry2d_OVT_INCLUDED
+#define geometry2d_OVT_INCLUDED
+
+/* 
+	Define your data types here. 
+*/
+
+#endif
