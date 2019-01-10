@@ -197,6 +197,7 @@ LIBRARY CTree
       upload    : CLASS CTree/Upload;
     END_PARTS;
     OPERATIONS
+      constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
       startup       : C_FUNCTION <OV_FNC_STARTUP>;
       shutdown      : C_FUNCTION <OV_FNC_SHUTDOWN>;
       submit        : C_FUNCTION <CTREE_FNC_SUBMIT>;

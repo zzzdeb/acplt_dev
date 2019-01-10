@@ -114,8 +114,24 @@ nmap <localleader>bg :!tclsh $ACPLT_HOME/system/systools/build_database_omni.tcl
 nmap <localleader>t :!cd $ACPLT_HOME/dev; ctags -Rnu<cr>
 nmap <localleader>r :vsplit term://$ACPLT_HOME/system/sysbin/ov_runtimeserver\ -c\ $ACPLT_HOME/servers/MANAGER/ov_server.conf
 nnoremap <localleader>r :vsplit term://$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
-nnoremap <localleader>rj:T $ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
-tnoremap <localleader>r $ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr>
+
+function! OvUp()
+    new
+    sb
+    terminal tclsh $ACPLT_HOME/system/systools/build_database_omni.tcl
+    terminal tclsh $ACPLT_HOME/system/systools/build_database_omni.tcl MANAGERx
+
+    sleep 500m
+
+  	terminal$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1 | sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tput sgr0),"
+    file SERVER1
+   vnew
+    :terminal $ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGERx/ov_server.conf >/dev/null 2>&1 | sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tput sgr0),"
+    file SERVER2
+endfunction
+
+nnoremap <localleader>run :call OvUp()<cr>
+
 nnoremap <localleader>r i$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HOME/servers/MANAGER/ov_server.conf >/dev/null 2>&1\| sed "s,\[ACPLT/OV Error].*,$(tput setaf 1)&$(tput sgr0),; s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),; s,TEST(.*PASS,$(tput setaf 2)&$(tputsgr0),"<cr><esc>
 
 nnoremap <localleader>ra :!curl "http://localhost:7509/setVar?format=plain&path=/TechUnits/dsyncTest/case_self2dsync/obj.actimode&newvalue=3"<cr>

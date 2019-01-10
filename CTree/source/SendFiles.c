@@ -170,16 +170,19 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
     ov_memstack_unlock();
     return;
   }
+  for(OV_UINT i = 0; i < itemsLength; i++) {
+    if(Ov_Fail(itemsResults[i])) {
+      ov_logfile_error("CTree_SendFiles: %s at %d",
+                       ov_result_getresulttext(itemsResults[i]), i);
+      pinst->v_status = EXTERNAL_ERROR;
+      pinst->v_result = OV_ERR_GENERIC;
+      ov_memstack_unlock();
+      return;
+    }
+  }
   pinst->v_status = DONE;
   pinst->v_result = OV_ERR_OK;
   ov_logfile_info("SendFiles done.");
-  ov_memstack_unlock();
-
-  if(Ov_Fail(pinst->v_result)) {
-    pinst->v_status = EXTERNAL_ERROR;
-    ov_memstack_unlock();
-    return;
-  }
   // debug
   /* for(OV_UINT i = 0; i < itemsLength; i++) { */
   /* ov_logfile_info("%u: %s", itemsResults[i], */
@@ -190,6 +193,7 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
     (*pinst->v_postCallback.callbackFunction)(
         pinst->v_postCallback.instanceCalled,
         Ov_StaticPtrCast(ov_domain, pinst));
+  ov_memstack_unlock();
   return;
 }
 

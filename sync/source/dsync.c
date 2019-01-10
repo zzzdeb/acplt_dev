@@ -257,7 +257,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_string_setvalue(
           &ptrans->v_path,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pdsyncDst), 2));
-      pdsyncDst->v_actimode = 1;
+      pdsyncDst->v_actimode = 0;
       pdsyncDst->v_status = DSYNC_DST_ACTIVE;
       CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
                                  NULL);

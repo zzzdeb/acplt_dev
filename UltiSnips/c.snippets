@@ -10,6 +10,10 @@ snippet incov "include libov/ov_"
 #include "libov/ov_${1:ov}.h"
 endsnippet
 
+snippet inch "include libov/ov_"
+#include "${1:`!v expand("%:h:h:t")`}_helper.h"
+endsnippet
+
 snippet osc "Ov_StaticPtrCast" w
 Ov_StaticPtrCast(${2:ov_object}, ${1:${VISUAL:pobj}})
 endsnippet

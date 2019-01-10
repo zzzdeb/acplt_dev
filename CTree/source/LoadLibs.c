@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include "CTree.h"
+#include "CTree_helper.h"
 #include "NoneTicketAuthenticator.h"
 #include "libov/ov_debug.h"
 #include "libov/ov_logfile.h"
@@ -55,17 +56,19 @@ OV_DLLFNCEXPORT OV_RESULT
   /*
    *   local variables
    */
-  //	OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs,
-  // pobj);
-  OV_RESULT result;
+  OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pobj);
+  OV_RESULT                 result;
 
   /* do what the base class does first */
   result = fb_functionblock_constructor(pobj);
-  if(Ov_Fail(result)) return result;
+  if(Ov_Fail(result))
+    return result;
 
-  /* do what */
+  result |= Ov_Link(fb_tasklist, pinst, &pinst->p_sendFiles);
+  pinst->p_sendFiles.v_iexreq = 1;
+  pinst->p_sendFiles.v_actimode = 1;
 
-  return OV_ERR_OK;
+  return result;
 }
 
 OV_DLLFNCEXPORT void CTree_LoadLibs_destructor(OV_INSTPTR_ov_object pobj) {
@@ -154,10 +157,12 @@ OV_DLLFNCEXPORT OV_RESULT
 
 /* checks if str in vec is. */
 OV_BOOL strvec_contains(const OV_STRING_VEC* vec, const OV_STRING str) {
-  if(!vec || !str) return 0;
+  if(!vec || !str)
+    return 0;
 
   for(OV_UINT i = 0; i < vec->veclen; i++) {
-    if(!ov_string_compare(vec->value[i], str)) return 1;
+    if(!ov_string_compare(vec->value[i], str))
+      return 1;
   }
   return 0;
 }
@@ -229,54 +234,21 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
 
 OV_DLLFNCEXPORT void dataSend_callback(const OV_INSTPTR_ov_domain this,
                                        const OV_INSTPTR_ov_domain that) {
-  OV_INSTPTR_CTree_LoadLibs    pinst = Ov_StaticPtrCast(CTree_LoadLibs, this);
-  OV_INSTPTR_ksbase_ClientBase pClient =
-      Ov_StaticPtrCast(ksbase_ClientBase, that);
-  OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
-  OV_UINT                      itemsLength = 0;
-  OV_RESULT*                   itemsResults = NULL;
-  OV_RESULT                    result;
-
   if(!this || !that) {
     ov_logfile_error("callback issued with NULL pointers. aborting.");
     return;
   }
+  OV_INSTPTR_CTree_LoadLibs  pinst = Ov_StaticPtrCast(CTree_LoadLibs, this);
+  OV_INSTPTR_CTree_SendFiles pSfiles = Ov_DynamicPtrCast(CTree_SendFiles, that);
 
-  Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
-
-  if(!pVtblClient) {
-    ov_logfile_error(
-        "%s callback: could not determine Vtable of Client %s. aborting",
-        this->v_identifier, that->v_identifier);
-    pinst->v_status = CTREE_COMMON_INTERNALERROR;
-    pinst->v_result = OV_ERR_BADOBJTYPE;
+  if(!pinst || !pSfiles) {
+    ov_logfile_error("callback issued with cant cast");
     return;
   }
-  ov_memstack_lock();
-
-  result = pVtblClient->m_processSetVar(pClient, NULL,
-                                        (OV_RESULT*)&(pinst->v_result),
-                                        &itemsLength, &itemsResults);
-  if(Ov_Fail(result)) {
-    pinst->v_status = CTREE_COMMON_INTERNALERROR;
-    pinst->v_result = result;
-    ov_memstack_unlock();
-    return;
-  }
-  pinst->v_status = DONE;
+  pinst->v_status = pSfiles->v_status;
+  pinst->v_result = pSfiles->v_result;
   ov_logfile_info("Done.");
 
-  if(Ov_Fail(pinst->v_result)) {
-    pinst->v_status = CTREE_COMMON_EXTERNALERROR;
-    ov_memstack_unlock();
-    return;
-  }
-
-  for(OV_UINT i = 0; i < itemsLength; i++) {
-    ov_logfile_info("%u: %s", itemsResults[i],
-                    ov_result_getresulttext(itemsResults[i]));
-  }
-  ov_memstack_unlock();
   /*calling outer object*/
   if(pinst->v_postCallback.callbackFunction)
     (*pinst->v_postCallback.callbackFunction)(
@@ -474,7 +446,8 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
       Ov_HeapFree(paddonlibs);
       Ov_HeapFree(blibs.value);
       break;
-    default: ov_logfile_error("%u : unexpected State", pinst->v_status);
+    default:
+      ov_logfile_error("%u : unexpected State", pinst->v_status);
   }
 
   return result;
@@ -486,17 +459,48 @@ OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
    *   local variables
    */
   OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pfb);
+  OV_RESULT                 result = OV_ERR_OK;
   pinst->v_result = -1;
-  OV_RESULT result = CTree_LoadLibs_execute(pinst);
-  switch(result) {
-    case OV_ERR_OK:
-      ov_logfile_info("SendFiles: sent. waiting for response.");
+  switch(pinst->v_status) {
+    case CTREE_LL_INIT:
+    case CTREE_LL_INFOREQSTD:
+    case CTREE_LL_INFO_RECEIVED:
+      result = CTree_LoadLibs_execute(pinst);
+      switch(result) {
+        case OV_ERR_OK:
+          ov_logfile_info("SendFiles: sent. waiting for response.");
+          break;
+        case OV_ERR_BADPARAM:
+          pinst->v_result = result;
+          ov_logfile_error("LoadLibs failed.");
+          break;
+        default:
+          pinst->v_result = result;
+          return;
+      }
       break;
-    case OV_ERR_BADPARAM:
-      pinst->v_result = result;
-      ov_logfile_error("LoadLibs failed.");
+    case CTREE_LL_DATA_SENT:
+      switch(pinst->p_sendFiles.v_status) {
+        case CTREE_SF_DONE:
+          ov_logfile_info("Done.");
+          pinst->v_status = CTREE_LL_DONE;
+          break;
+        case CTREE_COMMON_INTERNALERROR:
+        case CTREE_COMMON_EXTERNALERROR:
+          pinst->v_status = pinst->p_sendFiles.v_status;
+          pinst->v_result = pinst->p_sendFiles.v_result;
+        default:
+          pinst->v_status = CTREE_COMMON_INTERNALERROR;
+          pinst->v_result = OV_ERR_GENERIC;
+          break;
+      }
       break;
-    default: pinst->v_result = result; return;
+    case CTREE_LL_DONE:
+      pinst->v_actimode = 0;
+      break;
+    default:
+      ov_logfile_error("%u : unexpected State", pinst->v_status);
+      break;
   }
 
   return;

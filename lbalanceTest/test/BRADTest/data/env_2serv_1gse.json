@@ -10,6 +10,12 @@
           "BRAD": {
               "class": "lbalance/BRAD",
               "parts": {
+                "acceptNotifier": {
+                  "class": "lbalance/acceptNotifier",
+                  "variables": {
+                    "dstPath": ["STRING", "/TechUnits/BRADTest/case_2serv_1gse/env/src/BRAD.sendInitiator"]
+                  }
+                },
                 "appMonitor": {
                   "class": "lbalance/appMonitor",
                   "variables": {
@@ -37,7 +43,8 @@
                   "parts": {
                   },
                   "variables": {
-                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/dst/GSE1"]
+                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/dst/GSE1"],
+                    "appPaths": ["STRING_VEC", ["/TechUnits/BRADTest/case_2serv_1gse/env/dst"]]
                   }
                 }
               },
@@ -215,6 +222,12 @@
             "BRAD": {
               "class": "lbalance/BRAD",
               "parts": {
+                "acceptNotifier": {
+                  "class": "lbalance/acceptNotifier",
+                  "variables": {
+                    "dstPath": ["STRING", "/TechUnits/BRADTest/case_2serv_1gse/env/dst/BRAD.sendInitiator"]
+                  }
+                },
                 "appMonitor": {
                   "class": "lbalance/appMonitor",
                   "variables": {
@@ -242,7 +255,8 @@
                   "parts": {
                   },
                   "variables": {
-                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/src/GSE1"]
+                    "destination":["STRING", "//localhost:7509/MANAGER/TechUnits/BRADTest/case_2serv_1gse/env/src/GSE1"],
+                    "appPaths": ["STRING_VEC",["/TechUnits/BRADTest/case_2serv_1gse/env/src"]]
                   }
                 }
               },
@@ -266,3 +280,4 @@
     }
   }
 }
+

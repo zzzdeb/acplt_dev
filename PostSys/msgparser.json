@@ -17,7 +17,7 @@
                         "ErrState": ["INT", 0],
                         "calctime": ["TIME_SPAN", [0, 0]],
                         "Xpos": ["INT", 0],
-                        "Ypos": ["INT", 1]
+                        "Ypos": ["INT", 0]
                     },
                     "links": {
                         "taskparent": {

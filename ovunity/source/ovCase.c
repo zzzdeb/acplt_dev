@@ -102,7 +102,6 @@ OV_DLLFNCEXPORT OV_RESULT
 /* getting obj path */
 OV_DLLFNCEXPORT OV_INSTPTR_ov_object
                 ovunity_ovCase_getObjPath(OV_INSTPTR_ovunity_ovCase pcase) {
-  OV_INSTPTR_ov_object pobj = NULL;
   OV_ELEMENT           parent = {0};
   OV_ELEMENT           child = {0};
   parent.elemtype = OV_ET_OBJECT;

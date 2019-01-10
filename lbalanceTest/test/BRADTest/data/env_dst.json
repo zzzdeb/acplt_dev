@@ -1,0 +1,328 @@
+{
+    "Libraries": ["ov", "fbcomlib", "ksapi", "ksxdr", "TCPbind", "lbalance", "CTree", "PostSys"],
+    "Tree": {
+        "TechUnits": {
+            "class": "ov/domain",
+            "children": {
+                "GSE1": {
+                    "class": "ov/domain",
+                    "children": {
+                        "fbGetvar": {
+                            "variables": {
+                                "receivedVar": ["ANY", [
+                                    ["VOID", null], -378754552, [0, 0]
+                                ]],
+                                "doReset": ["BOOL", false],
+                                "varResult": ["UINT", 17],
+                                "host": ["STRING", "127.0.0.1"],
+                                "server": ["STRING", "MANAGER"],
+                                "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbGetvarClient.IN1"],
+                                "doSend": ["BOOL", false],
+                                "sendRequested": ["BOOL", false],
+                                "doCyclic": ["BOOL", true],
+                                "stateString": ["STRING", "request sent, awaiting answer"],
+                                "state": ["INT", 1],
+                                "errorCode": ["UINT", 0],
+                                "opResult": ["UINT", 0],
+                                "timeout": ["UINT", 10],
+                                "retryAfter": ["UINT", 300],
+                                "requestSendTime": ["TIME", [1546811691, 376423]],
+                                "iexreq": ["BOOL", true],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 43],
+                                "actimode": ["INT", 1],
+                                "proctime": ["TIME", [1542627295, 655545]],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 180]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "links": {
+                                "taskparent": {
+                                    "of_association": "fb/tasklist",
+                                    "parents": ["/Tasks/UrTask"],
+                                    "children": ["this"]
+                                }
+                            },
+                            "class": "fbcomlib/getVar",
+                            "parts": {
+                                "apiGet": {
+                                    "variables": {
+                                        "varValue": ["ANY", [
+                                            ["VOID", null], -378754552, [0, 0]
+                                        ]],
+                                        "varRes": ["UINT", 17],
+                                        "serverHost": ["STRING", "127.0.0.1"],
+                                        "serverName": ["STRING", "MANAGER"],
+                                        "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbGetvarClient.IN1"],
+                                        "status": ["INT", 2],
+                                        "result": ["UINT", 0],
+                                        "holdConnection": ["BOOL", true],
+                                        "Reset": ["BOOL", false],
+                                        "Submit": ["BOOL", false]
+                                    },
+                                    "class": "ksapi/getVar",
+                                    "children": {
+                                        "Client": {
+                                            "variables": {
+                                                "ManagerPort": ["STRING", "7509"],
+                                                "msgAccepted": ["INT", 0],
+                                                "msgStatus": ["INT", 0],
+                                                "rpcErrCode": ["INT", 0],
+                                                "sentProcID": ["UINT", 257],
+                                                "sentXID": ["UINT", 3594102694],
+                                                "timeLastEvent": ["TIME", [1546811691, 376969]],
+                                                "timeout": ["UINT", 30],
+                                                "dataToSend": ["CTYPE", "not supported"],
+                                                "tempXID": ["UINT", 3594102694],
+                                                "tempCallback": ["CTYPE", "not supported"],
+                                                "dataReceived": ["CTYPE", "not supported"],
+                                                "serverHost": ["STRING", "127.0.0.1"],
+                                                "serverName": ["STRING", "MANAGER"],
+                                                "serverPort": ["STRING", "7509"],
+                                                "state": ["UINT", 8],
+                                                "runningKSservice": ["UINT", 0],
+                                                "callback": ["CTYPE", "not supported"],
+                                                "holdConnection": ["BOOL", true],
+                                                "actimode": ["INT", 0],
+                                                "cycInterval": ["INT", 5],
+                                                "NextExecTime": ["TIME", [1546811691, 390176]]
+                                            },
+                                            "links": {
+                                                "Channel": {
+                                                    "of_association": "ksbase/AssocChannelDataHandler",
+                                                    "parents": ["~/GSE1/fbGetvar.apiGet/Client/channel"],
+                                                    "children": ["this"]
+                                                },
+                                                "RootComTask": {
+                                                    "of_association": "ksbase/AssocComTaskList",
+                                                    "parents": ["/communication/RootComTask"],
+                                                    "children": ["this"]
+                                                }
+                                            },
+                                            "class": "ksxdr/xdrClient",
+                                            "children": {
+                                                "channel": {
+                                                    "variables": {
+                                                        "socket": ["INT", 21],
+                                                        "addrInfoReq": ["CTYPE", "not supported"],
+                                                        "ConnectionState": ["UINT", 2],
+                                                        "address": ["STRING", "127.0.0.1"],
+                                                        "outData": ["CTYPE", "not supported"],
+                                                        "inData": ["CTYPE", "not supported"],
+                                                        "ClientHandlerAssociated": ["UINT", 0],
+                                                        "isLocal": ["BOOL", false],
+                                                        "usesStreamProtocol": ["BOOL", true],
+                                                        "LastReceiveTime": ["TIME", [1546811691, 380384]],
+                                                        "ConnectionTimeOut": ["UINT", 300],
+                                                        "UnusedDataTimeOut": ["UINT", 300],
+                                                        "CloseAfterSend": ["BOOL", false],
+                                                        "actimode": ["INT", 1],
+                                                        "cycInterval": ["INT", 1],
+                                                        "NextExecTime": ["TIME", [1546811691, 442636]]
+                                                    },
+                                                    "links": {
+                                                        "DataHandler": {
+                                                            "of_association": "ksbase/AssocChannelDataHandler",
+                                                            "parents": ["this"],
+                                                            "children": ["~/GSE1/fbGetvar.apiGet/Client"]
+                                                        },
+                                                        "RootComTask": {
+                                                            "of_association": "ksbase/AssocComTaskList",
+                                                            "parents": ["/communication/RootComTask"],
+                                                            "children": ["this"]
+                                                        }
+                                                    },
+                                                    "class": "TCPbind/TCPChannel"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "fbSetvar": {
+                            "variables": {
+                                "sendVar": ["ANY", [
+                                    ["INT", 1], 0, [16, 0]
+                                ]],
+                                "doReset": ["BOOL", false],
+                                "varResult": ["UINT", 17],
+                                "host": ["STRING", "127.0.0.1"],
+                                "server": ["STRING", "MANAGER"],
+                                "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbSetvarClient.IN1"],
+                                "doSend": ["BOOL", false],
+                                "sendRequested": ["BOOL", false],
+                                "doCyclic": ["BOOL", true],
+                                "stateString": ["STRING", "request sent, awaiting answer"],
+                                "state": ["INT", 1],
+                                "errorCode": ["UINT", 0],
+                                "opResult": ["UINT", 0],
+                                "timeout": ["UINT", 10],
+                                "retryAfter": ["UINT", 300],
+                                "requestSendTime": ["TIME", [1546811691, 376423]],
+                                "iexreq": ["BOOL", true],
+                                "eexreq": ["BOOL", false],
+                                "maxcalctime": ["TIME_SPAN", [0, 0]],
+                                "methcount": ["UINT", 43],
+                                "actimode": ["INT", 1],
+                                "proctime": ["TIME", [1546811648, 437327]],
+                                "cyctime": ["TIME_SPAN", [0, 0]],
+                                "ErrState": ["INT", 0],
+                                "calctime": ["TIME_SPAN", [0, 108]],
+                                "Xpos": ["INT", 0],
+                                "Ypos": ["INT", 0]
+                            },
+                            "links": {
+                                "taskparent": {
+                                    "of_association": "fb/tasklist",
+                                    "parents": ["/Tasks/UrTask"],
+                                    "children": ["this"]
+                                }
+                            },
+                            "class": "fbcomlib/setVar",
+                            "parts": {
+                                "apiSet": {
+                                    "variables": {
+                                        "varValue": ["ANY", [
+                                            ["INT", 1], 0, [16, 0]
+                                        ]],
+                                        "varRes": ["UINT", 17],
+                                        "serverHost": ["STRING", "127.0.0.1"],
+                                        "serverName": ["STRING", "MANAGER"],
+                                        "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/fbSetvarClient.IN1"],
+                                        "status": ["INT", 2],
+                                        "result": ["UINT", 0],
+                                        "holdConnection": ["BOOL", true],
+                                        "Reset": ["BOOL", false],
+                                        "Submit": ["BOOL", false]
+                                    },
+                                    "class": "ksapi/setVar",
+                                    "children": {
+                                        "Client": {
+                                            "variables": {
+                                                "ManagerPort": ["STRING", "7509"],
+                                                "msgAccepted": ["INT", 0],
+                                                "msgStatus": ["INT", 0],
+                                                "rpcErrCode": ["INT", 0],
+                                                "sentProcID": ["UINT", 258],
+                                                "sentXID": ["UINT", 3594102695],
+                                                "timeLastEvent": ["TIME", [1546811691, 377089]],
+                                                "timeout": ["UINT", 30],
+                                                "dataToSend": ["CTYPE", "not supported"],
+                                                "tempXID": ["UINT", 3594102695],
+                                                "tempCallback": ["CTYPE", "not supported"],
+                                                "dataReceived": ["CTYPE", "not supported"],
+                                                "serverHost": ["STRING", "127.0.0.1"],
+                                                "serverName": ["STRING", "MANAGER"],
+                                                "serverPort": ["STRING", "7509"],
+                                                "state": ["UINT", 8],
+                                                "runningKSservice": ["UINT", 0],
+                                                "callback": ["CTYPE", "not supported"],
+                                                "holdConnection": ["BOOL", true],
+                                                "actimode": ["INT", 0],
+                                                "cycInterval": ["INT", 5],
+                                                "NextExecTime": ["TIME", [1546811691, 390199]]
+                                            },
+                                            "links": {
+                                                "Channel": {
+                                                    "of_association": "ksbase/AssocChannelDataHandler",
+                                                    "parents": ["~/GSE1/fbSetvar.apiSet/Client/channel"],
+                                                    "children": ["this"]
+                                                },
+                                                "RootComTask": {
+                                                    "of_association": "ksbase/AssocComTaskList",
+                                                    "parents": ["/communication/RootComTask"],
+                                                    "children": ["this"]
+                                                }
+                                            },
+                                            "class": "ksxdr/xdrClient",
+                                            "children": {
+                                                "channel": {
+                                                    "variables": {
+                                                        "socket": ["INT", 23],
+                                                        "addrInfoReq": ["CTYPE", "not supported"],
+                                                        "ConnectionState": ["UINT", 2],
+                                                        "address": ["STRING", "127.0.0.1"],
+                                                        "outData": ["CTYPE", "not supported"],
+                                                        "inData": ["CTYPE", "not supported"],
+                                                        "ClientHandlerAssociated": ["UINT", 0],
+                                                        "isLocal": ["BOOL", false],
+                                                        "usesStreamProtocol": ["BOOL", true],
+                                                        "LastReceiveTime": ["TIME", [1546811691, 380410]],
+                                                        "ConnectionTimeOut": ["UINT", 300],
+                                                        "UnusedDataTimeOut": ["UINT", 300],
+                                                        "CloseAfterSend": ["BOOL", false],
+                                                        "actimode": ["INT", 1],
+                                                        "cycInterval": ["INT", 1],
+                                                        "NextExecTime": ["TIME", [1546811691, 442644]]
+                                                    },
+                                                    "links": {
+                                                        "DataHandler": {
+                                                            "of_association": "ksbase/AssocChannelDataHandler",
+                                                            "parents": ["this"],
+                                                            "children": ["~/GSE1/fbSetvar.apiSet/Client"]
+                                                        },
+                                                        "RootComTask": {
+                                                            "of_association": "ksbase/AssocComTaskList",
+                                                            "parents": ["/communication/RootComTask"],
+                                                            "children": ["this"]
+                                                        }
+                                                    },
+                                                    "class": "TCPbind/TCPChannel"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "ksapiGetvar": {
+                            "variables": {
+                                "varValue": ["ANY", [
+                                    ["VOID", null], 1559061717, [0, 0]
+                                ]],
+                                "varRes": ["UINT", 0],
+                                "serverHost": ["STRING", "127.0.0.1"],
+                                "serverName": ["STRING", "MANAGER"],
+                                "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/ksapiGetvarClient.IN1"],
+                                "status": ["INT", 0],
+                                "result": ["UINT", 0],
+                                "holdConnection": ["BOOL", false],
+                                "Reset": ["BOOL", false],
+                                "Submit": ["BOOL", false]
+                            },
+                            "class": "ksapi/getVar"
+                        },
+                        "ksapiSetvar": {
+                            "variables": {
+                                "varValue": ["ANY", [
+                                    ["VOID", null], 1559061717, [0, 0]
+                                ]],
+                                "varRes": ["UINT", 0],
+                                "serverHost": ["STRING", "127.0.0.1"],
+                                "serverName": ["STRING", "MANAGER"],
+                                "path": ["STRING", "/TechUnits/BRADTest/case_self2dsync/env/server/ksapiSetvarClient.IN1"],
+                                "status": ["INT", 0],
+                                "result": ["UINT", 0],
+                                "holdConnection": ["BOOL", false],
+                                "Reset": ["BOOL", false],
+                                "Submit": ["BOOL", false]
+                            },
+                            "class": "ksapi/setVar"
+                        }
+                    }
+                },
+                "GSE2": {
+                    "class": "ov/domain"
+                },
+                "GSE1_1": {
+                    "class": "ov/domain"
+                }
+            }
+        }
+    },
+    "Path": "/TechUnits"
+}

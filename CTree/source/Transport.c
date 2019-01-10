@@ -32,6 +32,19 @@
 #include <stdarg.h>
 
 enum State { INITIAL, LIBSSENT_WAITING, TREESENT_WAITING, DONE };
+OV_DLLFNCEXPORT OV_RESULT
+                CTree_Transport_constructor(OV_INSTPTR_ov_object pobj) {
+  OV_RESULT                  result = OV_ERR_OK;
+  OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pobj);
+
+  result = fb_functionblock_constructor(pobj);
+
+  result |= Ov_Link(fb_tasklist, pinst, &pinst->p_loadlibs);
+  pinst->p_loadlibs.v_actimode = 1;
+  pinst->p_loadlibs.v_iexreq = 1;
+
+  return result;
+}
 
 OV_DLLFNCEXPORT void CTree_Transport_startup(OV_INSTPTR_ov_object pobj) {
   /*
@@ -317,7 +330,18 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
                                        OV_INSTPTR_ov_domain that) {
   OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, this);
   /* Load Libs */
-  OV_INSTPTR_CTree_LoadLibs ploadlibs = Ov_StaticPtrCast(CTree_LoadLibs, that);
+  if(!this || !that) {
+    ov_logfile_error("callback issued with NULL pointers. aborting.");
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = OV_ERR_GENERIC;
+    return;
+  }
+  OV_INSTPTR_CTree_LoadLibs ploadlibs = Ov_DynamicPtrCast(CTree_LoadLibs, that);
+  if(!pinst || !ploadlibs) {
+    ov_logfile_error("callback issued with cant cast");
+    return;
+  }
+  pinst->v_status = ploadlibs->v_status;
   if(ploadlibs->v_result) {
     pinst->v_result = OV_ERR_GENERIC;
     return;
