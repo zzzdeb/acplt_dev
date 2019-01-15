@@ -3,10 +3,6 @@ set softtabstop=0
 set shiftwidth=2
 set noexpandtab
 
-
-"mouse enable in all mode
-set mouse=a
-
 set foldmethod=indent
 set foldlevelstart=99
                     
@@ -26,14 +22,10 @@ let &path.="*/include, */source, CTree/include, CTree/source"
 
 "let g:ycm_global_ycm_extra_conf = ".ycm_extra_conf.py"
 let g:ycm_confirm_extra_conf = 0
-let g:ycm_always_populate_location_list = 1
 " let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_auto_trigger = 1
 
-let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetDirectories = ['/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/UltiSnips', '/home/zzz/.vim/bundle/vim-snippets/UltiSnips']
-
-let g:clang_format#code_style="llvm"
 
 set wildignore+=*.o,*.a,*.so,*.un~,*/source/sourcetemplates,.*/build,draft,*/CTree1
 let g:CommandTWildIgnore = &wildignore . ", */CTree1, */build/*"
@@ -56,12 +48,9 @@ autocmd FileType c.doxygen :inoremap <buffer> <C-S> <ESC>:ClangFormat <CR>:Updat
 nnoremap <C-S> :<C-u>Update<CR>
 inoremap <C-S> <ESC>:Update<CR>
 
-nnoremap <Leader>o <s-a>;<return>
-imap <Leader>o <Esc><Leader>o
 
 set makeprg=make\ -C\ %:h/../build/linux\ -j\ debug
 
-nnoremap <leader>a :Ack<cr>
 
 nmap <c-b> :make<cr> 
 au QuickFixCmdPost make exec 'cw' 
@@ -84,7 +73,6 @@ au QuickFixCmdPost make exec 'cw'
 " endfunction
 
 " au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-e>"
 " this mapping Enter key to <C-y> to chose the current highlight item 
 " and close the selection list, same as other IDEs.
@@ -136,5 +124,4 @@ nnoremap <localleader>r i$ACPLT_HOME/system/sysbin/ov_runtimeserver -c $ACPLT_HO
 
 nnoremap <localleader>ra :!curl "http://localhost:7509/setVar?format=plain&path=/TechUnits/dsyncTest/case_self2dsync/obj.actimode&newvalue=3"<cr>
 nnoremap <localleader>rs :!curl "http://localhost:7509/createObject?format=plain&path=/TechUnits/dsyncTest&factory=/acplt/syncTest/dsyncTest"<cr>
-tnoremap <Esc> <C-\><C-n>
 
