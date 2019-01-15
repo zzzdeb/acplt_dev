@@ -41,11 +41,18 @@
 #define SYNC_SRC_ERROR 64
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
-  OV_RESULT result = OV_ERR_OK;
-  /* OV_INSTPTR_sync_dsync pinst = Ov_StaticPtrCast(sync_dsync, pobj); */
+  OV_RESULT             result = OV_ERR_OK;
+  OV_INSTPTR_sync_dsync pinst = Ov_StaticPtrCast(sync_dsync, pobj);
 
   result = fb_functionblock_constructor(pobj);
 
+  OV_ANY servername = {0};
+  servername.value.vartype = OV_VT_VOID;
+  servername.value.valueunion.val_string = NULL;
+  result |= ov_vendortree_getservername(&servername, NULL);
+
+  result |= ov_string_setvalue(&pinst->v_selfServer,
+                               servername.value.valueunion.val_string);
   return result;
 }
 
@@ -175,9 +182,9 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
   }
   ksmsg_msgClient_pathLen_set(pMsgClnt, 3);
 
-  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0],
+  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0], pinst->v_selfHost);
+  ov_string_setvalue(&pMsgClnt->v_pathName.value[0],
                      servername.value.valueunion.val_string);
-  ov_string_setvalue(&pMsgClnt->v_pathName.value[0], pinst->v_selfServer);
   ov_string_setvalue(
       &pMsgClnt->v_pathInstance.value[0],
       ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgClnt), 2));
@@ -257,7 +264,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_string_setvalue(
           &ptrans->v_path,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pdsyncDst), 2));
-      pdsyncDst->v_actimode = 0;
+      pdsyncDst->v_actimode = 1;
       pdsyncDst->v_status = DSYNC_DST_ACTIVE;
       CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
                                  NULL);

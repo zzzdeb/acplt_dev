@@ -69,6 +69,10 @@ OV_DLLFNCEXPORT OV_RESULT
     return result;
   OV_INSTPTR_ov_domain pInbox = NULL;
   result = Ov_CreateObject(ov_domain, pInbox, this, "Inbox");
+  ksmsg_msgClient_pathLen_set(this, 2);
+  // TODO: zzz: fix it. get server name :2019 Jan 14 12:58
+  ov_string_setvalue(&this->v_pathHost.value[0], "none");
+  ov_string_setvalue(&this->v_pathName.value[0], "MANAGER");
 
   this->v_answerItems = NULL;
 

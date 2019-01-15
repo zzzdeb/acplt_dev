@@ -199,7 +199,7 @@ LIBRARY sync
               COMMENT     = "Hostname to be found in network"
               INITIALVALUE  = "";
       selfServer: STRING 
-              FLAGS="i"
+              FLAGS="o"
               COMMENT     = "server name"
               INITIALVALUE  = "";
       shutdown  : BOOL 
