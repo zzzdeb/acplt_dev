@@ -93,5 +93,6 @@ OV_DLLFNCEXPORT OV_INSTPTR_PostSys_inbox
       }
     }
   }
+  ov_memstack_unlock();
   return NULL;
 }

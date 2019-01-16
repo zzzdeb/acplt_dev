@@ -59,6 +59,19 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
   pobj->v_reset = value;
+  if(value && !pobj->v_reset) {
+    pobj->v_status = SYNC_SRC_INIT;
+    ksapi_KSApiCommon_Reset_set(
+        Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_kssetter), 0);
+    ksapi_KSApiCommon_Reset_set(
+        Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_kssetter), 1);
+    ksapi_KSApiCommon_Reset_set(
+        Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_ksCrtObj), 0);
+    ksapi_KSApiCommon_Reset_set(
+        Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_ksCrtObj), 1);
+    CTree_Transport_reset_set(&pobj->p_transport, 0);
+    CTree_Transport_reset_set(&pobj->p_transport, 1);
+  }
   return OV_ERR_OK;
 }
 
@@ -78,7 +91,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
     /*go on */
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
     if(!proot) {
-      ov_logfile_error("root couldt be found");
+      ov_logfile_error("root couldt be found %s", pobj->v_srcPath);
       pobj->v_status = DSYNC_DST_ERROR;
       pobj->v_result = OV_ERR_GENERIC;
       return OV_ERR_GENERIC;
@@ -255,6 +268,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         ov_logfile_error("%u: %s: srcKS set failed", result,
                          ov_result_getresulttext(result));
         pinst->v_status = SYNC_SRC_ERROR;
+        ov_memstack_unlock();
         return;
       }
       ov_string_setvalue(&srcKS, NULL);

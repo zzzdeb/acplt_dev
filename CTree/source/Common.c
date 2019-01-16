@@ -34,7 +34,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Common_trigger_set(OV_INSTPTR_CTree_Common pobj,
     OV_TIME pltc = {0, 0};
     ov_time_gettime(&pltc);
     fb_functionblock_execTypeMethod((void*)pobj, &pltc);
-    pobj->v_trigger = 1;
+    pobj->v_trigger = 0;
   }
   return pobj->v_result;
 
