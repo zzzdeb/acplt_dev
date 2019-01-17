@@ -184,15 +184,15 @@ LIBRARY lbalance
         FLAGS="i"
         COMMENT     = "loads of apps";
 
+      neighbourIPs[] : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
       neighbourLoads[] : UINT
           FLAGS="i"
           COMMENT     = "list of neighborloads";
       neighbourCaps[]  : UINT
           FLAGS="i"
           COMMENT     = "capacity of neighbors";
-      neighbourIPs[] : STRING
-          FLAGS="i"
-          COMMENT     = "IPs of neighbors";
       neighbourSysInfos[]  : STRING
           FLAGS="i"
           COMMENT     = "sysinfos of neighbors";
@@ -304,15 +304,15 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "loads of requests";
 
+      neighbourIPs[] : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
       neighbourLoads[] : UINT
           FLAGS="i"
           COMMENT     = "list of neighborloads";
       neighbourCaps[]  : UINT
           FLAGS="i"
           COMMENT     = "capacity of neighbors";
-      neighbourIPs[] : STRING
-          FLAGS="i"
-          COMMENT     = "IPs of neighbors";
       localLoad : UINT
           FLAGS="i"
           COMMENT     = "total load of ourselves";
@@ -419,29 +419,13 @@ LIBRARY lbalance
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";
-      apps[]  : STRING
-        FLAGS="i"
-        COMMENT     = "Apps on this node";
-      appReq[]: STRING
-        FLAGS="i"
-        COMMENT     = "requirements of apps";
-      loads[] : UINT
-        FLAGS="i"
-        COMMENT     = "loads of apps";
+
       neighborIPs[]  : STRING 
           FLAGS="i"
           COMMENT     = "IPs of neighbors";
       serverNames[] : STRING
           FLAGS="i"
           COMMENT     = "names of neighbors";
-      outApp  : STRING 
-          FLAGS="o"
-          COMMENT     = "app to be sent"
-          INITIALVALUE  = "";
-      outLoad : UINT 
-          FLAGS="o"
-          COMMENT     = "load of app to be sent"
-          INITIALVALUE  = 0;
       outRequirements  : STRING
           FLAGS="o"
           COMMENT     = "requirements of app"
@@ -506,8 +490,10 @@ LIBRARY lbalance
       appMonitor  : CLASS lbalance/appMonitor;
       nbInformer  : CLASS lbalance/neighborInformer;
       nbDB  : CLASS lbalance/neighborDB;
+      inLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       reqSender : CLASS lbalance/reqSender;
       reqReceiver : CLASS lbalance/reqReceiver;
+      outLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
       mock: CLASS lbalance/mock;
