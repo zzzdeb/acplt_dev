@@ -9,6 +9,9 @@
 #include "limits.h"
 
 
+static const OV_UINT MAX_UINT = (~(OV_UINT)0);
+
+
 /**
  * Calculate the target load of every known neighbour node.
  *
@@ -95,12 +98,12 @@ OV_UINT lse_optimization_chose_request(
 {
 	OV_UINT_VEC targetLoads = lse_optimization_calculate_target_load(nodeLoads, nodeCapacities);
 
-	OV_UINT res = 0; // TODO use invalid value to accept NO REQUEST
+	OV_UINT res = MAX_UINT;
 	OV_SINGLE maximumGain = 0.0f;
 	for (OV_UINT i = 0; i < reqLoads.veclen && i < reqSourceIds.veclen; ++i) {
 		OV_UINT nodeId = reqSourceIds.value[i];
 		if (nodeId >= targetLoads.veclen)
-			continue;
+			continue; // This also filters out the MAX_UINT value if IP is unknown
 
 		OV_SINGLE seGain = lse_optimization_calculate_se_gain(
 				nodeId, ownNodeId, reqLoads.value[i], nodeLoads, targetLoads);
@@ -115,14 +118,12 @@ OV_UINT lse_optimization_chose_request(
 
 
 OV_UINT_VEC lse_optimization_lookup_requesting_nodes(OV_STRING_VEC requestIPs, OV_STRING_VEC nodeIPs) {
-	OV_UINT MAX_UINT = (~(OV_UINT)0);
-
 	OV_UINT_VEC res;
 	Ov_SetDynamicVectorLength(&res, requestIPs.veclen, UINT);
 
 
 	for (OV_UINT i = 0; i < requestIPs.veclen; ++i) {
-		OV_UINT idx = MAX_UINT; // TODO use better invalid value to indicate unknown IP
+		OV_UINT idx = MAX_UINT;
 		for (OV_UINT j = 0; i < nodeIPs.veclen; ++i) {
 			if (ov_string_compare(requestIPs.value[i], nodeIPs.value[j]) == OV_STRCMP_EQUAL) {
 				idx = j;

@@ -47,7 +47,7 @@ AppMovementSpec lse_optimization_chose_app(
  * @param nodeCapacities A vector of load capacities of all known neighbour nodes (indices must match those of
  * 	                     `nodeLoads`)
  * @param ownNodeId The index of our own node in `nodeLoads`, `nodeCapacities`
- * @return The index of the request to accept.  TODO: Allow to return FALSE / accept no request somehow
+ * @return The index of the request to accept or MAX_UINT, if no request should be accepted
  */
 OV_UINT lse_optimization_chose_request(
 		OV_UINT_VEC reqLoads, OV_UINT_VEC reqSourceIds, OV_UINT_VEC nodeLoads, OV_UINT_VEC nodeCapacities,
@@ -60,7 +60,7 @@ OV_UINT lse_optimization_chose_request(
  * @param requestIPs The vector of IP addresses to transform
  * @param nodeIPs The vector of IP addresses of all known nodes
  * @return The vector of the indices of the nodes belonging to the given IP addresses
- *         Returns the highest possible UINT number if IP address is unknown (TODO: find better representation of unknown IP)
+ *         Returns MAX_UINT (highest UINT number) if IP address is unknown
  */
 OV_UINT_VEC lse_optimization_lookup_requesting_nodes(
 		OV_STRING_VEC requestIPs, OV_STRING_VEC nodeIPs);
