@@ -88,6 +88,7 @@ AppMovementSpec lse_optimization_chose_app(
 		}
 	}
 
+	Ov_SetDynamicVectorLength(&targetLoads, 0, UINT);
 	return res;
 }
 
@@ -113,6 +114,7 @@ OV_UINT lse_optimization_chose_request(
 		}
 	}
 
+	Ov_SetDynamicVectorLength(&targetLoads, 0, UINT);
 	return res;
 }
 

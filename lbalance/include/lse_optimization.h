@@ -3,7 +3,7 @@
  *
  * * `lse_optimization_chose_app()` takes the gathered load and capacity information of all known hosts and the list of
  *   local applications and calculates, which application should be moved to improve the total squared error.
- * * `lse_optimization_chose_app()` takes the list of received movement requests and calculates which of them will
+ * * `lse_optimization_chose_request()` takes the list of received movement requests and calculates which of them will
  *   reduce the total square error the most.
  *
  * @date Jan 2019
