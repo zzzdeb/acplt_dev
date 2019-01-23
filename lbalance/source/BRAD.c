@@ -68,7 +68,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_outLSEOptimizer);
-  pinst->p_outLSEOptimizer.v_actimode = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"actimode");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "apps",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"localApps");
@@ -119,7 +121,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_inLSEOptimizer);
-  pinst->p_inLSEOptimizer.v_actimode = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"actimode");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
 				"reqIPs");
