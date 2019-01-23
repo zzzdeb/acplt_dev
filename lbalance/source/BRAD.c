@@ -30,24 +30,45 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
 
   result = ov_object_constructor(pobj);
 
-  /* ov_fb_connect(&pinst->p_appMonitor, "apps", &pinst->p_nbInformer, "apps");
-   */
   /***********************************************************/
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "syncTrigger",
                 Ov_StaticPtrCast(fb_object, pinst), "init");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
-                Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "R");
   /* ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "D", */
   /* Ov_StaticPtrCast(fb_object, &pinst->p), "D"); */
+
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_appMonitor);
   pinst->p_appMonitor.v_actimode = 1;
   pinst->p_appMonitor.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appPaths",
+                Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appPaths");
+
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_nbInformer);
+  pinst->p_nbInformer.v_actimode = 1;
+  pinst->p_nbInformer.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "sum");
+  // TODO cap (capacity of this node)
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "neighborIPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
+                "neighborIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "serverNames",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
+                "serverNames");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
 
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
+  pinst->p_nbDB.v_actimode = 1;
+  pinst->p_nbDB.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "A");
+
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_outLSEOptimizer);
+  pinst->p_outLSEOptimizer.v_actimode = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "apps",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"localApps");
@@ -57,27 +78,6 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "loads",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"localAppLoads");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appPaths",
-                Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appPaths");
-  /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
-  pinst->p_nbDB.v_actimode = 1;
-  pinst->p_nbDB.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "A");
-  /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_nbInformer);
-  pinst->p_nbInformer.v_actimode = 1;
-  pinst->p_nbInformer.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "neighborIPs",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
-                "neighborIPs");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "serverNames",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
-                "serverNames");
-  /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_outLSEOptimizer);
-  pinst->p_outLSEOptimizer.v_actimode = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "IPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"neighbourIPs");
@@ -90,20 +90,13 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "sysInfos",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"neighbourSysInfos");
-  /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator);
-  pinst->p_sendInitiator.v_actimode = 1;
-  pinst->p_sendInitiator.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
-		        "outApp",
-                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "outApp");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
-                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "R");
-  /***********************************************************/
-  /* Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier); */
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"localLoad");
+  // TODO localCap (capacity of this node)
+
 
   /***********************************************************/
-
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqSender);
   pinst->p_reqSender.v_actimode = 1;
   pinst->p_reqSender.v_iexreq = 1;
@@ -116,11 +109,37 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer), "outIP",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender),
                 "destination");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
+                Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "R");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqReceiver);
   pinst->p_reqReceiver.v_actimode = 1;
   pinst->p_reqReceiver.v_iexreq = 1;
+
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_inLSEOptimizer);
+  pinst->p_inLSEOptimizer.v_actimode = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"reqIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqLoads",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"reqLoads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "IPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+                "neighbourIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "loads",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+                "neighbourLoads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "caps",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+                "neighbourCaps");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"localLoad");
+  // TODO localCap (capacity of this node)
+
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier);
   pinst->p_acceptNotifier.v_actimode = 1;
@@ -128,40 +147,36 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
                 "reqIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+		        "reqIndex",
+                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
+                "index");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "A",
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier), "A");
+
+  /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator);
+  pinst->p_sendInitiator.v_actimode = 1;
+  pinst->p_sendInitiator.v_iexreq = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+		        "outApp",
+                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "outApp");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
+                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "R");
+
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_dsync);
   pinst->p_dsync.v_actimode = 0;
   pinst->p_dsync.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "appPath",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "srcPath");
+  // TODO destination (from outLSEOptimizer.outIP)
+  // TODO D-Trigger
+
   ov_string_setvalue(&pinst->p_dsync.v_selfHost, "localhost");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "destination",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "destKS");
 
-  /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_inLSEOptimizer);
-  pinst->p_inLSEOptimizer.v_actimode = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "IPs",
-                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-                "neighbourIPs");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "loads",
-                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-  				"neighbourLoads");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "caps",
-                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-  				"localCap");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-		        "reqIndex",
-                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
-                "reqIndex");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
-                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-				"reqIPs");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqLoads",
-                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
-				"reqLoads");
   return result;
 }
 
