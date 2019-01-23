@@ -95,8 +95,7 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
     case LB_REQSENDER_INIT:
       if(pinst->v_R) {
         /* pinst->v_sysInfo */
-        if(!pinst->v_outApp || !pinst->v_outRequirements ||
-           !pinst->v_destination) {
+        if(!pinst->v_outApp || !pinst->v_destination) {
           ov_logfile_warning(
               "lbalance_reqSender: outApp or v_outRequirements  or "
               "v_destination NULL in this Round");
@@ -144,8 +143,6 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         /* order is important. see helper */
         cJSON_AddItemToArray(jsMsg, cJSON_CreateString(myIP));
         cJSON_AddItemToArray(jsMsg, cJSON_CreateNumber(pinst->v_outLoad));
-        cJSON_AddItemToArray(jsMsg,
-                             cJSON_CreateString(pinst->v_outRequirements));
 
         OV_STRING tmpStr = cJSON_Print(jsMsg);
         cJSON_Delete(jsMsg);
@@ -167,7 +164,6 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
       if(!pinst->v_R) {
         pinst->v_status = LB_REQSENDER_INIT;
         ov_string_setvalue(&pinst->v_outApp, NULL);
-        ov_string_setvalue(&pinst->v_outRequirements, NULL);
         pinst->v_outLoad = 0;
       }
       break;

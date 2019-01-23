@@ -239,10 +239,6 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "load of app to be sent"
           INITIALVALUE  = 0;
-      outRequirements  : STRING
-          FLAGS="i"
-          COMMENT     = "requirements of app"
-          INITIALVALUE  = "";
       destination : STRING
           FLAGS="i"
           COMMENT     = "ks ov destination"
@@ -279,9 +275,6 @@ LIBRARY lbalance
       reqLoads[]  : UINT
           FLAGS="o"
           COMMENT     = "loads of requests";
-      reqLoadRequirements[] : STRING
-          FLAGS="o"
-          COMMENT     = "requirements of loads";
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;

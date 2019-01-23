@@ -34,8 +34,6 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_reqReceiver_reset_set(
     pobj->v_result = 0;
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqIPs, 0, STRING);
     result |= Ov_SetDynamicVectorLength(&pobj->v_reqLoads, 0, UINT);
-    result |=
-        Ov_SetDynamicVectorLength(&pobj->v_reqLoadRequirements, 0, STRING);
   }
   pobj->v_reset = value;
   return result;
@@ -69,7 +67,6 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
   cJSON* jsMsg = NULL;
   cJSON* jsip = NULL;
   cJSON* jsload = NULL;
-  cJSON* jsreqs = NULL;
   switch(pinst->v_status) {
     case LB_REQREC_INIT:
       /* pinst->p_inbox */
@@ -84,8 +81,6 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
       nLen = pinst->v_reqIPs.veclen + waitingMsgsLen;
       result |= Ov_SetDynamicVectorLength(&pinst->v_reqIPs, nLen, STRING);
       result |= Ov_SetDynamicVectorLength(&pinst->v_reqLoads, nLen, UINT);
-      result |= Ov_SetDynamicVectorLength(&pinst->v_reqLoadRequirements, nLen,
-                                          STRING);
       if(Ov_Fail(result)) {
         ov_logfile_error(
             "lbalance_reqReceiver: %u: %s: failed to allocate vector", result,
@@ -178,19 +173,9 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
           continue;
         }
 
-        jsreqs = cJSON_GetArrayItem(jsMsg, LB_REQREC_REQUIREPOS);
-        if(!jsreqs || !cJSON_IsString(jsreqs)) {
-          ov_logfile_warning("lbalance_neighborDB: msg: bad json format at %d",
-                             LB_REQREC_REQUIREPOS);
-          Ov_DeleteObject(pMsg);
-          continue;
-        }
-
         ov_string_setvalue(&pinst->v_reqIPs.value[currentInd],
                            jsip->valuestring);
         pinst->v_reqLoads.value[currentInd] = jsload->valueint;
-        ov_string_setvalue(&pinst->v_reqLoadRequirements.value[currentInd],
-                           jsreqs->valuestring);
 
         currentInd++;
 
@@ -201,8 +186,6 @@ lbalance_reqReceiver_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
       result |= Ov_SetDynamicVectorLength(&pinst->v_reqIPs, currentInd, STRING);
       result |= Ov_SetDynamicVectorLength(&pinst->v_reqLoads, currentInd, UINT);
-      result |= Ov_SetDynamicVectorLength(&pinst->v_reqLoadRequirements,
-                                          currentInd, STRING);
       if(Ov_Fail(result)) {
         ov_logfile_error(
             "lbalance_neighborDB: %u: %s: failed to allocate vector "
