@@ -85,7 +85,7 @@ OV_DLLFNCEXPORT OV_INSTPTR_fb_connection
     return NULL;
   }
   result |= fb_connection_sourceport_set(pconn, fromName);
-  result |= fb_connection_targetport_set(pconn, fromName);
+  result |= fb_connection_targetport_set(pconn, toName);
   result |= Ov_Link(fb_inputconnections, toObj, pconn);
   result |= Ov_Link(fb_outputconnections, fromObj, pconn);
   result |= fb_connection_on_set(pconn, 1);
