@@ -114,11 +114,13 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier), "A");
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_dsync);
-  pinst->p_dsync.v_actimode = 1;
+  pinst->p_dsync.v_actimode = 0;
   pinst->p_dsync.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "appPath",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "srcPath");
   ov_string_setvalue(&pinst->p_dsync.v_selfHost, "localhost");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "destination",
+                Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "destKS");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_mock);
