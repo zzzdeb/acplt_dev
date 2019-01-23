@@ -481,7 +481,7 @@ LIBRARY lbalance
       inLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       reqSender : CLASS lbalance/reqSender;
       reqReceiver : CLASS lbalance/reqReceiver;
-      outLSEOptimizer : CLASS lbalance/inLSEOptimizer;
+      outLSEOptimizer : CLASS lbalance/outLSEOptimizer;
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
       mock: CLASS lbalance/mock;
