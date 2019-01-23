@@ -400,6 +400,10 @@ LIBRARY lbalance
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";
+      localCapacity  : UINT
+        FLAGS="o"
+        COMMENT     = "Load capacity of this node."
+        INITIALVALUE= 100;
 
       neighborIPs[]  : STRING 
           FLAGS="i"

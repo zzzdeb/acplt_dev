@@ -49,7 +49,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   pinst->p_nbInformer.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "sum");
-  // TODO cap (capacity of this node)
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "cap");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "neighborIPs",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
                 "neighborIPs");
@@ -95,7 +96,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
 				"localLoad");
-  // TODO localCap (capacity of this node)
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"localCap");
 
 
   /***********************************************************/
@@ -142,7 +145,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "sum",
                 Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
 				"localLoad");
-  // TODO localCap (capacity of this node)
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"localCap");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_acceptNotifier);
