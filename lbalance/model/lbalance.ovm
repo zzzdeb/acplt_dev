@@ -344,15 +344,11 @@ LIBRARY lbalance
           COMMENT     = "IPs of requests";
       index : INT
           FLAGS="i"
-          COMMENT     = "index of choosen node"
+          COMMENT     = "index of choosen request"
           INITIALVALUE  = 0;
-      dstPath : STRING
-          FLAGS="i"
-          COMMENT="Path of object to get notified"
-          INITIALVALUE="";
       A : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
-          COMMENT     = "triggers accept"
+          COMMENT     = "triggers accept notification"
           INITIALVALUE  = FALSE;
     END_VARIABLES;
     PARTS
@@ -368,22 +364,14 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "initiate send";
     VARIABLES
-      reset : BOOL HAS_SET_ACCESSOR
+      clear : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
-          COMMENT="Resets lbalance objects"
-          INITIALVALUE=FALSE;
-      outApp  : STRING
-          FLAGS="i"
-          COMMENT     = "app to send out"
-          INITIALVALUE  = "";
-      R : BOOL HAS_SET_ACCESSOR
-          FLAGS="i"
-          COMMENT     = "triggers request"
+          COMMENT     = "Rising edge clears the received accept notifications"
           INITIALVALUE  = FALSE;
-      appPath : STRING
-          FLAGS="i"
-          COMMENT="Path of app to send by dsync"
-          INITIALVALUE="";
+      accepted : BOOL
+          FLAGS="o"
+          COMMENT="True if an accept notification has been received"
+          INITIALVALUE=FALSE;
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;

@@ -158,18 +158,17 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator);
   pinst->p_sendInitiator.v_actimode = 1;
   pinst->p_sendInitiator.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
-		        "outApp",
-                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "outApp");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
-                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "R");
+                Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "clear");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_dsync);
   pinst->p_dsync.v_actimode = 0;
   pinst->p_dsync.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "appPath",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+		  	  	"outApp",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "srcPath");
+  // TODO enable (from p_sendInitiator.accepted)
   // TODO destination (from outLSEOptimizer.outIP)
   // TODO D-Trigger
 

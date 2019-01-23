@@ -5,6 +5,7 @@
 
 #define LB_NDB_PATH "/data/lbalance/BRAD.nbDB"
 #define LB_REQREC_PATH "/data/lbalance/BRAD.reqReceiver"
+#define LB_SENDINIT_PATH "/data/lbalance/BRAD.sendInitiator"
 
 #define LB_INTERNALERROR 64
 #define LB_EXTERNALERROR 128
@@ -55,5 +56,3 @@
 #define LB_ACCEPTNOTIFIER_KEYWORD "ACCEPT"
 
 #define LB_SENDINIT_INIT 0
-#define LB_SENDINIT_SENT 1
-#define LB_SENDINIT_PATH "/data/lbalance/BRAD.sendInitiator"
