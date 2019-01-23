@@ -49,11 +49,14 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "sum");
 
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "apps",
-                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "apps");
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"localApps");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appReq",
-                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appReq");
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"localAppReq");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "loads",
-                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "loads");
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"localAppLoads");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "appPaths",
                 Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "appPaths");
   /***********************************************************/
@@ -73,10 +76,26 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
                 "serverNames");
   /***********************************************************/
+  Ov_Link(fb_tasklist, pinst, &pinst->p_outLSEOptimizer);
+  pinst->p_outLSEOptimizer.v_actimode = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "IPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"neighbourIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "loads",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"neighbourLoads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "caps",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"neighbourCaps");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "sysInfos",
+                Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+				"neighbourSysInfos");
+  /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_sendInitiator);
   pinst->p_sendInitiator.v_actimode = 1;
   pinst->p_sendInitiator.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "outApp",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+		        "outApp",
                 Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "outApp");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
                 Ov_StaticPtrCast(fb_object, &pinst->p_sendInitiator), "R");
@@ -88,14 +107,13 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqSender);
   pinst->p_reqSender.v_actimode = 1;
   pinst->p_reqSender.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "outApp",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+		  	    "outApp",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "outApp");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "outLoad",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
+		  	    "outLoad",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "outLoad");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "outRequirements",
-                Ov_StaticPtrCast(fb_object, &pinst->p_reqSender),
-                "outRequirements");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "destination",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer), "outIP",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender),
                 "destination");
 
@@ -121,17 +139,27 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_string_setvalue(&pinst->p_dsync.v_selfHost, "localhost");
 
   /***********************************************************/
-  Ov_Link(fb_tasklist, pinst, &pinst->p_mock);
-  pinst->p_mock.v_actimode = 1;
-  pinst->p_mock.v_iexreq = 1;
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqIndex",
+  Ov_Link(fb_tasklist, pinst, &pinst->p_inLSEOptimizer);
+  pinst->p_inLSEOptimizer.v_actimode = 1;
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "IPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+                "neighbourIPs");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "loads",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+  				"neighbourLoads");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "caps",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+  				"localCap");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+		        "reqIndex",
                 Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
                 "reqIndex");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqIndex",
-                Ov_StaticPtrCast(fb_object, &pinst->p_acceptNotifier),
-                "reqIndex");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqIPs",
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"reqIPs");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_reqReceiver), "reqLoads",
-                Ov_StaticPtrCast(fb_object, &pinst->p_mock), "reqLoads");
+                Ov_StaticPtrCast(fb_object, &pinst->p_inLSEOptimizer),
+				"reqLoads");
   return result;
 }
 

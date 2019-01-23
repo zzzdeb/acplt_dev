@@ -169,6 +169,60 @@ LIBRARY lbalance
   END_CLASS;
 
 
+  CLASS outLSEOptimizer      : CLASS lbalance/Common
+    IS_INSTANTIABLE;
+    COMMENT = "Selects the optimal possible request to move a local app to another node";
+
+    VARIABLES
+      localApps[]  : STRING
+        FLAGS="i"
+        COMMENT     = "Apps on this node";
+      localAppReq[]: STRING
+        FLAGS="i"
+        COMMENT     = "requirements of apps";
+      localAppLoads[] : UINT
+        FLAGS="i"
+        COMMENT     = "loads of apps";
+
+      neighbourIPs[] : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
+      neighbourLoads[] : UINT
+          FLAGS="i"
+          COMMENT     = "list of neighborloads";
+      neighbourCaps[]  : UINT
+          FLAGS="i"
+          COMMENT     = "capacity of neighbors";
+      neighbourSysInfos[]  : STRING
+          FLAGS="i"
+          COMMENT     = "sysinfos of neighbors";
+      localLoad : UINT
+          FLAGS="i"
+          COMMENT     = "total load of ourselves";
+      localCap : UINT
+          FLAGS="i"
+          COMMENT     = "capacity of ourselves";
+
+      outApp  : STRING
+          FLAGS="o"
+          COMMENT     = "app to be sent. May be empty if no app should be sent."
+          INITIALVALUE  = "";
+      outLoad : UINT
+          FLAGS="o"
+          COMMENT     = "load of app to be sent"
+          INITIALVALUE  = 0;
+      outIP : STRING
+          FLAGS="o"
+          COMMENT     = "IP of node to send app to. May be empty if no app should be sent."
+          INITIALVALUE  = "";
+    END_VARIABLES;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+
+  END_CLASS;
+
+
   CLASS reqSender         : CLASS lbalance/Common
     IS_INSTANTIABLE;
     COMMENT = "request sender to one neighbor";
@@ -224,7 +278,8 @@ LIBRARY lbalance
           COMMENT     = "IPs of requests";
       reqLoads[]  : UINT
           FLAGS="o"
-          COMMENT     = "loads of requests"; reqLoadRequirements[] : STRING
+          COMMENT     = "loads of requests";
+      reqLoadRequirements[] : STRING
           FLAGS="o"
           COMMENT     = "requirements of loads";
     END_VARIABLES;
@@ -235,6 +290,46 @@ LIBRARY lbalance
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
+
+
+  CLASS inLSEOptimizer          : CLASS lbalance/Common
+  IS_INSTANTIABLE;
+  COMMENT = "Choses the best of all received requests";
+
+    VARIABLES
+      reqIPs[]  : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of requests";
+      reqLoads[]  : UINT
+          FLAGS="i"
+          COMMENT     = "loads of requests";
+
+      neighbourIPs[] : STRING
+          FLAGS="i"
+          COMMENT     = "IPs of neighbors";
+      neighbourLoads[] : UINT
+          FLAGS="i"
+          COMMENT     = "list of neighborloads";
+      neighbourCaps[]  : UINT
+          FLAGS="i"
+          COMMENT     = "capacity of neighbors";
+      localLoad : UINT
+          FLAGS="i"
+          COMMENT     = "total load of ourselves";
+      localCap : UINT
+          FLAGS="i"
+          COMMENT     = "capacity of ourselves";
+
+      reqIndex : INT
+          FLAGS="o"
+          COMMENT     = "index of choosen node. Will be -1, if no request should be accepted."
+          INITIALVALUE  = 0;
+    END_VARIABLES;
+    OPERATIONS
+      typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+    END_OPERATIONS;
+  END_CLASS;
+
 
   CLASS acceptNotifier          : CLASS lbalance/Common
     IS_INSTANTIABLE;
@@ -324,29 +419,13 @@ LIBRARY lbalance
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";
-      apps[]  : STRING
-        FLAGS="i"
-        COMMENT     = "Apps on this node";
-      appReq[]: STRING
-        FLAGS="i"
-        COMMENT     = "requirements of apps";
-      loads[] : UINT
-        FLAGS="i"
-        COMMENT     = "loads of apps";
+
       neighborIPs[]  : STRING 
           FLAGS="i"
           COMMENT     = "IPs of neighbors";
       serverNames[] : STRING
           FLAGS="i"
           COMMENT     = "names of neighbors";
-      outApp  : STRING 
-          FLAGS="o"
-          COMMENT     = "app to be sent"
-          INITIALVALUE  = "";
-      outLoad : UINT 
-          FLAGS="o"
-          COMMENT     = "load of app to be sent"
-          INITIALVALUE  = 0;
       outRequirements  : STRING
           FLAGS="o"
           COMMENT     = "requirements of app"
@@ -411,8 +490,10 @@ LIBRARY lbalance
       appMonitor  : CLASS lbalance/appMonitor;
       nbInformer  : CLASS lbalance/neighborInformer;
       nbDB  : CLASS lbalance/neighborDB;
+      inLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       reqSender : CLASS lbalance/reqSender;
       reqReceiver : CLASS lbalance/reqReceiver;
+      outLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
       mock: CLASS lbalance/mock;
