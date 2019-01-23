@@ -197,7 +197,7 @@ OV_DLLFNCEXPORT OV_RESULT
 OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_init_set(OV_INSTPTR_lbalance_BRAD pobj,
                                                  const OV_BOOL value) {
   if(value && !pobj->v_init) {
-    Ov_WarnIf(LB_BRAD_D != pobj->v_status);
+    Ov_WarnIf(!(pobj->v_status == LB_BRAD_D) || (pobj->v_status == LB_BRAD_I));
     pobj->v_status = LB_BRAD_B;
     pobj->v_B = 1;
     pobj->v_R = 0;
@@ -234,24 +234,69 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_D_set(OV_INSTPTR_lbalance_BRAD pobj,
   return OV_ERR_OK;
 }
 
+
+/**
+ * Helper function to get the relevant time interval to check against in the
+ * current BRAD phase
+ */
+static inline OV_SINGLE get_relevant_interval(OV_INSTPTR_lbalance_BRAD pinst) {
+  switch(pinst->v_status) {
+    case LB_BRAD_I:
+      return pinst->v_T * 4;
+    case LB_BRAD_B:
+    case LB_BRAD_R:
+    case LB_BRAD_A:
+      return pinst->v_T;
+    case LB_BRAD_D:
+      return pinst->v_T;
+    default:
+      return 0;
+  }
+}
+
 OV_DLLFNCEXPORT void lbalance_BRAD_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                               OV_TIME* pltc) {
   /*
    *   local variables
    */
   OV_INSTPTR_lbalance_BRAD pinst = Ov_StaticPtrCast(lbalance_BRAD, pfb);
+  OV_SINGLE                interval = get_relevant_interval(pinst);
   OV_TIME                  now = {0};
   OV_TIME_SPAN             tstemp = {0};
-  OV_BOOL                  changePhase = 0;
+  OV_BOOL                  changePhase = FALSE;
 
   ov_time_gettime(&now);
   ov_time_diff(&tstemp, &now, &(pinst->v_timeLastEvent));
-  if((tstemp.secs > (OV_INT)pinst->v_T) ||
-     ((tstemp.secs == (OV_INT)pinst->v_T) && (tstemp.usecs > 0))) {
-    changePhase = 1;
+
+  // Always restart in initializing state after a longer execution pause.
+  if (tstemp.secs > (OV_UINT)2*interval) {
+	ov_logfile_info("lbalance_BRAD: (re)acitvated after long downtime. Starting with Init phase.");
+	pinst->v_status = LB_BRAD_I;
+	pinst->v_B = 0;
+	pinst->v_R = 0;
+	pinst->v_A = 0;
+	pinst->v_D = 0;
+	ov_time_gettime(&pinst->v_timeLastEvent);
+	return;
+  }
+
+  // Check if BRAD phase time has expired
+  if((tstemp.secs > (OV_INT)interval) ||
+      ((tstemp.secs == (OV_INT)interval) &&
+          (tstemp.usecs >= (OV_UINT)(interval / 1e6)))) {
+    changePhase = TRUE;
     ov_logfile_info("lbalance_BRAD: changing phase from %d", pinst->v_status);
   }
+
+  // Do phase/state changes
   switch(pinst->v_status) {
+    case LB_BRAD_I:
+      if(changePhase) {
+          pinst->v_B = 1;
+          pinst->v_status = LB_BRAD_B;
+          pinst->v_timeLastEvent = now;
+      }
+      return;
     case LB_BRAD_B:
       if(changePhase) {
         pinst->v_B = 0;

@@ -26,10 +26,11 @@
 #define LB_APPMON_DONE 1
 #define LB_APPMON_ERROR 64
 
-#define LB_BRAD_B 0
-#define LB_BRAD_R 1
-#define LB_BRAD_A 2
-#define LB_BRAD_D 3
+#define LB_BRAD_I 0
+#define LB_BRAD_B 1
+#define LB_BRAD_R 2
+#define LB_BRAD_A 3
+#define LB_BRAD_D 4
 
 #define LB_REQSENDER_INIT 0
 #define LB_REQSENDER_SENT 1

@@ -433,6 +433,7 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "sets back to B state"
           INITIALVALUE  = FALSE;
+      // TODO we should introduce an additional independent T for D phase
       T : SINGLE
           FLAGS="i"
           COMMENT     = "Interval to stay in one state"
