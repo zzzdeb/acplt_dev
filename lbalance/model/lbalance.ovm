@@ -407,21 +407,7 @@ LIBRARY lbalance
       serverNames[] : STRING
           FLAGS="i"
           COMMENT     = "names of neighbors";
-      outRequirements  : STRING
-          FLAGS="o"
-          COMMENT     = "requirements of app"
-          INITIALVALUE  = "";
-      destination : STRING
-          FLAGS="i"
-          COMMENT     = "ks ov destination"
-          INITIALVALUE  = "";
-      reqIndex  : UINT 
-          FLAGS="o"
-          COMMENT     = "Tell client not to close the connection after each request"
-          INITIALVALUE  = 0;
-      reqLoads[]  : UINT
-          FLAGS="i"
-          COMMENT     = "loads of requests";
+
     END_VARIABLES;
     PARTS
     END_PARTS;
