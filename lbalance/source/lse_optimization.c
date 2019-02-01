@@ -81,6 +81,7 @@ AppMovementSpec lse_optimization_chose_app(
 			OV_SINGLE seGain = lse_optimization_calculate_se_gain(
 					ownNodeId, nodeId, appLoads.value[appId], nodeLoads, targetLoads);
 			if (seGain > maximumGain) {
+				res.valid = TRUE;
 				res.appId = appId;
 				res.nodeId = nodeId;
 				maximumGain = seGain;
