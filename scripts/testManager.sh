@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # no parameter: start server and load fbds
 # parameter 1: 	-r --> restarts server
@@ -10,10 +9,10 @@ SERVERPORT="7509"
 SERVERIP="localhost"
 
 ##### Functions ######
-. $THISACPLTSYSTEM/scripts/functions.sh
+#. $THISACPLTSYSTEM/scripts/functions.sh
 
 ##### start Server #####
-startServer $1
+#startServer $1
 echo -e "Waiting 1sec for Server to register at MANAGER."
 sleep 1
 
@@ -32,10 +31,8 @@ sleep 1
 # weights 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.actimode&newvalue=1"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.iexreq&newvalue=1"
-nbIPs="\{src\}"
-curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.neighborIPs&newvalue="$nbIPs
-servers="\{MANAGER\}"
-curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.serverNames&newvalue="$servers
+servers="\{src/MANAGER	0	src	7509	MANAGER\}"
+curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.ovServers&newvalue="$servers
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.nbInformer.myIP%&newvalue=134.130.125.88"
 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.actimode&newvalue=1"
