@@ -56,6 +56,15 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
   return result;
 }
 
+OV_DLLFNCEXPORT OV_RESULT sync_dsync_trigger_set(OV_INSTPTR_sync_dsync pinst,
+                                                 const OV_BOOL         value) {
+  if(value && !pinst->v_trigger && pinst->v_EN) {
+    pinst->v_actimode = 1;
+  }
+  pinst->v_trigger = value;
+  return 0;
+}
+
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
   pobj->v_reset = value;
@@ -98,7 +107,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
     }
     const OV_STRING classesToConfiugure[] = {[KSAPISET] = "ksapi/setVar",
                                              [KSAPIGET] = "ksapi/getVar"};
-    // shutting down
+    // shuttinmg dowmn
     for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
       if(i != KSAPISET && i != KSAPIGET) {
         ov_logfile_warning("sync_dsync: cant handle %d", i);
@@ -241,6 +250,10 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
   ov_memstack_lock();
   switch(pinst->v_status) {
     case SYNC_SRC_INIT:
+      if(!pinst->v_EN) {
+        ov_logfile_warning("sync_dsync: not enabled");
+        return;
+      }
       /* check */
       proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
       if(!proot) {

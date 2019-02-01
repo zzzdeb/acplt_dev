@@ -207,6 +207,16 @@ LIBRARY sync
               FLAGS="i"
               COMMENT     = "shuts down the tree and deletes"
               INITIALVALUE  = FALSE;
+
+      EN : BOOL 
+          FLAGS="i"
+          COMMENT="enables"
+          INITIALVALUE=FALSE;
+      trigger : BOOL HAS_SET_ACCESSOR
+          FLAGS="i"
+          COMMENT="trigger"
+          INITIALVALUE=FALSE;
+
       holdConnection  : BOOL FLAGS="i"
         COMMENT     = "Tell client not to close the connection after each request"
         INITIALVALUE  = FALSE;
