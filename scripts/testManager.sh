@@ -31,7 +31,7 @@ sleep 1
 # weights 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.actimode&newvalue=1"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.iexreq&newvalue=1"
-servers="\{src/MANAGER	0	src	7509	MANAGER\}"
+servers="\{src/MANAGER\t0\tsrc\t7509\tMANAGER\}"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.ovServers&newvalue="$servers
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.nbInformer.myIP%&newvalue=134.130.125.88"
 
