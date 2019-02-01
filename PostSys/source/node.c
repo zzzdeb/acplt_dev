@@ -49,7 +49,6 @@ OV_DLLFNCEXPORT void PostSys_node_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   Ov_ForEachChildEx(ov_containment, pInb, pMsg, PostSys_Message) { break; }
 
   if(pMsg) {
-    // TODO: zzz: num of tries: Sa 01 Dez 2018 18:34:50 CET
     switch(pMsg->v_msgStatus) {
       case MSGNEW:
       case MSGNEWARRIVED:
@@ -63,7 +62,7 @@ OV_DLLFNCEXPORT void PostSys_node_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         if(pMsgDelivery) {
           isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
           if(!isOk) {
-            // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+            ov_logfile_warning("PostSys_node: sendmessage failed");
             Ov_DeleteObject(pMsg);
             return;
           }

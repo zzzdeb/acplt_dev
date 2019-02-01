@@ -98,7 +98,7 @@ OV_DLLFNCEXPORT OV_RESULT
 
   if(!pobj->v_switch && value) {
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_path, 2);
-    if(!proot) { // todo badparam info
+    if(!proot) {
       ov_logfile_error("root couldt be found: %s", pobj->v_path);
       pobj->v_result = OV_ERR_GENERIC;
       return 0;
@@ -158,8 +158,7 @@ OV_DLLFNCEXPORT OV_RESULT
     }
     ks_splitOneStringPath(pobj->v_srcKS, &srcHost, &srcHostPort, &srcName,
                           &srcNamePort, &srcPath);
-    // FIX: zzz: check parameters: Mo 03 Dez 2018 23:54:45 CET
-
+    ov_logfile_info("sync_dsyncDst: requesting shutdown to %s", pobj->v_srcKS);
     ov_string_print(&pobj->p_kssetter.v_path, "%s.shutdown", pobj->v_syncPath);
     ov_string_setvalue(&pobj->p_kssetter.v_serverHost, srcHost);
     ov_string_setvalue(&pobj->p_kssetter.v_serverName, srcName);
@@ -177,6 +176,8 @@ OV_RESULT sync_dsyncDst_opTerm(OV_INSTPTR_sync_dsyncDst pinst, OV_RESULT res) {
   pinst->p_player.v_actimode = 0;
   pinst->p_syncDownload.v_actimode = 0;
   pinst->v_actimode = 0;
+  // TODO: zzz: notify src site :2019 Jan 18 18:58
+  // TODO: zzz: delete image :2019 Jan 18 18:58
   pinst->v_status = DSYNC_DST_ERROR;
   return result;
 }
@@ -206,6 +207,7 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       break;
     case DSYNC_DST_DONE:
       pinst->v_actimode = 0;
+      ov_logfile_info("sync_dsyncDst: done.");
       break;
     default:
       ov_logfile_error("sync_dsyncDst: unknown state");
