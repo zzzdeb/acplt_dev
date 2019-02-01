@@ -1,0 +1,37 @@
+#ifndef ressourcesMonitor_OVT_INCLUDED
+#define ressourcesMonitor_OVT_INCLUDED
+
+/* 
+	Define your data types here. 
+*/
+#include <dns_sd.h>
+
+// A struct to hold the context for a call to DNSServiceResolve, which can also be stored as member of a linked list
+typedef struct resolveContext resolveContext;
+struct resolveContext {
+	OV_INSTPTR_ov_object	pinst;
+    DNSServiceRef			sdRef;
+    OV_BOOL					terminate;
+    resolveContext			*next;
+};
+typedef resolveContext* pResolveContext;
+
+
+// A member of a linked list of known networks and the number of hops to reach them
+typedef struct networkEntry networkEntry;
+struct networkEntry {
+	OV_STRING			networkId;
+    OV_UINT				hops;
+    OV_STRING			nextHop;
+    OV_BOOL				routable;
+    networkEntry		*next;
+};
+// A linked list of known networks
+typedef struct networkList {
+	networkEntry		*first;
+	OV_UINT				num;
+} networkList;
+
+typedef enum netMonitorState netMonitorState_t;
+
+#endif

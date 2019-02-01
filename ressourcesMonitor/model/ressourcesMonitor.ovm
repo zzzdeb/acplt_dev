@@ -1,0 +1,134 @@
+#include "ov.ovm"
+#include "fb.ovm"
+#include "ksapi.ovm"
+
+LIBRARY ressourcesMonitor
+	VERSION   = "V0.1 (Jun-2018)";
+	AUTHOR    = "Michael Thies";
+	COPYRIGHT = "";
+	COMMENT   = "";
+	
+	/**
+		Ressources & Environment Monitor
+		
+		Provides information about system environment and ressources usage in a Function Block interface. 
+	*/
+	CLASS systemMonitor : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			sysOS : STRING FLAGS="o" COMMENT="Operating System of this system (linux, nt, ...)";
+			sysOSVersion : STRING FLAGS="o" COMMENT="Operating System (Kernel) Version";
+			cpuType : STRING FLAGS="o" COMMENT="Model name of this system's CPU.";
+			cpuUsage : SINGLE FLAGS="o" COMMENT="Average CPU usage (computation time/total time) during last update interval";
+			memSize : UINT FLAGS="o" COMMENT="System memory in kiB";
+			memUsed : UINT FLAGS="o" COMMENT="Used memory in kiB (does not include Buffers and Caches on Linuxes)";
+			ovArch : STRING FLAGS="o" COMMENT="OV cpu architecture (i386, amd64, arm, arm64)";
+			ovDBSize : UINT FLAGS="o" COMMENT="Maximum size of the OV database in kiB";
+			ovDBUsed : UINT FLAGS="o" COMMENT="Current size of the OV database in kiB";
+			ovLibs[] : STRING FLAGS="o" COMMENT="List of currently loaded OV libraries";
+			ovFbUrCycTime : TIME_SPAN FLAGS="o" COMMENT="Cycle time of the Fb UrTask in s";
+			ovFbUrCalcTime : TIME_SPAN FLAGS="o" COMMENT="Required calculation time of the Fb UrTask's last execution in s";
+			
+			cpuLastTicks : UINT COMMENT="Saved number of total cpu time ticks at last measurement";
+			cpuLastIdleTicks : UINT COMMENT="Saved number of cpu idle time ticks at last measurement";
+		END_VARIABLES;
+		OPERATIONS
+			startup     : C_FUNCTION <OV_FNC_STARTUP>;
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	
+	/**
+		A functionblock to provide a list of this system's local network connections.
+		
+		It queries the operating system at each execution for a full list of local network addresses and derives unique
+		network identifiers.
+	*/
+	CLASS localNetMonitor : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			// Add variables here. The syntax is:
+			// <Variable name> : <Datatype> [<Accessors>] [<FLAGS>] [<Comment>] [<INITIALVALUE>]
+			localNetworks[] : STRING FLAGS="o" COMMENT="A list of network identifiers of networks, this system is connected to";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		A functionblock to generate a list of all reachable networks, including local networks and those, who can be
+		reached via other nodes.
+		
+		A reachableNetMonitor takes a list of local networks and tries to supplement it with routed networks, by
+		contacting all OV servers in a given list, searching for a reachableNetMonitor at the same path and adds
+		additional networks to the local list, if no shorter path is already known.
+	*/
+	CLASS reachableNetMonitor : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			localNetworks[] : STRING FLAGS="i" COMMENT="A list of local network identifiers, e.g. discovered by localNetMonitor.";
+			ovServers[] : STRING FLAGS="i" COMMENT="A list of known and reachable OV servers, e.g. discoverd by ovDiscoverer.";
+			updateInterval : TIME_SPAN FLAGS="i" COMMENT="The time interval between updates of the networks list (including requests to other OV servers)" INITIALVALUE=00:05:00;
+			
+			networks[] : STRING FLAGS="o" COMMENT="A list of all reachable networks and the number of hops to reach them. Each entry is tab-separated: networkId, hops, nextHop, routable";
+			lastUpdate : TIME FLAGS="o" COMMENT="Timestamp of the last update of the reachable network list.";
+			
+			networksInt : C_TYPE<networkList> FLAGS="n" COMMENT="Internal linked list of detected networks.";
+			ovServersInt[] : STRING FLAGS="n" COMMENT="A copy of ovServers to keep them static during the query loop.";
+			nextQueryServer : UINT FLAGS="n" COMMENT="Internal index of the next server to query for networks";
+			querySent : BOOL FLAGS="n" COMMENT="Internal state: If true, we are currently in query loop and waiting for a response.";
+			queryTime : TIME FLAGS="n" COMMENT="Timestamp of the moment of sending the currently pending KS request. (Used to calculate timeout)";
+		END_VARIABLES;
+		
+		PARTS
+			apiGet	:	CLASS	ksapi/getVar;
+		END_PARTS;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		A functionblock to discover other OV Servers with OPC UA Server on the network, using the OPC UA Local Discovery
+		Server with Multicast Extenstions (UA LDS-ME) and register the local OPC UA Server for discovery.
+	*/
+	CLASS ovDiscoverer : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			discover : BOOL FLAGS="i" COMMENT="Only tries to discover other servers when set to True." INITIALVALUE=TRUE;
+			sdRef : C_TYPE <DNSServiceRef> COMMENT="mDNS deamon service reference for long running DNSServiceBrowse.";
+			resolveContexts : C_TYPE <pResolveContext> COMMENT="Linked list of custom context of DNSServiceResolve calls, used to check their sdRefs' sockets for updates.";
+			isDiscovering : BOOL FLAGS="o" COMMENT="True as long as a valid DNSServiceBrowse operation is running.";
+			ovServers[] : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			shutdown : C_FUNCTION <OV_FNC_SHUTDOWN>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+	/**
+		A functionblock to register this OV instance with Avahi or Bonjour via libdns_sd for network discovery via mDNS.
+	*/
+	CLASS mDNSRegisterer : CLASS fb/functionblock
+		IS_INSTANTIABLE;
+		VARIABLES
+			register : BOOL FLAGS="i" COMMENT="The server is only registered if True." INITIALVALUE=TRUE;
+			sdRef : C_TYPE <DNSServiceRef>;
+			isRegistered : BOOL FLAGS="o" COMMENT="True when the server has successfully been registered";
+		END_VARIABLES;
+		
+		OPERATIONS
+			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+			shutdown : C_FUNCTION <OV_FNC_SHUTDOWN>;
+		END_OPERATIONS;
+	END_CLASS;
+	
+END_LIBRARY;
