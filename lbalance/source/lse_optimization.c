@@ -5,6 +5,7 @@
 #include "lse_optimization.h"
 
 #include "libov/ov_ov.h"
+#include "libov/ov_logfile.h"
 #include "libov/ov_macros.h"
 #include "limits.h"
 
@@ -53,15 +54,22 @@ static OV_UINT_VEC lse_optimization_calculate_target_load(OV_UINT_VEC loads, OV_
 static OV_SINGLE lse_optimization_calculate_se_gain(
 		OV_UINT sourceNodeId, OV_UINT destinationNodeId, OV_UINT appLoad, OV_UINT_VEC loads, OV_UINT_VEC targetLoads)
 {
-	OV_UINT sourceLoad = loads.value[sourceNodeId],
-			destLoad = loads.value[destinationNodeId],
-			sourceTarget = targetLoads.value[sourceNodeId],
-			destTarget = targetLoads.value[destinationNodeId];
+	OV_SINGLE sourceLoad = (OV_SINGLE)loads.value[sourceNodeId],
+			destLoad = (OV_SINGLE)loads.value[destinationNodeId],
+			sourceTarget = (OV_SINGLE)targetLoads.value[sourceNodeId],
+			destTarget = (OV_SINGLE)targetLoads.value[destinationNodeId];
 
-	OV_SINGLE square(OV_UINT a) { return (OV_SINGLE)a * (OV_SINGLE)a; }
+	OV_SINGLE square(OV_SINGLE a) { return a * a; }
 
-	return square(sourceLoad - sourceTarget) - square(sourceLoad - appLoad - sourceTarget)
-			+ square(destLoad - destTarget) - square(destLoad + appLoad - destTarget);
+	ov_logfile_debug("Calculating possible app movement:");
+	ov_logfile_debug("App load: %u, source node: %u, dest node: %u",
+			appLoad, sourceNodeId, destinationNodeId);
+	ov_logfile_debug("Old source SE: %f, new source SE: %f, old dest SE: %f, new dest SE: %f",
+			square(sourceLoad - sourceTarget), square(sourceLoad - (OV_SINGLE)appLoad - sourceTarget),
+			square(destLoad - destTarget), square(destLoad + (OV_SINGLE)appLoad - destTarget));
+
+	return square(sourceLoad - sourceTarget) - square(sourceLoad - (OV_SINGLE)appLoad - sourceTarget)
+			+ square(destLoad - destTarget) - square(destLoad + (OV_SINGLE)appLoad - destTarget);
 }
 
 
