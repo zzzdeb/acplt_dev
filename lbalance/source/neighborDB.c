@@ -223,7 +223,7 @@ lbalance_neighborDB_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           continue;
         }
 
-        ov_string_print(&pinst->v_IPs.value[currentInd], "%s/%s",
+        ov_string_print(&pinst->v_IPs.value[currentInd], "//%s/%s",
                         jsip->valuestring, jsserv->valuestring);
         pinst->v_caps.value[currentInd] = jscap->valueint;
         pinst->v_loads.value[currentInd] = jsload->valueint;
