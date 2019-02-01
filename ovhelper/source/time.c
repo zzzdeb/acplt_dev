@@ -46,14 +46,14 @@ OV_DLLFNCEXPORT void ov_time_multiply(OV_TIME* res, const OV_TIME src,
   OV_UINT secs = src.secs;
   OV_UINT usecs = src.usecs;
   if(factor > 1) {
-		usecs = src.usecs * factor;
-		secs = src.secs * factor;
+    usecs = src.usecs * factor;
+    secs = src.secs * factor;
     secs += (OV_UINT)(usecs / 1000000);
     usecs = usecs % 1000000;
   }
   if(factor < 1) {
-    secs = src.secs / factor;
-    usecs = ((src.secs - secs) * 1000000 + src.usecs) / factor;
+    secs = src.secs * factor;
+    usecs = ((src.secs - secs / factor) * 1000000 + src.usecs) * factor;
   }
   res->secs = secs;
   res->usecs = usecs;

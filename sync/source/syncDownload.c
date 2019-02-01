@@ -38,6 +38,10 @@ OV_BOOL startsWith(const char* pre, const char* str) {
 
 OV_RESULT syncDownloadConfigureSetGet(OV_INSTPTR_sync_syncDownload pinst,
                                       OV_INSTPTR_ov_object         pobj) {
+  OV_INSTPTR_fb_task pUrtask = NULL;
+  pUrtask =
+      Ov_DynamicPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
+
   if(Ov_CanCastTo(ksapi_setVar, pobj) || Ov_CanCastTo(ksapi_getVar, pobj)) {
     OV_INSTPTR_ksapi_KSApiCommon pobjCasted =
         Ov_StaticPtrCast(ksapi_KSApiCommon, pobj);
@@ -58,6 +62,14 @@ OV_RESULT syncDownloadConfigureSetGet(OV_INSTPTR_sync_syncDownload pinst,
     ov_string_setvalue(
         &pMsgClnt->v_pathInstance.value[0],
         ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgClnt), 2));
+    OV_INSTPTR_fb_functionblock pFbobj =
+        Ov_DynamicPtrCast(fb_functionblock, pobj->v_pouterobject);
+    if(pFbobj) {
+      if(pFbobj->v_cyctime.secs || pFbobj->v_cyctime.usecs)
+        ov_timespan_multiply(&pFbobj->v_cyctime, pFbobj->v_cyctime, 0.5);
+      else
+        ov_timespan_multiply(&pFbobj->v_cyctime, pUrtask->v_cyctime, 0.5);
+    }
   } else {
     ov_logfile_error("%s is not from right class", pobj->v_identifier);
     return OV_ERR_BADPARAM;
