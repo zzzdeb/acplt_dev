@@ -72,11 +72,7 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   pinst->p_outLSEOptimizer.v_actimode = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
-<<<<<<< HEAD
-                "actimode");
-=======
-				"enable");
->>>>>>> lbalance: Add and connect enable input to *LSEOptimizer
+                "enable");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_appMonitor), "apps",
                 Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
                 "localApps");
