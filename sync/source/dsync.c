@@ -427,12 +427,12 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_info("setgetalternate creation done.");
       pinst->v_status = DEBUGSTATE;
 
-      /* ov_memstack_unlock(); */
-      /* return; */
-      /* break; */
+      ov_memstack_unlock();
+      return;
+      break;
     case DEBUGSTATE:
       ov_logfile_warning("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 0) {
+      if(pinst->v_debugi++ >= 1) {
         ov_logfile_warning("sync_dsync: running");
         /* run transport */
         OV_INSTPTR_CTree_Transport ptrans =
