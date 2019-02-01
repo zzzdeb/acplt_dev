@@ -114,13 +114,6 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathElem_set(
   return result;
 }
 
-OV_RESULT acplt_msgExtendWithPath(OV_STRING* msg, OV_UINT pathLen,
-                                  OV_STRING* Host, OV_STRING* Name,
-                                  OV_STRING* Inst) {
-  // TODO: zzz: add Sa 08 Dez 2018 23:42:20 CET
-  return 0;
-}
-
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
     OV_INSTPTR_PostSys_msgCreator pobj, const OV_UINT value) {
   OV_STRING_VEC* tmp[] = {&pobj->v_receiverHost, &pobj->v_receiverName,
@@ -142,7 +135,18 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_pathLen_set(
 
 OV_DLLFNCEXPORT OV_UINT
                 PostSys_msgCreator_pathLen_get(OV_INSTPTR_PostSys_msgCreator pinst) {
-  return pinst->v_receiverHost.veclen;
+  OV_UINT len = 0;
+  len = pinst->v_receiverHost.veclen;
+  if(len != pinst->v_receiverName.veclen &&
+     len != pinst->v_receiverInstance.veclen)
+    ov_logfile_warning("PostSys_msgCreator: length of path corrupted %d %d %d",
+                       len, pinst->v_receiverHost.veclen, len,
+                       pinst->v_receiverName.veclen,
+                       pinst->v_receiverInstance.veclen);
+  if(len < 1) {
+    ov_logfile_warning("PostSys_msgCreator: pathlen shorter than 1");
+  }
+  return len;
 }
 
 OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
@@ -183,7 +187,6 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
     return OV_ERR_BADVALUE; /*	an order has exactly 2 ";" in it
                              */
 
-  // todo check lenght r same, and check if it is greater than 2
   pathLen = PostSys_msgCreator_pathLen_get(pobj);
   OV_STRING_VEC* a[3] = {&pobj->v_receiverHost, &pobj->v_receiverName,
                          &pobj->v_receiverInstance};
@@ -307,9 +310,6 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
 
   msgBody = acplt_simpleMsg_GenerateFlatBody(
       "ProcessControl", command, FALSE, NULL, &ids, &values, &units, &types);
-  acplt_msgExtendWithPath(&msgBody, pathLen, pobj->v_receiverHost.value,
-                          pobj->v_receiverName.value,
-                          pobj->v_receiverInstance.value);
 
   if(!msgBody) {
     Ov_DeleteObject(pMsg);
@@ -326,7 +326,6 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_msgCreator_order_set(
     return result;
   }
   ov_memstack_unlock();
-
   return OV_ERR_OK;
 }
 
@@ -356,14 +355,18 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
         pinst->v_tries = 0;
         if(!isOk) {
-          // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+          ov_logfile_warning("PostSys_msgCreator: sendmessage failed");
           Ov_DeleteObject(pMsg);
           return;
         }
       }
     } else if(pMsg->v_msgStatus == MSGWAITING) {
       pinst->v_tries++;
-      if(pinst->v_tries > 3) {
+      OV_UINT tries = 0;
+      if(pinst->v_tries > tries) {
+        ov_logfile_warning(
+            "PostSys_msgCreator: sendmessage more than %d try. deleting",
+            tries);
         Ov_DeleteObject(pMsg);
         Ov_ForEachChildEx(ov_containment, pinst, pMsg, PostSys_Message) {
           break;
@@ -374,7 +377,7 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           isOk = PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
           pinst->v_tries = 0;
           if(!isOk) {
-            // TODO: zzz: work on in this msg Mi 19 Dez 2018 22:03:41 CET
+            ov_logfile_warning("PostSys_msgCreator: sendmessage failed");
             Ov_DeleteObject(pMsg);
             return;
           }
