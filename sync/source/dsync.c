@@ -325,7 +325,11 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
           &pdsyncDst->v_syncPath,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pinst), 2));
       result = sync_dsyncDst_srcKS_set(pdsyncDst, srcKS);
-      result |= sync_dsyncDst_dstKS_set(pdsyncDst, pinst->v_destKS);
+      OV_STRING dstKS = NULL;
+      result |=
+          ov_string_print(&dstKS, "%s%s", pinst->v_destKS, pinst->v_srcPath);
+      result |= sync_dsyncDst_dstKS_set(pdsyncDst, dstKS);
+      result |= ov_string_setvalue(&dstKS, NULL);
       if(Ov_Fail(result)) {
         ov_logfile_error("%u: %s: srcKS set failed", result,
                          ov_result_getresulttext(result));
@@ -423,12 +427,12 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_info("setgetalternate creation done.");
       pinst->v_status = DEBUGSTATE;
 
-      /* ov_memstack_unlock(); */
-      /* return; */
-      /* break; */
+      ov_memstack_unlock();
+      return;
+      break;
     case DEBUGSTATE:
       ov_logfile_warning("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 0) {
+      if(pinst->v_debugi++ >= 1) {
         ov_logfile_warning("sync_dsync: running");
         /* run transport */
         OV_INSTPTR_CTree_Transport ptrans =
