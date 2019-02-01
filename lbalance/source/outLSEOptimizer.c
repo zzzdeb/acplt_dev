@@ -37,8 +37,8 @@ OV_DLLFNCEXPORT void lbalance_outLSEOptimizer_typemethod(
     OV_UINT localIndex = pinst->v_neighbourLoads.veclen;
     Ov_SetDynamicVectorLength(&pinst->v_neighbourLoads,pinst->v_neighbourLoads.veclen+1, UINT);
     pinst->v_neighbourLoads.value[localIndex] = pinst->v_localLoad;
-    Ov_SetDynamicVectorLength(&pinst->v_neighbourLoads,pinst->v_neighbourCaps.veclen+1, UINT);
-    pinst->v_neighbourLoads.value[localIndex] = pinst->v_localCap;
+    Ov_SetDynamicVectorLength(&pinst->v_neighbourCaps,pinst->v_neighbourCaps.veclen+1, UINT);
+    pinst->v_neighbourCaps.value[localIndex] = pinst->v_localCap;
 
     // Calculate optimal movement
     AppMovementSpec appToMove = lse_optimization_chose_app(

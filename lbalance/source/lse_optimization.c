@@ -30,7 +30,7 @@ static OV_UINT_VEC lse_optimization_calculate_target_load(OV_UINT_VEC loads, OV_
 	}
 
 	// Calculate individual node's target load
-	OV_UINT_VEC res;
+	OV_UINT_VEC res = {0};
 	Ov_SetDynamicVectorLength(&res, numNodes, UINT);
 	for (OV_UINT i = 0; i < numNodes; ++i) {
 		res.value[i] = totalLoad * capacities.value[i] / totalCapacity;
@@ -120,7 +120,7 @@ OV_UINT lse_optimization_chose_request(
 
 
 OV_UINT_VEC lse_optimization_lookup_requesting_nodes(OV_STRING_VEC requestIPs, OV_STRING_VEC nodeIPs) {
-	OV_UINT_VEC res;
+	OV_UINT_VEC res = {0};
 	Ov_SetDynamicVectorLength(&res, requestIPs.veclen, UINT);
 
 
