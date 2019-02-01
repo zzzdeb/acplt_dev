@@ -245,6 +245,10 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "ks ov destination"
           INITIALVALUE  = "";
+      selfHost : STRING
+          FLAGS="i"
+          COMMENT="MyHost in Netzwerk"
+          INITIALVALUE="";
       R : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
           COMMENT     = "triggers request"
@@ -404,6 +408,10 @@ LIBRARY lbalance
       ovServers[] : STRING FLAGS="io" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
 
 
+      selfHost : STRING
+          FLAGS="i"
+          COMMENT="MyHost in Netzwerk"
+          INITIALVALUE="";
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";

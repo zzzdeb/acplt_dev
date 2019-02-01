@@ -88,8 +88,6 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   servername.value.vartype = OV_VT_VOID;
   servername.value.valueunion.val_string = NULL;
   ov_vendortree_getservername(&servername, NULL);
-  ov_string_print(&myIP, "//127.0.0.1/%s",
-                  servername.value.valueunion.val_string);
 
   switch(pinst->v_status) {
     case LB_REQSENDER_INIT:
@@ -138,6 +136,13 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         /* send to neighbor */
         result |= PostSys_msgCreator_dst_set(psender, dstKS);
         result |= ov_string_append(&order, "a;a;");
+        /* creating myIP */
+        if(!pinst->v_selfHost || !servername.value.valueunion.val_string) {
+          ov_logfile_error("lbalance_reqSender: selfHost | server = NULL");
+          return;
+        }
+        ov_string_print(&myIP, "//%s/%s", pinst->v_selfHost,
+                        servername.value.valueunion.val_string);
         /* result |= ov_string_append(&order, ";"); */
         cJSON* jsMsg = cJSON_CreateArray();
         /* order is important. see helper */

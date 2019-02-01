@@ -52,8 +52,7 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "cap");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "ovServers",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
-                "ovServers");
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "ovServers");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
 
@@ -113,6 +112,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 "destination");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "R");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+                Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "selfHost");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqReceiver);
@@ -182,7 +183,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   // TODO destination (from outLSEOptimizer.outIP)
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer), "outIP",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "destKS");
-  ov_string_setvalue(&pinst->p_dsync.v_selfHost, "134.130.125.88");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+                Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "selfHost");
 
   return result;
 }
