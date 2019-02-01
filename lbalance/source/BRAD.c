@@ -55,6 +55,8 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "ovServers");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "myIP");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
