@@ -239,10 +239,6 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "load of app to be sent"
           INITIALVALUE  = 0;
-      outRequirements  : STRING
-          FLAGS="i"
-          COMMENT     = "requirements of app"
-          INITIALVALUE  = "";
       destination : STRING
           FLAGS="i"
           COMMENT     = "ks ov destination"
@@ -279,9 +275,6 @@ LIBRARY lbalance
       reqLoads[]  : UINT
           FLAGS="o"
           COMMENT     = "loads of requests";
-      reqLoadRequirements[] : STRING
-          FLAGS="o"
-          COMMENT     = "requirements of loads";
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;
@@ -344,15 +337,11 @@ LIBRARY lbalance
           COMMENT     = "IPs of requests";
       index : INT
           FLAGS="i"
-          COMMENT     = "index of choosen node"
+          COMMENT     = "index of choosen request"
           INITIALVALUE  = 0;
-      dstPath : STRING
-          FLAGS="i"
-          COMMENT="Path of object to get notified"
-          INITIALVALUE="";
       A : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
-          COMMENT     = "triggers accept"
+          COMMENT     = "triggers accept notification"
           INITIALVALUE  = FALSE;
     END_VARIABLES;
     PARTS
@@ -368,22 +357,14 @@ LIBRARY lbalance
     IS_INSTANTIABLE;
     COMMENT = "initiate send";
     VARIABLES
-      reset : BOOL HAS_SET_ACCESSOR
+      clear : BOOL HAS_SET_ACCESSOR
           FLAGS="i"
-          COMMENT="Resets lbalance objects"
-          INITIALVALUE=FALSE;
-      outApp  : STRING
-          FLAGS="i"
-          COMMENT     = "app to send out"
-          INITIALVALUE  = "";
-      R : BOOL HAS_SET_ACCESSOR
-          FLAGS="i"
-          COMMENT     = "triggers request"
+          COMMENT     = "Rising edge clears the received accept notifications"
           INITIALVALUE  = FALSE;
-      appPath : STRING
-          FLAGS="i"
-          COMMENT="Path of app to send by dsync"
-          INITIALVALUE="";
+      accepted : BOOL
+          FLAGS="o"
+          COMMENT="True if an accept notification has been received"
+          INITIALVALUE=FALSE;
     END_VARIABLES;
     PARTS
       inbox : CLASS PostSys/inbox;
@@ -419,6 +400,10 @@ LIBRARY lbalance
       appPaths[]  : STRING
         FLAGS="i"
         COMMENT     = "Paths of GSEs";
+      localCapacity  : UINT
+        FLAGS="o"
+        COMMENT     = "Load capacity of this node."
+        INITIALVALUE= 100;
 
       neighborIPs[]  : STRING 
           FLAGS="i"
@@ -426,21 +411,7 @@ LIBRARY lbalance
       serverNames[] : STRING
           FLAGS="i"
           COMMENT     = "names of neighbors";
-      outRequirements  : STRING
-          FLAGS="o"
-          COMMENT     = "requirements of app"
-          INITIALVALUE  = "";
-      destination : STRING
-          FLAGS="i"
-          COMMENT     = "ks ov destination"
-          INITIALVALUE  = "";
-      reqIndex  : UINT 
-          FLAGS="o"
-          COMMENT     = "Tell client not to close the connection after each request"
-          INITIALVALUE  = 0;
-      reqLoads[]  : UINT
-          FLAGS="i"
-          COMMENT     = "loads of requests";
+
     END_VARIABLES;
     PARTS
     END_PARTS;
@@ -462,6 +433,7 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "sets back to B state"
           INITIALVALUE  = FALSE;
+      // TODO we should introduce an additional independent T for D phase
       T : SINGLE
           FLAGS="i"
           COMMENT     = "Interval to stay in one state"
@@ -493,7 +465,7 @@ LIBRARY lbalance
       inLSEOptimizer : CLASS lbalance/inLSEOptimizer;
       reqSender : CLASS lbalance/reqSender;
       reqReceiver : CLASS lbalance/reqReceiver;
-      outLSEOptimizer : CLASS lbalance/inLSEOptimizer;
+      outLSEOptimizer : CLASS lbalance/outLSEOptimizer;
       acceptNotifier: CLASS lbalance/acceptNotifier;
       sendInitiator: CLASS lbalance/sendInitiator;
       mock: CLASS lbalance/mock;

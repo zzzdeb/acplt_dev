@@ -5,6 +5,7 @@
 
 #define LB_NDB_PATH "/data/lbalance/BRAD.nbDB"
 #define LB_REQREC_PATH "/data/lbalance/BRAD.reqReceiver"
+#define LB_SENDINIT_PATH "/data/lbalance/BRAD.sendInitiator"
 
 #define LB_INTERNALERROR 64
 #define LB_EXTERNALERROR 128
@@ -25,10 +26,11 @@
 #define LB_APPMON_DONE 1
 #define LB_APPMON_ERROR 64
 
-#define LB_BRAD_B 0
-#define LB_BRAD_R 1
-#define LB_BRAD_A 2
-#define LB_BRAD_D 3
+#define LB_BRAD_I 0
+#define LB_BRAD_B 1
+#define LB_BRAD_R 2
+#define LB_BRAD_A 3
+#define LB_BRAD_D 4
 
 #define LB_REQSENDER_INIT 0
 #define LB_REQSENDER_SENT 1
@@ -37,7 +39,6 @@
 #define LB_REQREC_JSONLEN 3
 #define LB_REQREC_IPPOS 0
 #define LB_REQREC_LOADPOS 1
-#define LB_REQREC_REQUIREPOS 2
 
 #define LB_NBINFORMER_INIT 0
 #define LB_NBINFORMER_SENT 1
@@ -55,5 +56,3 @@
 #define LB_ACCEPTNOTIFIER_KEYWORD "ACCEPT"
 
 #define LB_SENDINIT_INIT 0
-#define LB_SENDINIT_SENT 1
-#define LB_SENDINIT_PATH "/data/lbalance/BRAD.sendInitiator"
