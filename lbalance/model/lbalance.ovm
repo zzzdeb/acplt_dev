@@ -106,12 +106,9 @@ LIBRARY lbalance
           FLAGS="i"
           COMMENT     = "my IP"
           INITIALVALUE  = "localhost";
-      neighborIPs[]  : STRING 
-          FLAGS="i"
-          COMMENT     = "IPs of neighbors";
-      serverNames[] : STRING
-          FLAGS="i"
-          COMMENT     = "names of neighbors";
+      ovServers[] : STRING
+        FLAGS="i"
+        COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: <ignored>, <ignored>, OV host, OV Port, OV servername";
       B : BOOL HAS_SET_ACCESSOR
         FLAGS="i"
         COMMENT     = "triggers neighborInformer"
@@ -404,7 +401,7 @@ LIBRARY lbalance
       
       cpuLastTicks : UINT COMMENT="Saved number of total cpu time ticks at last measurement";
       cpuLastIdleTicks : UINT COMMENT="Saved number of cpu idle time ticks at last measurement";
-      ovServers[] : STRING FLAGS="o" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
+      ovServers[] : STRING FLAGS="io" COMMENT="OV servers discovered on local network. Each entry is a tab-delimited string: DNS fullname, DNS interface, OV host, OV Port, OV servername";
 
 
       appPaths[]  : STRING
@@ -414,13 +411,6 @@ LIBRARY lbalance
         FLAGS="o"
         COMMENT     = "Load capacity of this node."
         INITIALVALUE= 100;
-
-      neighborIPs[]  : STRING 
-          FLAGS="i"
-          COMMENT     = "IPs of neighbors";
-      serverNames[] : STRING
-          FLAGS="i"
-          COMMENT     = "names of neighbors";
 
     END_VARIABLES;
     PARTS

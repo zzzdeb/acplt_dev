@@ -23,6 +23,11 @@
 
 #include "libov/ov_macros.h"
 
+#define INET6_ADDRSTRLEN 46
+#define STR_IMPL_(x) #x      //stringify argument
+#define STR(x) STR_IMPL_(x)  //indirection to expand argument macros
+
+
 OV_DLLFNCEXPORT OV_RESULT
                 lbalance_neighborInformer_constructor(OV_INSTPTR_ov_object pobj) {
   OV_RESULT                            result = OV_ERR_OK;
@@ -77,8 +82,7 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
   switch(pinst->v_status) {
     case LB_NBINFORMER_INIT:
       if(pinst->v_B) {
-        nlen = pinst->v_neighborIPs.veclen;
-        Ov_AbortIf(nlen != pinst->v_serverNames.veclen);
+        nlen = pinst->v_ovServers.veclen;
         /* paramcheck */
         {
           if(!nlen) {
@@ -91,9 +95,14 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
         for(OV_UINT i = 0; i < nlen; ++i) {
           /* create neighbor ks*/
-          result |= ov_string_print(&dstKS, "//%s/%s%s",
-                                    pinst->v_neighborIPs.value[i],
-                                    pinst->v_serverNames.value[i], LB_NDB_PATH);
+          char host[INET6_ADDRSTRLEN+1];
+          OV_UINT port;
+          char server[OV_NAME_MAXLEN+1];
+          sscanf(pinst->v_ovServers.value[i],
+              "%*[^\t]\t%*[^\t]\t%" STR(INET6_ADDRSTRLEN) "[^\t]\t%u\t%" STR(OV_NAME_MAXLEN) "[^\t]",
+              host, &port, server);
+          result |= ov_string_print(&dstKS, "//%s:%u/%s%s", host, port, server,
+              LB_NDB_PATH);
 
           /* ov_string_print(&dstKS, "//%s/%s%s",
              pinst->v_neigborIPs.value[i], */

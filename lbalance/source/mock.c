@@ -59,7 +59,7 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_mock_constructor(OV_INSTPTR_ov_object pobj) {
   result = ov_object_constructor(pobj);
 
   ov_string_setvalue(&pinst->v_sysOS, "linux");
-  OV_STRING servers[] = {"localhost\tlocalhost\t127.0.0.1\t7509\tMANAGER"};
+  OV_STRING servers[] = {"localhost\t0\t127.0.0.1\t7509\tMANAGER"};
   Ov_SetDynamicVectorValue(&pinst->v_ovServers, servers, 1, STRING);
   OV_STRING appPaths[] = {"/TechUnits"};
   Ov_SetDynamicVectorValue(&pinst->v_appPaths, appPaths, 1, STRING);

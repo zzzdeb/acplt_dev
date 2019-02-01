@@ -51,12 +51,9 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "sum");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "cap");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "neighborIPs",
+  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "ovServers",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
-                "neighborIPs");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "serverNames",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
-                "serverNames");
+                "ovServers");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
 
