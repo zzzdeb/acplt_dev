@@ -111,12 +111,12 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         ks_splitOneStringPath(pinst->v_destination, &targetHost,
                               &targetHostPort, &targetServer, &targetServerPort,
                               &targetPath);
-        if(!targetPath) {
-          ov_logfile_error("No path is given in targetKS");
-          pinst->v_status = LB_INTERNALERROR;
-          ov_memstack_unlock();
-          return;
-        }
+        /* if(!targetPath) { */
+        /* ov_logfile_error("No path is given in targetKS"); */
+        /* pinst->v_status = LB_INTERNALERROR; */
+        /* ov_memstack_unlock(); */
+        /* return; */
+        /* } */
 
         if(!targetHost || !targetServer) {
           ov_logfile_error("No targetHost or server is given in targetKS %s",
