@@ -300,6 +300,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
     case SYNC_SRC_INIT:
       if(!pinst->v_EN) {
         ov_logfile_warning("sync_dsync: not enabled");
+        ov_memstack_unlock();
         return;
       }
       /* check */

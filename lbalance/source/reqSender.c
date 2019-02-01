@@ -139,6 +139,7 @@ lbalance_reqSender_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
         /* creating myIP */
         if(!pinst->v_selfHost || !servername.value.valueunion.val_string) {
           ov_logfile_error("lbalance_reqSender: selfHost | server = NULL");
+          ov_memstack_unlock();
           return;
         }
         ov_string_print(&myIP, "//%s/%s", pinst->v_selfHost,
