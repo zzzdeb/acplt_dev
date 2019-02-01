@@ -33,6 +33,9 @@ OV_DLLFNCEXPORT void lbalance_outLSEOptimizer_typemethod(
 ) {
     OV_INSTPTR_lbalance_outLSEOptimizer pinst = Ov_StaticPtrCast(lbalance_outLSEOptimizer, pfb);
 
+    if (!pinst->v_enable)
+    	return;
+
     // Append local load and capacity to load/capacity vectors
     OV_UINT localIndex = pinst->v_neighbourLoads.veclen;
     Ov_SetDynamicVectorLength(&pinst->v_neighbourLoads,pinst->v_neighbourLoads.veclen+1, UINT);
@@ -55,5 +58,9 @@ OV_DLLFNCEXPORT void lbalance_outLSEOptimizer_typemethod(
         pinst->v_outLoad = 0;
         ov_string_setvalue(&pinst->v_outIP, NULL);
     }
+
+    // Remove local load and capacity from load/capacity vectors
+    Ov_SetDynamicVectorLength(&pinst->v_neighbourLoads,pinst->v_neighbourLoads.veclen-1, UINT);
+    Ov_SetDynamicVectorLength(&pinst->v_neighbourCaps,pinst->v_neighbourCaps.veclen-1, UINT);
 }
 
