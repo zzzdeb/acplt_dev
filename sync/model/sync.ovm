@@ -207,6 +207,10 @@ LIBRARY sync
               FLAGS="i"
               COMMENT     = "shuts down the tree and deletes"
               INITIALVALUE  = FALSE;
+      EN : BOOL 
+          FLAGS="i"
+          COMMENT="enables"
+          INITIALVALUE=TRUE;
       holdConnection  : BOOL FLAGS="i"
         COMMENT     = "Tell client not to close the connection after each request"
         INITIALVALUE  = FALSE;
@@ -220,6 +224,10 @@ LIBRARY sync
       result    : INT FLAGS="o"
         COMMENT   = "result"
         INITIALVALUE  = 0;
+      debugi : INT
+          FLAGS="i"
+          COMMENT=""
+          INITIALVALUE=0;
       /* pcache : CTYPE <DSYNC_PCACHE> FLAGS="h" */
       /*        COMMENT     = "Pointers to objects to configure"; */
     END_VARIABLES;

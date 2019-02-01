@@ -40,6 +40,8 @@
 #define SYNC_SRC_DONE 8
 #define SYNC_SRC_ERROR 64
 
+#define DEBUGSTATE 16
+
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
   OV_RESULT             result = OV_ERR_OK;
   OV_INSTPTR_sync_dsync pinst = Ov_StaticPtrCast(sync_dsync, pobj);
@@ -88,6 +90,9 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       return OV_ERR_BADVALUE;
     }
 
+    OV_INSTPTR_fb_task pUrtask = NULL;
+    pUrtask = Ov_DynamicPtrCast(fb_task,
+                                ov_path_getobjectpointer("/Tasks/UrTask", 2));
     /*go on */
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
     if(!proot) {
@@ -113,27 +118,58 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
             OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
                 ov_containment, Ov_StaticPtrCast(ov_domain, pobj), "msgClient",
                 ksmsg_msgClient);
-            if(!pMsgClnt) {
+            // FIXME: zzz: forcing stability :2019 Feb 01 10:41
+            if(pMsgClnt) {
+              result |= Ov_DeleteObject(pMsgClnt);
+            } else {
               ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
-              continue;
             }
-            Ov_WarnIf(pMsgClnt->v_pathLen != 3);
-            result = ksmsg_msgClient_path_deleteElement(pMsgClnt, 1);
-            if(Ov_Fail(result)) {
-              ov_logfile_error("%u: %s: failed to delete path element", result,
-                               ov_result_getresulttext(result));
-              return result;
+            if(pobj->v_pouterobject) {
+              OV_INSTPTR_fbcomlib_FBComCommon pOobj =
+                  Ov_DynamicPtrCast(fbcomlib_FBComCommon, pobj->v_pouterobject);
+              if(pOobj) {
+                result |= fbcomlib_FBComCommon_doSend_set(pOobj, 1);
+                result |= fbcomlib_FBComCommon_doSend_set(pOobj, 0);
+              } else {
+                ov_logfile_warning("sync_dsync: ksapi not in fbcomlib %s",
+                                   ov_path_getcanonicalpath(
+                                       Ov_StaticPtrCast(ov_object, pOobj), 2));
+              }
+            } else {
+              result |= ksapi_KSApiCommon_Reset_set(
+                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 1);
+              result |= ksapi_KSApiCommon_Reset_set(
+                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 0);
             }
+            // TODO: zzz: set it faster :2019 Jan 31 15:57
+            OV_INSTPTR_fb_functionblock pFbobj =
+                Ov_DynamicPtrCast(fb_functionblock, pobj->v_pouterobject);
+            if(pFbobj) {
+              if(pFbobj->v_cyctime.secs || pFbobj->v_cyctime.usecs)
+                ov_timespan_multiply(&pFbobj->v_cyctime, pFbobj->v_cyctime,
+                                     0.5);
+              else
+                ov_timespan_multiply(&pFbobj->v_cyctime, pUrtask->v_cyctime,
+                                     0.5);
+            }
+            /* Ov_WarnIf(pMsgClnt->v_pathLen != 3); */
+            /* result = ksmsg_msgClient_path_deleteElement(pMsgClnt, 1); */
+            /* if(Ov_Fail(result)) { */
+            /* ov_logfile_error("%u: %s: failed to delete path element", result,
+             */
+            /* ov_result_getresulttext(result)); */
+            /* return result; */
+            /* } */
             if(i == KSAPISET) {
               // TODO: zzz: make sure it doesnt work again :2018 Dez 20
               // 11:56
-              OV_INSTPTR_fbcomlib_setVar pfbsetVar = Ov_StaticPtrCast(
+              OV_INSTPTR_fbcomlib_setVar pfbsetVar = Ov_DynamicPtrCast(
                   fbcomlib_setVar,
                   Ov_StaticPtrCast(ksapi_setVar, pobj)->v_pouterobject);
               if(pfbsetVar) {
                 pfbsetVar->v_actimode = 0;
+                ov_logfile_info("%s.actimode = 0", pfbsetVar->v_identifier);
               }
-              ov_logfile_info("%s.actimode = 0", pMsgClnt->v_identifier);
             }
           };
         }
@@ -154,6 +190,10 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
   OV_STRING                  dstInst = NULL;
   OV_STRING                  dstHostPort = NULL;
   OV_STRING                  dstServerPort = NULL;
+
+  OV_INSTPTR_fb_task pUrtask = NULL;
+  pUrtask =
+      Ov_DynamicPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
 
   /* Getting Servername  */
   OV_ANY servername = {0};
@@ -186,7 +226,6 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
     result =
         Ov_CreateObject(ksmsg_msgClient, pMsgClnt, pobjCasted, "msgClient");
     if(result) {
-      // TODO: zzz: give more info Mo 10 Dez 2018 15:51:15 CET
       ov_logfile_info("%s couldnt create msgClient",
                       ov_result_getresulttext(result));
       return NULL;
@@ -211,7 +250,16 @@ OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
   ov_string_setvalue(&pMsgClnt->v_pathName.value[2], pobjCasted->v_serverName);
   ov_string_setvalue(&pMsgClnt->v_pathInstance.value[2],
                      DEFAULT_POSTSYS_EXECUTER);
-  // TODO: zzz: change status so that it can go on Mo 10 Dez 2018 16:31:06 CET
+  /* setting cyctime slower */
+  // TODO: zzz: set it slower :2019 Jan 31 15:57
+  OV_INSTPTR_fb_functionblock pFbobj =
+      Ov_DynamicPtrCast(fb_functionblock, pobj->v_pouterobject);
+  if(pFbobj) {
+    if(pFbobj->v_cyctime.secs || pFbobj->v_cyctime.usecs)
+      ov_timespan_multiply(&pFbobj->v_cyctime, pFbobj->v_cyctime, 2);
+    else
+      ov_timespan_multiply(&pFbobj->v_cyctime, pUrtask->v_cyctime, 2);
+  }
   return pMsgClnt;
 }
 
@@ -256,9 +304,9 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
                       dsyncDstPath);
 
       OV_STRING srcKS = NULL;
-      ov_string_print(&srcKS, "//%s/%s%s",
-                      servername.value.valueunion.val_string,
-                      pinst->v_selfServer, pinst->v_srcPath, 2);
+      ov_string_print(&srcKS, "//%s/%s%s", pinst->v_selfHost,
+                      servername.value.valueunion.val_string, pinst->v_srcPath,
+                      2);
       ov_string_setvalue(
           &pdsyncDst->v_syncPath,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pinst), 2));
@@ -359,22 +407,30 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         }
       }
       ov_logfile_info("setgetalternate creation done.");
+      pinst->v_status = DEBUGSTATE;
 
-      /* run transport */
-      OV_INSTPTR_CTree_Transport ptrans =
-          Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
-      ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
-      ov_string_setvalue(&ptrans->v_targetKS, pinst->v_destKS);
-      ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
-                      DSYNC_DOWNLOAD_PATH_DEST_EXT);
-      CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
-                                 NULL);
+      /* ov_memstack_unlock(); */
+      /* return; */
+      /* break; */
+    case DEBUGSTATE:
+      ov_logfile_warning("sync_dsync: in debug state %d", pinst->v_debugi);
+      if(pinst->v_debugi++ >= 0) {
+        ov_logfile_warning("sync_dsync: running");
+        /* run transport */
+        OV_INSTPTR_CTree_Transport ptrans =
+            Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
+        ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
+        ov_string_setvalue(&ptrans->v_targetKS, pinst->v_destKS);
+        ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
+                        DSYNC_DOWNLOAD_PATH_DEST_EXT);
+        CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
+                                   NULL);
 
-      pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
-      ov_logfile_info("transport requested");
-      ov_memstack_unlock();
-      return;
+        pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
+        ov_logfile_info("transport requested");
+      }
       break;
+
     case SYNC_SRC_TRANSPORTREQUESTED:
       if(pinst->p_transport.v_status == CTREE_TRANSPORT_DONE) {
         ov_logfile_info("transport done successfully");

@@ -114,7 +114,12 @@
                   },
                   "parts": {
                     "apiGet": {
-                      "class": "ksapi/getVar"
+                      "class": "ksapi/getVar",
+                      "children": {
+                       "Client": {
+                         "class": "ksmsg/msgClient"
+                       }
+                      }
                     }
                   },
                   "variables": {

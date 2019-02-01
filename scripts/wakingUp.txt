@@ -1,0 +1,18 @@
+interface zu administrator
+12 booking
+id eingeben
+location eingeben
+einbuchen
+
+rfm sicherung ausschalten
+muss true sein
+
+1. rfm  table  ->  emergency -> beide true
+2. rtw  ->  4  5 am leben
+short cut ->  
+
+PEOO
+ZOLBOO;OCCUPY;
+H;LEFT;
+;START;
+

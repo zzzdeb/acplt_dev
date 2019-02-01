@@ -1,0 +1,1414 @@
+{
+    "Libraries": [
+        "sync",
+        "CTree",
+        "ksxdr",
+        "ksapi",
+        "PostSys"
+    ],
+    "Path": "/TechUnits/sync1",
+    "Tree": {
+        "sync2": {
+            "class": "sync/dsync",
+            "links": {
+                "taskparent": {
+                    "children": [
+                        "this"
+                    ],
+                    "of_association": "fb/tasklist",
+                    "parents": [
+                        "/Tasks/UrTask"
+                    ]
+                }
+            },
+            "parts": {
+                "dsyncDstTemp": {
+                    "class": "sync/dsyncDst",
+                    "links": {
+                        "RootComTask": {
+                            "children": [
+                                "this"
+                            ],
+                            "of_association": "ksbase/AssocComTaskList",
+                            "parents": [
+                                "/communication/RootComTask"
+                            ]
+                        }
+                    },
+                    "parts": {
+                        "kssetter": {
+                            "class": "ksapi/setVar",
+                            "variables": {
+                                "Reset": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "Submit": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "holdConnection": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "path": [
+                                    "STRING",
+                                    null
+                                ],
+                                "result": [
+                                    "UINT",
+                                    0
+                                ],
+                                "serverHost": [
+                                    "STRING",
+                                    null
+                                ],
+                                "serverName": [
+                                    "STRING",
+                                    null
+                                ],
+                                "status": [
+                                    "INT",
+                                    0
+                                ],
+                                "varRes": [
+                                    "UINT",
+                                    0
+                                ],
+                                "varValue": [
+                                    "ANY",
+                                    [
+                                        [
+                                            "VOID",
+                                            null
+                                        ],
+                                        409407200,
+                                        [
+                                            0,
+                                            0
+                                        ]
+                                    ]
+                                ]
+                            }
+                        },
+                        "player": {
+                            "class": "sync/player",
+                            "links": {
+                                "RootComTask": {
+                                    "children": [
+                                        "this"
+                                    ],
+                                    "of_association": "ksbase/AssocComTaskList",
+                                    "parents": [
+                                        "/communication/RootComTask"
+                                    ]
+                                }
+                            },
+                            "parts": {
+                                "bufNode": {
+                                    "children": {
+                                        "inbox": {
+                                            "class": "PostSys/inbox",
+                                            "variables": {
+                                                "holdConnection": [
+                                                    "BOOL",
+                                                    false
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "class": "sync/bufferer",
+                                    "links": {
+                                        "RootComTask": {
+                                            "children": [
+                                                "this"
+                                            ],
+                                            "of_association": "ksbase/AssocComTaskList",
+                                            "parents": [
+                                                "/communication/RootComTask"
+                                            ]
+                                        }
+                                    },
+                                    "parts": {
+                                        "buffer": {
+                                            "class": "sync/Buffer"
+                                        }
+                                    },
+                                    "variables": {
+                                        "DestPref": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "NextExecTime": [
+                                            "TIME",
+                                            [
+                                                1547660414,
+                                                596524
+                                            ]
+                                        ],
+                                        "SourcePref": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "actimode": [
+                                            "INT",
+                                            1
+                                        ],
+                                        "cycInterval": [
+                                            "INT",
+                                            5
+                                        ],
+                                        "lastBufferedMsg": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "msgsWaitingRes": [
+                                            "STRING_VEC",
+                                            []
+                                        ],
+                                        "status": [
+                                            "INT",
+                                            0
+                                        ]
+                                    }
+                                },
+                                "dstNode": {
+                                    "children": {
+                                        "inbox": {
+                                            "class": "PostSys/inbox",
+                                            "variables": {
+                                                "holdConnection": [
+                                                    "BOOL",
+                                                    false
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "class": "sync/dstNode",
+                                    "links": {
+                                        "RootComTask": {
+                                            "children": [
+                                                "this"
+                                            ],
+                                            "of_association": "ksbase/AssocComTaskList",
+                                            "parents": [
+                                                "/communication/RootComTask"
+                                            ]
+                                        }
+                                    },
+                                    "variables": {
+                                        "DestPref": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "NextExecTime": [
+                                            "TIME",
+                                            [
+                                                1547660414,
+                                                596526
+                                            ]
+                                        ],
+                                        "SourcePref": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "actimode": [
+                                            "INT",
+                                            1
+                                        ],
+                                        "cycInterval": [
+                                            "INT",
+                                            5
+                                        ]
+                                    }
+                                }
+                            },
+                            "variables": {
+                                "NextExecTime": [
+                                    "TIME",
+                                    [
+                                        1547660219,
+                                        804202
+                                    ]
+                                ],
+                                "actimode": [
+                                    "INT",
+                                    0
+                                ],
+                                "cycInterval": [
+                                    "INT",
+                                    5
+                                ],
+                                "dstHost": [
+                                    "STRING",
+                                    null
+                                ],
+                                "dstPath": [
+                                    "STRING",
+                                    null
+                                ],
+                                "dstServer": [
+                                    "STRING",
+                                    null
+                                ],
+                                "srcHost": [
+                                    "STRING",
+                                    null
+                                ],
+                                "srcPath": [
+                                    "STRING",
+                                    null
+                                ],
+                                "srcServer": [
+                                    "STRING",
+                                    null
+                                ],
+                                "status": [
+                                    "INT",
+                                    0
+                                ],
+                                "switch": [
+                                    "BOOL",
+                                    false
+                                ]
+                            }
+                        },
+                        "syncDownload": {
+                            "class": "sync/syncDownload",
+                            "variables": {
+                                "ErrState": [
+                                    "INT",
+                                    0
+                                ],
+                                "ErrorMsg": [
+                                    "STRING",
+                                    null
+                                ],
+                                "Xpos": [
+                                    "INT",
+                                    0
+                                ],
+                                "Ypos": [
+                                    "INT",
+                                    0
+                                ],
+                                "actimode": [
+                                    "INT",
+                                    0
+                                ],
+                                "cache": [
+                                    "CTYPE",
+                                    "not supported"
+                                ],
+                                "calctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "cyctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "eexreq": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "force": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "iexreq": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "json": [
+                                    "STRING",
+                                    null
+                                ],
+                                "maxcalctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "methcount": [
+                                    "UINT",
+                                    0
+                                ],
+                                "path": [
+                                    "STRING",
+                                    "/TechUnits"
+                                ],
+                                "proctime": [
+                                    "TIME",
+                                    [
+                                        1547660219,
+                                        799163
+                                    ]
+                                ],
+                                "result": [
+                                    "INT",
+                                    0
+                                ],
+                                "srcPath": [
+                                    "STRING",
+                                    null
+                                ],
+                                "state": [
+                                    "INT",
+                                    0
+                                ],
+                                "trigger": [
+                                    "INT",
+                                    0
+                                ]
+                            }
+                        }
+                    },
+                    "variables": {
+                        "NextExecTime": [
+                            "TIME",
+                            [
+                                1547660414,
+                                596526
+                            ]
+                        ],
+                        "actimode": [
+                            "INT",
+                            1
+                        ],
+                        "cycInterval": [
+                            "INT",
+                            5
+                        ],
+                        "dstKS": [
+                            "STRING",
+                            null
+                        ],
+                        "path": [
+                            "STRING",
+                            null
+                        ],
+                        "result": [
+                            "INT",
+                            0
+                        ],
+                        "srcKS": [
+                            "STRING",
+                            null
+                        ],
+                        "status": [
+                            "INT",
+                            0
+                        ],
+                        "switch": [
+                            "BOOL",
+                            false
+                        ],
+                        "syncPath": [
+                            "STRING",
+                            null
+                        ]
+                    }
+                },
+                "ksCrtObj": {
+                    "class": "ksapi/createObject",
+                    "variables": {
+                        "Reset": [
+                            "BOOL",
+                            false
+                        ],
+                        "Submit": [
+                            "BOOL",
+                            false
+                        ],
+                        "classPath": [
+                            "STRING",
+                            null
+                        ],
+                        "element": [
+                            "STRING",
+                            null
+                        ],
+                        "holdConnection": [
+                            "BOOL",
+                            false
+                        ],
+                        "path": [
+                            "STRING",
+                            null
+                        ],
+                        "position": [
+                            "INT",
+                            0
+                        ],
+                        "result": [
+                            "UINT",
+                            0
+                        ],
+                        "serverHost": [
+                            "STRING",
+                            null
+                        ],
+                        "serverName": [
+                            "STRING",
+                            null
+                        ],
+                        "status": [
+                            "INT",
+                            0
+                        ]
+                    }
+                },
+                "kssetter": {
+                    "class": "ksapi/setVar",
+                    "variables": {
+                        "Reset": [
+                            "BOOL",
+                            false
+                        ],
+                        "Submit": [
+                            "BOOL",
+                            false
+                        ],
+                        "holdConnection": [
+                            "BOOL",
+                            false
+                        ],
+                        "path": [
+                            "STRING",
+                            null
+                        ],
+                        "result": [
+                            "UINT",
+                            0
+                        ],
+                        "serverHost": [
+                            "STRING",
+                            null
+                        ],
+                        "serverName": [
+                            "STRING",
+                            null
+                        ],
+                        "status": [
+                            "INT",
+                            0
+                        ],
+                        "varRes": [
+                            "UINT",
+                            0
+                        ],
+                        "varValue": [
+                            "ANY",
+                            [
+                                [
+                                    "VOID",
+                                    null
+                                ],
+                                409403400,
+                                [
+                                    0,
+                                    5000
+                                ]
+                            ]
+                        ]
+                    }
+                },
+                "transport": {
+                    "class": "CTree/Transport",
+                    "links": {
+                        "taskchild": {
+                            "children": [
+                                "~.transport.loadlibs"
+                            ],
+                            "of_association": "fb/tasklist",
+                            "parents": [
+                                "this"
+                            ]
+                        }
+                    },
+                    "parts": {
+                        "loadlibs": {
+                            "class": "CTree/LoadLibs",
+                            "links": {
+                                "taskchild": {
+                                    "children": [
+                                        "~.transport.loadlibs.sendFiles"
+                                    ],
+                                    "of_association": "fb/tasklist",
+                                    "parents": [
+                                        "this"
+                                    ]
+                                },
+                                "taskparent": {
+                                    "children": [
+                                        "this"
+                                    ],
+                                    "of_association": "fb/tasklist",
+                                    "parents": [
+                                        "~.transport"
+                                    ]
+                                }
+                            },
+                            "parts": {
+                                "ks": {
+                                    "class": "ksxdr/xdrClient",
+                                    "links": {
+                                        "RootComTask": {
+                                            "children": [
+                                                "this"
+                                            ],
+                                            "of_association": "ksbase/AssocComTaskList",
+                                            "parents": [
+                                                "/communication/RootComTask"
+                                            ]
+                                        }
+                                    },
+                                    "variables": {
+                                        "ManagerPort": [
+                                            "STRING",
+                                            "7509"
+                                        ],
+                                        "NextExecTime": [
+                                            "TIME",
+                                            [
+                                                1547660219,
+                                                809093
+                                            ]
+                                        ],
+                                        "actimode": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "callback": [
+                                            "CTYPE",
+                                            "not supported"
+                                        ],
+                                        "cycInterval": [
+                                            "INT",
+                                            5
+                                        ],
+                                        "dataReceived": [
+                                            "CTYPE",
+                                            "not supported"
+                                        ],
+                                        "dataToSend": [
+                                            "CTYPE",
+                                            "not supported"
+                                        ],
+                                        "holdConnection": [
+                                            "BOOL",
+                                            false
+                                        ],
+                                        "msgAccepted": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "msgStatus": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "rpcErrCode": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "runningKSservice": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "sentProcID": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "sentXID": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "serverHost": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "serverName": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "serverPort": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "state": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "tempCallback": [
+                                            "CTYPE",
+                                            "not supported"
+                                        ],
+                                        "tempXID": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "timeLastEvent": [
+                                            "TIME",
+                                            [
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                                        "timeout": [
+                                            "UINT",
+                                            30
+                                        ]
+                                    }
+                                },
+                                "sendFiles": {
+                                    "class": "CTree/SendFiles",
+                                    "links": {
+                                        "taskparent": {
+                                            "children": [
+                                                "this"
+                                            ],
+                                            "of_association": "fb/tasklist",
+                                            "parents": [
+                                                "~.transport.loadlibs"
+                                            ]
+                                        }
+                                    },
+                                    "parts": {
+                                        "ks": {
+                                            "class": "ksxdr/xdrClient",
+                                            "links": {
+                                                "RootComTask": {
+                                                    "children": [
+                                                        "this"
+                                                    ],
+                                                    "of_association": "ksbase/AssocComTaskList",
+                                                    "parents": [
+                                                        "/communication/RootComTask"
+                                                    ]
+                                                }
+                                            },
+                                            "variables": {
+                                                "ManagerPort": [
+                                                    "STRING",
+                                                    "7509"
+                                                ],
+                                                "NextExecTime": [
+                                                    "TIME",
+                                                    [
+                                                        1547660219,
+                                                        810205
+                                                    ]
+                                                ],
+                                                "actimode": [
+                                                    "INT",
+                                                    0
+                                                ],
+                                                "callback": [
+                                                    "CTYPE",
+                                                    "not supported"
+                                                ],
+                                                "cycInterval": [
+                                                    "INT",
+                                                    5
+                                                ],
+                                                "dataReceived": [
+                                                    "CTYPE",
+                                                    "not supported"
+                                                ],
+                                                "dataToSend": [
+                                                    "CTYPE",
+                                                    "not supported"
+                                                ],
+                                                "holdConnection": [
+                                                    "BOOL",
+                                                    false
+                                                ],
+                                                "msgAccepted": [
+                                                    "INT",
+                                                    0
+                                                ],
+                                                "msgStatus": [
+                                                    "INT",
+                                                    0
+                                                ],
+                                                "rpcErrCode": [
+                                                    "INT",
+                                                    0
+                                                ],
+                                                "runningKSservice": [
+                                                    "UINT",
+                                                    0
+                                                ],
+                                                "sentProcID": [
+                                                    "UINT",
+                                                    0
+                                                ],
+                                                "sentXID": [
+                                                    "UINT",
+                                                    0
+                                                ],
+                                                "serverHost": [
+                                                    "STRING",
+                                                    null
+                                                ],
+                                                "serverName": [
+                                                    "STRING",
+                                                    null
+                                                ],
+                                                "serverPort": [
+                                                    "STRING",
+                                                    null
+                                                ],
+                                                "state": [
+                                                    "UINT",
+                                                    0
+                                                ],
+                                                "tempCallback": [
+                                                    "CTYPE",
+                                                    "not supported"
+                                                ],
+                                                "tempXID": [
+                                                    "UINT",
+                                                    0
+                                                ],
+                                                "timeLastEvent": [
+                                                    "TIME",
+                                                    [
+                                                        0,
+                                                        0
+                                                    ]
+                                                ],
+                                                "timeout": [
+                                                    "UINT",
+                                                    30
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "variables": {
+                                        "ErrState": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "ErrorMsg": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "Xpos": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "Ypos": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "actimode": [
+                                            "INT",
+                                            1
+                                        ],
+                                        "calctime": [
+                                            "TIME_SPAN",
+                                            [
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                                        "cyctime": [
+                                            "TIME_SPAN",
+                                            [
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                                        "eexreq": [
+                                            "BOOL",
+                                            false
+                                        ],
+                                        "filesToSend": [
+                                            "STRING_VEC",
+                                            []
+                                        ],
+                                        "iexreq": [
+                                            "BOOL",
+                                            true
+                                        ],
+                                        "maxcalctime": [
+                                            "TIME_SPAN",
+                                            [
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                                        "methcount": [
+                                            "UINT",
+                                            0
+                                        ],
+                                        "postCallback": [
+                                            "CTYPE",
+                                            "not supported"
+                                        ],
+                                        "proctime": [
+                                            "TIME",
+                                            [
+                                                1547660219,
+                                                799316
+                                            ]
+                                        ],
+                                        "reset": [
+                                            "BOOL",
+                                            false
+                                        ],
+                                        "result": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "status": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "targetKS": [
+                                            "STRING",
+                                            null
+                                        ],
+                                        "trigger": [
+                                            "INT",
+                                            0
+                                        ],
+                                        "whereToSend": [
+                                            "STRING_VEC",
+                                            []
+                                        ]
+                                    }
+                                }
+                            },
+                            "variables": {
+                                "Arch": [
+                                    "UINT",
+                                    0
+                                ],
+                                "ErrState": [
+                                    "INT",
+                                    0
+                                ],
+                                "ErrorMsg": [
+                                    "STRING",
+                                    null
+                                ],
+                                "OS": [
+                                    "STRING",
+                                    null
+                                ],
+                                "Xpos": [
+                                    "INT",
+                                    0
+                                ],
+                                "Ypos": [
+                                    "INT",
+                                    0
+                                ],
+                                "actimode": [
+                                    "INT",
+                                    1
+                                ],
+                                "calctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "cyctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "eexreq": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "iexreq": [
+                                    "BOOL",
+                                    true
+                                ],
+                                "libsToSend": [
+                                    "STRING_VEC",
+                                    []
+                                ],
+                                "maxcalctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "methcount": [
+                                    "UINT",
+                                    0
+                                ],
+                                "postCallback": [
+                                    "CTYPE",
+                                    "not supported"
+                                ],
+                                "proctime": [
+                                    "TIME",
+                                    [
+                                        1547660219,
+                                        799321
+                                    ]
+                                ],
+                                "reset": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "result": [
+                                    "INT",
+                                    0
+                                ],
+                                "status": [
+                                    "UINT",
+                                    0
+                                ],
+                                "targetArch": [
+                                    "UINT",
+                                    0
+                                ],
+                                "targetKS": [
+                                    "STRING",
+                                    null
+                                ],
+                                "targetLibs": [
+                                    "STRING_VEC",
+                                    []
+                                ],
+                                "targetOS": [
+                                    "STRING",
+                                    null
+                                ],
+                                "trigger": [
+                                    "INT",
+                                    0
+                                ]
+                            }
+                        },
+                        "upload": {
+                            "class": "CTree/Upload",
+                            "variables": {
+                                "ErrState": [
+                                    "INT",
+                                    0
+                                ],
+                                "ErrorMsg": [
+                                    "STRING",
+                                    null
+                                ],
+                                "Xpos": [
+                                    "INT",
+                                    0
+                                ],
+                                "Ypos": [
+                                    "INT",
+                                    0
+                                ],
+                                "actimode": [
+                                    "INT",
+                                    0
+                                ],
+                                "cache": [
+                                    "CTYPE",
+                                    "not supported"
+                                ],
+                                "calctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "cyctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "eexreq": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "getVar": [
+                                    "BOOL",
+                                    true
+                                ],
+                                "iexreq": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "keepJson": [
+                                    "BOOL",
+                                    false
+                                ],
+                                "libs": [
+                                    "STRING_VEC",
+                                    []
+                                ],
+                                "maxcalctime": [
+                                    "TIME_SPAN",
+                                    [
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "methcount": [
+                                    "UINT",
+                                    0
+                                ],
+                                "path": [
+                                    "STRING",
+                                    "/TechUnits"
+                                ],
+                                "proctime": [
+                                    "TIME",
+                                    [
+                                        1547660219,
+                                        799131
+                                    ]
+                                ],
+                                "result": [
+                                    "INT",
+                                    0
+                                ],
+                                "tree": [
+                                    "STRING",
+                                    null
+                                ],
+                                "trigger": [
+                                    "INT",
+                                    0
+                                ]
+                            }
+                        }
+                    },
+                    "variables": {
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "ErrorMsg": [
+                            "STRING",
+                            null
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "autoUpload": [
+                            "BOOL",
+                            false
+                        ],
+                        "calctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "holdConnection": [
+                            "BOOL",
+                            false
+                        ],
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "path": [
+                            "STRING",
+                            "/TechUnits"
+                        ],
+                        "proctime": [
+                            "TIME",
+                            [
+                                1547660219,
+                                799141
+                            ]
+                        ],
+                        "reset": [
+                            "BOOL",
+                            false
+                        ],
+                        "result": [
+                            "INT",
+                            0
+                        ],
+                        "status": [
+                            "INT",
+                            0
+                        ],
+                        "targetDownloadPath": [
+                            "STRING",
+                            null
+                        ],
+                        "targetHost": [
+                            "STRING",
+                            null
+                        ],
+                        "targetHostPort": [
+                            "STRING",
+                            null
+                        ],
+                        "targetKS": [
+                            "STRING",
+                            null
+                        ],
+                        "targetPath": [
+                            "STRING",
+                            null
+                        ],
+                        "targetServer": [
+                            "STRING",
+                            null
+                        ],
+                        "targetServerPort": [
+                            "STRING",
+                            null
+                        ],
+                        "trigger": [
+                            "INT",
+                            0
+                        ]
+                    }
+                },
+                "upload": {
+                    "class": "CTree/Upload",
+                    "variables": {
+                        "ErrState": [
+                            "INT",
+                            0
+                        ],
+                        "ErrorMsg": [
+                            "STRING",
+                            null
+                        ],
+                        "Xpos": [
+                            "INT",
+                            0
+                        ],
+                        "Ypos": [
+                            "INT",
+                            0
+                        ],
+                        "actimode": [
+                            "INT",
+                            0
+                        ],
+                        "cache": [
+                            "CTYPE",
+                            "not supported"
+                        ],
+                        "calctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "cyctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "eexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "getVar": [
+                            "BOOL",
+                            true
+                        ],
+                        "iexreq": [
+                            "BOOL",
+                            false
+                        ],
+                        "keepJson": [
+                            "BOOL",
+                            false
+                        ],
+                        "libs": [
+                            "STRING_VEC",
+                            []
+                        ],
+                        "maxcalctime": [
+                            "TIME_SPAN",
+                            [
+                                0,
+                                0
+                            ]
+                        ],
+                        "methcount": [
+                            "UINT",
+                            0
+                        ],
+                        "path": [
+                            "STRING",
+                            "/TechUnits"
+                        ],
+                        "proctime": [
+                            "TIME",
+                            [
+                                1547660219,
+                                799152
+                            ]
+                        ],
+                        "result": [
+                            "INT",
+                            0
+                        ],
+                        "tree": [
+                            "STRING",
+                            null
+                        ],
+                        "trigger": [
+                            "INT",
+                            0
+                        ]
+                    }
+                }
+            },
+            "variables": {
+                "ErrState": [
+                    "INT",
+                    0
+                ],
+                "Xpos": [
+                    "INT",
+                    0
+                ],
+                "Ypos": [
+                    "INT",
+                    0
+                ],
+                "actimode": [
+                    "INT",
+                    0
+                ],
+                "calctime": [
+                    "TIME_SPAN",
+                    [
+                        0,
+                        0
+                    ]
+                ],
+                "cyctime": [
+                    "TIME_SPAN",
+                    [
+                        0,
+                        0
+                    ]
+                ],
+                "destKS": [
+                    "STRING",
+                    "//localhost:7509/THESIS8/TechUnits/GSE1"
+                ],
+                "eexreq": [
+                    "BOOL",
+                    true
+                ],
+                "holdConnection": [
+                    "BOOL",
+                    false
+                ],
+                "iexreq": [
+                    "BOOL",
+                    true
+                ],
+                "maxcalctime": [
+                    "TIME_SPAN",
+                    [
+                        0,
+                        0
+                    ]
+                ],
+                "methcount": [
+                    "UINT",
+                    0
+                ],
+                "proctime": [
+                    "TIME",
+                    [
+                        1547660219,
+                        799223
+                    ]
+                ],
+                "reset": [
+                    "BOOL",
+                    false
+                ],
+                "result": [
+                    "INT",
+                    0
+                ],
+                "selfHost": [
+                    "STRING",
+                    "localhost"
+                ],
+                "selfServer": [
+                    "STRING",
+                    "THESIS8"
+                ],
+                "shutdown": [
+                    "BOOL",
+                    false
+                ],
+                "srcPath": [
+                    "STRING",
+                    "/TechUnits/GSE"
+                ],
+                "status": [
+                    "INT",
+                    0
+                ]
+            }
+        }
+    }
+}

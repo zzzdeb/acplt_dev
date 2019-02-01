@@ -49,7 +49,8 @@ TEST(dsync, dsync_default) {
 
   /* create case */
   OV_INSTPTR_ovunity_ovCase pcase = ovunity_createCase(gpinst, case_name);
-  if(!pcase) Throw(OV_ERR_GENERIC);
+  if(!pcase)
+    Throw(OV_ERR_GENERIC);
 
   ovunity_ovCase_build1(pcase);
   pobj = Ov_StaticPtrCast(sync_dsync, ovunity_ovCase_getObjPath(pcase));

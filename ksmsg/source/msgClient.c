@@ -70,9 +70,13 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_INSTPTR_ov_domain pInbox = NULL;
   result = Ov_CreateObject(ov_domain, pInbox, this, "Inbox");
   ksmsg_msgClient_pathLen_set(this, 2);
-  // TODO: zzz: fix it. get server name :2019 Jan 14 12:58
+  OV_ANY servername = {0};
+  servername.value.vartype = OV_VT_VOID;
+  servername.value.valueunion.val_string = NULL;
+  ov_vendortree_getservername(&servername, NULL);
   ov_string_setvalue(&this->v_pathHost.value[0], "none");
-  ov_string_setvalue(&this->v_pathName.value[0], "MANAGER");
+  ov_string_setvalue(&this->v_pathName.value[0],
+                     servername.value.valueunion.val_string);
 
   this->v_answerItems = NULL;
 
@@ -218,7 +222,7 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       Ov_SearchChildEx(ov_containment, thisCl, "Inbox", ov_domain);
 
   /*
-   * state machine
+  * state machine
    */
   switch(thisCl->v_state) {
     case KSBASE_CLST_INITIAL:
@@ -234,7 +238,7 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
               PostSys_MsgDelivery,
               Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
           if(pMsgDelivery) {
-            Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsg);
+            PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
             ov_time_gettime(&thisCl->v_timeLastEvent);
           }
         }
@@ -262,78 +266,80 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         }
       } else {
         thisCl->v_state = KSBASE_CLST_AWAITINGANSWER;
-      }
-      // TODO: zzz: if msg is sent go to awaitinganswer Mo 10 Dez 2018 18:21:49
-      // CET
-      // TODO: zzz: delete better the message So 09 Dez 2018 10:44:18 CET
-      return;
+        // TODO: zzz: if msg is sent go to awaitinganswer Mo 10 Dez 2018
+        // 18:21:49 CET
+        // TODO: zzz: delete better the message So 09 Dez 2018 10:44:18 CET
+        return;
 
-    case KSBASE_CLST_AWAITINGANSWER: /*	waiting for answer --> just calculate
-                                        timeouts	*/
-    case KSBASE_CLST_BUSY:           /*	call HandleData again to process data	*/
-                                     /*	calculate timeout	*/
-      Ov_ForEachChildEx(ov_containment, pInbox, pMsgTmp, PostSys_Message) {
-        pMsg = pMsgTmp;
-      }
-      if(pMsg) {
-        result = msgClient_handleMessage(thisCl, pMsg);
-        if(Ov_Fail(result)) {
-          thisCl->v_state = KSBASE_CLST_ERROR;
-          ov_logfile_error("%u: %s: could not handle the message", result,
-                           ov_result_getresulttext(result));
+        case KSBASE_CLST_AWAITINGANSWER: /*	waiting for answer --> just
+                                            calculate timeouts	*/
+        case KSBASE_CLST_BUSY: /*	call HandleData again to process data
+                                */
+                               /*	calculate timeout	*/
+          Ov_ForEachChildEx(ov_containment, pInbox, pMsgTmp, PostSys_Message) {
+            pMsg = pMsgTmp;
+          }
+          if(pMsg) {
+            result = msgClient_handleMessage(thisCl, pMsg);
+            if(Ov_Fail(result)) {
+              thisCl->v_state = KSBASE_CLST_ERROR;
+              ov_logfile_error("%u: %s: could not handle the message", result,
+                               ov_result_getresulttext(result));
+              return;
+            }
+            Ov_DeleteObject(pMsg);
+            thisCl->v_state = KSBASE_CLST_COMPLETED;
+            break;
+          }
+          ov_time_gettime(&now);
+          ov_time_diff(&tstemp, &now, &(thisCl->v_timeLastEvent));
+          if((tstemp.secs > (OV_INT)thisCl->v_timeout) ||
+             ((tstemp.secs == (OV_INT)thisCl->v_timeout) &&
+              (tstemp.usecs > 0))) {
+            thisCl->v_state = KSBASE_CLST_ERROR | XDRCL_TIMEOUT;
+            thisCl->v_actimode = 0;
+          }
           return;
-        }
-        Ov_DeleteObject(pMsg);
-        thisCl->v_state = KSBASE_CLST_COMPLETED;
-        break;
+        case KSBASE_CLST_COMPLETED: /*	issue the callback	*/
+          thisCl->v_state = KSBASE_CLST_INITIAL;
+          thisCl->v_actimode = 0;
+          KS_logfile_debug(
+              ("%s: completed. issuing callback", thisCl->v_identifier));
+          if(thisCl->v_callback.callbackFunction)
+            thisCl->v_callback.callbackFunction(
+                thisCl->v_callback.instanceCalled,
+                Ov_StaticPtrCast(ov_domain, this));
+          // TODO: zzz: close connection Mo 10 Dez 2018 18:25:03 CET
+          return;
+        case KSBASE_CLST_ERROR:
+          thisCl->v_actimode = 0;
+          return;
+        default:
+          KS_logfile_debug(("entering default in msgClient typemethod - this "
+                            "should not happen"));
+          thisCl->v_actimode = 0;
+          break;
       }
-      ov_time_gettime(&now);
-      ov_time_diff(&tstemp, &now, &(thisCl->v_timeLastEvent));
-      if((tstemp.secs > (OV_INT)thisCl->v_timeout) ||
-         ((tstemp.secs == (OV_INT)thisCl->v_timeout) && (tstemp.usecs > 0))) {
-        thisCl->v_state = KSBASE_CLST_ERROR | XDRCL_TIMEOUT;
-        thisCl->v_actimode = 0;
-      }
+
       return;
-    case KSBASE_CLST_COMPLETED: /*	issue the callback	*/
-      thisCl->v_state = KSBASE_CLST_INITIAL;
-      thisCl->v_actimode = 0;
-      KS_logfile_debug(
-          ("%s: completed. issuing callback", thisCl->v_identifier));
-      if(thisCl->v_callback.callbackFunction)
-        thisCl->v_callback.callbackFunction(thisCl->v_callback.instanceCalled,
-                                            Ov_StaticPtrCast(ov_domain, this));
-      // TODO: zzz: close connection Mo 10 Dez 2018 18:25:03 CET
-      return;
-    case KSBASE_CLST_ERROR:
-      thisCl->v_actimode = 0;
-      return;
-    default:
-      KS_logfile_debug((
-          "entering default in msgClient typemethod - this should not happen"));
-      thisCl->v_actimode = 0;
-      break;
   }
 
-  return;
-}
+  /*******************************************************************************************************************************************************************************
+   * 				Reset
+   *******************************************************************************************************************************************************************************/
 
-/*******************************************************************************************************************************************************************************
- * 				Reset
- *******************************************************************************************************************************************************************************/
-
-OV_DLLFNCEXPORT OV_RESULT
-                ksmsg_msgClient_reset(OV_INSTPTR_ksbase_ClientBase this) {
-  OV_RESULT result = OV_ERR_OK;
-  result = ksxdr_xdrClient_reset(this);
-  OV_INSTPTR_PostSys_Message pmsg = NULL;
-  OV_INSTPTR_ov_domain       pinbox =
-      Ov_SearchChildEx(ov_containment, this, "Inbox", ov_domain);
-  if(!pinbox) {
-    return 0;
+  OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_reset(
+      OV_INSTPTR_ksbase_ClientBase this) {
+    OV_RESULT result = OV_ERR_OK;
+    result = ksxdr_xdrClient_reset(this);
+    OV_INSTPTR_PostSys_Message pmsg = NULL;
+    OV_INSTPTR_ov_domain       pinbox =
+        Ov_SearchChildEx(ov_containment, this, "Inbox", ov_domain);
+    if(!pinbox) {
+      return 0;
+    }
+    Ov_ForEachChildEx(ov_containment, pinbox, pmsg, PostSys_Message) {
+      result |= Ov_DeleteObject(pmsg);
+    }
+    return result;
   }
-  Ov_ForEachChildEx(ov_containment, pinbox, pmsg, PostSys_Message) {
-    result |= Ov_DeleteObject(pmsg);
-  }
-  return result;
-}

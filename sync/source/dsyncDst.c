@@ -122,16 +122,28 @@ OV_DLLFNCEXPORT OV_RESULT
             OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
                 ov_containment, Ov_StaticPtrCast(ov_domain, pobj), "msgClient",
                 ksmsg_msgClient);
-            if(!pMsgClnt) {
-              ov_logfile_warning("dsyncDst: %s has no msgClient",
-                                 pobj->v_identifier);
-              continue;
+            // FIXME: zzz: forcing stability :2019 Feb 01 10:41
+            if(pMsgClnt) {
+              Ov_DeleteObject(pMsgClnt);
+            } else {
+              ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
             }
-            result = ksmsg_msgClient_path_deleteElement(pMsgClnt, 1);
-            if(Ov_Fail(result)) {
-              ov_logfile_error("%u: %s: failed to delete path element", result,
-                               ov_result_getresulttext(result));
-              return result;
+            if(pobj->v_pouterobject) {
+              OV_INSTPTR_fbcomlib_FBComCommon pOobj =
+                  Ov_DynamicPtrCast(fbcomlib_FBComCommon, pobj->v_pouterobject);
+              if(pOobj) {
+                fbcomlib_FBComCommon_doSend_set(pOobj, 1);
+                fbcomlib_FBComCommon_doSend_set(pOobj, 0);
+              } else {
+                ov_logfile_warning("sync_dsync: ksapi not in fbcomlib %s",
+                                   ov_path_getcanonicalpath(
+                                       Ov_StaticPtrCast(ov_object, pOobj), 2));
+              }
+            } else {
+              ksapi_KSApiCommon_Reset_set(
+                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 1);
+              ksapi_KSApiCommon_Reset_set(
+                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 0);
             }
           }
         }

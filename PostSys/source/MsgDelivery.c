@@ -597,7 +597,7 @@ OV_DLLFNCEXPORT OV_RESULT PostSys_parseAndDeliverMsg(
     return OV_ERR_OK;
   }
 
-  // todo check msg format
+  // TODO: zzz: check msg format :2019 Jan 18 18:04
   msgHeader.currentInd++;
   const OV_UINT pathLen = msgHeader.locAdrPath.veclen;
 

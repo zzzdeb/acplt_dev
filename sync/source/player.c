@@ -67,7 +67,7 @@ OV_DLLFNCEXPORT void sync_player_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         ov_logfile_error("sync_player: unknown state %d", pBufMsg->v_msgStatus);
         return;
     }
-    OV_UINT pathLen = pBufMsg->v_pathLen;
+    OV_UINT pathLen = PostSys_Message_pathLen_get(pBufMsg);
     if(ov_string_match(pBufMsg->v_msgBody, "<bdy Op=\"RES:*")) {
       /* changing settings */
       /* edit comp */
