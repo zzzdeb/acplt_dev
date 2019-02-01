@@ -30,7 +30,11 @@
 
 !/ovhelper
 /*/source/sourcetemplates
-/*/build
+/*/build/**
+!/*/build/linux/
+!/*/build/linux/Makefile
+!/*/build/nt/
+!/*/build/nt/Makefile
 /*/draft
 /*/.svn
 /*/Debug (Windows)

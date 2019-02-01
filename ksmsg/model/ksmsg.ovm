@@ -2,6 +2,7 @@
 #include "ksbase.ovm"
 #include "ksxdr.ovm"
 #include "PostSys.ovm"
+#include "CTree.ovm"
 
 
 LIBRARY ksmsg
