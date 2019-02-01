@@ -1,0 +1,14 @@
+# Eclipse ignores
+.metadata
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
+
+# build directory
+build/
+source/sourcetemplates/
