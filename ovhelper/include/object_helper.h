@@ -67,4 +67,16 @@ OV_DLLFNCEXPORT void ov_time_multiply(OV_TIME* res, const OV_TIME src,
 OV_DLLFNCEXPORT void ov_timespan_multiply(OV_TIME_SPAN*      res,
                                           const OV_TIME_SPAN src,
                                           const OV_SINGLE    factor);
+
+/**
+ * @brief checks if strvec vec contains str
+ *
+ * @param vec
+ * @param str
+ *
+ * @return
+ */
+OV_DLLFNCEXPORT OV_BOOL ov_strvec_contains(const OV_STRING_VEC* vec,
+                                           const OV_STRING      str);
+
 #endif /* OBJECT_HELPER_H_ */

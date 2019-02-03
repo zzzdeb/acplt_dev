@@ -400,7 +400,7 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
                                 STRING);
       OV_UINT j = 0;
       for(OV_UINT i = 0; i < pinst->v_libsToSend.veclen; i++) {
-        if(strvec_contains(&pinst->v_targetLibs,
+        if(ov_strvec_contains(&pinst->v_targetLibs,
                            pinst->v_libsToSend.value[i])) {
           ov_logfile_info("Library %s exists", pinst->v_libsToSend.value[i]);
           libsToSend.veclen--;

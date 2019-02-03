@@ -81,3 +81,15 @@ OV_DLLFNCEXPORT OV_RESULT ov_string_get(OV_STRING* str1, OV_STRING str2,
   return OV_ERR_OK;
 }
 
+/* checks if str in vec is. */
+OV_DLLFNCEXPORT OV_BOOL ov_strvec_contains(const OV_STRING_VEC* vec,
+                                           const OV_STRING      str) {
+  if(!vec || !str)
+    return 0;
+
+  for(OV_UINT i = 0; i < vec->veclen; i++) {
+    if(!ov_string_compare(vec->value[i], str))
+      return 1;
+  }
+  return 0;
+}
