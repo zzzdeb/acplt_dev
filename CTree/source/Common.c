@@ -28,6 +28,8 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Common_trigger_set(OV_INSTPTR_CTree_Common pobj,
   OV_VTBLPTR_CTree_Common pVtblthis = NULL;
 
   if(value && (!pobj->v_trigger)) {
+    pobj->v_actimode = 1;
+    pobj->v_iexreq = 1;
     Ov_GetVTablePtr(CTree_Common, pVtblthis, pobj);
     if(!pVtblthis)
       return OV_ERR_BADOBJTYPE;

@@ -855,6 +855,7 @@ OV_DLLFNCEXPORT void CTree_Upload_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_CTree_Upload pinst = Ov_StaticPtrCast(CTree_Upload, pfb);
 
   OV_RESULT res = CTree_Upload_execute(pinst);
+  pinst->v_actimode = 0;
   pinst->v_result = res;
   switch(res) {
     case OV_ERR_OK:

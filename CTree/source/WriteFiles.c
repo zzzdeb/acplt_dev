@@ -114,7 +114,7 @@ CTree_WriteFiles_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME *pltc) {
   OV_INSTPTR_CTree_WriteFiles pinst = Ov_StaticPtrCast(CTree_WriteFiles, pfb);
   OV_RESULT result = OV_ERR_OK;
   result = CTree_WriteFiles_write(pinst);
-  switch (result) {
+  pinst->v_actimode = 0;
   case OV_ERR_OK:
     pinst->v_result = result;
     ov_logfile_info("Successfully written.");
