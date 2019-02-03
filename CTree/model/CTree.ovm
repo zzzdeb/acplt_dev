@@ -146,10 +146,6 @@ LIBRARY CTree
     END_PARTS;
     OPERATIONS
       constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-      destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
-      startup      : C_FUNCTION <OV_FNC_STARTUP>;
-        shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
-        
       typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
@@ -198,9 +194,6 @@ LIBRARY CTree
     END_PARTS;
     OPERATIONS
       constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-      startup       : C_FUNCTION <OV_FNC_STARTUP>;
-      shutdown      : C_FUNCTION <OV_FNC_SHUTDOWN>;
-      submit        : C_FUNCTION <CTREE_FNC_SUBMIT>;
       //getaccess     : C_FUNCTION <OV_FNC_GETACCESS>;    /*  just to make all variables visible on KS  */
       prepareSubmit   : C_FUNCTION <CTREE_FNC_PREPSUBMIT>;
       genSetForSubmit   : C_FUNCTION <CTREE_FNC_GENSETFSUBMIT>;

@@ -71,46 +71,6 @@ OV_DLLFNCEXPORT OV_RESULT
   return result;
 }
 
-OV_DLLFNCEXPORT void CTree_LoadLibs_destructor(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  //	OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs,
-  // pobj);
-  /* do what */
-  /* destroy object */
-  fb_functionblock_destructor(pobj);
-
-  return;
-}
-
-OV_DLLFNCEXPORT void CTree_LoadLibs_startup(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pobj);
-
-  /* do what the base class does first */
-  fb_functionblock_startup(pobj);
-
-  /* do what */
-  pinst->p_ks.v_actimode = 1;
-  return;
-}
-
-OV_DLLFNCEXPORT void CTree_LoadLibs_shutdown(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  //	OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs,
-  // pobj);
-  /* do what */
-  /* set the object's state to "shut down" */
-  fb_functionblock_shutdown(pobj);
-
-  return;
-}
-
 OV_DLLFNCEXPORT OV_RESULT
                 CTree_LoadLibs_reset_set(OV_INSTPTR_CTree_LoadLibs pobj, const OV_BOOL value) {
   OV_RESULT                    result = OV_ERR_OK;

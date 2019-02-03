@@ -46,39 +46,6 @@ OV_DLLFNCEXPORT OV_RESULT
   return result;
 }
 
-OV_DLLFNCEXPORT void CTree_Transport_startup(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   *   */
-
-  OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pobj);
-
-  /*
-   do what the base class does first
-   */
-  fb_functionblock_startup(pobj);
-
-  //	 do what
-  pinst->v_result = OV_ERR_OK;
-  pinst->v_status = INITIAL;
-  return;
-}
-
-OV_DLLFNCEXPORT void CTree_Transport_shutdown(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  /*
-
-   do what
-
-   set the object's state to "shut down"
-   */
-  fb_functionblock_shutdown(pobj);
-
-  return;
-}
-
 OV_DLLFNCEXPORT OV_RESULT
                 CTree_Transport_reset_set(OV_INSTPTR_CTree_Transport pobj, OV_BOOL value) {
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
@@ -227,34 +194,6 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
   }
   return result;
 }
-/*
-
- OV_DLLFNCEXPORT OV_ACCESS CTree_Transport_getaccess(OV_INSTPTR_ov_object pobj,
- const OV_ELEMENT *pelem, const OV_TICKET *pticket) {
-
- *	local variables
-
-
-
- *	switch based on the element's type
-
- switch (pelem->elemtype) {
- case OV_ET_VARIABLE:
- if (pelem->elemunion.pvar->v_offset
- >= offsetof(OV_INST_ov_object, __classinfo)) {
- if (pelem->elemunion.pvar->v_vartype == OV_VT_CTYPE)
- return OV_AC_NONE;
- else
- return OV_AC_READWRITE;
- }
- break;
- default:
- break;
- }
-
- return ov_object_getaccess(pobj, pelem, pticket);
- }
- */
 
 #define DOWNLOADTRIGGERPOS 2
 
