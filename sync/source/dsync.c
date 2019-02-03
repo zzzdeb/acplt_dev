@@ -69,7 +69,6 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_trigger_set(OV_INSTPTR_sync_dsync pinst,
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
                                                const OV_BOOL         value) {
-  pobj->v_reset = value;
   if(value && !pobj->v_reset) {
     pobj->v_status = SYNC_SRC_INIT;
     ksapi_KSApiCommon_Reset_set(
@@ -83,6 +82,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
     CTree_Transport_reset_set(&pobj->p_transport, 0);
     CTree_Transport_reset_set(&pobj->p_transport, 1);
   }
+  pobj->v_reset = value;
   return OV_ERR_OK;
 }
 
