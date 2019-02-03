@@ -5,4 +5,4 @@ tail -f $ACPLT_HOME/servers/$1/logfiles/log_start_server.txt \
     s,\[ACPLT/OV Warning].*,$(tput setaf 3)&$(tput sgr0),;\
     s,\[ACPLT/OV Debug].*,$(tput setaf 4)&$(tput sgr0),; \
     s,TEST(.*PASS,$(tput setaf 2)&$(tput sgr0),;" \
-2>&1 | perl -ne 'if (/file truncated/) {system 'clear'; print} else {print}'
+2>&1
