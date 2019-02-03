@@ -28,7 +28,7 @@ OV_STRING free_varpath(const OV_STRING path) {
   OV_STRING tmpString = NULL;
   OV_STRING currentChar = NULL;
   ov_string_setvalue(&pathWV, path);
-  if (*path != '$') {
+  if(*path != '$') {
     return pathWV;
   }
   ov_string_setvalue(&tmpString, path);
@@ -36,7 +36,7 @@ OV_STRING free_varpath(const OV_STRING path) {
   *currentChar = 0;
   ov_string_setvalue(&pathWV, getenv(tmpString + 1));
   *currentChar = '/';
-  if (pathWV == NULL) {
+  if(pathWV == NULL) {
     ov_string_setvalue(&tmpString, NULL);
     return pathWV;
   }
@@ -46,19 +46,19 @@ OV_STRING free_varpath(const OV_STRING path) {
 }
 /* writes blen bytes of pvalue under name*/
 OV_RESULT bytesToFile(const OV_STRING path, OV_UINT blen,
-                      const OV_BYTE *pvalue) {
+                      const OV_BYTE* pvalue) {
   OV_RESULT result = OV_ERR_OK;
-  FILE *target_lib = NULL;
+  FILE*     target_lib = NULL;
   OV_STRING varFreePath = free_varpath(path);
   target_lib = fopen(varFreePath, "wb");
   ov_string_setvalue(&varFreePath, NULL);
 
   OV_UINT tmp = fwrite(pvalue, sizeof(OV_BYTE), blen, target_lib);
   //	ov_logfile_info("bytes written %u %s", tmp, name);
-  if (tmp != blen)
+  if(tmp != blen)
     ov_logfile_error("not enough");
 
-  if (target_lib) {
+  if(target_lib) {
     fclose(target_lib);
     //		ov_logfile_info("closing file");
   }
@@ -67,7 +67,7 @@ OV_RESULT bytesToFile(const OV_STRING path, OV_UINT blen,
 
 /* writes files */
 OV_DLLFNCEXPORT OV_RESULT
-CTree_WriteFiles_write(OV_INSTPTR_CTree_WriteFiles pinst) {
+                CTree_WriteFiles_write(OV_INSTPTR_CTree_WriteFiles pinst) {
   OV_RESULT result = OV_ERR_OK;
 
   //	if(pinst->v_filesPositions || pinst->v_filesToWrite	||
@@ -81,18 +81,18 @@ CTree_WriteFiles_write(OV_INSTPTR_CTree_WriteFiles pinst) {
   Ov_WarnIfNot(pinst->v_filesToWrite.value);
   Ov_WarnIfNot(pinst->v_byteFiles.value.valueunion.val_byte_vec.value);
 
-  OV_BYTE *pvalue = pinst->v_byteFiles.value.valueunion.val_byte_vec.value;
-  OV_UINT len = pinst->v_filesToWrite.veclen;
-  OV_UINT blen = 0;
+  OV_BYTE*  pvalue = pinst->v_byteFiles.value.valueunion.val_byte_vec.value;
+  OV_UINT   len = pinst->v_filesToWrite.veclen;
+  OV_UINT   blen = 0;
   OV_STRING fileName = NULL;
-  for (OV_UINT i = 0; i < len; i++) {
+  for(OV_UINT i = 0; i < len; i++) {
     blen = i ? pinst->v_filesPositions.value[i] -
                    pinst->v_filesPositions.value[i - 1]
              : pinst->v_filesPositions.value[0];
     result =
         bytesToFile(pinst->v_filesToWrite.value[i], blen,
                     pvalue + (i ? pinst->v_filesPositions.value[i - 1] : 0));
-    if (Ov_OK(result)) {
+    if(Ov_OK(result)) {
       ov_logfile_info("In file %s %u bytes writen",
                       pinst->v_filesToWrite.value[i], blen);
     } else {
@@ -107,21 +107,22 @@ CTree_WriteFiles_write(OV_INSTPTR_CTree_WriteFiles pinst) {
 }
 
 OV_DLLFNCEXPORT void
-CTree_WriteFiles_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME *pltc) {
+CTree_WriteFiles_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   /*
    *   local variables
    */
   OV_INSTPTR_CTree_WriteFiles pinst = Ov_StaticPtrCast(CTree_WriteFiles, pfb);
-  OV_RESULT result = OV_ERR_OK;
+  OV_RESULT                   result = OV_ERR_OK;
   result = CTree_WriteFiles_write(pinst);
   pinst->v_actimode = 0;
-  case OV_ERR_OK:
-    pinst->v_result = result;
-    ov_logfile_info("Successfully written.");
-    break;
-  default:
-    pinst->v_result = !!result;
-    ov_logfile_error("%u: %s", result, ov_result_getresulttext(result));
+  switch(result) {
+    case OV_ERR_OK:
+      pinst->v_result = result;
+      ov_logfile_info("Successfully written.");
+      break;
+    default:
+      pinst->v_result = !!result;
+      ov_logfile_error("%u: %s", result, ov_result_getresulttext(result));
   }
 
   return;
