@@ -44,8 +44,6 @@ SET_KSPARAM(const OV_INSTPTR_ksbase_ClientBase pclient, const OV_STRING param);
 typedef OV_DLLFNCEXPORT OV_RESULT ACCESS_TO_STRING(OV_STRING *accessstr,
                                                    const OV_ACCESS *access);
 
-typedef void CTREE_FNC_SUBMIT(OV_INSTPTR_CTree_Transport pobj);
-
 typedef OV_RESULT CTREE_LOADLIBS_SAVE(OV_INSTPTR_CTree_LoadLibs pobj);
 /* writefiles */
 typedef OV_RESULT CTREE_WRITEFILES_WRITE(OV_INSTPTR_CTree_WriteFiles pinst);

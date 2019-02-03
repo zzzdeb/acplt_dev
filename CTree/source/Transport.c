@@ -107,10 +107,6 @@ OV_DLLFNCEXPORT OV_RESULT
   return result;
 }
 
-OV_DLLFNCEXPORT void CTree_Transport_submit(OV_INSTPTR_CTree_Transport pobj) {
-  return;
-}
-
 OV_RESULT
 CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
                                OV_INSTPTR_ksbase_ClientBase* pClient,
