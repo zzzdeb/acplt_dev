@@ -30,22 +30,27 @@
 #include "libov/ov_result.h"
 
 OV_RESULT ov_library_setglobalvars_CTree_new(void) {
-  OV_RESULT result = OV_ERR_OK;
-  OV_INSTPTR_CTree_Download pdownload = NULL;
-  OV_INSTPTR_CTree_Upload pupload = NULL;
-  OV_INSTPTR_CTree_Transport ptransport = NULL;
-  OV_INSTPTR_CTree_dbinfoExt pdbinfo = NULL;
+  OV_RESULT                   result = OV_ERR_OK;
+  OV_INSTPTR_CTree_Download   pdownload = NULL;
+  OV_INSTPTR_CTree_Upload     pupload = NULL;
+  OV_INSTPTR_CTree_Transport  ptransport = NULL;
+  OV_INSTPTR_CTree_dbinfoExt  pdbinfo = NULL;
   OV_INSTPTR_CTree_WriteFiles pwritefiles = NULL;
-  OV_INSTPTR_ov_domain pCTree = NULL;
-  OV_INSTPTR_ov_domain pData = NULL;
-  // OV_INSTPTR_fb_task pUrTask = NULL;
+  OV_INSTPTR_ov_domain        pCTree = NULL;
+  OV_INSTPTR_ov_domain        pData = NULL;
+  OV_INSTPTR_fb_task          pUrTask = NULL;
+  pUrTask =
+      Ov_StaticPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
+  if(!pUrTask) {
+    ov_logfile_warning("CTree_library_open: UrTask couldt get");
+  }
   /*
    *    set the global variables of the original version
    *    and if successful, load other libraries
    *    and create some objects
    */
   result = ov_library_setglobalvars_CTree();
-  if (Ov_Fail(result)) {
+  if(Ov_Fail(result)) {
     return result;
   }
   /*
@@ -53,14 +58,14 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
    */
   pData = Ov_StaticPtrCast(ov_domain,
                            Ov_SearchChild(ov_containment, &pdb->root, "data"));
-  if (!pData) {
+  if(!pData) {
     return result;
   }
   pCTree = Ov_StaticPtrCast(ov_domain,
                             Ov_SearchChild(ov_containment, pData, "CTree"));
-  if (!pCTree) {
+  if(!pCTree) {
     result = Ov_CreateObject(ov_domain, pCTree, pData, "CTree");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create CTree in /data;",
                        ov_result_getresulttext(result));
       return result;
@@ -68,35 +73,36 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
   }
   pdownload = Ov_StaticPtrCast(
       CTree_Download, Ov_SearchChild(ov_containment, pCTree, "Download"));
-  if (!pdownload) {
+  if(!pdownload) {
     result = Ov_CreateObject(CTree_Download, pdownload, pCTree, "Download");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create download;",
                        ov_result_getresulttext(result));
     }
+    if(pUrTask)
+      Ov_Link(fb_tasklist, pUrTask, pdownload);
   }
   pupload = Ov_StaticPtrCast(CTree_Upload,
                              Ov_SearchChild(ov_containment, pCTree, "Upload"));
-  if (!pupload) {
+  if(!pupload) {
     result = Ov_CreateObject(CTree_Upload, pupload, pCTree, "Upload");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create upload;",
                        ov_result_getresulttext(result));
     }
-    // OV_INSTPTR_ov_object ptmp =
-    //     ov_path_getobjectpointer("/Tasks/UrTask", VERSION_FOR_CTREE);
-    // pUrTask = Ov_StaticPtrCast(fb_task, ptmp);
-    //		if(pUrTask)
-    //			Ov_Link(fb_tasklist, pUrTask, pupload);
+    if(pUrTask)
+      Ov_Link(fb_tasklist, pUrTask, pupload);
   }
   ptransport = Ov_StaticPtrCast(
       CTree_Transport, Ov_SearchChild(ov_containment, pCTree, "Transport"));
-  if (!ptransport) {
+  if(!ptransport) {
     result = Ov_CreateObject(CTree_Transport, ptransport, pCTree, "Transport");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create transport;",
                        ov_result_getresulttext(result));
     }
+    if(pUrTask)
+      Ov_Link(fb_tasklist, pUrTask, ptransport);
   }
 
   /*
@@ -104,9 +110,9 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
    */
   pdbinfo = Ov_StaticPtrCast(CTree_dbinfoExt,
                              Ov_SearchChild(ov_containment, pCTree, "dbinfo"));
-  if (!pdbinfo) {
+  if(!pdbinfo) {
     result = Ov_CreateObject(CTree_dbinfoExt, pdbinfo, pCTree, "dbinfo");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create dbinfo in /data/CTree;",
                        ov_result_getresulttext(result));
     }
@@ -115,26 +121,29 @@ OV_RESULT ov_library_setglobalvars_CTree_new(void) {
   /* write file */
   pwritefiles = Ov_StaticPtrCast(
       CTree_WriteFiles, Ov_SearchChild(ov_containment, pCTree, "WriteFiles"));
-  if (!pwritefiles) {
+  if(!pwritefiles) {
     result =
         Ov_CreateObject(CTree_WriteFiles, pwritefiles, pCTree, "WriteFiles");
-    if (Ov_Fail(result)) {
+    if(Ov_Fail(result)) {
       ov_logfile_error("Error: %s: couldnt create WriteFiles in /data/CTree;",
                        ov_result_getresulttext(result));
     }
+    if(pUrTask)
+      Ov_Link(fb_tasklist, pUrTask, pwritefiles);
   }
 
   //		result = Ov_CreateObject(CTree_Upload, pupload, pCTree,
-  //"Transport"); 		if (Ov_Fail(result)){ 			ov_logfile_error("Error: %s: couldnt
-  //create transport;", ov_result_getresulttext(result));
+  //"Transport"); 		if (Ov_Fail(result)){
+  // ov_logfile_error("Error: %s: couldnt create transport;",
+  // ov_result_getresulttext(result));
   //		}
 
   return OV_ERR_OK;
 }
 
-OV_DLLFNCEXPORT OV_LIBRARY_DEF *ov_library_open_CTree(void) {
+OV_DLLFNCEXPORT OV_LIBRARY_DEF* ov_library_open_CTree(void) {
   /* local variables */
-  static OV_LIBRARY_DEF *OV_LIBRARY_DEF_CTree_new;
+  static OV_LIBRARY_DEF* OV_LIBRARY_DEF_CTree_new;
   /*
    *       replace the 'setglobalvars' function created by the code generator
    *       with a new one.
