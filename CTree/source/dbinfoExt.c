@@ -31,12 +31,6 @@
 #include "libov/ov_vendortree.h"
 #include "object_helper.h"
 
-void exitInfo(void) {
-  ov_logfile_info("exitInfo");
-  if(errno)
-    perror("terminating␣with␣error␣condition");
-  fputs("Good␣Bye\n", stderr);
-}
 OV_RESULT updateAddonlibs();
 
 OV_DLLFNCEXPORT OV_RESULT
@@ -51,8 +45,6 @@ OV_DLLFNCEXPORT OV_RESULT
   result = ov_object_constructor(pobj);
   if(Ov_Fail(result))
     return result;
-
-  atexit(exitInfo);
 
   /* do what */
   pinst->v_addonlibs.veclen = 0;
@@ -125,7 +117,7 @@ OV_DLLFNCEXPORT void CTree_dbinfoExt_shutdown(OV_INSTPTR_ov_object pobj) {
 OV_DLLFNCEXPORT OV_STRING*
                 CTree_dbinfoExt_addonlibs_get(OV_INSTPTR_CTree_dbinfoExt pobj,
                                               OV_UINT*                   pveclen) {
-  ov_logfile_info("libs getter");
+  ov_logfile_info("CTree_dbinfoExt: getting libs");
   *pveclen = pobj->v_addonlibs.veclen;
   return pobj->v_addonlibs.value;
 }
