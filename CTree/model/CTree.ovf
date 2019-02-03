@@ -12,16 +12,6 @@
 OV_RESULT CTree_Download_execute(OV_INSTPTR_CTree_Download pinst);
 /* Upload */
 OV_RESULT CTree_Upload_execute(OV_INSTPTR_CTree_Upload pinst);
-/* LoadLibs */
-OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst);
-OV_RESULT CTree_LoadLibs_execute_withCallback(
-    OV_INSTPTR_CTree_LoadLibs pinst, OV_INSTPTR_ov_domain that,
-    void (*callback)(OV_INSTPTR_ov_domain, OV_INSTPTR_ov_domain));
-/* SendFiles */
-OV_RESULT CTree_SendFiles_execute_withCallback(OV_INSTPTR_CTree_SendFiles pinst,
-                        OV_INSTPTR_ov_domain that,
-                        void (*callback)(OV_INSTPTR_ov_domain,
-                                         OV_INSTPTR_ov_domain));
 /* helper */
 OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING *serverHost,
                        OV_STRING *port, OV_STRING *serverName,

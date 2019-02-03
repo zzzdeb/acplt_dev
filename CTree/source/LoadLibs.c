@@ -30,22 +30,13 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_result.h"
 #include "libov/ov_string.h"
+#include "object_helper.h"
 
 #include "ksapi.h"
 #include "ksbase.h"
 #include "ksbase_helper.h"
 
 enum format { OS, ARCH, LIBS, ACPLTHOME, FORMATLEN };
-enum state {
-  INITIAL,
-  INFO_REQUESTED,
-  INFO_RECEIVED,
-  DATA_SENT,
-  DONE,
-  INTERNAL_ERROR,
-  EXTERNAL_ERROR,
-  NUMOFSTATES
-};
 
 #define DBINFO_SYSTEM "/data/CTree/dbinfo.serversystem"
 #define DBINFO_ARCH "/data/CTree/dbinfo.serversystemarch"
@@ -66,7 +57,7 @@ OV_DLLFNCEXPORT OV_RESULT
 
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_sendFiles);
   pinst->p_sendFiles.v_iexreq = 1;
-  pinst->p_sendFiles.v_actimode = 1;
+  pinst->p_sendFiles.v_actimode = 0;
 
   return result;
 }
@@ -78,7 +69,7 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
   //  OV_VTBLPTR_CTree_SendFiles pVtblSendfiles = NULL;
   if(value && (!pobj->v_reset)) {
-    pobj->v_status = INITIAL;
+    pobj->v_status = CTREE_LL_INIT;
     pobj->v_result = OV_ERR_OK;
 
     ov_string_setvalue(&pobj->v_targetOS, NULL);
@@ -103,28 +94,11 @@ OV_DLLFNCEXPORT OV_RESULT
       }
     }
 
-    pobj->p_sendFiles.v_reset = 1;
+    pobj->p_sendFiles.v_reset = 0;
+    CTree_SendFiles_reset_set(&pobj->p_sendFiles, 1);
   }
   pobj->v_reset = value;
   return result;
-}
-
-OV_DLLFNCEXPORT OV_RESULT
-                CTree_LoadLibs_savelibs(OV_INSTPTR_CTree_LoadLibs pobj) {
-  ov_logfile_info("in save");
-  return 0;
-}
-
-/* checks if str in vec is. */
-OV_BOOL strvec_contains(const OV_STRING_VEC* vec, const OV_STRING str) {
-  if(!vec || !str)
-    return 0;
-
-  for(OV_UINT i = 0; i < vec->veclen; i++) {
-    if(!ov_string_compare(vec->value[i], str))
-      return 1;
-  }
-  return 0;
 }
 
 OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
@@ -148,7 +122,7 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
     ov_logfile_error(
         "%s callback: could not determine Vtable of Client %s. aborting",
         this->v_identifier, that->v_identifier);
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_BADOBJTYPE;
     return;
   }
@@ -156,13 +130,13 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
   result = pVtblClient->m_processGetVar(
       pClient, NULL, (OV_RESULT*)&(pinst->v_result), &itemsLength, &itemsVals);
   if(Ov_Fail(result)) {
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = result;
     ov_memstack_unlock();
     return;
   }
 
-  pinst->v_status = INFO_RECEIVED;
+  pinst->v_status = CTREE_LL_INFO_RECEIVED;
 
   ov_memstack_unlock();
   if(!itemsVals[ARCH].result)
@@ -188,7 +162,7 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
   //		ov_string_print(&pinst->v_targetAddonlibsDir, "%s%s%c%s%c",
   // itemsVals[ACPLTHOME].var_current_props.value.valueunion.val_string,
   //"system", sep, "addonlibs", sep);;
-  CTree_LoadLibs_execute(pinst);
+  /* CTree_LoadLibs_execute(pinst); */
   return;
 }
 
@@ -208,35 +182,18 @@ OV_DLLFNCEXPORT void dataSend_callback(const OV_INSTPTR_ov_domain this,
   pinst->v_status = pSfiles->v_status;
   pinst->v_result = pSfiles->v_result;
   ov_logfile_info("Done.");
-
-  /*calling outer object*/
-  if(pinst->v_postCallback.callbackFunction)
-    (*pinst->v_postCallback.callbackFunction)(
-        pinst->v_postCallback.instanceCalled,
-        Ov_StaticPtrCast(ov_domain, pinst));
   return;
 }
 
-/* calls callback with that object when done. */
-OV_RESULT CTree_LoadLibs_execute_withCallback(
-    OV_INSTPTR_CTree_LoadLibs pinst, OV_INSTPTR_ov_domain that,
-    void (*callback)(OV_INSTPTR_ov_domain, OV_INSTPTR_ov_domain)) {
-  pinst->v_postCallback.callbackFunction = callback;
-  pinst->v_postCallback.instanceCalled = that;
-  return CTree_LoadLibs_execute(pinst);
-}
-
-OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
-  OV_RESULT result = OV_ERR_OK;
-
-  OV_STRING_VEC libsToSend = {0};
-  //  OV_STRING_VEC libs = {0};
-
-  //  OV_STRING_VEC *ptarget_libs = NULL;
-
-  OV_BYTE_VEC  blibs = {0, NULL};
-  OV_BYTE_VEC* paddonlibs = {0, NULL};
-  //  OV_UINT_VEC libPositions = {0, NULL};
+OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
+                                               OV_TIME* pltc) {
+  /*
+   *   local variables
+   */
+  OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pfb);
+  OV_RESULT                 result = OV_ERR_OK;
+  OV_STRING_VEC             libsToSend = {0};
+  /* OV_BYTE_VEC               blibs = {0, NULL}; */
 
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, &pinst->p_ks);
@@ -248,8 +205,8 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
   OV_TICKET*    pticket = NULL;
 
   switch(pinst->v_status) {
-    case DONE:
-    case INITIAL:
+    case CTREE_LL_DONE:
+    case CTREE_LL_INIT:
       /*
        * 1. get own os and arch
        */
@@ -286,27 +243,27 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
       OV_STRING targetPath = NULL;
       ks_splitOneStringPath(pinst->v_targetKS, &serverHost, &serverPort,
                             &serverName, &serverNamePort, &targetPath);
-      if(!serverHost) {
-        ov_logfile_error("%s: no serverHost set. aborting",
+      if(!serverHost || !serverName) {
+        ov_logfile_error("%s: no serverHost||serverName set. aborting",
                          pinst->p_ks.v_identifier);
-        return OV_ERR_BADPARAM;
+        pinst->v_result = OV_ERR_BADPARAM;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_memstack_unlock();
+        return;
       }
 
-      result = ksbase_ClientBase_serverHost_set(
+      result |= ksbase_ClientBase_serverHost_set(
           (OV_INSTPTR_ksbase_ClientBase)&pinst->p_ks, serverHost);
+      result |= ksbase_ClientBase_serverName_set(
+          (OV_INSTPTR_ksbase_ClientBase)&pinst->p_ks, serverName);
       if(Ov_Fail(result)) {
-        ov_logfile_error("%s: submit: could not set serverHost at Client",
-                         pinst->p_ks.v_identifier);
-        return result;
-      }
-      if(serverName) {
-        result = ksbase_ClientBase_serverName_set(
-            (OV_INSTPTR_ksbase_ClientBase)&pinst->p_ks, serverName);
-        if(Ov_Fail(result)) {
-          ov_logfile_error("%s: submit: could not set serverName at Client",
-                           pinst->p_ks.v_identifier);
-          return result;
-        }
+        ov_logfile_error(
+            "%s: submit: could not set hostName||serverName at Client",
+            pinst->p_ks.v_identifier);
+        pinst->v_result = result;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_memstack_unlock();
+        return;
       }
 
       Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
@@ -315,10 +272,10 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
         //					"%s callback: could not
         // determine Vtable of Client %s. aborting",
         // pinst->v_identifier, that->v_identifier);
-        pinst->v_status = INTERNAL_ERROR;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
         pinst->v_result = OV_ERR_BADOBJTYPE;
         ov_memstack_unlock();
-        return OV_ERR_GENERIC;
+        return;
       }
       OV_STRING targetpaths[FORMATLEN] = {
           [OS] = "/data/CTree/dbinfo.serversystem",
@@ -328,17 +285,17 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
       result = pVtblClient->m_requestGetVar(
           pClient, NULL, FORMATLEN, targetpaths, (OV_INSTPTR_ov_domain)pinst,
           &infoRequest_callback);
+      pinst->v_status = CTREE_LL_INFOREQSTED;
 
       if(!(pClient->v_state & KSBASE_CLST_ERROR))
-        pinst->v_status = INFO_REQUESTED;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
       else
-        pinst->v_status = INTERNAL_ERROR;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
       ov_memstack_unlock();
       break;
-    case INFO_REQUESTED:
-      ov_logfile_error("unexpected status %u", INFO_REQUESTED);
+    case CTREE_LL_INFOREQSTED:
       break;
-    case INFO_RECEIVED:
+    case CTREE_LL_INFO_RECEIVED:
 
       /*
        * 3. compare os and arch
@@ -348,7 +305,9 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
         ov_logfile_info("OS and Arch are matching with target system");
       } else {
         ov_logfile_error("Target os or arch is different from local");
-        return OV_ERR_GENERIC;
+        pinst->v_result = OV_ERR_BADVALUE;
+        pinst->v_status = CTREE_COMMON_EXTERNALERROR;
+        return;
       }
       /*
        * 4. Find out libs to transport
@@ -361,7 +320,7 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
       OV_UINT j = 0;
       for(OV_UINT i = 0; i < pinst->v_libsToSend.veclen; i++) {
         if(ov_strvec_contains(&pinst->v_targetLibs,
-                           pinst->v_libsToSend.value[i])) {
+                              pinst->v_libsToSend.value[i])) {
           ov_logfile_info("Library %s exists", pinst->v_libsToSend.value[i]);
           libsToSend.veclen--;
         } else {
@@ -375,8 +334,6 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
       /*
        * 5. convert libs to OV_BYTE_VEC
        */
-      ov_memstack_lock();
-
       Ov_SetDynamicVectorLength(&pinst->p_sendFiles.v_filesToSend,
                                 libsToSend.veclen, STRING);
       for(OV_UINT i = 0; i < libsToSend.veclen; ++i) {
@@ -396,54 +353,29 @@ OV_RESULT CTree_LoadLibs_execute(OV_INSTPTR_CTree_LoadLibs pinst) {
        * 6. send libs
        */
       ov_string_setvalue(&pinst->p_sendFiles.v_targetKS, pinst->v_targetKS);
-      result = CTree_SendFiles_execute_withCallback(
-          &pinst->p_sendFiles, (OV_INSTPTR_ov_domain)pinst, &dataSend_callback);
+      /* triggering sendfiles */
+      pinst->p_sendFiles.v_trigger = 0;
+      result = CTree_Common_trigger_set(
+          Ov_StaticPtrCast(CTree_Common, &pinst->p_sendFiles), 1);
       if(Ov_OK(result))
-        pinst->v_status = DATA_SENT;
-      else
-        ov_logfile_error("%d", result);
-
-      Ov_HeapFree(paddonlibs);
-      Ov_HeapFree(blibs.value);
-      break;
-    default:
-      ov_logfile_error("%u : unexpected State", pinst->v_status);
-  }
-
-  return result;
-}
-
-OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
-                                               OV_TIME* pltc) {
-  /*
-   *   local variables
-   */
-  OV_INSTPTR_CTree_LoadLibs pinst = Ov_StaticPtrCast(CTree_LoadLibs, pfb);
-  OV_RESULT                 result = OV_ERR_OK;
-  pinst->v_result = -1;
-  switch(pinst->v_status) {
-    case CTREE_LL_INIT:
-    case CTREE_LL_INFOREQSTD:
-    case CTREE_LL_INFO_RECEIVED:
-      result = CTree_LoadLibs_execute(pinst);
-      switch(result) {
-        case OV_ERR_OK:
-          ov_logfile_info("SendFiles: sent. waiting for response.");
-          break;
-        case OV_ERR_BADPARAM:
-          pinst->v_result = result;
-          ov_logfile_error("LoadLibs failed.");
-          break;
-        default:
-          pinst->v_result = result;
-          return;
+        pinst->v_status = CTREE_LL_DATA_SENT;
+      else {
+        ov_logfile_error("CTree_LoadLibs: Failed to trigger Sendfiles");
+        pinst->v_result = OV_ERR_GENERIC;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_memstack_unlock();
+        return;
       }
+      ov_memstack_unlock();
+      /* Ov_HeapFree(paddonlibs); */
+      /* Ov_HeapFree(blibs.value); */
       break;
     case CTREE_LL_DATA_SENT:
       switch(pinst->p_sendFiles.v_status) {
         case CTREE_SF_DONE:
-          ov_logfile_info("Done.");
+          ov_logfile_info("CTree_LoadLibs: Done.");
           pinst->v_status = CTREE_LL_DONE;
+          pinst->v_actimode = 0;
           break;
         case CTREE_COMMON_INTERNALERROR:
         case CTREE_COMMON_EXTERNALERROR:
@@ -455,13 +387,13 @@ OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
           break;
       }
       break;
-    case CTREE_LL_DONE:
+    case CTREE_COMMON_INTERNALERROR:
+    case CTREE_COMMON_EXTERNALERROR:
       pinst->v_actimode = 0;
       break;
     default:
       ov_logfile_error("%u : unexpected State", pinst->v_status);
-      break;
+      pinst->v_actimode = 0;
   }
-
   return;
 }

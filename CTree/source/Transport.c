@@ -31,7 +31,6 @@
 
 #include <stdarg.h>
 
-enum State { INITIAL, LIBSSENT_WAITING, TREESENT_WAITING, DONE };
 OV_DLLFNCEXPORT OV_RESULT
                 CTree_Transport_constructor(OV_INSTPTR_ov_object pobj) {
   OV_RESULT                  result = OV_ERR_OK;
@@ -40,23 +39,23 @@ OV_DLLFNCEXPORT OV_RESULT
   result = fb_functionblock_constructor(pobj);
 
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_loadlibs);
-  pinst->p_loadlibs.v_actimode = 1;
+  pinst->p_loadlibs.v_actimode = 0;
   pinst->p_loadlibs.v_iexreq = 1;
 
   return result;
 }
 
 OV_DLLFNCEXPORT OV_RESULT
-                CTree_Transport_reset_set(OV_INSTPTR_CTree_Transport pobj, OV_BOOL value) {
+                CTree_Transport_reset_set(OV_INSTPTR_CTree_Transport pinst, OV_BOOL value) {
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
   OV_RESULT                    result = OV_ERR_OK;
 
-  if(value && (!pobj->v_reset)) {
-    pobj->v_status = INITIAL;
-    pobj->v_result = OV_ERR_OK;
+  if(value && (!pinst->v_reset)) {
+    pinst->v_status = CTREE_TR_INIT;
+    pinst->v_result = OV_ERR_OK;
     Ov_ForEachChildEx(
-        ov_containment, pobj, pClient,
+        ov_containment, pinst, pClient,
         ksbase_ClientBase) { /*	find the object in the containment which is
                             derived from ClientBase	*/
       break;
@@ -68,9 +67,11 @@ OV_DLLFNCEXPORT OV_RESULT
         result = pVtblClient->m_reset(pClient);
       }
     }
+    pinst->p_loadlibs.v_reset = 0;
+    CTree_LoadLibs_reset_set(&pinst->p_loadlibs, 1);
   }
 
-  pobj->v_reset = value;
+  pinst->v_reset = value;
   return result;
 }
 
@@ -199,7 +200,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
 
 void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
                                            const OV_INSTPTR_ov_domain that) {
-  OV_INSTPTR_CTree_Transport   thisSV = Ov_StaticPtrCast(CTree_Transport, this);
+  OV_INSTPTR_CTree_Transport   pinst = Ov_StaticPtrCast(CTree_Transport, this);
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, that);
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
@@ -218,23 +219,23 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
     KS_logfile_error(
         ("%s callback: could not determine Vtable of Client %s. aborting",
          this->v_identifier, that->v_identifier));
-    thisSV->v_status = CTREE_COMMON_INTERNALERROR;
-    thisSV->v_result = OV_ERR_BADOBJTYPE;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = OV_ERR_BADOBJTYPE;
     return;
   }
   ov_memstack_lock();
   result = pVtblClient->m_processSetVar(pClient, NULL,
-                                        (OV_RESULT*)&(thisSV->v_result),
+                                        (OV_RESULT*)&(pinst->v_result),
                                         &itemsLength, &itemsResults);
   if(Ov_Fail(result)) {
-    thisSV->v_status = CTREE_COMMON_INTERNALERROR;
-    thisSV->v_result = result;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    pinst->v_result = result;
     ov_memstack_unlock();
     return;
   }
 
-  if(Ov_Fail(thisSV->v_result)) {
-    thisSV->v_status = CTREE_COMMON_EXTERNALERROR;
+  if(Ov_Fail(pinst->v_result)) {
+    pinst->v_status = CTREE_COMMON_EXTERNALERROR;
     ov_memstack_unlock();
     return;
   }
@@ -247,41 +248,22 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
                          "set didnt work or Download had error");
       }
       ov_logfile_info("Transport failed.");
-      thisSV->v_status = CTREE_COMMON_EXTERNALERROR;
+      pinst->v_status = CTREE_COMMON_EXTERNALERROR;
       ov_memstack_unlock();
       return;
     }
   }
 
-  //	thisSV->v_varRes = itemsResults[0];
-  thisSV->v_status = DONE;
+  //	pinst->v_varRes = itemsResults[0];
+  pinst->v_status = CTREE_TR_DONE;
+  pinst->v_actimode = 0;
   ov_logfile_info("Transport done.");
 
   ov_memstack_unlock();
   return;
 }
 
-void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
-                                       OV_INSTPTR_ov_domain that) {
-  OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, this);
-  /* Load Libs */
-  if(!this || !that) {
-    ov_logfile_error("callback issued with NULL pointers. aborting.");
-    pinst->v_status = CTREE_COMMON_INTERNALERROR;
-    pinst->v_result = OV_ERR_GENERIC;
-    return;
-  }
-  OV_INSTPTR_CTree_LoadLibs ploadlibs = Ov_DynamicPtrCast(CTree_LoadLibs, that);
-  if(!pinst || !ploadlibs) {
-    ov_logfile_error("callback issued with cant cast");
-    return;
-  }
-  pinst->v_status = ploadlibs->v_status;
-  if(ploadlibs->v_result) {
-    pinst->v_result = OV_ERR_GENERIC;
-    return;
-  }
-
+void CTree_Transport_sendTree(OV_INSTPTR_CTree_Transport pinst) {
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
 
@@ -310,6 +292,7 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
     ov_string_setvalue(&path, DOWNLOAD_PATH);
 
   ov_logfile_info("%s: path Transport", path);
+
   if(pinst->p_upload.v_tree) {
     items[0].path_and_name = NULL;
     ov_string_print(&items[0].path_and_name, "%s.%s", path,
@@ -330,7 +313,7 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
     items[DOWNLOADTRIGGERPOS].var_current_props.value.valueunion.val_int = 1;
   } else {
     ov_logfile_warning("%s: v_tree is empty", pinst->v_identifier);
-    pinst->v_status = DONE;
+    pinst->v_status = CTREE_TR_DONE;
     pinst->v_result = OV_ERR_OK;
     /*cleaning*/
     ov_string_setvalue(&path, NULL);
@@ -343,9 +326,9 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
                                (OV_INSTPTR_ov_domain)pinst,
                                &CTree_Transport_treedownload_callback);
 
-  if(!(pClient->v_state & KSBASE_CLST_ERROR))
-    pinst->v_status = TREESENT_WAITING;
-  else {
+  if(!(pClient->v_state & KSBASE_CLST_ERROR)) {
+    pinst->v_status = CTREE_TR_TREESENT_WAITING;
+  } else {
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_GENERIC;
     /*cleaning*/
@@ -360,66 +343,6 @@ void CTree_Transport_loadlibs_callback(OV_INSTPTR_ov_domain this,
   return;
 }
 
-OV_DLLFNCEXPORT OV_RESULT
-                CTree_Transport_execute(OV_INSTPTR_CTree_Transport pinst) {
-  OV_RESULT result = OV_ERR_OK;
-
-  ov_string_setvalue(&pinst->p_upload.v_path, pinst->v_path);
-  CTree_Upload_typemethod(Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload),
-                          NULL);
-  if(Ov_Fail(pinst->p_upload.v_result)) {
-    pinst->v_status = CTREE_COMMON_INTERNALERROR;
-    ov_logfile_error("Transport failed.");
-    return OV_ERR_GENERIC;
-  }
-
-  ov_memstack_lock();
-  OV_STRING targetHost = NULL;
-  OV_STRING targetServer = NULL;
-  OV_STRING targetPath = NULL;
-  OV_STRING targetHostPort = NULL;
-  OV_STRING targetServerPort = NULL;
-  ks_splitOneStringPath(pinst->v_targetKS, &targetHost, &targetHostPort,
-                        &targetServer, &targetServerPort, &targetPath);
-  if(!targetPath) {
-    ov_logfile_error("No path is given in targetKS");
-    pinst->v_status = CTREE_COMMON_INTERNALERROR;
-    ov_memstack_unlock();
-    return OV_ERR_BADPARAM;
-  }
-
-  if(!targetHost) {
-    ov_logfile_info("targetKS: running local");
-    OV_INSTPTR_CTree_Download pdownload = Ov_StaticPtrCast(
-        CTree_Download, ov_path_getobjectpointer("/data/CTree/Download", 2));
-    ov_string_setvalue(&pdownload->v_json, pinst->p_upload.v_tree);
-    ov_string_setvalue(&pdownload->v_path, targetPath);
-    pinst->v_status = DONE;
-    ov_memstack_unlock();
-    return CTree_Download_execute(pdownload);
-  }
-  // TODO: zzz: ks_splitOneString problem at Port when it must be NULL Di 04 Dez
-  // 2018 01:17:57 CET
-  ov_string_setvalue(&pinst->v_targetHost, targetHost);
-  //  ov_string_setvalue(&pinst->v_targetHostPort, targetHostPort);
-  ov_string_setvalue(&pinst->v_targetServer, targetServer);
-  //  ov_string_setvalue(&pinst->v_targetServerPort, targetServerPort);
-  ov_string_setvalue(&pinst->v_targetPath, targetPath);
-
-  result = ov_string_setvalue(&pinst->p_loadlibs.v_targetKS, pinst->v_targetKS);
-  Ov_SetDynamicVectorValue(&pinst->p_loadlibs.v_libsToSend,
-                           pinst->p_upload.v_libs.value,
-                           pinst->p_upload.v_libs.veclen, STRING);
-  result = CTree_LoadLibs_execute_withCallback(
-      &pinst->p_loadlibs, Ov_StaticPtrCast(ov_domain, pinst),
-      CTree_Transport_loadlibs_callback);
-  if(Ov_OK(result)) {
-    pinst->v_status = LIBSSENT_WAITING;
-  }
-  ov_memstack_unlock();
-  return result;
-}
-
 OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                                 OV_TIME* pltc) {
   /*
@@ -428,20 +351,116 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pfb);
   OV_RESULT                  result = {0};
 
-  result = CTree_Transport_execute(pinst);
-  switch(result) {
-    case OV_ERR_OK:
-      pinst->v_result = -1;
-      ov_logfile_info("Transport: Load request");
-      break;
-    case OV_ERR_BADPARAM:
+  switch(pinst->v_status) {
+    case CTREE_TR_DONE:
+    case CTREE_TR_INIT:
+      ov_string_setvalue(&pinst->p_upload.v_path, pinst->v_path);
+      CTree_Upload_typemethod(
+          Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload), NULL);
+      if(Ov_Fail(pinst->p_upload.v_result)) {
+        pinst->v_result = pinst->p_upload.v_result;
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_logfile_error("Transport failed.");
+        return;
+      }
+
+      ov_memstack_lock();
+      OV_STRING targetHost = NULL;
+      OV_STRING targetServer = NULL;
+      OV_STRING targetPath = NULL;
+      OV_STRING targetHostPort = NULL;
+      OV_STRING targetServerPort = NULL;
+      ks_splitOneStringPath(pinst->v_targetKS, &targetHost, &targetHostPort,
+                            &targetServer, &targetServerPort, &targetPath);
+      if(!targetPath) {
+        ov_logfile_error("No path is given in targetKS");
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_memstack_unlock();
+        pinst->v_result = OV_ERR_BADPARAM;
+      }
+
+      if(!targetHost) {
+        ov_logfile_info("targetKS: running local");
+        OV_INSTPTR_CTree_Download pdownload = Ov_StaticPtrCast(
+            CTree_Download,
+            ov_path_getobjectpointer("/data/CTree/Download", 2));
+        ov_string_setvalue(&pdownload->v_json, pinst->p_upload.v_tree);
+        ov_string_setvalue(&pdownload->v_path, targetPath);
+        pinst->v_status = CTREE_TR_DONE;
+        ov_memstack_unlock();
+        pinst->v_result = CTree_Download_execute(pdownload);
+      }
+      // TODO: zzz: ks_splitOneString problem at Port when it must be NULL Di
+      // 04 Dez 2018 01:17:57 CET
+      result |= ov_string_setvalue(&pinst->v_targetHost, targetHost);
+      //  ov_string_setvalue(&pinst->v_targetHostPort, targetHostPort);
+      result |= ov_string_setvalue(&pinst->v_targetServer, targetServer);
+      //  ov_string_setvalue(&pinst->v_targetServerPort, targetServerPort);
+      result |= ov_string_setvalue(&pinst->v_targetPath, targetPath);
+
+      result |=
+          ov_string_setvalue(&pinst->p_loadlibs.v_targetKS, pinst->v_targetKS);
+      result |= Ov_SetDynamicVectorValue(&pinst->p_loadlibs.v_libsToSend,
+                                         pinst->p_upload.v_libs.value,
+                                         pinst->p_upload.v_libs.veclen, STRING);
+      if(Ov_Fail(result)) {
+        ov_logfile_error("CTree_Transport: %u: %s: failed to set string",
+                         result, ov_result_getresulttext(result));
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        pinst->v_result = result;
+        ov_memstack_unlock();
+        return;
+      }
+
+      pinst->p_loadlibs.v_trigger = 0;
+      result = CTree_Common_trigger_set(
+          Ov_StaticPtrCast(CTree_Common, &pinst->p_loadlibs), 1);
+      if(Ov_OK(result)) {
+        pinst->v_status = CTREE_TR_LIBSSENT_WAITING;
+      } else {
+        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        pinst->v_result = pinst->p_loadlibs.v_result;
+        ov_memstack_unlock();
+        return;
+      }
+      ov_memstack_unlock();
       pinst->v_result = result;
-      ov_logfile_error("Transport failed.");
+      return;
+      break;
+    case CTREE_TR_LIBSSENT_WAITING:
+      ov_logfile_info("CTree_Transport: libsentwaiting");
+      switch(pinst->p_loadlibs.v_status) {
+        case CTREE_LL_INIT:
+          ov_logfile_error("CTree_Transport: loadlibs still in init status");
+          pinst->v_status = CTREE_COMMON_INTERNALERROR;
+          pinst->v_result = OV_ERR_GENERIC;
+          break;
+        case CTREE_LL_INFOREQSTED:
+        case CTREE_LL_INFO_RECEIVED:
+        case CTREE_LL_DATA_SENT:
+          break;
+        case CTREE_LL_DONE:
+          CTree_Transport_sendTree(pinst);
+          break;
+        case CTREE_COMMON_INTERNALERROR:
+        case CTREE_COMMON_EXTERNALERROR:
+          pinst->v_status = pinst->p_loadlibs.v_status;
+          pinst->v_result = pinst->p_loadlibs.v_result;
+          break;
+        default:
+          pinst->v_status = CTREE_COMMON_INTERNALERROR;
+          pinst->v_result = OV_ERR_GENERIC;
+          break;
+      }
+      break;
+    case CTREE_TR_TREESENT_WAITING:
+      ov_logfile_info("CTree_Transport: treesentwaiting");
+      break;
+    case CTREE_COMMON_EXTERNALERROR:
+    case CTREE_COMMON_INTERNALERROR:
+      pinst->v_actimode = 0;
       break;
     default:
-      pinst->v_result = OV_ERR_GENERIC;
-      ov_logfile_error("Transport failed.");
+      break;
   }
-
-  return;
 }

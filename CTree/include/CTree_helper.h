@@ -17,6 +17,11 @@
 #define CTREE_LL_DATA_SENT 3
 #define CTREE_LL_DONE 4
 
+#define CTREE_TR_INIT 0
+#define CTREE_TR_LIBSSENT_WAITING 1
+#define CTREE_TR_TREESENT_WAITING 2
+#define CTREE_TR_DONE 3
+
 OV_RESULT valueToJSON(cJSON** pjsvalue, const OV_VAR_TYPE vartype,
                       const OV_BYTE* var, const OV_UINT size);
 

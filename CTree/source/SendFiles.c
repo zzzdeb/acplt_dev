@@ -22,6 +22,8 @@
 #include <string.h>
 
 #include "CTree.h"
+#include "CTree_helper.h"
+
 #include "libov/ov_macros.h"
 #include "libov/ov_ov.h"
 #include "libov/ov_result.h"
@@ -29,14 +31,7 @@
 #include "ksbase.h"
 #include "ksbase_helper.h"
 
-enum state {
-  INITIAL,
-  SENT_WAITING,
-  DONE,
-  INTERNAL_ERROR,
-  EXTERNAL_ERROR,
-  STATESLEN
-};
+enum state { INITIAL, SENT_WAITING, DONE, STATESLEN };
 
 OV_DLLFNCEXPORT OV_RESULT CTree_SendFiles_reset_set(
     OV_INSTPTR_CTree_SendFiles pobj, const OV_BOOL value) {
@@ -153,9 +148,10 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
 
   if(!pVtblClient) {
     ov_logfile_error(
+
         "%s callback: could not determine Vtable of Client %s. aborting",
         this->v_identifier, that->v_identifier);
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_BADOBJTYPE;
     return;
   }
@@ -165,7 +161,7 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
                                         (OV_RESULT*)&(pinst->v_result),
                                         &itemsLength, &itemsResults);
   if(Ov_Fail(result)) {
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = result;
     ov_memstack_unlock();
     return;
@@ -174,7 +170,7 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
     if(Ov_Fail(itemsResults[i])) {
       ov_logfile_error("CTree_SendFiles: %s at %d",
                        ov_result_getresulttext(itemsResults[i]), i);
-      pinst->v_status = EXTERNAL_ERROR;
+      pinst->v_status = CTREE_COMMON_EXTERNALERROR;
       pinst->v_result = OV_ERR_GENERIC;
       ov_memstack_unlock();
       return;
@@ -182,17 +178,13 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
   }
   pinst->v_status = DONE;
   pinst->v_result = OV_ERR_OK;
+  pinst->v_actimode = 0;
   ov_logfile_info("SendFiles done.");
   // debug
   /* for(OV_UINT i = 0; i < itemsLength; i++) { */
   /* ov_logfile_info("%u: %s", itemsResults[i], */
   /* ov_result_getresulttext(itemsResults[i])); */
   /* } */
-
-  if(pinst->v_postCallback.callbackFunction)
-    (*pinst->v_postCallback.callbackFunction)(
-        pinst->v_postCallback.instanceCalled,
-        Ov_StaticPtrCast(ov_domain, pinst));
   ov_memstack_unlock();
   return;
 }
@@ -203,7 +195,7 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   OV_STRING_VEC fileNames = {0, NULL};
   OV_UINT_VEC   filePositions = {0, NULL};
   OV_BYTE_VEC   unitedBfiles = {0, NULL};
-  OV_BYTE_VEC*  pbfiles = {0, NULL};
+  OV_BYTE_VEC*  pbfiles = NULL;
 
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, &pinst->p_ks);
@@ -212,7 +204,7 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
   Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
   if(!pVtblClient) {
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     return OV_ERR_GENERIC;
   }
 
@@ -300,7 +292,7 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   if(!(pClient->v_state & KSBASE_CLST_ERROR))
     pinst->v_status = SENT_WAITING;
   else {
-    pinst->v_status = INTERNAL_ERROR;
+    pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_GENERIC;
     /* cleaning */
   }
@@ -317,15 +309,6 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   return result;
 }
 
-OV_RESULT CTree_SendFiles_execute_withCallback(
-    OV_INSTPTR_CTree_SendFiles pinst, OV_INSTPTR_ov_domain that,
-    void (*callback)(OV_INSTPTR_ov_domain, OV_INSTPTR_ov_domain)) {
-  /* outer object to call after finished*/
-  pinst->v_postCallback.callbackFunction = callback;
-  pinst->v_postCallback.instanceCalled = that;
-  return CTree_SendFiles_execute(pinst);
-}
-
 OV_DLLFNCEXPORT void CTree_SendFiles_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                                 OV_TIME* pltc) {
   /*
@@ -334,23 +317,37 @@ OV_DLLFNCEXPORT void CTree_SendFiles_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
   OV_INSTPTR_CTree_SendFiles pinst = Ov_StaticPtrCast(CTree_SendFiles, pfb);
   OV_RESULT                  result = OV_ERR_OK;
-  ov_string_setvalue(&pinst->v_ErrorMsg, NULL);
-  pinst->v_result = OV_ERR_OK;
 
-  result = CTree_SendFiles_execute(pinst);
-  switch(result) {
-    case OV_ERR_OK:
-      pinst->v_result = -1;
-      ov_logfile_info("SendFiles done, waiting for response.");
+  switch(pinst->v_status) {
+    case INITIAL:
+      ov_string_setvalue(&pinst->v_ErrorMsg, NULL);
+      pinst->v_result = OV_ERR_OK;
+      result = CTree_SendFiles_execute(pinst);
+      switch(result) {
+        case OV_ERR_OK:
+          pinst->v_result = 0;
+          ov_logfile_info("SendFiles done, waiting for response.");
+          break;
+        default:
+          pinst->v_result = result;
+          pinst->v_actimode = 0;
+          ov_logfile_error("SendFiles failed. : %s",
+                           ov_result_getresulttext(result));
+      }
+    case SENT_WAITING:
       break;
-    case OV_ERR_BADPARAM:
-      pinst->v_result = result;
-      ov_logfile_error("SendFiles failed.");
+    case DONE:
+      pinst->v_status = INITIAL;
+      break;
+    case CTREE_COMMON_INTERNALERROR:
+    case CTREE_COMMON_EXTERNALERROR:
+      pinst->v_actimode = 0;
       break;
     default:
+      ov_logfile_error("CTree_SendFiles: unknown status");
+      pinst->v_status = CTREE_COMMON_INTERNALERROR;
       pinst->v_result = OV_ERR_GENERIC;
-      ov_logfile_error("SendFiles failed. : %s",
-                       ov_result_getresulttext(result));
+      break;
   }
   return;
 }
