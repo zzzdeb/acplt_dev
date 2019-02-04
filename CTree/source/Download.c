@@ -1155,7 +1155,6 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
   pinst->v_result = OV_ERR_OK;
 
   OV_RESULT res = CTree_Download_execute(pinst);
-  pinst->v_actimode = 0;
   switch(res) {
     case OV_ERR_OK:
       pinst->v_result = res;
@@ -1169,5 +1168,6 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
       pinst->v_result = res;
       ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
   }
+  pinst->v_actimode = 0;
   return;
 }

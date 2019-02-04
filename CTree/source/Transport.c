@@ -189,6 +189,7 @@ OV_DLLFNCEXPORT OV_RESULT CTree_Transport_genSetForSubmit(
   result = ov_string_print(&pinst->v_targetKS, "//%s/%s/%s", serverHost,
                            serverName, path);
   if(Ov_Fail(result)) {
+    ov_logfile_error("CTree_Transport: failed to print targetKS");
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = result;
     return result;
@@ -228,6 +229,7 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
                                         (OV_RESULT*)&(pinst->v_result),
                                         &itemsLength, &itemsResults);
   if(Ov_Fail(result)) {
+    ov_logfile_error("CTree_Transport: failed to proecess setvar");
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = result;
     ov_memstack_unlock();
@@ -274,6 +276,7 @@ void CTree_Transport_sendTree(OV_INSTPTR_CTree_Transport pinst) {
 
   result = CTree_Transport_prepareSubmit(pinst, &pClient, &pVtblClient);
   if(Ov_Fail(result)) {
+    ov_logfile_error("CTree_Transport: failed to prepareSubmit");
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = result;
     return;
@@ -329,6 +332,7 @@ void CTree_Transport_sendTree(OV_INSTPTR_CTree_Transport pinst) {
   if(!(pClient->v_state & KSBASE_CLST_ERROR)) {
     pinst->v_status = CTREE_TR_TREESENT_WAITING;
   } else {
+    ov_logfile_error("CTree_Transport: client error");
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_GENERIC;
     /*cleaning*/
@@ -418,6 +422,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
       if(Ov_OK(result)) {
         pinst->v_status = CTREE_TR_LIBSSENT_WAITING;
       } else {
+        ov_logfile_error("CTree_Transport: triggering LoadLibs failed");
         pinst->v_status = CTREE_COMMON_INTERNALERROR;
         pinst->v_result = pinst->p_loadlibs.v_result;
         ov_memstack_unlock();
@@ -448,6 +453,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
           pinst->v_result = pinst->p_loadlibs.v_result;
           break;
         default:
+          ov_logfile_error("CTree_Transport: unexpected state");
           pinst->v_status = CTREE_COMMON_INTERNALERROR;
           pinst->v_result = OV_ERR_GENERIC;
           break;
