@@ -99,7 +99,7 @@ LIBRARY lbalance
       sum : UINT 
         FLAGS="i"
         COMMENT     = "sum of loads";
-      cap : UINT HAS_GET_ACCESSOR 
+      cap : UINT 
         FLAGS="i"
         COMMENT     = "capacity of this node";
       myIP  : STRING

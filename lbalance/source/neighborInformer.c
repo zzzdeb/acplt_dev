@@ -51,11 +51,6 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_neighborInformer_B_set(
   return 0;
 }
 
-OV_DLLFNCEXPORT OV_UINT
-                lbalance_neighborInformer_cap_get(OV_INSTPTR_lbalance_neighborInformer pinst) {
-  return 100 - pinst->v_sum;
-}
-
 OV_DLLFNCEXPORT OV_RESULT lbalance_neighborInformer_reset_set(
     OV_INSTPTR_lbalance_neighborInformer pinst, const OV_BOOL value) {
   pinst->v_reset = value;
@@ -124,7 +119,7 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
           cJSON_AddItemToArray(jsMsg, cJSON_CreateNumber(pinst->v_sum));
           cJSON_AddItemToArray(
               jsMsg,
-              cJSON_CreateNumber(lbalance_neighborInformer_cap_get(pinst)));
+              cJSON_CreateNumber(pinst->v_cap));
           cJSON_AddItemToArray(jsMsg, cJSON_CreateArray());
           OV_STRING tmpStr = cJSON_Print(jsMsg);
           if(tmpStr) {

@@ -63,7 +63,7 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 			0,			/* interfaceIndex */
 			servicename,	/* name */
 			"_ov._tcp",	/* regtype */
-			NULL,		/* domain */
+			".local",	/* domain */
 			NULL,		/* host */
 			htons((uint16_t)port),/* port */
 			0,			/* txtLen */
@@ -79,6 +79,24 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 		regObj->v_isRegistered = TRUE;
 		return OV_ERR_OK;
 	}
+}
+
+
+OV_DLLFNCEXPORT void ressourcesMonitor_mDNSRegisterer_startup(
+	OV_INSTPTR_ov_object 	pobj
+) {
+    OV_INSTPTR_ressourcesMonitor_mDNSRegisterer pinst = Ov_StaticPtrCast(ressourcesMonitor_mDNSRegisterer, pobj);
+
+    /* do what the base class does first */
+    fb_functionblock_startup(pobj);
+
+	char hostname[HOST_NAME_MAX+1];
+	gethostname(hostname, HOST_NAME_MAX);
+	ov_string_setvalue(&pinst->v_registerHostname, hostname);
+	ov_string_append(&pinst->v_registerHostname, ".local");
+
+
+    return;
 }
 
 

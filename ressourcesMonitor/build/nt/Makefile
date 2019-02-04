@@ -8,7 +8,7 @@ lc = $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(s
 #Project config parameters that are accessed by Eclipse
 SERVERSTARTKEYS = -w fb -w ksbase -w ressourcesMonitor
 #/Project config parameters that are accessed by Eclipse
-MAKMAKOPTIONS = 
+MAKMAKOPTIONS = -o
 EXTRA_CC_FLAGS = -DWINVER=0x0501 -DPLT_USE_WINSOCK2
 EXTRA_LIBS = 
 LD_FLAGS = -liphlpapi -lws2_32 -L../../lib -ldnssd
