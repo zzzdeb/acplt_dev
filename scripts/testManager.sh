@@ -29,6 +29,11 @@ sleep 1
 # PALETTELIST="\{/TechUnits/GSE/PA001\}%20\{/TechUnits/GSE/PA002\}%20\{/TechUnits/GSE/PA003\}"
 # curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/GSE/TopologyAgent.PalettePaths&newvalue="$PALETTELIST
 # weights 
+curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1"
+curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2"
+
+curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.selfHost&newvalue=134.130.125.88"
+
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.actimode&newvalue=1"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.iexreq&newvalue=1"
 servers="\{src/MANAGER\t0\tsrc\t7509\tMANAGER\}"
