@@ -71,6 +71,7 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   OV_STRING_VEC types = {0};
 
   // TODO: zzz: work on it Sa 01 Dez 2018 18:30:29 CET
+  ov_memstack_lock();
   acplt_simpleMsg_parseFlatBody(pMsg->v_msgBody, &srv, &op, 0, &contName, &ids,
                                 &values, &units, &types);
   /* creating res msg*/
@@ -96,7 +97,6 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   if(ov_string_compare(op, "GET") == OV_STRCMP_EQUAL) {
     /*ov_logfile_info("ksmsg_executer: called GET");*/
     OV_GETVAR_PAR params = {0};
-    ov_memstack_lock();
     params.identifiers_len = ids.veclen;
     params.identifiers_val = ids.value;
     OV_GETVAR_RES results = {0};
@@ -151,13 +151,11 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       Ov_Link(PostSys_MsgDelivery2Message, pMsgDelivery, pMsgRes);
     }
 
-    ov_memstack_unlock();
     Ov_DeleteObject(pMsg);
   } else if(ov_string_compare(op, "SET") == OV_STRCMP_EQUAL) {
     /*ov_logfile_info("ksmsg_executer: called SET");*/
     OV_SETVAR_RES results = {0};
     OV_SETVAR_PAR params = {0};
-    ov_memstack_lock();
     params.items_len = ids.veclen;
     OV_UINT len = params.items_len;
     params.items_val = ov_memstack_alloc(len * sizeof(OV_SETVAR_ITEM));
@@ -219,6 +217,7 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
                      pMsg->v_msgBody);
     Ov_DeleteObject(pMsg);
   }
+  ov_memstack_unlock();
   return;
 }
 

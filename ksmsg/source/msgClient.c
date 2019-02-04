@@ -57,6 +57,7 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_malloc.h"
 #include "libov/ov_memstack.h"
+#include "libov/ov_path.h"
 #include "libov/ov_result.h"
 #include "ov_ksserver_backend.h"
 
@@ -74,10 +75,14 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_ANY servername = {0};
   servername.value.vartype = OV_VT_VOID;
   servername.value.valueunion.val_string = NULL;
-  ov_vendortree_getservername(&servername, NULL);
-  ov_string_setvalue(&this->v_pathHost.value[0], "none");
-  ov_string_setvalue(&this->v_pathName.value[0],
-                     servername.value.valueunion.val_string);
+  result |= ov_vendortree_getservername(&servername, NULL);
+  result |= ov_string_setvalue(
+      &this->v_pathInstance.value[0],
+      ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, this), 2));
+  result |= ov_string_setvalue(&this->v_pathHost.value[0], "localhost");
+  result |= ov_string_setvalue(&this->v_pathName.value[0],
+                               servername.value.valueunion.val_string);
+  result |= ov_string_setvalue(&this->v_pathInstance.value[1], EXECUTERPATH);
 
   this->v_answerItems = NULL;
 
@@ -162,6 +167,7 @@ OV_RESULT msgClient_handleMessage(OV_INSTPTR_ksmsg_msgClient pinst,
   OV_STRING_VEC types = {0};
   OV_STRING_VEC units = {0};
   // TODO: zzz: check param Do 13 Dez 2018 23:16:24 CET
+  ov_memstack_lock();
   acplt_simpleMsg_parseFlatBody(pMsg->v_msgBody, &svc, &op, 0, &container, &ids,
                                 &vals, &units, &types);
   cJSON*  jsvalue = NULL;
@@ -179,6 +185,7 @@ OV_RESULT msgClient_handleMessage(OV_INSTPTR_ksmsg_msgClient pinst,
       if(!jsvalue) {
         ov_logfile_error("ksmsg_msgClient: bad json format %s", vals.value[i]);
         pinst->v_state = KSBASE_CLST_ERROR;
+        ov_memstack_unlock();
         return OV_ERR_BADVALUE;
       }
       if(cJSON_IsArray(jsvalue) || cJSON_GetArraySize(jsvalue) == 2) {
@@ -188,6 +195,7 @@ OV_RESULT msgClient_handleMessage(OV_INSTPTR_ksmsg_msgClient pinst,
           ov_logfile_error("%u: %s: couldnt convert json to Varvalu", result,
                            ov_result_getresulttext(result));
           pinst->v_state = KSBASE_CLST_ERROR;
+          ov_memstack_unlock();
           return OV_ERR_GENERIC;
         }
         pinst->v_answerItems[i].result = 0;
@@ -202,6 +210,7 @@ OV_RESULT msgClient_handleMessage(OV_INSTPTR_ksmsg_msgClient pinst,
       pinst->v_answerItems[i].result = atoi(vals.value[i]);
     }
   }
+  ov_memstack_unlock();
   return result;
 }
 
