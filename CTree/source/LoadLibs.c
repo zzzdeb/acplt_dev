@@ -287,10 +287,10 @@ OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
           &infoRequest_callback);
       pinst->v_status = CTREE_LL_INFOREQSTED;
 
-      if(!(pClient->v_state & KSBASE_CLST_ERROR))
+      if((pClient->v_state & KSBASE_CLST_ERROR)) {
         pinst->v_status = CTREE_COMMON_INTERNALERROR;
-      else
-        pinst->v_status = CTREE_COMMON_INTERNALERROR;
+        ov_logfile_error("CTree_LoadLibs: ks error");
+      }
       ov_memstack_unlock();
       break;
     case CTREE_LL_INFOREQSTED:

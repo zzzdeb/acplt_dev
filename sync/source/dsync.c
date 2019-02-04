@@ -19,6 +19,7 @@
 #endif
 
 #include "CTree.h"
+#include "CTree_helper.h"
 #include "PostSys.h"
 #include "ksbase_helper.h"
 #include "ksmsg.h"
@@ -32,13 +33,6 @@
 #include "sync_helper.h"
 
 #include "ksapi_commonFuncs.h"
-
-#define SYNC_SRC_INIT 0
-#define SYNC_SRC_SYNCCREATEREQUESTED 1
-#define SYNC_SRC_TRANSPORTREQUESTED 2
-#define SYNC_SRC_WAITINGFORSHUTDOWN 4
-#define SYNC_SRC_DONE 8
-#define SYNC_SRC_ERROR 64
 
 #define DEBUGSTATE 16
 
@@ -55,6 +49,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
 
   result |= ov_string_setvalue(&pinst->v_selfServer,
                                servername.value.valueunion.val_string);
+  result |= Ov_Link(fb_tasklist, pinst, &pinst->p_transport);
   return result;
 }
 
@@ -105,8 +100,8 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
     /*go on */
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
     if(!proot) {
-      ov_logfile_error("root couldt be found %s", pobj->v_srcPath);
-      pobj->v_status = DSYNC_DST_ERROR;
+      ov_logfile_error("sync_dsync: root coudnt be found %s", pobj->v_srcPath);
+      pobj->v_status = SYNC_INTERNALERROR;
       pobj->v_result = OV_ERR_GENERIC;
       return OV_ERR_GENERIC;
     }
@@ -307,7 +302,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
       if(!proot) {
         ov_logfile_error("root couldt be found");
-        pinst->v_status = SYNC_SRC_ERROR;
+        pinst->v_status = SYNC_INTERNALERROR;
         ov_memstack_unlock();
         return;
       } /* configure dest server */
@@ -333,7 +328,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       if(Ov_Fail(result)) {
         ov_logfile_error("%u: %s: srcKS set failed", result,
                          ov_result_getresulttext(result));
-        pinst->v_status = SYNC_SRC_ERROR;
+        pinst->v_status = SYNC_INTERNALERROR;
         ov_memstack_unlock();
         return;
       }
@@ -346,8 +341,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
           ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pdsyncDst), 2));
       pdsyncDst->v_actimode = 1;
       pdsyncDst->v_status = DSYNC_DST_ACTIVE;
-      CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
-                                 NULL);
+      ptrans->v_trigger = 0;
+      CTree_Common_trigger_set(Ov_StaticPtrCast(CTree_Common, ptrans), 1);
       pdsyncDst->v_actimode = 0;
       pinst->v_status = SYNC_SRC_SYNCCREATEREQUESTED;
       ov_logfile_info("sync on destination requested");
@@ -368,10 +363,10 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       if(ptrans->v_status &
          (CTREE_COMMON_EXTERNALERROR | CTREE_COMMON_EXTERNALERROR)) {
         ov_logfile_error("sync_dsync: transport failed");
-        pinst->v_status = SYNC_SRC_ERROR;
+        pinst->v_status = SYNC_INTERNALERROR;
         ov_memstack_unlock();
         return;
-      } else if(ptrans->v_status != CTREE_TRANSPORT_DONE) {
+      } else if(ptrans->v_status != CTREE_TR_DONE) {
         ov_memstack_unlock();
         return;
       }
@@ -414,7 +409,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
               if(!pMsgClnt) {
                 ov_logfile_error("sync_dsync: could not create Client %s",
                                  pobj->v_identifier);
-                pinst->v_status = SYNC_SRC_ERROR;
+                pinst->v_status = SYNC_INTERNALERROR;
                 ov_memstack_unlock();
                 return;
               }
@@ -431,34 +426,40 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       return;
       break;
     case DEBUGSTATE:
-      ov_logfile_warning("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 1) {
-        ov_logfile_warning("sync_dsync: running");
+      ov_logfile_debug("sync_dsync: in debug state %d", pinst->v_debugi);
+      if(pinst->v_debugi++ >= 2) {
+        ov_logfile_debug("sync_dsync: running");
         /* run transport */
         OV_INSTPTR_CTree_Transport ptrans =
             Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
         ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
-        ov_string_setvalue(&ptrans->v_targetKS, pinst->v_destKS);
+        ov_string_print(&ptrans->v_targetKS, "%s%s", pinst->v_destKS,
+                        pinst->v_srcPath);
         ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
                         DSYNC_DOWNLOAD_PATH_DEST_EXT);
-        CTree_Transport_typemethod(Ov_StaticPtrCast(fb_functionblock, ptrans),
-                                   NULL);
-
+        ptrans->v_trigger = 0;
+        CTree_Common_trigger_set(Ov_StaticPtrCast(CTree_Common, ptrans), 1);
         pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
         ov_logfile_info("transport requested");
       }
       break;
 
     case SYNC_SRC_TRANSPORTREQUESTED:
-      if(pinst->p_transport.v_status == CTREE_TRANSPORT_DONE) {
-        ov_logfile_info("transport done successfully");
-        pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
-      } else {
-        if(pinst->p_transport.v_status &
-           (CTREE_COMMON_INTERNALERROR | CTREE_COMMON_EXTERNALERROR)) {
+      switch(pinst->p_transport.v_status) {
+        case CTREE_TR_DONE:
+          ov_logfile_info("transport done successfully");
+          pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
+          break;
+        case CTREE_TR_TREESENT_WAITING:
+        case CTREE_TR_LIBSSENT_WAITING:
+          break;
+        case CTREE_TR_INIT:
+        case CTREE_COMMON_EXTERNALERROR:
+        case CTREE_COMMON_INTERNALERROR:
+        default:
           ov_logfile_error("sync failed at transport");
-          pinst->v_status = SYNC_SRC_ERROR;
-        }
+          pinst->v_status = SYNC_INTERNALERROR;
+          break;
       }
       break;
     case SYNC_SRC_WAITINGFORSHUTDOWN:
@@ -467,7 +468,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_info("sync in SYNC_SRC_DONE");
       pinst->v_actimode = 0;
       break;
-    case SYNC_SRC_ERROR:
+    case SYNC_INTERNALERROR:
+    case SYNC_EXTERNALERROR:
       pinst->v_actimode = 0;
       break;
     default:

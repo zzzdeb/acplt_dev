@@ -17,6 +17,15 @@ typedef struct {
 #define PLAYER_SRCNODE_PATH_DEST "/data/dsyncDst.player.bufNode"
 #define PLAYER_DSTNODE_PATH_DEST "/data/dsyncDst.player.dstNode"
 
+#define SYNC_SRC_INIT 0
+#define SYNC_SRC_SYNCCREATEREQUESTED 1
+#define SYNC_SRC_TRANSPORTREQUESTED 2
+#define SYNC_SRC_WAITINGFORSHUTDOWN 4
+#define SYNC_SRC_DONE 8
+
+#define SYNC_INTERNALERROR 64
+#define SYNC_EXTERNALERROR 128
+
 #define KSAPISET 0
 #define KSAPIGET 1
 #define SYNC_CONFIGURE_LEN 2
@@ -28,7 +37,6 @@ typedef struct {
 #define DSYNC_DST_ACTIVE 1
 #define DSYNC_DST_WAITINGPLAYER 2
 #define DSYNC_DST_DONE 8
-#define DSYNC_DST_ERROR 64
 
 #define BUFFERER_INIT 0
 #define BUFFERER_NOBUFFERING 1
@@ -37,6 +45,5 @@ typedef struct {
 #define PLAYER_PLAYING 1
 #define PLAYER_WAITING_RESULTS 2
 #define PLAYER_DONE 4
-#define PLAYER_ERROR 8
 
 #endif

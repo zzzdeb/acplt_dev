@@ -116,7 +116,7 @@ OV_DLLFNCEXPORT void sync_player_typemethod(OV_INSTPTR_ksbase_ComTask this) {
             Ov_StaticPtrCast(sync_dsyncDst, pinst->v_pouterobject);
         result = sync_dsyncDst_switch_set(psyncDst, 1);
         if(Ov_Fail(result)) {
-          pinst->v_status = PLAYER_ERROR;
+          pinst->v_status = SYNC_INTERNALERROR;
           return;
         }
 
@@ -128,7 +128,7 @@ OV_DLLFNCEXPORT void sync_player_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         }
         break;
       case PLAYER_DONE:
-      case PLAYER_ERROR:
+      case SYNC_INTERNALERROR:
         pinst->v_actimode = 0;
         break;
       default:
@@ -193,7 +193,7 @@ OV_DLLFNCEXPORT void sync_player_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         }
         break;
       case PLAYER_DONE:
-      case PLAYER_ERROR:
+      case SYNC_INTERNALERROR:
         pinst->v_actimode = 0;
         break;
       default:

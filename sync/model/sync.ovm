@@ -87,7 +87,7 @@ LIBRARY sync
           INITIALVALUE  = "";
       status  : INT
           FLAGS="o"
-          COMMENT     = "0: ACTIVE, 1: STOP_BUFFERING"
+          COMMENT     = "0: ACTIVE, 1: STOP_BUFFERING, 64, 128 Error"
           INITIALVALUE  = 0;
       msgsWaitingRes[]  : STRING
           FLAGS="o"
@@ -224,7 +224,7 @@ LIBRARY sync
         COMMENT = "Rising edge triggers reset of Client object and sets status and result to 0"
         INITIALVALUE  = FALSE;
       status    : INT FLAGS="o" 
-        COMMENT     = "Status: 0: initial; 1: loadlib request sent, waiting for answer; 2: libs uploaded; 3: upload request sent; 4: completed; 64: internal error; 128: external error"
+        COMMENT     = "Status: 0: initial; 1: syncDst creation requested; 2: transport of tree requested; 4: waiting for shutdown; 8: Done; 64: internal error; 128: external error"
         INITIALVALUE  = 0;
       result    : INT FLAGS="o"
         COMMENT   = "result"
