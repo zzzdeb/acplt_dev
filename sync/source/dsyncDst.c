@@ -55,6 +55,7 @@ OV_DLLFNCEXPORT OV_RESULT
   ks_splitOneStringPath(value, &host, &hostPort, &serv, &servPort, &path);
   result = ov_string_setvalue(&pinst->v_dstKS, value);
   result |= ov_string_setvalue(&pinst->v_path, path);
+  result |= ov_string_setvalue(&pinst->p_syncDownload.v_path, path);
   result |= ov_string_setvalue(&pinst->p_player.v_dstHost, host);
   result |= ov_string_setvalue(&pinst->p_player.v_dstServer, serv);
   result |= ov_string_setvalue(&pinst->p_player.v_dstPath, path);
@@ -99,7 +100,7 @@ OV_DLLFNCEXPORT OV_RESULT
   if(!pobj->v_switch && value) {
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_path, 2);
     if(!proot) {
-      ov_logfile_error("root couldt be found: %s", pobj->v_path);
+      ov_logfile_error("sync_dsyncDst: root couldt be found: %s", pobj->v_path);
       pobj->v_result = OV_ERR_GENERIC;
       return 0;
     }
@@ -190,7 +191,7 @@ OV_RESULT sync_dsyncDst_opTerm(OV_INSTPTR_sync_dsyncDst pinst, OV_RESULT res) {
   pinst->v_actimode = 0;
   // TODO: zzz: notify src site :2019 Jan 18 18:58
   // TODO: zzz: delete image :2019 Jan 18 18:58
-  pinst->v_status = DSYNC_DST_ERROR;
+  pinst->v_status = SYNC_INTERNALERROR;
   return result;
 }
 
@@ -202,7 +203,8 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   switch(pinst->v_status) {
     case DSYNC_DST_INIT:
       break;
-    case DSYNC_DST_ERROR:
+    case SYNC_INTERNALERROR:
+    case SYNC_EXTERNALERROR:
       pinst->v_actimode = 0;
       break;
     case DSYNC_DST_ACTIVE:
