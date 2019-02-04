@@ -44,6 +44,7 @@
 #endif
 
 #include "CTree_helper.h"
+#include "PostSys_helper.h"
 #include "acplt_simpleMsgHandling.h"
 #include "cJSON.h"
 #include "ks_logfile.h"
@@ -222,7 +223,7 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       Ov_SearchChildEx(ov_containment, thisCl, "Inbox", ov_domain);
 
   /*
-  * state machine
+   * state machine
    */
   switch(thisCl->v_state) {
     case KSBASE_CLST_INITIAL:
@@ -230,6 +231,19 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         break;
       }
       if(pMsg) {
+        switch(pMsg->v_msgStatus) {
+          case MSGREADYFORSENDING:
+            break;
+          case MSGNEW:
+          case MSGWAITING:
+          case MSGDONE:
+          case MSGFATALERROR:
+          default:
+            ov_logfile_debug("ksmsg_msgClient: deleting msg with status %d",
+                             pMsg->v_msgStatus);
+            Ov_DeleteObject(pMsg);
+            return;
+        }
         pMsgDelivery = Ov_GetParent(PostSys_MsgDelivery2Message, pMsg);
         if(pMsgDelivery) { /*	this message was already tried to be send
                             */
@@ -238,6 +252,7 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
               PostSys_MsgDelivery,
               Ov_GetFirstChild(ov_instantiation, pclass_PostSys_MsgDelivery));
           if(pMsgDelivery) {
+            ov_logfile_debug("ksmsg_msgClient: sending msg");
             PostSys_MsgDelivery_sendMessage(pMsgDelivery, pMsg);
             ov_time_gettime(&thisCl->v_timeLastEvent);
           }
@@ -325,22 +340,22 @@ void ksmsg_msgClient_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   }
 }
 
-  /*******************************************************************************************************************************************************************************
-   * 				Reset
-   *******************************************************************************************************************************************************************************/
+/*******************************************************************************************************************************************************************************
+ * 				Reset
+ *******************************************************************************************************************************************************************************/
 
-  OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_reset(
-      OV_INSTPTR_ksbase_ClientBase this) {
-    OV_RESULT result = OV_ERR_OK;
-    result = ksxdr_xdrClient_reset(this);
-    OV_INSTPTR_PostSys_Message pmsg = NULL;
-    OV_INSTPTR_ov_domain       pinbox =
-        Ov_SearchChildEx(ov_containment, this, "Inbox", ov_domain);
-    if(!pinbox) {
-      return 0;
-    }
-    Ov_ForEachChildEx(ov_containment, pinbox, pmsg, PostSys_Message) {
-      result |= Ov_DeleteObject(pmsg);
-    }
-    return result;
+OV_DLLFNCEXPORT OV_RESULT
+                ksmsg_msgClient_reset(OV_INSTPTR_ksbase_ClientBase this) {
+  OV_RESULT result = OV_ERR_OK;
+  result = ksxdr_xdrClient_reset(this);
+  OV_INSTPTR_PostSys_Message pmsg = NULL;
+  OV_INSTPTR_ov_domain       pinbox =
+      Ov_SearchChildEx(ov_containment, this, "Inbox", ov_domain);
+  if(!pinbox) {
+    return 0;
   }
+  Ov_ForEachChildEx(ov_containment, pinbox, pmsg, PostSys_Message) {
+    result |= Ov_DeleteObject(pmsg);
+  }
+  return result;
+}
