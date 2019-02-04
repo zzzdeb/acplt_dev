@@ -94,7 +94,7 @@ OV_DLLFNCEXPORT OV_BOOL
       ov_memstack_unlock();
       return FALSE;
     }
-    ov_memstack_lock();
+    ov_memstack_unlock();
     return TRUE;
   } else
     return FALSE;

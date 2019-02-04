@@ -95,6 +95,7 @@ OV_RESULT filesToBytes(OV_BYTE_VEC* bvec, OV_STRING path) {
   if(!lib) {
     bvec->value = NULL;
     bvec->veclen = 0;
+    ov_memstack_unlock();
     return OV_ERR_BADPATH;
   }
 
@@ -107,6 +108,7 @@ OV_RESULT filesToBytes(OV_BYTE_VEC* bvec, OV_STRING path) {
   if(bvec->veclen == -1) {
     bvec->value = NULL;
     bvec->veclen = 0;
+    ov_memstack_unlock();
     return OV_ERR_GENERIC;
   }
 
@@ -229,6 +231,7 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
                            pinst->v_filesToSend.value[i]);
         break;
       default:
+        ov_memstack_unlock();
         return result;
     }
   }

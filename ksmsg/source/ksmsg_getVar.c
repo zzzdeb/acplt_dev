@@ -78,10 +78,11 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestGetVar(
       }
     }
   }
-  ov_memstack_lock();
 
   if(ksmsg_msgClient_msgsInQueue_get(pobj) >= pobj->v_queueLength)
     return OV_ERR_NOACCESS;
+
+  ov_memstack_lock();
 
   result =
       PostSys_createAnonymousMessage(Ov_StaticPtrCast(ov_domain, pobj),
@@ -150,6 +151,7 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestGetVar(
     ov_memstack_unlock();
     return result;
   }
+  pMsg->v_msgStatus = MSGREADYFORSENDING;
   pobj->v_msgsInQueue++;
   ov_memstack_unlock();
 
@@ -225,11 +227,11 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestSetVar(
       }
     }
   }
-  ov_memstack_lock();
 
   if(ksmsg_msgClient_msgsInQueue_get(pobj) >= pobj->v_queueLength)
     return OV_ERR_NOACCESS;
 
+  ov_memstack_lock();
   result =
       PostSys_createAnonymousMessage(Ov_StaticPtrCast(ov_domain, pobj),
                                      "Message", (OV_INSTPTR_ov_object*)(&pMsg));
@@ -320,6 +322,7 @@ OV_DLLFNCEXPORT OV_RESULT ksmsg_msgClient_requestSetVar(
   pobj->v_msgsInQueue++;
   ov_memstack_unlock();
 
+  pMsg->v_msgStatus = MSGREADYFORSENDING;
   pobj->v_actimode = 1;
   return OV_ERR_OK;
 }
