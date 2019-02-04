@@ -215,7 +215,8 @@ OV_DLLFNCEXPORT void ksmsg_executer_typemethod(OV_INSTPTR_ksbase_ComTask this) {
     Ov_DeleteObject(pMsg);
     return;
   } else {
-    ov_logfile_error("ksmsg_executer: unknown operator %s", op);
+    ov_logfile_error("ksmsg_executer: unknown operator %s %s", op,
+                     pMsg->v_msgBody);
     Ov_DeleteObject(pMsg);
   }
   return;
