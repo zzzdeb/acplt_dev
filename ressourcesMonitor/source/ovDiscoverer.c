@@ -23,12 +23,16 @@
 
 #include "ressourcesMonitor.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_vendortree.h"
 
 #include <dns_sd.h>
+#include <unistd.h>
 #if OV_SYSTEM_NT
+#define HOST_NAME_MAX 255
 #include <windows.h>
 #include <ws2tcpip.h>
 #else
+#include <limits.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <netdb.h>
@@ -36,6 +40,10 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #endif
+
+#define LOOKUP_IP_ADDRESS FALSE
+#define INCLUDE_OWN_SERVER FALSE
+
 
 /**
  * Add a discovered ov server to the vector of servers.
@@ -67,6 +75,25 @@ static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t 
 		strncpy(servername, fullname, delim-fullname);
 	}
 
+#if !INCLUDE_OWN_SERVER
+	// Get local hostname and OV servername
+	char ourHostname[HOST_NAME_MAX];
+	OV_ANY ourServername;
+	ov_vendortree_getservername(&ourServername, NULL);
+	gethostname(ourHostname, HOST_NAME_MAX);
+
+	// Extract simple hostname from DNS fullname and compare hostname and OV servername to our data
+	char *delim2 = strstr(delim+2, ".");
+	if (strncmp(delim+2, ourHostname, delim2-delim-2) == 0
+			&& strcmp(servername, ourServername.value.valueunion.val_string) == 0) {
+		ov_string_setvalue(&ourServername.value.valueunion.val_string, NULL);
+		ov_logfile_info("Skipping that server (%s), b/c it seems to be ourselves.", fullname);
+		return;
+	}
+	ov_string_setvalue(&ourServername.value.valueunion.val_string, NULL);
+#endif
+
+#if LOOKUP_IP_ADDRESS
 	// Lookup IP of OV server's host
 	// TODO replace by DNSServiceGetAddrInfo on Windows (with Bonjour)
 	// This requires _POSIX_C_SOURCE=200112L
@@ -83,13 +110,18 @@ static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t 
 	} else {
 		ov_logfile_warning("Could not resolve IP address of OV server host %s: %s", hostname, gai_strerror(res));
 	}
+#endif
 
 	// Resize string vector and add entry as tab separated string: fullname, interfaceIndex, ip, port, servername
 	Ov_SetDynamicVectorLength(list, list->veclen+1, STRING);
 	ov_string_print(&list->value[list->veclen-1], "%s\t%u\t%s\t%hu\t%s",
 			fullname,
 			interfaceIndex,
+#if LOOKUP_IP_ADDRESS
 			addr_str[0] ? addr_str : hostname,
+#else
+			hostname,
+#endif
 			port,
 			servername);
 }
