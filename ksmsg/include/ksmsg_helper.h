@@ -8,5 +8,6 @@
 OV_DLLFNCEXPORT
 OV_RESULT ksmsg_msgClient_path_deleteElement(OV_INSTPTR_ksmsg_msgClient pMsg,
                                              OV_UINT                    ind);
+#define EXECUTERPATH "/data/exec"
 
 #endif /* ifndef _KSMSG_HELPER_H_ */
