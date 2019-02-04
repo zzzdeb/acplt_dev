@@ -87,6 +87,7 @@ sync_syncDownload_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
   OV_INSTPTR_ov_domain         proot = NULL;
 
   switch(pinst->v_state) {
+    case SYNC_DOWNLOAD_DONE:
     case SYNC_DOWNLOAD_INIT:
       ov_string_setvalue(&path, pinst->v_path);
       if(!path) {
@@ -144,8 +145,6 @@ sync_syncDownload_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
           ov_logfile_error("syncDownload failed. : %s",
                            ov_result_getresulttext(result));
       }
-      break;
-    case SYNC_DOWNLOAD_DONE:
       break;
     default:
       ov_logfile_error("sync_syncDownload: Unknown state %d", pinst->v_state);
