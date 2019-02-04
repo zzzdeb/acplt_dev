@@ -123,9 +123,11 @@ LIBRARY ressourcesMonitor
 			register : BOOL FLAGS="i" COMMENT="The server is only registered if True." INITIALVALUE=TRUE;
 			sdRef : C_TYPE <DNSServiceRef>;
 			isRegistered : BOOL FLAGS="o" COMMENT="True when the server has successfully been registered";
+			registerHostname : STRING FLAGS="o" COMMENT="The Hostname (FQN) used for registering the server.";
 		END_VARIABLES;
 		
 		OPERATIONS
+			startup     : C_FUNCTION <OV_FNC_STARTUP>;
 			typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
 			shutdown : C_FUNCTION <OV_FNC_SHUTDOWN>;
 		END_OPERATIONS;
