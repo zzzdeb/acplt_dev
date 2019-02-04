@@ -24,6 +24,7 @@
 !/syncTest
 !/PostSys
 !/PostSysTest
+!/ressourcesMonitor
 !/ksmsg
 !/lbalance
 !/lbalanceTest
