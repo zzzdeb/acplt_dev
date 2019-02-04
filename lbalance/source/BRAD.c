@@ -174,7 +174,7 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_dsync);
-  pinst->p_dsync.v_actimode = 0;
+  pinst->p_dsync.v_actimode = 1;
   pinst->p_dsync.v_iexreq = 1;
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer),
                 "outApp", Ov_StaticPtrCast(fb_object, &pinst->p_dsync),
