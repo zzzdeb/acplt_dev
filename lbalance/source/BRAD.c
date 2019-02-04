@@ -22,6 +22,7 @@
 #include "lbalance.h"
 #include "lbalance_helper.h"
 #include "libov/ov_macros.h"
+#include "libov/ov_path.h"
 #include "object_helper.h"
 
 OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
@@ -29,6 +30,11 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   OV_INSTPTR_lbalance_BRAD pinst = Ov_StaticPtrCast(lbalance_BRAD, pobj);
 
   result = ov_object_constructor(pobj);
+
+  OV_INSTPTR_fb_object pDiscoveryReg = Ov_DynamicPtrCast(
+		  fb_object, ov_path_getobjectpointer("/data/mDNSDiscovery/reg", 2));
+  OV_INSTPTR_fb_object pDiscoveryDisco = Ov_DynamicPtrCast(
+		  fb_object, ov_path_getobjectpointer("/data/mDNSDiscovery/disco", 2));
 
   /***********************************************************/
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_nbDB), "syncTrigger",
@@ -51,12 +57,22 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "sum");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "localCapacity",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "cap");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "ovServers",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "ovServers");
+  if (pDiscoveryReg)
+	  ov_fb_connect(pDiscoveryDisco, "ovServers",
+					Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
+					"ovServers");
+  else
+	  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "ovServers",
+					Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer),
+					"ovServers");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "B",
                 Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "B");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
-                Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "myIP");
+  if (pDiscoveryReg)
+	  ov_fb_connect(pDiscoveryReg, "registerHostname",
+					Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "myIP");
+  else
+	  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+					Ov_StaticPtrCast(fb_object, &pinst->p_nbInformer), "myIP");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_nbDB);
@@ -114,8 +130,12 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
                 "destination");
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "R",
                 Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "R");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
-                Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "selfHost");
+  if (pDiscoveryReg)
+	  ov_fb_connect(pDiscoveryReg, "registerHostname",
+					Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "selfHost");
+  else
+	  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+					Ov_StaticPtrCast(fb_object, &pinst->p_reqSender), "selfHost");
 
   /***********************************************************/
   Ov_Link(fb_tasklist, pinst, &pinst->p_reqReceiver);
