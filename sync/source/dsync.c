@@ -181,6 +181,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
     }
   }
   pobj->v_status = SYNC_SRC_DONE;
+  pobj->v_actimode = 0;
   ov_logfile_info("dsync shutdown on src site.");
   return OV_ERR_OK;
 }
@@ -292,6 +293,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
 
   ov_memstack_lock();
   switch(pinst->v_status) {
+    case SYNC_SRC_DONE:
     case SYNC_SRC_INIT:
       if(!pinst->v_EN) {
         ov_logfile_warning("sync_dsync: not enabled");
@@ -463,10 +465,6 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       }
       break;
     case SYNC_SRC_WAITINGFORSHUTDOWN:
-      break;
-    case SYNC_SRC_DONE:
-      ov_logfile_info("sync in SYNC_SRC_DONE");
-      pinst->v_actimode = 0;
       break;
     case SYNC_INTERNALERROR:
     case SYNC_EXTERNALERROR:
