@@ -25,11 +25,14 @@ let g:ycm_confirm_extra_conf = 0
 " let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_auto_trigger = 1
 
+let 
+
 let g:UltiSnipsSnippetDirectories = ['/home/zzz/hiwi/ACPLT-DevKit-linux64/acplt/dev/UltiSnips', '/home/zzz/.vim/bundle/vim-snippets/UltiSnips']
 
 set wildignore+=*.o,*.a,*.so,*.un~,*/source/sourcetemplates,.*/build,draft,*/CTree1
 let g:CommandTWildIgnore = &wildignore . ", */CTree1, */build/*"
 
+" let g:CCSpellCheckEnable = 1
 " set makeprg 
 " augroup END
 
@@ -89,7 +92,7 @@ augroup END
 nmap <localleader>s :%s//
 
 nmap <localleader>ev :vsplit .nvimrc<cr>
-nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm \| let @/='CLASS\[^S\]*".expand('%:t:r')."\[^S\]*:'"<cr>n
+nmap <localleader>eom :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovm \| let @/='CLASS\[^S\]*".expand('%:t:r')."\[^S\]*:'"<cr>nz<cr>
 let @/='CLASS\[^S\]*\[^S\]*\:'"<cr>
 
 nmap <localleader>eof :execute ":vsplit ".expand("%:h:h")."/model/".expand("%:h:h").".ovf"<cr>

@@ -20,10 +20,7 @@
 
 #include "CTree.h"
 #include "CTree_helper.h"
-#include "PostSys.h"
 #include "ksbase_helper.h"
-#include "ksmsg.h"
-#include "ksmsg_helper.h"
 #include "libov/ov_macros.h"
 #include "libov/ov_path.h"
 #include "libov/ov_result.h"
@@ -49,6 +46,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
 
   result |= ov_string_setvalue(&pinst->v_selfServer,
                                servername.value.valueunion.val_string);
+  ov_string_setvalue(&servername.value.valueunion.val_string, NULL);
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_transport);
   return result;
 }
@@ -56,7 +54,9 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
 OV_DLLFNCEXPORT OV_RESULT sync_dsync_trigger_set(OV_INSTPTR_sync_dsync pinst,
                                                  const OV_BOOL         value) {
   if(value && !pinst->v_trigger && pinst->v_EN) {
+    pinst->v_iexreq = 1;
     pinst->v_actimode = 1;
+    pinst->v_status = SYNC_SRC_ACTIVE;
   }
   pinst->v_trigger = value;
   return 0;
@@ -85,6 +85,9 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
                                                   const OV_BOOL         value) {
   OV_RESULT result = OV_ERR_OK;
   pobj->v_reset = value;
+
+  ov_logfile_info("dsync shutdown on src site.");
+  pobj->v_status = SYNC_SRC_INIT;
   if(value) {
     /*check if request expected*/
     if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN &&
@@ -92,6 +95,10 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       ov_logfile_error(
           "sync_dsync: shutdown requested, where no request expected");
       return OV_ERR_BADVALUE;
+    }
+    if(!pobj->v_copy) {
+      result |= Ov_DeleteObject(ov_path_getobjectpointer(pobj->v_srcPath, 2));
+      return result;
     }
 
     OV_INSTPTR_fb_task pUrtask = NULL;
@@ -105,167 +112,11 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       pobj->v_result = OV_ERR_GENERIC;
       return OV_ERR_GENERIC;
     }
-    const OV_STRING classesToConfiugure[] = {[KSAPISET] = "ksapi/setVar",
-                                             [KSAPIGET] = "ksapi/getVar"};
-    // shuttinmg dowmn
-    for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
-      if(i != KSAPISET && i != KSAPIGET) {
-        ov_logfile_warning("sync_dsync: cant handle %d", i);
-        continue;
-      }
-      OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
-      if(pssc) {
-        OV_INSTPTR_ov_object pobj = NULL;
-        Ov_ForEachChild(ov_instantiation, pssc, pobj) {
-          /* checking if right one */
-          if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
-            OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
-                ov_containment, Ov_StaticPtrCast(ov_domain, pobj), "msgClient",
-                ksmsg_msgClient);
-            // FIXME: zzz: forcing stability :2019 Feb 01 10:41
-            if(pMsgClnt) {
-              result |= Ov_DeleteObject(pMsgClnt);
-            } else {
-              ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
-            }
-            if(pobj->v_pouterobject) {
-              OV_INSTPTR_fbcomlib_FBComCommon pOobj =
-                  Ov_DynamicPtrCast(fbcomlib_FBComCommon, pobj->v_pouterobject);
-              if(pOobj) {
-                result |= fbcomlib_FBComCommon_doSend_set(pOobj, 1);
-                result |= fbcomlib_FBComCommon_doSend_set(pOobj, 0);
-              } else {
-                ov_logfile_warning("sync_dsync: ksapi not in fbcomlib %s",
-                                   ov_path_getcanonicalpath(
-                                       Ov_StaticPtrCast(ov_object, pOobj), 2));
-              }
-            } else {
-              result |= ksapi_KSApiCommon_Reset_set(
-                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 1);
-              result |= ksapi_KSApiCommon_Reset_set(
-                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 0);
-            }
-            // TODO: zzz: set it faster :2019 Jan 31 15:57
-            OV_INSTPTR_fb_functionblock pFbobj =
-                Ov_DynamicPtrCast(fb_functionblock, pobj->v_pouterobject);
-            if(pFbobj) {
-              if(pFbobj->v_cyctime.secs || pFbobj->v_cyctime.usecs)
-                ov_timespan_multiply(&pFbobj->v_cyctime, pFbobj->v_cyctime,
-                                     0.5);
-              else
-                ov_timespan_multiply(&pFbobj->v_cyctime, pUrtask->v_cyctime,
-                                     0.5);
-            }
-            /* Ov_WarnIf(pMsgClnt->v_pathLen != 3); */
-            /* result = ksmsg_msgClient_path_deleteElement(pMsgClnt, 1); */
-            /* if(Ov_Fail(result)) { */
-            /* ov_logfile_error("%u: %s: failed to delete path element", result,
-             */
-            /* ov_result_getresulttext(result)); */
-            /* return result; */
-            /* } */
-            if(i == KSAPISET) {
-              // TODO: zzz: make sure it doesnt work again :2018 Dez 20
-              // 11:56
-              OV_INSTPTR_fbcomlib_setVar pfbsetVar = Ov_DynamicPtrCast(
-                  fbcomlib_setVar,
-                  Ov_StaticPtrCast(ksapi_setVar, pobj)->v_pouterobject);
-              if(pfbsetVar) {
-                pfbsetVar->v_actimode = 0;
-                ov_logfile_info("%s.actimode = 0", pfbsetVar->v_identifier);
-              }
-            }
-          };
-        }
-      }
-    }
   }
-  pobj->v_status = SYNC_SRC_DONE;
+  pobj->v_status = SYNC_SRC_INIT;
   pobj->v_actimode = 0;
   ov_logfile_info("dsync shutdown on src site.");
   return OV_ERR_OK;
-}
-
-OV_INSTPTR_ksmsg_msgClient dsync_createKsxdrAlt(OV_INSTPTR_sync_dsync pinst,
-                                                OV_INSTPTR_ov_object  pobj) {
-  OV_RESULT                  result = OV_ERR_OK;
-  OV_INSTPTR_ksmsg_msgClient pMsgClnt = NULL;
-  OV_STRING                  dstHost = NULL;
-  OV_STRING                  dstServer = NULL;
-  OV_STRING                  dstInst = NULL;
-  OV_STRING                  dstHostPort = NULL;
-  OV_STRING                  dstServerPort = NULL;
-
-  OV_INSTPTR_fb_task pUrtask = NULL;
-  pUrtask =
-      Ov_DynamicPtrCast(fb_task, ov_path_getobjectpointer("/Tasks/UrTask", 2));
-
-  /* Getting Servername  */
-  OV_ANY servername = {0};
-  servername.value.vartype = OV_VT_VOID;
-  servername.value.valueunion.val_string = NULL;
-  ov_vendortree_getservername(&servername, NULL);
-
-  OV_INSTPTR_ksbase_ClientBase pClient = NULL;
-
-  result = ks_splitOneStringPath(pinst->v_destKS, &dstHost, &dstHostPort,
-                                 &dstServer, &dstServerPort, &dstInst);
-  if(Ov_Fail(result)) {
-    ov_logfile_error("%u: %s:", result, ov_result_getresulttext(result));
-    return NULL;
-  }
-
-  /* if(Ov_CanCastTo(ksapi_setVar, pobj)) { */
-  OV_INSTPTR_ksapi_KSApiCommon pobjCasted =
-      Ov_StaticPtrCast(ksapi_KSApiCommon, pobj);
-
-  Ov_ForEachChildEx(ov_containment, pobjCasted, pClient, ksbase_ClientBase) {
-    /*	find the object in the containment which is
-          derived from ClientBase	*/
-    break;
-  }
-  if(Ov_CanCastTo(ksmsg_msgClient, pClient)) {
-    pMsgClnt = Ov_StaticPtrCast(ksmsg_msgClient, pClient);
-  } else {
-    Ov_Unlink(ov_containment, pobjCasted, pClient);
-    result =
-        Ov_CreateObject(ksmsg_msgClient, pMsgClnt, pobjCasted, "msgClient");
-    if(result) {
-      ov_logfile_info("%s couldnt create msgClient",
-                      ov_result_getresulttext(result));
-      return NULL;
-    }
-    Ov_Link(ov_containment, pobjCasted, pClient);
-  }
-  ksmsg_msgClient_pathLen_set(pMsgClnt, 3);
-
-  ov_string_setvalue(&pMsgClnt->v_pathHost.value[0], pinst->v_selfHost);
-  ov_string_setvalue(&pMsgClnt->v_pathName.value[0],
-                     servername.value.valueunion.val_string);
-  ov_string_setvalue(
-      &pMsgClnt->v_pathInstance.value[0],
-      ov_path_getcanonicalpath(Ov_StaticPtrCast(ov_object, pMsgClnt), 2));
-
-  ov_string_setvalue(&pMsgClnt->v_pathHost.value[1], dstHost);
-  ov_string_setvalue(&pMsgClnt->v_pathName.value[1], dstServer);
-  ov_string_setvalue(&pMsgClnt->v_pathInstance.value[1],
-                     PLAYER_SRCNODE_PATH_DEST);
-
-  ov_string_setvalue(&pMsgClnt->v_pathHost.value[2], pobjCasted->v_serverHost);
-  ov_string_setvalue(&pMsgClnt->v_pathName.value[2], pobjCasted->v_serverName);
-  ov_string_setvalue(&pMsgClnt->v_pathInstance.value[2],
-                     DEFAULT_POSTSYS_EXECUTER);
-  /* setting cyctime slower */
-  // TODO: zzz: set it slower :2019 Jan 31 15:57
-  OV_INSTPTR_fb_functionblock pFbobj =
-      Ov_DynamicPtrCast(fb_functionblock, pobj->v_pouterobject);
-  if(pFbobj) {
-    if(pFbobj->v_cyctime.secs || pFbobj->v_cyctime.usecs)
-      ov_timespan_multiply(&pFbobj->v_cyctime, pFbobj->v_cyctime, 2);
-    else
-      ov_timespan_multiply(&pFbobj->v_cyctime, pUrtask->v_cyctime, 2);
-  }
-  return pMsgClnt;
 }
 
 OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
@@ -285,16 +136,17 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_sync_dsyncDst pdsyncDst = &pinst->p_dsyncDstTemp;
   OV_INSTPTR_ov_object     proot = NULL;
 
+  ov_memstack_lock();
   /* Getting Servername  */
   OV_ANY servername = {0};
   servername.value.vartype = OV_VT_VOID;
   servername.value.valueunion.val_string = NULL;
   ov_vendortree_getservername(&servername, NULL);
 
-  ov_memstack_lock();
   switch(pinst->v_status) {
-    case SYNC_SRC_DONE:
     case SYNC_SRC_INIT:
+      break;
+    case SYNC_SRC_ACTIVE:
       if(!pinst->v_EN) {
         ov_logfile_warning("sync_dsync: not enabled");
         ov_memstack_unlock();
@@ -386,50 +238,10 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         }
       }
       ov_logfile_info("dsyncDst created successfully. Transporting...");
-      /* } */
-      // setvar
-      const OV_STRING classesToConfiugure[] = {[KSAPIGET] = "ksapi/getVar",
-                                               [KSAPISET] = "ksapi/setVar"};
-
-      proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
-      if(!proot) {
-        ov_logfile_error("sync_syncDownload: srcPath no proot");
-        pinst->v_result = OV_ERR_GENERIC;
-        ov_memstack_unlock();
-        return;
-      }
-      for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
-        OV_INSTPTR_ov_class pssc = ov_class_search(classesToConfiugure[i]);
-        if(pssc) {
-          OV_INSTPTR_ov_object pobj = NULL;
-          Ov_ForEachChild(ov_instantiation, pssc, pobj) {
-            /* checking if right one */
-            if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
-              /* create Msg alternative */
-              OV_INSTPTR_ksmsg_msgClient pMsgClnt =
-                  dsync_createKsxdrAlt(pinst, pobj);
-              if(!pMsgClnt) {
-                ov_logfile_error("sync_dsync: could not create Client %s",
-                                 pobj->v_identifier);
-                pinst->v_status = SYNC_INTERNALERROR;
-                ov_memstack_unlock();
-                return;
-              }
-            }
-          }
-        } else {
-          ov_logfile_info("fbcomlib/setVar not used");
-        }
-      }
-      ov_logfile_info("setgetalternate creation done.");
       pinst->v_status = DEBUGSTATE;
-
-      ov_memstack_unlock();
-      return;
-      break;
     case DEBUGSTATE:
       ov_logfile_debug("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 2) {
+      if(pinst->v_debugi++ >= 0) {
         ov_logfile_debug("sync_dsync: running");
         /* run transport */
         OV_INSTPTR_CTree_Transport ptrans =
@@ -444,8 +256,9 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
         ov_logfile_info("transport requested");
       }
+      ov_memstack_unlock();
+      return;
       break;
-
     case SYNC_SRC_TRANSPORTREQUESTED:
       switch(pinst->p_transport.v_status) {
         case CTREE_TR_DONE:

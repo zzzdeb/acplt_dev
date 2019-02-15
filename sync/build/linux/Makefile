@@ -9,8 +9,8 @@ lc = $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(s
 SERVERSTARTKEYS = -w fb -w ksbase -w sync
 #/Project config parameters that are accessed by Eclipse
 MAKMAKOPTIONS = 
-EXTRA_CC_FLAGS = -I "../../../cexception/" -I "../../../ov/include/libml/"
-EXTRA_LIBS = libcexception.so
+EXTRA_CC_FLAGS = -I "../../../ov/include/libml/"
+EXTRA_LIBS = 
 LD_FLAGS = 
 COMPILER = GCC
 PREBUILD = ../prebuild.tcl

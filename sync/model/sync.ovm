@@ -5,8 +5,6 @@
 #include "fbcomlib.ovm"
 #include "ssc.ovm"
 #include "ksapi.ovm"
-#include "ksmsg.ovm"
-#include "PostSys.ovm"
 
 LIBRARY sync
   VERSION   = "V0.1 (DD-Mon-YYYY)";
@@ -15,19 +13,7 @@ LIBRARY sync
   COMMENT   = "";
   
   
-  CLASS dstNode         : CLASS PostSys/node
-    IS_INSTANTIABLE;
-    COMMENT = "nodeInbox to interact with Tree during playing";
-    VARIABLES
-      /* Input *************************************************/
-      SourcePref  : STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
-      DestPref  : STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
-    END_VARIABLES;
-    OPERATIONS
-      typemethod      : C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-    END_OPERATIONS;
-  END_CLASS;
-
+  
   CLASS syncDownload          : CLASS CTree/Download
       IS_INSTANTIABLE;
       COMMENT = "like download but changes paths in elements to make copied tree work correctly";
@@ -46,102 +32,6 @@ LIBRARY sync
       END_OPERATIONS;
   END_CLASS;
 
-  CLASS bufferMessage         : CLASS PostSys/Message
-      IS_INSTANTIABLE;
-      COMMENT = "msg to Buffer with try count";
-      VARIABLES
-        round : UINT 
-                FLAGS="o"
-                COMMENT     = "how many round is the message in inbox"
-                INITIALVALUE  = 0;
-      END_VARIABLES;
-      PARTS
-  
-      END_PARTS;
-      OPERATIONS
-          
-      END_OPERATIONS;
-  END_CLASS;
-
-  CLASS Buffer          : CLASS ov/domain
-    IS_INSTANTIABLE;
-    COMMENT = "sync ssc-s in path with targetKS copies";
-    VARIABLES
-      /* Input *************************************************/
-    END_VARIABLES;
-    OPERATIONS
-      
-    END_OPERATIONS;
-  END_CLASS;
-
-  CLASS bufferer          : CLASS PostSys/node
-    IS_INSTANTIABLE;
-    COMMENT = "buffers messages send through this node";
-    VARIABLES
-      /* Input *************************************************/
-      SourcePref  : STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
-      DestPref  : STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
-      lastBufferedMsg : STRING 
-          FLAGS="o"
-          COMMENT     = "id of last buffered msg"
-          INITIALVALUE  = "";
-      status  : INT
-          FLAGS="o"
-          COMMENT     = "0: ACTIVE, 1: STOP_BUFFERING, 64, 128 Error"
-          INITIALVALUE  = 0;
-      msgsWaitingRes[]  : STRING
-          FLAGS="o"
-          COMMENT     = "msgs sent & waiting res";
-    END_VARIABLES;
-    PARTS
-        buffer  : CLASS sync/Buffer;
-    END_PARTS;
-    OPERATIONS
-      typemethod      : C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-    END_OPERATIONS;
-  END_CLASS;
-
-  CLASS player: CLASS ksbase/ComTask
-  IS_INSTANTIABLE;
-    COMMENT = "";
-    VARIABLES
-      srcHost : STRING 
-              FLAGS="i"
-              COMMENT     = "Hostname of src"
-              INITIALVALUE  = "";
-      srcServer:  STRING 
-              FLAGS="i"
-              COMMENT     = "src server name"
-              INITIALVALUE  = "";
-      srcPath : STRING COMMENT="Tree to transmit in source. Used for changing Paths in msgs" INITIALVALUE="";
-      dstHost : STRING 
-              FLAGS="i"
-              COMMENT     = "Hostname of dst"
-              INITIALVALUE  = "";
-      dstServer:  STRING 
-              FLAGS="i"
-              COMMENT     = "dst server name"
-              INITIALVALUE  = "";
-      dstPath : STRING COMMENT="Tree to transmit in dest. Used for changing Paths in msgs" INITIALVALUE="";
-      switch  : BOOL 
-              HAS_SET_ACCESSOR
-              FLAGS="i"
-              COMMENT     = "switches active nodes"
-              INITIALVALUE  = FALSE;
-      status  : INT 
-          FLAGS="o"
-          COMMENT     = "0: INIT, 1: PLAYING, 2: WAITING ANSWERS, 4: DONE"
-          INITIALVALUE  = 0;
-    END_VARIABLES;
-    PARTS
-        bufNode : CLASS sync/bufferer;
-        dstNode : CLASS sync/dstNode;
-    END_PARTS;
-    OPERATIONS
-      typemethod  : C_FUNCTION <KSBASE_FNC_TYPEMETHOD>;
-    END_OPERATIONS;
-  END_CLASS;
-  
 
   CLASS dsyncDst          : CLASS ksbase/ComTask
       IS_INSTANTIABLE;
@@ -179,7 +69,6 @@ LIBRARY sync
       PARTS
         syncDownload  : CLASS sync/syncDownload;
         kssetter  : CLASS ksapi/setVar;
-        player  : CLASS sync/player;
       END_PARTS;
       OPERATIONS
         constructor : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
@@ -215,7 +104,10 @@ LIBRARY sync
           FLAGS="i"
           COMMENT="trigger"
           INITIALVALUE=FALSE;
-
+      copy : BOOL
+          FLAGS="i"
+          COMMENT="case 1: Instance in src site is kept"
+          INITIALVALUE=FALSE;
       holdConnection  : BOOL FLAGS="i"
         COMMENT     = "Tell client not to close the connection after each request"
         INITIALVALUE  = FALSE;
@@ -285,11 +177,6 @@ LIBRARY sync
   END_CLASS;
   
   //CLASS db  : CLASS fb/functionblock
-  
-    ASSOCIATION buffered: ONE_TO_MANY
-      PARENT bufferer : CLASS sync/bufferer;
-      CHILD  bufferedMsgs   : CLASS PostSys/Message;
-    END_ASSOCIATION;
   
   //ASSOCIATION syncSscVar  : ONE_TO_ONE
   //  PARENT ssc  : CLASS ssc/SequentialStateChart;
