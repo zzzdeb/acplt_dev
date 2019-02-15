@@ -88,7 +88,9 @@ lbalance_acceptNotifier_typemethod(OV_INSTPTR_fb_functionblock pfb,
           pinst->v_status = LB_ACCEPTNOTIFIER_SENT;
           return;
         }
-        if(pinst->v_index >= pinst->v_reqIPs.veclen) {
+        if(pinst->v_index >= (OV_INT)pinst->v_reqIPs.veclen) {
+          ov_logfile_error("lbalance_acceptNotifier: index>veclen, %d>%u",
+                           pinst->v_index, pinst->v_reqIPs.veclen);
           pinst->v_status = LB_INTERNALERROR;
           pinst->v_result = OV_ERR_BADVALUE;
           return;
