@@ -37,7 +37,7 @@ OV_DLLFNCEXPORT OV_RESULT
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_sender);
   pinst->p_sender.v_actimode = 1;
   pinst->p_sender.v_iexreq = 1;
-
+  pinst->p_sender.v_queueLength = 20;
   return result;
 }
 
