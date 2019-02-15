@@ -86,11 +86,9 @@ static void addServerToList(OV_STRING_VEC *list, const char *fullname, uint32_t 
 	char *delim2 = strstr(delim+2, ".");
 	if (strncmp(delim+2, ourHostname, delim2-delim-2) == 0
 			&& strcmp(servername, ourServername.value.valueunion.val_string) == 0) {
-		ov_string_setvalue(&ourServername.value.valueunion.val_string, NULL);
 		ov_logfile_info("Skipping that server (%s), b/c it seems to be ourselves.", fullname);
 		return;
 	}
-	ov_string_setvalue(&ourServername.value.valueunion.val_string, NULL);
 #endif
 
 #if LOOKUP_IP_ADDRESS

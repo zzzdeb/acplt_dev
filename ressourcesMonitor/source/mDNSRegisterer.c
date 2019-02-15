@@ -45,7 +45,6 @@ static OV_RESULT registerWithBonjour(OV_INSTPTR_ressourcesMonitor_mDNSRegisterer
 	OV_ANY serverName;
 	ov_vendortree_getservername(&serverName, NULL);
 	strncpy(servicename, serverName.value.valueunion.val_string, OV_NAME_MAXLEN);
-	ov_string_setvalue(&serverName.value.valueunion.val_string, NULL);
 	unsigned int serverNameLen = strlen(servicename);
 	servicename[serverNameLen] = '.';
 	strncat(servicename + serverNameLen + 1, hostname, HOST_NAME_MAX);
