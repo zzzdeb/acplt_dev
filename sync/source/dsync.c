@@ -38,6 +38,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
   OV_INSTPTR_sync_dsync pinst = Ov_StaticPtrCast(sync_dsync, pobj);
 
   result = fb_functionblock_constructor(pobj);
+  pinst->p_dsyncDstTemp.v_actimode = 0;
 
   ov_memstack_lock();
   OV_ANY servername = {0};
@@ -152,7 +153,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       /* check */
       proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
       if(!proot) {
-        ov_logfile_error("dsync_sync: root couldt be found");
+        ov_logfile_error("dsync_sync: root couldt be found %s",
+                         pinst->v_srcPath);
         pinst->v_status = SYNC_INTERNALERROR;
         ov_memstack_unlock();
         return;

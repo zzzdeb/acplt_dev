@@ -191,7 +191,6 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       pinst->v_actimode = 0;
       break;
     case DSYNC_DST_ACTIVE:
-      ov_logfile_debug("sync_dsyncDst: active mode");
       if(pinst->p_syncDownload.v_state == SYNC_DOWNLOAD_DONE) {
         if(Ov_Fail(pinst->p_syncDownload.v_result)) {
           sync_dsyncDst_opTerm(pinst, pinst->p_syncDownload.v_result);
