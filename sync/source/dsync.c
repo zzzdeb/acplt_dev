@@ -77,6 +77,8 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_reset_set(OV_INSTPTR_sync_dsync pobj,
         Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_ksCrtObj), 0);
     ksapi_KSApiCommon_Reset_set(
         Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_ksCrtObj), 1);
+    ov_string_setvalue(&pobj->p_transport.v_targetDownloadPath,
+                       "data/CTree/Download");
     CTree_Transport_reset_set(&pobj->p_transport, 0);
     CTree_Transport_reset_set(&pobj->p_transport, 1);
   }
@@ -256,6 +258,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       switch(pinst->p_transport.v_status) {
         case CTREE_TR_DONE:
           ov_logfile_info("transport done successfully");
+          ov_string_setvalue(&pinst->p_transport.v_targetDownloadPath,
+                             "data/CTree/Download");
           pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
           break;
         case CTREE_TR_TREESENT_WAITING:
@@ -265,6 +269,8 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         case CTREE_COMMON_EXTERNALERROR:
         case CTREE_COMMON_INTERNALERROR:
         default:
+          ov_string_setvalue(&pinst->p_transport.v_targetDownloadPath,
+                             "data/CTree/Download");
           ov_logfile_error("sync failed at transport");
           pinst->v_status = SYNC_INTERNALERROR;
           break;
