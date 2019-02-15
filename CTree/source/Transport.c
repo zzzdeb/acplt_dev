@@ -91,19 +91,20 @@ CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
   Ov_ForEachChildEx(ov_containment, pCommon, *pClient, ksbase_ClientBase) {
     break;
   }
+  ov_memstack_lock();
   if(!(*pClient)) { /*	no client found --> create one	*/
     const char          defaultClient[] = "xdrClient";
     OV_INSTPTR_ov_class pClassClient = NULL;
-    ov_memstack_lock();
     tmpStr = ov_vendortree_getcmdlineoption_value("KS_USECLIENT");
     if(!tmpStr)
       tmpStr = ov_vendortree_getcmdlineoption_value("CTREE_USECLIENT");
 
     if(!tmpStr)
       tmpStr = (OV_STRING)defaultClient;
-    else if(!(*tmpStr))
+    else if(!(*tmpStr)) {
+      ov_memstack_unlock();
       return OV_ERR_OK;
-
+    }
     Ov_ForEachChild(ov_inheritance, pclass_ksbase_ClientBase, pClassClient) {
       if(ov_string_compare(pClassClient->v_identifier, tmpStr) ==
          OV_STRCMP_EQUAL) {
@@ -117,14 +118,16 @@ CTree_helper_getClientPointers(OV_INSTPTR_CTree_Transport    pCommon,
         break;
       }
     }
-    ov_memstack_unlock();
   }
 
   /*	here we definitely have a client object	*/
   Ov_GetVTablePtr(ksbase_ClientBase, *pVtblClient, *pClient);
-  if(!pVtblClient)
+  if(!pVtblClient) {
+    ov_memstack_unlock();
     return OV_ERR_BADOBJTYPE;
+  }
 
+  ov_memstack_unlock();
   return OV_ERR_OK;
 }
 
@@ -214,6 +217,7 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
     return;
   }
 
+  ov_memstack_lock();
   Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
 
   if(!pVtblClient) {
@@ -222,9 +226,9 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
          this->v_identifier, that->v_identifier));
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
     pinst->v_result = OV_ERR_BADOBJTYPE;
+    ov_memstack_unlock();
     return;
   }
-  ov_memstack_lock();
   result = pVtblClient->m_processSetVar(pClient, NULL,
                                         (OV_RESULT*)&(pinst->v_result),
                                         &itemsLength, &itemsResults);
@@ -355,6 +359,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
   OV_INSTPTR_CTree_Transport pinst = Ov_StaticPtrCast(CTree_Transport, pfb);
   OV_RESULT                  result = {0};
 
+  ov_memstack_lock();
   switch(pinst->v_status) {
     case CTREE_TR_DONE:
     case CTREE_TR_INIT:
@@ -368,7 +373,6 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
         return;
       }
 
-      ov_memstack_lock();
       OV_STRING targetHost = NULL;
       OV_STRING targetServer = NULL;
       OV_STRING targetPath = NULL;
@@ -381,6 +385,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
         pinst->v_status = CTREE_COMMON_INTERNALERROR;
         ov_memstack_unlock();
         pinst->v_result = OV_ERR_BADPARAM;
+        return;
       }
 
       if(!targetHost) {
@@ -391,7 +396,6 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
         ov_string_setvalue(&pdownload->v_json, pinst->p_upload.v_tree);
         ov_string_setvalue(&pdownload->v_path, targetPath);
         pinst->v_status = CTREE_TR_DONE;
-        ov_memstack_unlock();
         pinst->v_result = CTree_Download_execute(pdownload);
       }
       // TODO: zzz: ks_splitOneString problem at Port when it must be NULL Di
@@ -469,4 +473,6 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
     default:
       break;
   }
+  ov_memstack_unlock();
+  return;
 }

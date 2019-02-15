@@ -192,7 +192,6 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
     case DSYNC_DST_DONE:
       pinst->v_actimode = 0;
       ov_logfile_info("sync_dsyncDst: done.");
-      ov_memstack_unlock();
       break;
     default:
       ov_logfile_error("sync_dsyncDst: unknown state");

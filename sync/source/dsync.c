@@ -39,6 +39,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
 
   result = fb_functionblock_constructor(pobj);
 
+  ov_memstack_lock();
   OV_ANY servername = {0};
   servername.value.vartype = OV_VT_VOID;
   servername.value.valueunion.val_string = NULL;
@@ -48,6 +49,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_constructor(OV_INSTPTR_ov_object pobj) {
                                servername.value.valueunion.val_string);
   ov_string_setvalue(&servername.value.valueunion.val_string, NULL);
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_transport);
+  ov_memstack_unlock();
   return result;
 }
 
@@ -87,7 +89,6 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
   pobj->v_reset = value;
 
   ov_logfile_info("dsync shutdown on src site.");
-  pobj->v_status = SYNC_SRC_INIT;
   if(value) {
     /*check if request expected*/
     if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN &&
@@ -96,14 +97,6 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
           "sync_dsync: shutdown requested, where no request expected");
       return OV_ERR_BADVALUE;
     }
-    if(!pobj->v_copy) {
-      result |= Ov_DeleteObject(ov_path_getobjectpointer(pobj->v_srcPath, 2));
-      return result;
-    }
-
-    OV_INSTPTR_fb_task pUrtask = NULL;
-    pUrtask = Ov_DynamicPtrCast(fb_task,
-                                ov_path_getobjectpointer("/Tasks/UrTask", 2));
     /*go on */
     OV_INSTPTR_ov_object proot = ov_path_getobjectpointer(pobj->v_srcPath, 2);
     if(!proot) {
@@ -111,6 +104,10 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       pobj->v_status = SYNC_INTERNALERROR;
       pobj->v_result = OV_ERR_GENERIC;
       return OV_ERR_GENERIC;
+    }
+    if(!pobj->v_copy) {
+      result |= Ov_DeleteObject(ov_path_getobjectpointer(pobj->v_srcPath, 2));
+      return result;
     }
   }
   pobj->v_status = SYNC_SRC_INIT;
