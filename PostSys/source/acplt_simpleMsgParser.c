@@ -569,9 +569,9 @@ OV_DLLFNCEXPORT OV_RESULT acplt_simpleMsg_parseFlatBody(char const* xml,
 OV_DLLFNCEXPORT void acplt_simpleMsg_initHeader(ACPLT_MSGHEADER* header) {
 	if(header) {
 		header->sysAdrPath.veclen = 0;
+		header->sysAdrPath.value = NULL;
 		header->locAdrPath.veclen = 0;
-		Ov_SetDynamicVectorLength(&header->sysAdrPath, 0, STRING);
-		Ov_SetDynamicVectorLength(&header->locAdrPath, 0, STRING);
+		header->locAdrPath.value = NULL;
 		header->currentInd = 0;
 		header->msgId = NULL;
 		header->refMsgId = NULL;
