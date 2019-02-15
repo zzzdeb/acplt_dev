@@ -110,8 +110,8 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
       return result;
     }
   }
+  pobj->v_trigger = 0;
   pobj->v_status = SYNC_SRC_INIT;
-  pobj->v_actimode = 0;
   ov_logfile_info("dsync shutdown on src site.");
   return OV_ERR_OK;
 }
@@ -238,7 +238,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       pinst->v_status = DEBUGSTATE;
     case DEBUGSTATE:
       ov_logfile_debug("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 0) {
+      if(pinst->v_debugi++ >= 2) {
         ov_logfile_debug("sync_dsync: running");
         /* run transport */
         OV_INSTPTR_CTree_Transport ptrans =
