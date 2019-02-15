@@ -89,7 +89,7 @@ OV_DLLFNCEXPORT OV_RESULT sync_dsync_shutdown_set(OV_INSTPTR_sync_dsync pobj,
   pobj->v_reset = value;
 
   ov_logfile_info("dsync shutdown on src site.");
-  if(value) {
+  if(value && !pobj->v_shutdown) {
     /*check if request expected*/
     if(pobj->v_status != SYNC_SRC_WAITINGFORSHUTDOWN &&
        pobj->v_status != SYNC_SRC_TRANSPORTREQUESTED) {
@@ -235,24 +235,18 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         }
       }
       ov_logfile_info("dsyncDst created successfully. Transporting...");
-      pinst->v_status = DEBUGSTATE;
-    case DEBUGSTATE:
-      ov_logfile_debug("sync_dsync: in debug state %d", pinst->v_debugi);
-      if(pinst->v_debugi++ >= 2) {
-        ov_logfile_debug("sync_dsync: running");
-        /* run transport */
-        OV_INSTPTR_CTree_Transport ptrans =
-            Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
-        ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
-        ov_string_print(&ptrans->v_targetKS, "%s%s", pinst->v_destKS,
-                        pinst->v_srcPath);
-        ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
-                        DSYNC_DOWNLOAD_PATH_DEST_EXT);
-        ptrans->v_trigger = 0;
-        CTree_Common_trigger_set(Ov_StaticPtrCast(CTree_Common, ptrans), 1);
-        pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
-        ov_logfile_info("transport requested");
-      }
+      /* run transport */
+      OV_INSTPTR_CTree_Transport ptrans =
+          Ov_StaticPtrCast(CTree_Transport, &pinst->p_transport);
+      ov_string_setvalue(&ptrans->v_path, pinst->v_srcPath);
+      ov_string_print(&ptrans->v_targetKS, "%s%s", pinst->v_destKS,
+                      pinst->v_srcPath);
+      ov_string_print(&ptrans->v_targetDownloadPath, "%s%s", DSYNC_PATH_DEST,
+                      DSYNC_DOWNLOAD_PATH_DEST_EXT);
+      ptrans->v_trigger = 0;
+      CTree_Common_trigger_set(Ov_StaticPtrCast(CTree_Common, ptrans), 1);
+      pinst->v_status = SYNC_SRC_TRANSPORTREQUESTED;
+      ov_logfile_info("transport requested");
       ov_memstack_unlock();
       return;
       break;
