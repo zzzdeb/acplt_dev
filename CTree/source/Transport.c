@@ -247,8 +247,9 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
   }
   for(OV_UINT i = 0; i < itemsLength; ++i) {
     if(Ov_Fail(itemsResults[i])) {
-      ov_logfile_error("%u: %s: DownloadCallback[%d]", itemsResults[i],
-                       ov_result_getresulttext(itemsResults[i]), i);
+      ov_logfile_error("%u: %s: DownloadCallback[%d], %s", itemsResults[i],
+                       ov_result_getresulttext(itemsResults[i]), i,
+                       pinst->v_targetDownloadPath);
       if(i == DOWNLOADTRIGGERPOS) {
         ov_logfile_error("Download Trigger showed error. Could mean, either "
                          "set didnt work or Download had error");

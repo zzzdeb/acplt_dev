@@ -152,7 +152,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
       /* check */
       proot = ov_path_getobjectpointer(pinst->v_srcPath, 2);
       if(!proot) {
-        ov_logfile_error("root couldt be found");
+        ov_logfile_error("dsync_sync: root couldt be found");
         pinst->v_status = SYNC_INTERNALERROR;
         ov_memstack_unlock();
         return;

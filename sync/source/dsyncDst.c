@@ -161,7 +161,7 @@ OV_DLLFNCEXPORT OV_RESULT
     pobj->p_kssetter.v_varValue.value.valueunion.val_bool = 1;
     ksapi_setVar_submit(Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_kssetter));
   }
-  pobj->v_status = DSYNC_DST_DONE;
+  pobj->v_status = DSYNC_DST_INIT;
   return result;
 }
 
@@ -183,6 +183,7 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   ov_memstack_lock();
   OV_INSTPTR_sync_dsyncDst pinst = Ov_StaticPtrCast(sync_dsyncDst, this);
   switch(pinst->v_status) {
+    case DSYNC_DST_DONE:
     case DSYNC_DST_INIT:
       break;
     case SYNC_INTERNALERROR:
@@ -190,6 +191,7 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
       pinst->v_actimode = 0;
       break;
     case DSYNC_DST_ACTIVE:
+      ov_logfile_debug("sync_dsyncDst: active mode");
       if(pinst->p_syncDownload.v_state == SYNC_DOWNLOAD_DONE) {
         if(Ov_Fail(pinst->p_syncDownload.v_result)) {
           sync_dsyncDst_opTerm(pinst, pinst->p_syncDownload.v_result);
@@ -198,10 +200,6 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
           sync_dsyncDst_switch_set(pinst, 1);
         }
       }
-      break;
-    case DSYNC_DST_DONE:
-      pinst->v_actimode = 0;
-      ov_logfile_info("sync_dsyncDst: done.");
       break;
     default:
       ov_logfile_error("sync_dsyncDst: unknown state");
