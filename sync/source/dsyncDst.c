@@ -95,6 +95,8 @@ OV_DLLFNCEXPORT OV_RESULT
     /*
      * refresh nodes
      */
+    OV_BOOL doCyclic = 0;
+    OV_BOOL doSend = 0;
     for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
       if(i != KSAPISET && i != KSAPIGET) {
         ov_logfile_warning("sync_dsync: cant handle %d", i);
@@ -110,13 +112,21 @@ OV_DLLFNCEXPORT OV_RESULT
               if(Ov_CanCastTo(fbcomlib_setVar, pobj->v_pouterobject)) {
                 OV_INSTPTR_fbcomlib_setVar pOobj =
                     Ov_StaticPtrCast(fbcomlib_setVar, pobj->v_pouterobject);
+                doSend = pOobj->v_doSend;
+                doCyclic = pOobj->v_doCyclic;
                 pOobj->v_doReset = 0;
                 fbcomlib_setVar_doReset_set(pOobj, 1);
+                pOobj->v_doSend = doSend;
+                pOobj->v_doCyclic = doCyclic;
               } else if(Ov_CanCastTo(fbcomlib_getVar, pobj->v_pouterobject)) {
                 OV_INSTPTR_fbcomlib_getVar pOobj =
                     Ov_StaticPtrCast(fbcomlib_getVar, pobj->v_pouterobject);
+                doSend = pOobj->v_doSend;
+                doCyclic = pOobj->v_doCyclic;
                 pOobj->v_doReset = 0;
                 fbcomlib_getVar_doReset_set(pOobj, 1);
+                pOobj->v_doSend = doSend;
+                pOobj->v_doCyclic = doCyclic;
               } else {
                 ov_logfile_warning(
                     "sync_dsync: ksapi not in fbcomlib %s",
