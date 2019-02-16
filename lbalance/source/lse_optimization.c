@@ -135,7 +135,7 @@ OV_UINT_VEC lse_optimization_lookup_requesting_nodes(OV_STRING_VEC requestIPs, O
 
 	for (OV_UINT i = 0; i < requestIPs.veclen; ++i) {
 		OV_UINT idx = MAX_UINT;
-		for (OV_UINT j = 0; i < nodeIPs.veclen; ++i) {
+		for (OV_UINT j = 0; j < nodeIPs.veclen; ++j) {
 			if (ov_string_compare(requestIPs.value[i], nodeIPs.value[j]) == OV_STRCMP_EQUAL) {
 				idx = j;
 				break;
