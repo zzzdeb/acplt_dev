@@ -327,7 +327,7 @@ LIBRARY lbalance
       reqIndex : INT
           FLAGS="o"
           COMMENT     = "index of choosen node. Will be -1, if no request should be accepted."
-          INITIALVALUE  = 0;
+          INITIALVALUE  = -1;
     END_VARIABLES;
     OPERATIONS
       typemethod  : C_FUNCTION <FB_FNC_TYPEMETHOD>;
