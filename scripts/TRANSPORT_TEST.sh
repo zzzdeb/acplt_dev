@@ -13,7 +13,7 @@ SERVERIP="localhost"
 . $ACPLT_HOME/scripts/functions.sh
 
 ##### start Server #####
-startServer $1
+# startServer $1
 
 echo -e "\n\033[1;32mDone\033[m"
 
@@ -25,7 +25,7 @@ SERVERIP="localhost"
 
 
 ##### start Server #####
-startServer $1
+# startServer $1
 echo -e "Waiting 1sec for Server to register at MANAGER."
 sleep 4
 

@@ -14,7 +14,7 @@ SERVERIP="localhost"
 . $ACPLT_HOME/scripts/functions.sh
 
 ##### start Server #####
-# startServer $1
+startServer $1
 
 echo -e "\n\033[1;32mDone\033[m"
 
@@ -70,7 +70,7 @@ curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/dsync
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/dsync.srcPath&newvalue=/TechUnits/fbGetvar"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/dsync.selfHost&newvalue=localhost"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/dsync.iexreq&newvalue=1"
-curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/dsync.trigger&newvalue=1"
+curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&plainath=/TechUnits/dsync.trigger&newvalue=1"
 # curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/CTree/Transport.path&newvalue=/TechUnits/dsyncDst"
 # curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/CTree/Transport.trigger&newvalue=1"
 
