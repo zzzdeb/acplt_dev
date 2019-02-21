@@ -199,6 +199,7 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   OV_BYTE_VEC   unitedBfiles = {0, NULL};
   OV_BYTE_VEC*  pbfiles = NULL;
 
+  ov_memstack_lock();
   OV_INSTPTR_ksbase_ClientBase pClient =
       Ov_StaticPtrCast(ksbase_ClientBase, &pinst->p_ks);
   result = CTree_helper_setKSParam(pClient, pinst->v_targetKS);
@@ -207,10 +208,10 @@ OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   Ov_GetVTablePtr(ksbase_ClientBase, pVtblClient, pClient);
   if(!pVtblClient) {
     pinst->v_status = CTREE_COMMON_INTERNALERROR;
+    ov_memstack_unlock();
     return OV_ERR_GENERIC;
   }
 
-  ov_memstack_lock();
   /*file names*/
   //	fileNames.veclen = pinst->v_filesToSend.veclen;
   //	for (OV_UINT i = 0; i < fileNames.veclen; ++i)

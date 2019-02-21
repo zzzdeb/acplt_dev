@@ -362,7 +362,7 @@ PostSys_msgCreator_typemethod(OV_INSTPTR_fb_functionblock pfb, OV_TIME* pltc) {
       }
     } else if(pMsg->v_msgStatus == MSGWAITING) {
       pinst->v_tries++;
-      OV_UINT tries = 0;
+      OV_UINT tries = 2;
       if(pinst->v_tries > tries) {
         ov_logfile_warning(
             "PostSys_msgCreator: sendmessage more than %d try. deleting",

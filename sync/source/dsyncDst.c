@@ -24,15 +24,13 @@
 
 #include "ksapi.h"
 #include "ksbase_helper.h"
-#include "ksmsg_helper.h"
 
 OV_DLLFNCEXPORT OV_RESULT sync_dsyncDst_constructor(OV_INSTPTR_ov_object pobj) {
-  OV_RESULT                result = OV_ERR_OK;
-  OV_INSTPTR_sync_dsyncDst pinst = Ov_StaticPtrCast(sync_dsyncDst, pobj);
+  OV_RESULT result = OV_ERR_OK;
+  /* OV_INSTPTR_sync_dsyncDst pinst = Ov_StaticPtrCast(sync_dsyncDst, pobj); */
 
   result = ksbase_ComTask_constructor(pobj);
 
-  pinst->p_player.v_actimode = 0;
   return result;
 }
 
@@ -41,9 +39,6 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_RESULT result = OV_ERR_OK;
   if(!value) {
     result = ov_string_setvalue(&pinst->v_dstKS, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_dstHost, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_dstServer, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_dstPath, NULL);
     return result;
   }
   OV_STRING host = NULL;
@@ -56,9 +51,6 @@ OV_DLLFNCEXPORT OV_RESULT
   result = ov_string_setvalue(&pinst->v_dstKS, value);
   result |= ov_string_setvalue(&pinst->v_path, path);
   result |= ov_string_setvalue(&pinst->p_syncDownload.v_path, path);
-  result |= ov_string_setvalue(&pinst->p_player.v_dstHost, host);
-  result |= ov_string_setvalue(&pinst->p_player.v_dstServer, serv);
-  result |= ov_string_setvalue(&pinst->p_player.v_dstPath, path);
   ov_memstack_unlock();
   return result;
 }
@@ -68,9 +60,6 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_RESULT result = OV_ERR_OK;
   if(!value) {
     result = ov_string_setvalue(&pinst->v_srcKS, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_srcHost, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_srcServer, NULL);
-    result |= ov_string_setvalue(&pinst->p_player.v_srcPath, NULL);
     return result;
   }
   OV_STRING host = NULL;
@@ -81,9 +70,6 @@ OV_DLLFNCEXPORT OV_RESULT
   ov_memstack_lock();
   ks_splitOneStringPath(value, &host, &hostPort, &serv, &servPort, &path);
   result = ov_string_setvalue(&pinst->v_srcKS, value);
-  result |= ov_string_setvalue(&pinst->p_player.v_srcHost, host);
-  result |= ov_string_setvalue(&pinst->p_player.v_srcServer, serv);
-  result |= ov_string_setvalue(&pinst->p_player.v_srcPath, path);
   ov_memstack_unlock();
   return result;
 }
@@ -107,8 +93,10 @@ OV_DLLFNCEXPORT OV_RESULT
     const OV_STRING classesToConfiugure[] = {[KSAPISET] = "ksapi/setVar",
                                              [KSAPIGET] = "ksapi/getVar"};
     /*
-     * delete second element from path
+     * refresh nodes
      */
+    OV_BOOL doCyclic = 0;
+    OV_BOOL doSend = 0;
     for(OV_UINT i = 0; i < SYNC_CONFIGURE_LEN; ++i) {
       if(i != KSAPISET && i != KSAPIGET) {
         ov_logfile_warning("sync_dsync: cant handle %d", i);
@@ -120,45 +108,39 @@ OV_DLLFNCEXPORT OV_RESULT
         Ov_ForEachChild(ov_instantiation, pssc, pobj) {
           /* checking if right one */
           if(object_isDescendant(proot, Ov_StaticPtrCast(ov_object, pobj))) {
-            OV_INSTPTR_ksmsg_msgClient pMsgClnt = Ov_SearchChildEx(
-                ov_containment, Ov_StaticPtrCast(ov_domain, pobj), "msgClient",
-                ksmsg_msgClient);
-            // FIXME: zzz: forcing stability :2019 Feb 01 10:41
-            if(pMsgClnt) {
-              Ov_DeleteObject(pMsgClnt);
-            } else {
-              ov_logfile_warning("%s has no msgClient", pobj->v_identifier);
-            }
             if(pobj->v_pouterobject) {
-              OV_INSTPTR_fbcomlib_FBComCommon pOobj =
-                  Ov_DynamicPtrCast(fbcomlib_FBComCommon, pobj->v_pouterobject);
-              if(pOobj) {
-                fbcomlib_FBComCommon_doSend_set(pOobj, 1);
-                fbcomlib_FBComCommon_doSend_set(pOobj, 0);
+              if(Ov_CanCastTo(fbcomlib_setVar, pobj->v_pouterobject)) {
+                OV_INSTPTR_fbcomlib_setVar pOobj =
+                    Ov_StaticPtrCast(fbcomlib_setVar, pobj->v_pouterobject);
+                doSend = pOobj->v_doSend;
+                doCyclic = pOobj->v_doCyclic;
+                pOobj->v_doReset = 0;
+                fbcomlib_setVar_doReset_set(pOobj, 1);
+                pOobj->v_doSend = doSend;
+                pOobj->v_doCyclic = doCyclic;
+              } else if(Ov_CanCastTo(fbcomlib_getVar, pobj->v_pouterobject)) {
+                OV_INSTPTR_fbcomlib_getVar pOobj =
+                    Ov_StaticPtrCast(fbcomlib_getVar, pobj->v_pouterobject);
+                doSend = pOobj->v_doSend;
+                doCyclic = pOobj->v_doCyclic;
+                pOobj->v_doReset = 0;
+                fbcomlib_getVar_doReset_set(pOobj, 1);
+                pOobj->v_doSend = doSend;
+                pOobj->v_doCyclic = doCyclic;
               } else {
-                ov_logfile_warning("sync_dsync: ksapi not in fbcomlib %s",
-                                   ov_path_getcanonicalpath(
-                                       Ov_StaticPtrCast(ov_object, pOobj), 2));
+                ov_logfile_warning(
+                    "sync_dsync: ksapi not in fbcomlib %s",
+                    ov_path_getcanonicalpath(
+                        Ov_StaticPtrCast(ov_object, pobj->v_pouterobject), 2));
               }
             } else {
+              Ov_StaticPtrCast(ksapi_KSApiCommon, pobj)->v_Reset = 0;
               ksapi_KSApiCommon_Reset_set(
                   Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 1);
-              ksapi_KSApiCommon_Reset_set(
-                  Ov_StaticPtrCast(ksapi_KSApiCommon, pobj), 0);
             }
           }
         }
       }
-    }
-
-    // TODO: zzz: status :2018 Dez 20 12:56
-    /*
-     * stop buffering msgs
-     */
-    result = sync_player_switch_set(&pobj->p_player, 1);
-    if(Ov_Fail(result)) {
-      ov_logfile_error("%u: %s: ", result, ov_result_getresulttext(result));
-      return result;
     }
 
     /*
@@ -179,14 +161,13 @@ OV_DLLFNCEXPORT OV_RESULT
     pobj->p_kssetter.v_varValue.value.valueunion.val_bool = 1;
     ksapi_setVar_submit(Ov_StaticPtrCast(ksapi_KSApiCommon, &pobj->p_kssetter));
   }
-  pobj->v_status = DSYNC_DST_DONE;
+  pobj->v_status = DSYNC_DST_INIT;
   return result;
 }
 
 OV_RESULT sync_dsyncDst_opTerm(OV_INSTPTR_sync_dsyncDst pinst, OV_RESULT res) {
   pinst->v_result = res;
   OV_RESULT result = OV_ERR_OK;
-  pinst->p_player.v_actimode = 0;
   pinst->p_syncDownload.v_actimode = 0;
   pinst->v_actimode = 0;
   // TODO: zzz: notify src site :2019 Jan 18 18:58
@@ -199,8 +180,10 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
   /*
    *   local variables
    */
+  ov_memstack_lock();
   OV_INSTPTR_sync_dsyncDst pinst = Ov_StaticPtrCast(sync_dsyncDst, this);
   switch(pinst->v_status) {
+    case DSYNC_DST_DONE:
     case DSYNC_DST_INIT:
       break;
     case SYNC_INTERNALERROR:
@@ -212,21 +195,17 @@ OV_DLLFNCEXPORT void sync_dsyncDst_typemethod(OV_INSTPTR_ksbase_ComTask this) {
         if(Ov_Fail(pinst->p_syncDownload.v_result)) {
           sync_dsyncDst_opTerm(pinst, pinst->p_syncDownload.v_result);
         } else {
-          pinst->p_player.v_actimode = 1;
-          pinst->v_status = DSYNC_DST_WAITINGPLAYER;
+          pinst->v_switch = 0;
+          sync_dsyncDst_switch_set(pinst, 1);
         }
       }
       break;
-    case DSYNC_DST_WAITINGPLAYER:
-      break;
-    case DSYNC_DST_DONE:
-      pinst->v_actimode = 0;
-      ov_logfile_info("sync_dsyncDst: done.");
-      break;
     default:
       ov_logfile_error("sync_dsyncDst: unknown state");
+      ov_memstack_unlock();
       return;
   }
+  ov_memstack_unlock();
   return;
 }
 

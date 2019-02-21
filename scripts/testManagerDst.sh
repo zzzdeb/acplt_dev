@@ -6,10 +6,10 @@
 THISACPLTSYSTEM=$ACPLT_HOME
 SERVERNAME="MANAGER"
 SERVERPORT="7509"
-SERVERIP="localhost"
-MYIP="192.168.3.146"
-DST2="192.168.3.145"
-DST1="192.168.3.15"
+SERVERIP="192.168.3.145"
+MYIP="192.168.3.145"
+DST1="192.168.3.146"
+DST2="192.168.3.15"
 ##### Functions ######
 #. $THISACPLTSYSTEM/scripts/functions.sh
 
@@ -31,29 +31,12 @@ sleep 1
 # PALETTELIST="\{/TechUnits/GSE/PA001\}%20\{/TechUnits/GSE/PA002\}%20\{/TechUnits/GSE/PA003\}"
 # curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/TechUnits/GSE/TopologyAgent.PalettePaths&newvalue="$PALETTELIST
 # weights 
-# curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1"
-# curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2"
-
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1_1"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1_2"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1_3"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE1_4"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_1"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_2"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_3"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_4"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_5"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_6"
-curl "http://"$SERVERIP":"$SERVERPORT"/createObject?format=plain&factory=/acplt/ov/domain&path=/TechUnits/GSE2_7"
 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.selfHost&newvalue=$MYIP"
 
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.actimode&newvalue=1"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.iexreq&newvalue=1"
 servers="\{$DST1/MANAGER\t0\t$DST1\t7509\tMANAGER\}%20\{$DST2/MANAGER\t0\t$DST2\t7509\tMANAGER\}"
-# servers="\{$DST1/MANAGER\t0\t$DST1\t7509\tMANAGER\}"
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.mock.ovServers&newvalue="$servers
 curl "http://"$SERVERIP":"$SERVERPORT"/setVar?format=plain&path=/data/lbalance/BRAD.nbInformer.myIP%&newvalue=$MYIP"
 

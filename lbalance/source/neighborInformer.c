@@ -38,6 +38,7 @@ OV_DLLFNCEXPORT OV_RESULT
   result |= Ov_Link(fb_tasklist, pinst, &pinst->p_broadcaster);
   pinst->p_broadcaster.v_actimode = 1;
   pinst->p_broadcaster.v_iexreq = 1;
+  pinst->p_broadcaster.v_queueLength = 20;
 
   return result;
 }
@@ -104,7 +105,7 @@ lbalance_neighborInformer_typemethod(OV_INSTPTR_fb_functionblock pfb,
           /* pinst->v_serverNames.value[i], LB_NDB_PATH); */
           /* send to neighbor */
           result |= PostSys_msgCreator_dst_set(pbcaster, dstKS);
-          result |= ov_string_append(&order, "a;a;");
+          result |= ov_string_setvalue(&order, "a;a;");
           /* result |= ov_string_append(&order, ";"); */
           cJSON* jsMsg = cJSON_CreateArray();
           /* order is important. see helper */
