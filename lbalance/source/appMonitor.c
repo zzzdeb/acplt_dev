@@ -36,7 +36,7 @@ OV_DLLFNCEXPORT OV_RESULT
   OV_STRING paths[] = {"/TechUnits"};
   Ov_SetDynamicVectorValue(&pinst->v_appPaths, paths, 1, STRING);
 
-  OV_STRING weights[] = {"GSE1&10", "GSE2&20"};
+  OV_STRING weights[] = {"GSE1&10", "GSE2&20","GSE3&30"};
   Ov_SetDynamicVectorValue(&pinst->v_weights, weights, 2, STRING);
   return result;
 }
