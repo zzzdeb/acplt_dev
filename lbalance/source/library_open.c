@@ -67,6 +67,8 @@ OV_RESULT ov_library_setglobalvars_lbalance_new(void) {
     } else {
       ov_logfile_warning("lbalance_library_open: brad not listed in UrTask");
     }
+    pbrad->v_actimode = 1;
+    pbrad->v_iexreq = 1;
   }
   return result;
 }
