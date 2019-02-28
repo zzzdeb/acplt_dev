@@ -259,7 +259,7 @@ OV_DLLFNCEXPORT void sync_dsync_typemethod(OV_INSTPTR_fb_functionblock pfb,
         case CTREE_TR_DONE:
           ov_logfile_info("transport done successfully");
           ov_string_setvalue(&pinst->p_transport.v_targetDownloadPath,
-                             "data/CTree/Download");
+                             NULL);
           pinst->v_status = SYNC_SRC_WAITINGFORSHUTDOWN;
           break;
         case CTREE_TR_TREESENT_WAITING:
