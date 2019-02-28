@@ -175,9 +175,13 @@ static void DNSServiceResolveCallback(
 	ov_logfile_info("New OV server discovered: %s at %s:%hu (via Iface %u)", fullname, hosttarget, ntohs(port),
 			interfaceIndex);
 
-	// Add entry to list
-	addServerToList(&Ov_DynamicPtrCast(ressourcesMonitor_ovDiscoverer, pContext->pinst)->v_ovServers,
-			fullname, interfaceIndex, hosttarget, ntohs(port));
+	if (fullname == NULL) {
+		ov_logfile_error("Skipping Server with fullname (null).");
+	} else {
+		// Add entry to list
+		addServerToList(&Ov_DynamicPtrCast(ressourcesMonitor_ovDiscoverer, pContext->pinst)->v_ovServers,
+				fullname, interfaceIndex, hosttarget, ntohs(port));
+	}
 
 	// Set terminate flag to let resolveContext be terminated by update loop
 	pContext->terminate = TRUE;
