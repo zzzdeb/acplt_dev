@@ -204,11 +204,14 @@ OV_DLLFNCEXPORT OV_RESULT lbalance_BRAD_constructor(OV_INSTPTR_ov_object pobj) {
   ov_fb_connect(Ov_StaticPtrCast(fb_object, pinst), "D",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "trigger");
 
-  // TODO destination (from outLSEOptimizer.outIP)
   ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_outLSEOptimizer), "outIP",
                 Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "destKS");
-  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
-                Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "selfHost");
+  if (pDiscoveryReg)
+	  ov_fb_connect(pDiscoveryReg, "registerHostname",
+					Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "selfHost");
+  else
+	  ov_fb_connect(Ov_StaticPtrCast(fb_object, &pinst->p_mock), "selfHost",
+					Ov_StaticPtrCast(fb_object, &pinst->p_dsync), "selfHost");
 
   return result;
 }
