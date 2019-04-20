@@ -166,25 +166,6 @@ OV_DLLFNCEXPORT void infoRequest_callback(const OV_INSTPTR_ov_domain this,
   return;
 }
 
-OV_DLLFNCEXPORT void dataSend_callback(const OV_INSTPTR_ov_domain this,
-                                       const OV_INSTPTR_ov_domain that) {
-  if(!this || !that) {
-    ov_logfile_error("callback issued with NULL pointers. aborting.");
-    return;
-  }
-  OV_INSTPTR_CTree_LoadLibs  pinst = Ov_StaticPtrCast(CTree_LoadLibs, this);
-  OV_INSTPTR_CTree_SendFiles pSfiles = Ov_DynamicPtrCast(CTree_SendFiles, that);
-
-  if(!pinst || !pSfiles) {
-    ov_logfile_error("callback issued with cant cast");
-    return;
-  }
-  pinst->v_status = pSfiles->v_status;
-  pinst->v_result = pSfiles->v_result;
-  ov_logfile_info("Done.");
-  return;
-}
-
 OV_DLLFNCEXPORT void CTree_LoadLibs_typemethod(OV_INSTPTR_fb_functionblock pfb,
                                                OV_TIME* pltc) {
   /*

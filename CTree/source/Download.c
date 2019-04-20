@@ -21,6 +21,7 @@
 #endif
 
 #include "CTree.h"
+#include "CTree_helper.h"
 #include "libov/ov_ov.h"
 
 #include "libov/ov_association.h"
@@ -45,9 +46,14 @@
 /*
  * Helpers
  */
-
-/*
- * from path=~/b, pre=/a gives /a/b
+/**
+ * @brief from path=~/b, pre=/a gives /a/b. Dont forget to set to NULL after
+ * usage
+ *
+ * @param pre
+ * @param path
+ *
+ * @return
  */
 OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
   OV_STRING resstr = NULL;
@@ -61,8 +67,13 @@ OV_STRING inverse_path2(const OV_STRING pre, const OV_STRING path) {
   ov_string_append(&resstr, path + 1);
   return resstr;
 }
-/*
- * from a/b searches for class b in library a
+
+/**
+ * @brief from a/b searches for class b in library a
+ *
+ * @param neutralpath
+ *
+ * @return
  */
 OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
   OV_INSTPTR_ov_class pclass = NULL;
@@ -91,6 +102,17 @@ OV_INSTPTR_ov_class inverse_neutralpath(const OV_STRING neutralpath) {
   return NULL;
 }
 
+/**
+ * @brief experimental log function to unite log status error return
+ *
+ * @param pinst
+ * @param msg_type
+ * @param result
+ * @param format
+ * @param ...
+ *
+ * @return
+ */
 OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
                        OV_RESULT result, const OV_STRING format, ...) {
   char msg[1024];
@@ -117,9 +139,6 @@ OV_RESULT Download_log(OV_INSTPTR_CTree_Download pinst, OV_MSG_TYPE msg_type,
 }
 
 OV_RESULT jsonToVarelement(OV_ELEMENT* value, const cJSON* jsvalue);
-
-OV_DLLFNCEXPORT OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue,
-                                         const cJSON*  jsvalue);
 
 OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
                       const cJSON* jstrueval) {
@@ -399,7 +418,13 @@ OV_RESULT jsonToValue(OV_BYTE* value, const OV_VAR_TYPE type,
   return result;
 }
 
-/* checks if jsvariable in "IDENT":["TYPE","VALUE"] format is */
+/**
+ * @brief checks if jsvariable in "IDENT":["TYPE","VALUE"] format is
+ *
+ * @param jsvariable
+ *
+ * @return
+ */
 OV_BOOL isJsonValidVariable(cJSON* jsvariable) {
   if(!jsvariable)
     return 0;
@@ -492,6 +517,15 @@ OV_RESULT jsonToVarelement(OV_ELEMENT* pelement, const cJSON* jsvalue) {
   return result;
 }
 
+/**
+ * @brief sets variable values of pobj from json format
+ *
+ * @param pinst
+ * @param jsvariables
+ * @param pobj
+ *
+ * @return
+ */
 OV_RESULT set_variable_values(OV_INSTPTR_CTree_Download pinst,
                               cJSON* jsvariables, OV_INSTPTR_ov_object pobj) {
   /*
@@ -548,15 +582,43 @@ typedef enum { CTREE_CHILDREN, CTREE_PARTS } TYPE_OF_MEMBER;
 OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
                         OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type);
 
+/**
+ * @brief creating children of obj from json
+ *
+ * @param pinst
+ * @param jsparent
+ * @param pparent
+ *
+ * @return
+ */
 OV_RESULT download_children(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
                             OV_INSTPTR_ov_domain pparent) {
   return download_tree(pinst, jsparent, pparent, CTREE_CHILDREN);
 }
+
+/**
+ * @brief creating parts of obj from json
+ *
+ * @param pinst
+ * @param jsparent
+ * @param pparent
+ *
+ * @return
+ */
 OV_RESULT download_parts(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
                          OV_INSTPTR_ov_domain pparent) {
   return download_tree(pinst, jsparent, pparent, CTREE_PARTS);
 }
 
+/**
+ * @brief loads libraries in right order. But now not requested, since ov can
+ * load dependencies itself in right order
+ *
+ * @param pinst
+ * @param jslibs
+ *
+ * @return
+ */
 OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
                              const cJSON*              jslibs) {
   cJSON*                jscurrent = NULL;
@@ -568,7 +630,7 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
   OV_STRING libname = NULL;
 
   OV_UINT round = 0;
-  OV_UINT maxRound = 100;
+  OV_UINT maxRound = 100; // arbitrary big number
   OV_UINT deleted = 1;
 
   while(cJSON_GetArraySize(jslibs_cpy) && deleted && round++ < maxRound) {
@@ -623,6 +685,15 @@ OV_RESULT download_libraries(OV_INSTPTR_CTree_Download pinst,
   return 0;
 }
 
+/**
+ * @brief links obj with objpath according to saved data in jsobj
+ *
+ * @param pinst Download obj
+ * @param jsobj info to obj in json
+ * @param objpath path of obj
+ *
+ * @return OV_RESULT
+ */
 OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
                        const OV_STRING objpath) {
   OV_RESULT                 res = OV_ERR_OK;
@@ -767,12 +838,24 @@ OV_RESULT link_objects(OV_INSTPTR_CTree_Download pinst, cJSON* jsobj,
   return res;
 }
 
+/**
+ * @brief recursive function to save tree as json
+ *
+ * @param pinst
+ * @param jsparent
+ * @param pparent
+ * @param type children or parts
+ *
+ * @return
+ */
 OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
                         OV_INSTPTR_ov_domain pparent, TYPE_OF_MEMBER type) {
   OV_RESULT res = OV_ERR_OK;
 
   OV_INSTPTR_ov_class  pclass = NULL;
   OV_INSTPTR_ov_object pobj = NULL;
+  OV_PATH              path;
+  OV_ELEMENT           element;
   /* OV_BOOL              created = 0; */
   //	OV_INSTPTR_ov_class pclassobj = NULL;
   OV_STRING identifier = NULL;
@@ -808,12 +891,6 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
       return OV_ERR_BADPARAM;
     }
   }
-
-  /*
-   *	for parts
-   */
-  OV_PATH    path;
-  OV_ELEMENT element;
 
   cJSON_ArrayForEach(jschild, jsparent) {
     //		1. Getting identifier
@@ -874,7 +951,7 @@ OV_RESULT download_tree(OV_INSTPTR_CTree_Download pinst, cJSON* jsparent,
         break;
       case CTREE_PARTS:
         ov_string_print(&elementpath, "%s.%s", parentpath, identifier);
-        // TODO: zzz: sometimes ov_path_resolve resolves malformed path without
+        // FIX: zzz: sometimes ov_path_resolve resolves malformed path without
         // error :2019 Jan 03 17:11
         OV_INSTPTR_ov_object ptmp = ov_path_getobjectpointer(elementpath, 2);
         if(!ptmp) {
@@ -1169,5 +1246,4 @@ OV_DLLFNCEXPORT void CTree_Download_typemethod(OV_INSTPTR_fb_functionblock pfb,
       ov_logfile_error("Download failed. : %s", ov_result_getresulttext(res));
   }
   pinst->v_actimode = 0;
-  return;
 }

@@ -59,8 +59,15 @@ OV_DLLFNCEXPORT OV_RESULT CTree_SendFiles_reset_set(
   return result;
 }
 
-/* create path without variable. $ACPLT_HOME/dev -> /home/zzz/....../acplt/dev.
- * works for now only for first*/
+/**
+ * @brief create path without ENV variable. $ACPLT_HOME/dev ->
+ * /com/user/....../acplt/dev, works for now only for first variable. If no
+ * variable is included gives path back
+ *
+ * @param path
+ *
+ * @return
+ */
 OV_STRING pathWithoutVariable(OV_STRING path) {
   OV_STRING pathWV = NULL;
   OV_STRING tmpString = NULL;
@@ -83,6 +90,14 @@ OV_STRING pathWithoutVariable(OV_STRING path) {
   return pathWV;
 }
 
+/**
+ * @brief converts file from system to bytevector
+ *
+ * @param bvec
+ * @param path path of file. Can begin with env variable.
+ *
+ * @return
+ */
 OV_RESULT filesToBytes(OV_BYTE_VEC* bvec, OV_STRING path) {
   OV_RESULT result = OV_ERR_OK;
   FILE*     lib = NULL;
@@ -117,7 +132,14 @@ OV_RESULT filesToBytes(OV_BYTE_VEC* bvec, OV_STRING path) {
   ov_memstack_unlock();
   return result;
 }
-/*/a/b/c/d.so to d.so*/
+
+/**
+ * @brief /a/b/c/d.so to d.so
+ *
+ * @param path
+ *
+ * @return
+ */
 OV_STRING name_from_path(const OV_STRING path) {
   if(!path)
     return NULL;
@@ -130,7 +152,14 @@ OV_STRING name_from_path(const OV_STRING path) {
   return ret;
 }
 
-/* call back */
+/**
+ * @brief call back from target to confirm they received file
+ *
+ * @param this
+ * @param that
+ *
+ * @return
+ */
 OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
                                         const OV_INSTPTR_ov_domain that) {
   OV_INSTPTR_CTree_SendFiles   pinst = Ov_StaticPtrCast(CTree_SendFiles, this);
@@ -191,6 +220,14 @@ OV_DLLFNCEXPORT void sendFiles_callback(const OV_INSTPTR_ov_domain this,
   return;
 }
 
+/**
+ * @brief packs files in one bytevector and sends it to writefile and waits
+ * for response
+ *
+ * @param pinst
+ *
+ * @return
+ */
 OV_RESULT CTree_SendFiles_execute(OV_INSTPTR_CTree_SendFiles pinst) {
   OV_RESULT result = OV_ERR_OK;
 

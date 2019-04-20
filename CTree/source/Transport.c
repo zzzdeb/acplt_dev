@@ -270,6 +270,11 @@ void CTree_Transport_treedownload_callback(const OV_INSTPTR_ov_domain this,
   return;
 }
 
+/**
+ * @brief sends saved json tree to target Download to load
+ *
+ * @param pinst
+ */
 void CTree_Transport_sendTree(OV_INSTPTR_CTree_Transport pinst) {
   OV_INSTPTR_ksbase_ClientBase pClient = NULL;
   OV_VTBLPTR_ksbase_ClientBase pVtblClient = NULL;
@@ -364,6 +369,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
   switch(pinst->v_status) {
     case CTREE_TR_DONE:
     case CTREE_TR_INIT:
+      /* 1. get tree as json */
       ov_string_setvalue(&pinst->p_upload.v_path, pinst->v_path);
       CTree_Upload_typemethod(
           Ov_StaticPtrCast(fb_functionblock, &pinst->p_upload), NULL);
@@ -374,6 +380,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
         return;
       }
 
+      /* 2. see if necessary libraries are there, if not try to send */
       OV_STRING targetHost = NULL;
       OV_STRING targetServer = NULL;
       OV_STRING targetPath = NULL;
@@ -450,6 +457,7 @@ OV_DLLFNCEXPORT void CTree_Transport_typemethod(OV_INSTPTR_fb_functionblock pfb,
         case CTREE_LL_DATA_SENT:
           break;
         case CTREE_LL_DONE:
+          /* 3. Send json tree to load */
           CTree_Transport_sendTree(pinst);
           break;
         case CTREE_COMMON_INTERNALERROR:

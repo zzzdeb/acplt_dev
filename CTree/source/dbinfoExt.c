@@ -45,8 +45,7 @@ OV_DLLFNCEXPORT OV_RESULT
   result = ov_object_constructor(pobj);
   if(Ov_Fail(result))
     return result;
-
-  /* do what */
+  /* init */
   pinst->v_addonlibs.veclen = 0;
   pinst->v_addonlibs.value = NULL;
   /* architect */
@@ -61,57 +60,11 @@ OV_DLLFNCEXPORT OV_RESULT
   pinst->v_serversystemarch = arch;
 
   /* get acplt home */
-
   ov_string_setvalue(&pinst->v_acplthome, getenv("ACPLT_HOME"));
 
   updateAddonlibs(pobj);
 
   return OV_ERR_OK;
-}
-
-OV_DLLFNCEXPORT void CTree_dbinfoExt_destructor(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
-  //  pobj);
-
-  /* do what */
-
-  /* destroy object */
-  ov_object_destructor(pobj);
-
-  return;
-}
-
-OV_DLLFNCEXPORT void CTree_dbinfoExt_startup(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
-  //  pobj);
-
-  /* do what the base class does first */
-  ov_object_startup(pobj);
-
-  /* do what */
-
-  return;
-}
-
-OV_DLLFNCEXPORT void CTree_dbinfoExt_shutdown(OV_INSTPTR_ov_object pobj) {
-  /*
-   *   local variables
-   */
-  //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
-  //  pobj);
-
-  /* do what */
-
-  /* set the object's state to "shut down" */
-  ov_object_shutdown(pobj);
-
-  return;
 }
 
 OV_DLLFNCEXPORT OV_STRING*
@@ -130,10 +83,13 @@ OV_DLLFNCEXPORT OV_ACCESS CTree_dbinfoExt_getaccess(OV_INSTPTR_ov_object pobj,
    */
   //  OV_INSTPTR_CTree_dbinfoExt pinst = Ov_StaticPtrCast(CTree_dbinfoExt,
   //  pobj);
+
+  /* for now just give read access */
+  return OV_AC_READ;
+
   /*
    *	switch based on the element's type
    */
-  return OV_AC_READ;
   /*switch(pelem->elemtype) {
    case OV_ET_VARIABLE:
    if(pelem->elemunion.pvar->v_offset >=
@@ -155,6 +111,14 @@ OV_DLLFNCEXPORT OV_ACCESS CTree_dbinfoExt_getaccess(OV_INSTPTR_ov_object pobj,
   return ov_object_getaccess(pobj, pelem, pticket);
 }
 
+/**
+ * @brief lists addonlibs in $ACPLT_HOME/system/addonlibs. With
+ * little effort it can list files in multiple dirs
+ *
+ * @param pinst
+ *
+ * @return
+ */
 OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
   OV_RESULT result = OV_ERR_OK;
 
@@ -194,6 +158,7 @@ OV_RESULT updateAddonlibs(OV_INSTPTR_CTree_dbinfoExt pinst) {
     if(daddonlibs) {
       OV_STRING tmpFilename = NULL;
       while((dir = readdir(daddonlibs)) != NULL) {
+        /* ignoring . and .. */
         if(!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."))
           continue;
         //					dir = readdir(daddonlibs);

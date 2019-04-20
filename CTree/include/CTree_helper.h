@@ -22,9 +22,28 @@
 #define CTREE_TR_TREESENT_WAITING 2
 #define CTREE_TR_DONE 3
 
+/**
+ * @brief converts ov_Value to json
+ *
+ * @param pjsvalue
+ * @param vartype type of value
+ * @param var pointer to value
+ * @param size not used so far. It is for value, where byte lenght can not be
+ * extracted from type
+ *
+ * @return
+ */
 OV_RESULT valueToJSON(cJSON** pjsvalue, const OV_VAR_TYPE vartype,
                       const OV_BYTE* var, const OV_UINT size);
 
+/**
+ * @brief writes ov_value from json
+ *
+ * @param pvalue
+ * @param jsvalue
+ *
+ * @return
+ */
 OV_RESULT jsonToVarvalue(OV_VAR_VALUE* pvalue, const cJSON* jsvalue);
 
 OV_STRING CTree_helper_ovtypeToStr(OV_VAR_TYPE vartype);

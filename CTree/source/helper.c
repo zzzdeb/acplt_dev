@@ -27,8 +27,13 @@
 #include <string.h>
 
 #define VERSION_FOR_CTREE 2
-/*
- * String
+
+/**
+ * @brief concatination of strings of string_vector in one string
+ *
+ * @param vector
+ *
+ * @return
  */
 OV_DLLFNCEXPORT OV_STRING
                 CTree_helper_strlistcat(const OV_STRING_VEC* const vector) {
@@ -44,8 +49,13 @@ OV_DLLFNCEXPORT OV_STRING
   }
   return res;
 }
-/*
- * Functions
+
+/**
+ * @brief gets path of class object of ov_object like '/acplt/ov/domain'
+ *
+ * @param pobj
+ *
+ * @return
  */
 OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
   if(pobj == NULL)
@@ -61,6 +71,19 @@ OV_DLLFNCEXPORT OV_STRING CTree_helper_getfactory(OV_INSTPTR_ov_domain pobj) {
   return factory;
 }
 
+/**
+ * @brief meant to extract info from something like
+ * localhost:7509/MANAGER/Techunits. But found out ks_splitOneStringPath
+ * function which performs better. So dont use it
+ *
+ * @param kspath
+ * @param serverHost
+ * @param port
+ * @param serverName
+ * @param path
+ *
+ * @return
+ */
 OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING* serverHost,
                        OV_STRING* port, OV_STRING* serverName,
                        OV_STRING* path) {
@@ -138,6 +161,15 @@ OV_RESULT parse_kspath(const OV_STRING kspath, OV_STRING* serverHost,
   return result;
 }
 
+/**
+ * @brief from param=[//host[:MANAGERPort]/servername[:serverport]/]instancePath
+ * configures ksclient
+ *
+ * @param pclient
+ * @param param
+ *
+ * @return
+ */
 OV_DLLFNCEXPORT OV_RESULT CTree_helper_setKSParam(
     const OV_INSTPTR_ksbase_ClientBase pclient, const OV_STRING param) {
   OV_RESULT result = OV_ERR_OK;

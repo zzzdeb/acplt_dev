@@ -21,8 +21,15 @@
 #include "libov/ov_macros.h"
 #include "libov/ov_result.h"
 
-/* create path without variable. $ACPLT_HOME/dev -> /home/zzz/....../acplt/dev.
- * works for now only for first*/
+/**
+ * @brief create path without ENV variable. $ACPLT_HOME/dev ->
+ * /com/user/....../acplt/dev, works for now only for first variable. If no
+ * variable is included gives path back
+ *
+ * @param path
+ *
+ * @return
+ */
 OV_STRING free_varpath(const OV_STRING path) {
   OV_STRING pathWV = NULL;
   OV_STRING tmpString = NULL;
@@ -44,7 +51,16 @@ OV_STRING free_varpath(const OV_STRING path) {
   ov_string_setvalue(&tmpString, NULL);
   return pathWV;
 }
-/* writes blen bytes of pvalue under name*/
+
+/**
+ * @brief writes blen bytes of pvalue under name
+ *
+ * @param path
+ * @param blen
+ * @param pvalue
+ *
+ * @return
+ */
 OV_RESULT bytesToFile(const OV_STRING path, OV_UINT blen,
                       const OV_BYTE* pvalue) {
   OV_RESULT result = OV_ERR_OK;

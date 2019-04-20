@@ -7,13 +7,31 @@
 #include "kshttp.ovm"
 #include "ovhelper.ovm"
 
+/**
+*
+*   Chair of Process Control Engineering
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*
+*
+ * Some Classes now have the Flag "v". This means volatile. 
+ * This flag will be used in a clean-up function of the ov_runtimeserver to determine if an object needs to be deleted before the server starts up. 
+ */
+
 LIBRARY CTree
   VERSION   = "V0.1 (15-Mon-2018)";
   AUTHOR    = "Zolboo Erdenebayar";
   COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
   COMMENT   = "Upload and Download tree in json format";
-  
-
 
   /**
     Documentation of Common.
@@ -22,6 +40,7 @@ LIBRARY CTree
   */
   
   CLASS Common : CLASS fb/functionblock
+    COMMENT   = "Base class for CTree classes for general error, result, trigger functions";
     VARIABLES
       result    : INT FLAGS="o"
         COMMENT     = "Result: 0: Success; 1: Error; 4: Bad Param"
@@ -33,6 +52,7 @@ LIBRARY CTree
   
   CLASS Download : CLASS CTree/Common
     IS_INSTANTIABLE;
+		COMMENT = "creates ov tree from json text";
     VARIABLES
       json: STRING FLAGS="i" COMMENT="Tree to download as json format";
       path: STRING FLAGS="i" COMMENT="where to download" INITIALVALUE="/TechUnits";
@@ -49,6 +69,7 @@ LIBRARY CTree
   */
   CLASS WriteFiles : CLASS CTree/Common
     IS_INSTANTIABLE;
+    COMMENT = "Writes files from bytevector to system";
     VARIABLES
       filesToWrite[]: STRING FLAGS="i" COMMENT="Files to write";
       filesPositions[]: UINT FLAGS= "i" COMMENT="Positions of files in Bytevec"; 
@@ -65,6 +86,7 @@ LIBRARY CTree
   */
   CLASS SendFiles : CLASS CTree/Common
     IS_INSTANTIABLE;
+    COMMENT = "Packs files in bytevector and sends it to another server through ks.";
     VARIABLES
       targetKS: STRING FLAGS="i" COMMENT="IP(:PORT(default 7509))/serverName \n f.e. localhost/MANAGER" INITIALVALUE="";
       filesToSend[]: STRING FLAGS="i" COMMENT="Files to send. /home/a/b/d.so or ../c/d";
@@ -88,15 +110,10 @@ LIBRARY CTree
       typemethod: C_FUNCTION <FB_FNC_TYPEMETHOD>;
     END_OPERATIONS;
   END_CLASS;
-  
-  
-  /**
-    Documentation of Copy.
-    @note Javadoc syntax is allowed here.
-    @attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-  */
+
   CLASS Upload : CLASS CTree/Common
     IS_INSTANTIABLE;
+    COMMENT = "Saves tree as json";
     VARIABLES
       getVar: BOOL FLAGS="i" COMMENT="if variables should be copied" INITIALVALUE=TRUE;
       path: STRING FLAGS="i" COMMENT="path of object to upload as json" INITIALVALUE="/TechUnits";
@@ -117,6 +134,7 @@ LIBRARY CTree
   
   CLASS LoadLibs : CLASS CTree/Common
     IS_INSTANTIABLE;
+    COMMENT = "Requests target server to load libraries, and if it is not on target server loadable, it tries to send libraries as bytevector, if os and arch match";
     VARIABLES
       targetKS: STRING FLAGS="i" COMMENT="[//host[:MANAGERPort]/servername[:serverport]/]instancePath See: ks_splitOneStringPath()" INITIALVALUE="";
       status : UINT FLAGS="o" COMMENT="State of object; 0: Initial; 1: Info requested; 2: Info received; 3: Data sent; 4: Done" INITIALVALUE=0;
@@ -203,6 +221,7 @@ LIBRARY CTree
   
   CLASS dbinfoExt : CLASS ov/object
     IS_INSTANTIABLE;
+    COMMENT = "gives some extra information about server";
     VARIABLES
       serversystem : STRING             FLAGS = "o"  COMMENT = "Server-Plattform";
       serversystemarch : UINT             FLAGS = "o"  COMMENT = "Server-Plattform architecture";
@@ -212,14 +231,12 @@ LIBRARY CTree
     END_VARIABLES;
     OPERATIONS
       constructor  : C_FUNCTION <OV_FNC_CONSTRUCTOR>;
-      destructor   : C_FUNCTION <OV_FNC_DESTRUCTOR>;
-      startup      : C_FUNCTION <OV_FNC_STARTUP>;
-        shutdown     : C_FUNCTION <OV_FNC_SHUTDOWN>;
       getaccess    : C_FUNCTION <OV_FNC_GETACCESS>;
     END_OPERATIONS;
   END_CLASS;
 
   CLASS helper : CLASS ov/object
+    COMMENT = "helper functions";
     VARIABLES
     END_VARIABLES;
     OPERATIONS
@@ -235,53 +252,45 @@ LIBRARY CTree
   
   
   CLASS test : CLASS fb/functionblock
-  IS_INSTANTIABLE;
-  VARIABLES
-    //varVoid: C_TYPE<OV_VOID>;
-    varByte: ANY FLAGS="i";
-    varBool: BOOL FLAGS="o" COMMENT= "a ";
-    varInt: INT  FLAGS="o" INITIALVALUE=-1;
-    varUint: UINT  FLAGS="o" INITIALVALUE=1;
-    varSingle: SINGLE FLAGS="i" INITIALVALUE=1.1;
-    varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
-    varString: STRING FLAGS="i" INITIALVALUE="string test";
-    varTime:  TIME FLAGS="i";
-    varFunctionedTimefromVarTime: TIME FLAGS="i";
-    varTimeSpan:  TIME_SPAN FLAGS="o";
-    varState: C_TYPE<OV_STATE> FLAGS="i";
-    varStruct:  C_TYPE<TestStruct> FLAGS="i";
-    
-    
-    varByteVec: ANY FLAGS="o";
-    varBoolVec[]: BOOL FLAGS="i";
-    varIntVec[]:  INT FLAGS="i";
-    varUintVec[]: UINT FLAGS="o";
-    varSingleVec[]: SINGLE FLAGS="i";
-    varDoubleVec[]: DOUBLE FLAGS="o";
-    varStringVec[]: STRING FLAGS="i";
-    varTimeVec[]: TIME FLAGS="o";
-    varTimeSpanVec[]: TIME_SPAN FLAGS="i";
-    //varStructVec: C_TYPE<TestStruct>;
-    
-  END_VARIABLES;
-  PARTS
-    testpart1:  CLASS ksxdr/xdrClient;
-    testpart2:  CLASS ksxdr/xdrClient;
-  END_PARTS;
-  OPERATIONS
-    typemethod    : C_FUNCTION <FB_FNC_TYPEMETHOD>;
-    startup       : C_FUNCTION <OV_FNC_STARTUP>;
-    shutdown        : C_FUNCTION <OV_FNC_SHUTDOWN>;
-  END_OPERATIONS;
+    IS_INSTANTIABLE;
+    COMMENT = "mock object to run tests";
+    VARIABLES
+      //varVoid: C_TYPE<OV_VOID>;
+      varByte: ANY FLAGS="i";
+      varBool: BOOL FLAGS="o" COMMENT= "a ";
+      varInt: INT  FLAGS="o" INITIALVALUE=-1;
+      varUint: UINT  FLAGS="o" INITIALVALUE=1;
+      varSingle: SINGLE FLAGS="i" INITIALVALUE=1.1;
+      varDouble: DOUBLE FLAGS="i" INITIALVALUE=-1.1;
+      varString: STRING FLAGS="i" INITIALVALUE="string test";
+      varTime:  TIME FLAGS="i";
+      varFunctionedTimefromVarTime: TIME FLAGS="i";
+      varTimeSpan:  TIME_SPAN FLAGS="o";
+      varState: C_TYPE<OV_STATE> FLAGS="i";
+      varStruct:  C_TYPE<TestStruct> FLAGS="i";
+      
+      
+      varByteVec: ANY FLAGS="o";
+      varBoolVec[]: BOOL FLAGS="i";
+      varIntVec[]:  INT FLAGS="i";
+      varUintVec[]: UINT FLAGS="o";
+      varSingleVec[]: SINGLE FLAGS="i";
+      varDoubleVec[]: DOUBLE FLAGS="o";
+      varStringVec[]: STRING FLAGS="i";
+      varTimeVec[]: TIME FLAGS="o";
+      varTimeSpanVec[]: TIME_SPAN FLAGS="i";
+      //varStructVec: C_TYPE<TestStruct>;
+      
+    END_VARIABLES;
+    PARTS
+      testpart1:  CLASS ksxdr/xdrClient;
+      testpart2:  CLASS ksxdr/xdrClient;
+    END_PARTS;
+    OPERATIONS
+      typemethod    : C_FUNCTION <FB_FNC_TYPEMETHOD>;
+      startup       : C_FUNCTION <OV_FNC_STARTUP>;
+      shutdown        : C_FUNCTION <OV_FNC_SHUTDOWN>;
+    END_OPERATIONS;
   END_CLASS;
 
-  /**
-    Add associations and their documentation here.
-    Association syntax is:
-  */
-  //ASSOCIATION assocName : ONE_TO_MANY
-  //  PARENT parentVarName : CLASS ov/object;
-  //  CHILD  childVarName : CLASS ov/object;
-  //END_ASSOCIATION;
-  
 END_LIBRARY;
