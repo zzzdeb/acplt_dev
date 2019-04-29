@@ -33,12 +33,6 @@ LIBRARY CTree
   COPYRIGHT = "Copyright (C) 2013 Lehrstuhl fuer Prozessleittechnik, RWTH Aachen";
   COMMENT   = "Upload and Download tree in json format";
 
-  /**
-    Documentation of Common.
-    @note Javadoc syntax is allowed here.
-    @attention Changes in this file will only generate new code in ./source/sourcetemplates/. Code in ./source/ is not overwritten. 
-  */
-  
   CLASS Common : CLASS fb/functionblock
     COMMENT   = "Base class for CTree classes for general error, result, trigger functions";
     VARIABLES
@@ -49,7 +43,7 @@ LIBRARY CTree
       trigger: INT HAS_SET_ACCESSOR FLAGS="i" COMMENT="trigger typemethod. any value other than 0 will do. !!!Error Result means either set didnt work or Object returns Error"  INITIALVALUE=0;
     END_VARIABLES;
   END_CLASS;
-  
+
   CLASS Download : CLASS CTree/Common
     IS_INSTANTIABLE;
 		COMMENT = "creates ov tree from json text";
